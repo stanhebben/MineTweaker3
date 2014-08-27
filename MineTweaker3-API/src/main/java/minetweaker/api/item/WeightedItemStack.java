@@ -3,8 +3,8 @@ package minetweaker.api.item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  * Contains a weighted item stack. Weighted item stacks simply contain a stack

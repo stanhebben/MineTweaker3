@@ -6,18 +6,12 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import zenscript.annotations.OperatorType;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeBool;
-import stanhebben.zenscript.type.ZenTypeByte;
-import stanhebben.zenscript.type.ZenTypeDouble;
-import stanhebben.zenscript.type.ZenTypeFloat;
-import stanhebben.zenscript.type.ZenTypeInt;
-import stanhebben.zenscript.type.ZenTypeLong;
-import stanhebben.zenscript.type.ZenTypeShort;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -28,8 +22,13 @@ public class ExpressionArithmeticBinary extends Expression {
 	private final Expression a;
 	private final Expression b;
 	
-	public ExpressionArithmeticBinary(ZenPosition position, OperatorType operator, Expression a, Expression b) {
-		super(position);
+	public ExpressionArithmeticBinary(
+			ZenPosition position,
+			IScopeMethod environment,
+			OperatorType operator,
+			Expression a,
+			Expression b) {
+		super(position, environment);
 		
 		this.operator = operator;
 		this.a = a;
@@ -42,15 +41,16 @@ public class ExpressionArithmeticBinary extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			a.compile(result, environment);
-			b.compile(result, environment);
+			TypeRegistry types = getEnvironment().getTypes();
+			
+			a.compile(result, output);
+			b.compile(result, output);
 			
 			ZenType type = a.getType();
-			MethodOutput output = environment.getOutput();
 			
-			if (type == ZenType.BOOL) {
+			if (type == types.BOOL) {
 				switch (operator) {
 					case AND:
 						output.iAnd();
@@ -64,7 +64,7 @@ public class ExpressionArithmeticBinary extends Expression {
 					default:
 						throw new RuntimeException("Unsupported operator on " + type + ": " + operator);
 				}
-			} else if (type == ZenTypeByte.INSTANCE || type == ZenTypeShort.INSTANCE || type == ZenTypeInt.INSTANCE) {
+			} else if (type == types.BYTE || type == types.SHORT || type == types.INT) {
 				switch (operator) {
 					case ADD:
 						output.iAdd();
@@ -93,7 +93,7 @@ public class ExpressionArithmeticBinary extends Expression {
 					default:
 						throw new RuntimeException("Unsupported operator on " + type + ": " + operator);
 				}
-			} else if (type == ZenTypeLong.INSTANCE) {
+			} else if (type == types.LONG) {
 				switch (operator) {
 					case ADD:
 						output.lAdd();
@@ -122,7 +122,7 @@ public class ExpressionArithmeticBinary extends Expression {
 					default:
 						throw new RuntimeException("Unsupported operator on " + type + ": " + operator);
 				}
-			} else if (type == ZenTypeFloat.INSTANCE) {
+			} else if (type == types.FLOAT) {
 				switch (operator) {
 					case ADD:
 						output.fAdd();
@@ -142,7 +142,7 @@ public class ExpressionArithmeticBinary extends Expression {
 					default:
 						throw new RuntimeException("Unsupported operator on " + type + ": " + operator);
 				}
-			} else if (type == ZenTypeDouble.INSTANCE) {
+			} else if (type == types.DOUBLE) {
 				switch (operator) {
 					case ADD:
 						output.dAdd();
@@ -166,8 +166,8 @@ public class ExpressionArithmeticBinary extends Expression {
 				throw new RuntimeException("Internal compilation error: " + type + " is not a supported arithmetic type");
 			}
 		} else {
-			a.compile(result, environment);
-			b.compile(result, environment);
+			a.compile(result, output);
+			b.compile(result, output);
 		}
 	}
 }

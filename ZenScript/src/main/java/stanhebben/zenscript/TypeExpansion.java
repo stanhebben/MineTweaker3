@@ -9,29 +9,27 @@ import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenMethodStatic;
-import stanhebben.zenscript.annotations.ZenOperator;
-import stanhebben.zenscript.annotations.ZenSetter;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.compiler.ITypeRegistry;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenMethodStatic;
+import zenscript.annotations.ZenOperator;
+import zenscript.annotations.ZenSetter;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.expand.ZenExpandCaster;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import stanhebben.zenscript.value.IAny;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.util.ZenPosition;
 
 /**
  * Type expansions provide additional members for existing types. They can
@@ -75,7 +73,7 @@ public class TypeExpansion {
 	 * @param cls expanding class
 	 * @param types type registry
 	 */
-	public void expand(Class cls, ITypeRegistry types) {
+	public void expand(Class cls, TypeRegistry types) {
 		for (Method method : cls.getMethods()) {
 			String methodName = method.getName();
 			
@@ -177,7 +175,7 @@ public class TypeExpansion {
 	 * @param environment compilation environment
 	 * @param rules target delegate
 	 */
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules) {
+	public void constructCastingRules(IScopeGlobal environment, ICastingRuleDelegate rules) {
 		for (ZenExpandCaster caster : casters) {
 			caster.constructCastingRules(environment, rules);
 		}
@@ -193,7 +191,7 @@ public class TypeExpansion {
 	 */
 	public ZenExpandCaster getCaster(
 			ZenType type,
-			IEnvironmentGlobal environment) {
+			IScopeGlobal environment) {
 		for (ZenExpandCaster caster : casters) {
 			if (caster.getTarget().equals(type)) {
 				return caster;
@@ -221,7 +219,7 @@ public class TypeExpansion {
 	 */
 	public Expression unary(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeGlobal environment,
 			Expression value,
 			OperatorType operator) {
 		for (ZenNativeOperator op : unaryOperators) {
@@ -246,7 +244,7 @@ public class TypeExpansion {
 	 */
 	public Expression binary(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeGlobal environment,
 			Expression left,
 			Expression right,
 			OperatorType operator) {
@@ -273,7 +271,7 @@ public class TypeExpansion {
 	 */
 	public Expression ternary(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeGlobal environment,
 			Expression first,
 			Expression second,
 			Expression third,
@@ -299,7 +297,7 @@ public class TypeExpansion {
 	 */
 	public IPartialExpression instanceMember(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeGlobal environment,
 			Expression value,
 			String member) {
 		if (members.containsKey(member)) {
@@ -318,7 +316,7 @@ public class TypeExpansion {
 	 * @param member member name
 	 * @return resulting static member expression, or null if no such member was available
 	 */
-	public IPartialExpression staticMember(ZenPosition position, IEnvironmentGlobal environment, String member) {
+	public IPartialExpression staticMember(ZenPosition position, IScopeGlobal environment, String member) {
 		if (staticMembers.containsKey(member)) {
 			return staticMembers.get(member).instance(position, environment);
 		}
@@ -326,7 +324,7 @@ public class TypeExpansion {
 		return null;
 	}
 	
-	public void compileAnyCast(ZenType type, MethodOutput output, IEnvironmentGlobal environment, int localValue, int localClass) {
+	public void compileAnyCast(ZenType type, MethodOutput output, IScopeGlobal environment, int localValue, int localClass) {
 		if (type == null)
 			throw new IllegalArgumentException("type cannot be null");
 		
@@ -365,7 +363,7 @@ public class TypeExpansion {
 		}
 	}
 	
-	public void compileAnyCanCastImplicit(ZenType type, MethodOutput output, IEnvironmentGlobal environment, int localClass) {
+	public void compileAnyCanCastImplicit(ZenType type, MethodOutput output, IScopeGlobal environment, int localClass) {
 		for (ZenExpandCaster caster : casters) {
 			Label skip = new Label();
 			output.loadObject(localClass);
@@ -393,7 +391,7 @@ public class TypeExpansion {
 		}
 	}
 	
-	public boolean compileAnyUnary(MethodOutput output, OperatorType type, IEnvironmentMethod environment) {
+	public boolean compileAnyUnary(MethodOutput output, OperatorType type, IScopeMethod environment) {
 		for (ZenNativeOperator operator : unaryOperators) {
 			if (operator.getOperator() == type) {
 				ZenType returnType = operator.getMethod().getReturnType();

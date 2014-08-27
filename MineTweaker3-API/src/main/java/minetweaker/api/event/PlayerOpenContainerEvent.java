@@ -8,9 +8,9 @@ package minetweaker.api.event;
 
 import minetweaker.api.container.IContainer;
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

@@ -6,9 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -18,8 +19,8 @@ public class ExpressionStringIndex extends Expression {
 	private final Expression source;
 	private final Expression index;
 	
-	public ExpressionStringIndex(ZenPosition position, Expression source, Expression index) {
-		super(position);
+	public ExpressionStringIndex(ZenPosition position, IScopeMethod environment, Expression source, Expression index) {
+		super(position, environment);
 		
 		this.source = source;
 		this.index = index;
@@ -27,19 +28,19 @@ public class ExpressionStringIndex extends Expression {
 	
 	@Override
 	public ZenType getType() {
-		return ZenType.STRING;
+		return getEnvironment().getTypes().STRING;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		source.compile(result, environment);
-		index.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		source.compile(result, output);
+		index.compile(result, output);
 		
 		if (result) {
-			environment.getOutput().dup();
-			environment.getOutput().iConst1();
-			environment.getOutput().iAdd();
-			environment.getOutput().invokeVirtual(String.class, "substring", String.class, int.class, int.class);
+			output.dup();
+			output.iConst1();
+			output.iAdd();
+			output.invokeVirtual(String.class, "substring", String.class, int.class, int.class);
 		}
 	}
 }

@@ -2,9 +2,9 @@ package minetweaker.api.recipes;
 
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.Optional;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenMethod;
 
 /**
  * The RecipeManager adds and removes crafting recipes. The IRecipeManager

@@ -8,11 +8,11 @@ package minetweaker.api.oredict;
 
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenOperator;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenOperator;
 
 /**
  *

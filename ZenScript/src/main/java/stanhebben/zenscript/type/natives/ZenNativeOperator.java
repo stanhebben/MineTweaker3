@@ -6,7 +6,7 @@
 
 package stanhebben.zenscript.type.natives;
 
-import stanhebben.zenscript.annotations.OperatorType;
+import zenscript.annotations.OperatorType;
 
 /**
  *

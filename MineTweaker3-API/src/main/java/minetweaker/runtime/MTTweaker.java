@@ -25,17 +25,17 @@ import minetweaker.runtime.providers.ScriptProviderMemory;
 import stanhebben.zenscript.ZenModule;
 import static stanhebben.zenscript.ZenModule.compileScripts;
 import static stanhebben.zenscript.ZenModule.extractClassName;
-import stanhebben.zenscript.ZenParsedFile;
-import stanhebben.zenscript.ZenTokener;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.parser.ParseException;
+import zenscript.parser.ParsedFile;
+import zenscript.lexer.ZenTokener;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import zenscript.lexer.ParseException;
 
 /**
  * 
  * 
  * @author Stan Hebben
  */
-public class MTTweaker implements ITweaker {
+public final class MTTweaker {
 	private static final boolean DEBUG = false;
 	
 	private final List<IUndoableAction> actions = new ArrayList<IUndoableAction>();
@@ -45,7 +45,6 @@ public class MTTweaker implements ITweaker {
 	private IScriptProvider scriptProvider;
 	private byte[] scriptData;
 	
-	@Override
 	public void apply(IUndoableAction action) {
 		MineTweakerAPI.logInfo(action.describe());
 		
@@ -67,13 +66,11 @@ public class MTTweaker implements ITweaker {
 		
 		actions.add(action);
 	}
-
-	@Override
+	
 	public void remove(IIngredient items) {
 		GlobalRegistry.remove(items);
 	}
-
-	@Override
+	
 	public List<IUndoableAction> rollback() {
 		List<IUndoableAction> stuck = new ArrayList<IUndoableAction>();
 		for (int i = actions.size() - 1; i >= 0; i--) {
@@ -95,13 +92,11 @@ public class MTTweaker implements ITweaker {
 		actions.clear();
 		return stuck;
 	}
-
-	@Override
+	
 	public void setScriptProvider(IScriptProvider provider) {
 		scriptProvider = provider;
 	}
-
-	@Override
+	
 	public void load() {
 		System.out.println("Loading scripts");
 		
@@ -116,9 +111,9 @@ public class MTTweaker implements ITweaker {
 				executed.add(script.getGroupName());
 
 				Map<String, byte[]> classes = new HashMap<String, byte[]>();
-				IEnvironmentGlobal environmentGlobal = GlobalRegistry.makeGlobalEnvironment(classes);
+				IScopeGlobal environmentGlobal = GlobalRegistry.makeGlobalEnvironment(classes);
 
-				List<ZenParsedFile> files = new ArrayList<ZenParsedFile>();
+				List<ParsedFile> files = new ArrayList<ParsedFile>();
 
 				while (script.next()) {
 					Reader reader = null;
@@ -128,8 +123,8 @@ public class MTTweaker implements ITweaker {
 						String filename = script.getName();
 						String className = extractClassName(filename);
 						
-						ZenTokener parser = new ZenTokener(reader, environmentGlobal.getEnvironment());
-						ZenParsedFile pfile = new ZenParsedFile(filename, className, parser, environmentGlobal);
+						ZenTokener parser = new ZenTokener(reader);
+						ParsedFile pfile = new ParsedFile(filename, className, parser, environmentGlobal);
 						files.add(pfile);
 					} catch (IOException ex) {
 						MineTweakerAPI.logError("Could not load script " + script.getName() + ": " + ex.getMessage());
@@ -170,8 +165,7 @@ public class MTTweaker implements ITweaker {
 			}
 		}
 	}
-
-	@Override
+	
 	public byte[] getScriptData() {
 		return scriptData;
 	}

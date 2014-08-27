@@ -2,26 +2,26 @@ package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArrayGet;
 import stanhebben.zenscript.expression.ExpressionArrayLength;
 import stanhebben.zenscript.expression.ExpressionArraySet;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.casting.CastingRuleArrayArray;
-import stanhebben.zenscript.type.casting.CastingRuleArrayList;
-import stanhebben.zenscript.type.casting.CastingRuleDelegateArray;
-import stanhebben.zenscript.type.casting.ICastingRule;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
+import zenscript.symbolic.type.casting.CastingRuleArrayArray;
+import zenscript.symbolic.type.casting.CastingRuleArrayList;
+import zenscript.symbolic.type.casting.CastingRuleDelegateArray;
+import zenscript.symbolic.type.casting.ICastingRule;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 public class ZenTypeArrayBasic extends ZenTypeArray {
 	private final Type asmType;
 	
-	public ZenTypeArrayBasic(ZenType base) {
-		super(base);
+	public ZenTypeArrayBasic(IScopeGlobal environment, ZenType base) {
+		super(environment, base);
 		
 		asmType = Type.getType("[" + base.toASMType().getDescriptor());
 	}
@@ -44,14 +44,16 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
-		ICastingRule base = super.getCastingRule(type, environment);
-		if (base == null && getBaseType() == ANY && type instanceof ZenTypeArray) {
+	public ICastingRule getCastingRule(ZenType type) {
+		ZenType any = getEnvironment().getTypes().ANY;
+		
+		ICastingRule base = super.getCastingRule(type);
+		if (base == null && getBaseType() == any && type instanceof ZenTypeArray) {
 			ZenType toBaseType = ((ZenTypeArray)type).getBaseType();
 			if (type instanceof ZenTypeArrayBasic) {
-				return new CastingRuleArrayArray(ANY.getCastingRule(toBaseType, environment), this, (ZenTypeArrayBasic) type);
+				return new CastingRuleArrayArray(any.getCastingRule(toBaseType), this, (ZenTypeArrayBasic) type);
 			} else if (type instanceof ZenTypeArrayList) {
-				return new CastingRuleArrayList(ANY.getCastingRule(toBaseType, environment), this, (ZenTypeArrayList) type);
+				return new CastingRuleArrayList(any.getCastingRule(toBaseType), this, (ZenTypeArrayList) type);
 			} else {
 				throw new RuntimeException("Invalid array type: " + type);
 			}
@@ -61,28 +63,28 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
-		ICastingRuleDelegate arrayRules = new CastingRuleDelegateArray(rules, this);
-		getBaseType().constructCastingRules(environment, arrayRules, followCasters);
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+		ICastingRuleDelegate arrayRules = new CastingRuleDelegateArray(getEnvironment(), rules, this);
+		getBaseType().constructCastingRules(arrayRules, followCasters);
 		
 		if (followCasters) {
-			constructExpansionCastingRules(environment, rules);
+			constructExpansionCastingRules(rules);
 		}
 	}
 	
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
+	public IZenIterator makeIterator(int numValues) {
 		if (numValues == 1) {
-			return new ValueIterator(methodOutput.getOutput());
+			return new ValueIterator();
 		} else if (numValues == 2) {
-			return new IndexValueIterator(methodOutput.getOutput());
+			return new IndexValueIterator();
 		} else {
 			return null;
 		}
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal global) {
+	public String getAnyClassName() {
 		return null;
 	}
 
@@ -106,65 +108,65 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public IPartialExpression getMemberLength(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value) {
-		return new ExpressionArrayLength(position, value.eval(environment));
+	public IPartialExpression getMemberLength(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+		return new ExpressionArrayLength(position, environment, value.eval());
 	}
 
 	@Override
-	public Expression indexGet(ZenPosition position, IEnvironmentGlobal environment, Expression array, Expression index) {
+	public Expression indexGet(ZenPosition position, IScopeMethod environment, Expression array, Expression index) {
 		return new ExpressionArrayGet(
 				position,
+				environment,
 				array,
-				index.cast(position, environment, INT));
+				index.cast(position, getEnvironment().getTypes().INT));
 	}
 
 	@Override
-	public Expression indexSet(ZenPosition position, IEnvironmentGlobal environment, Expression array, Expression index, Expression value) {
+	public Expression indexSet(ZenPosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
 		return new ExpressionArraySet(
 				position,
+				environment,
 				array,
-				index.cast(position, environment, INT),
-				value.cast(position, environment, getBaseType()));
+				index.cast(position, getEnvironment().getTypes().INT),
+				value.cast(position, getBaseType()));
 	}
 	
 	private class ValueIterator implements IZenIterator {
-		private final MethodOutput methodOutput;
 		private int index;
 		
-		public ValueIterator(MethodOutput methodOutput) {
-			this.methodOutput = methodOutput;
+		public ValueIterator() {
 		}
 
 		@Override
-		public void compileStart(int[] locals) {
-			index = methodOutput.local(Type.INT_TYPE);
-			methodOutput.iConst0();
-			methodOutput.storeInt(index);
+		public void compileStart(MethodOutput output, int[] locals) {
+			index = output.local(Type.INT_TYPE);
+			output.iConst0();
+			output.storeInt(index);
 		}
 
 		@Override
-		public void compilePreIterate(int[] locals, Label exit) {
-			methodOutput.dup();
-			methodOutput.arrayLength();
-			methodOutput.loadInt(index);
-			methodOutput.ifICmpLE(exit);
+		public void compilePreIterate(MethodOutput output, int[] locals, Label exit) {
+			output.dup();
+			output.arrayLength();
+			output.loadInt(index);
+			output.ifICmpLE(exit);
 			
-			methodOutput.dup();
-			methodOutput.loadInt(index);
-			methodOutput.arrayLoad(getBaseType().toASMType());
-			methodOutput.store(getBaseType().toASMType(), locals[0]);
+			output.dup();
+			output.loadInt(index);
+			output.arrayLoad(getBaseType().toASMType());
+			output.store(getBaseType().toASMType(), locals[0]);
 		}
 		
 		@Override
-		public void compilePostIterate(int[] locals, Label exit, Label repeat) {
-			methodOutput.iinc(index, 1);
-			methodOutput.goTo(repeat);
+		public void compilePostIterate(MethodOutput output, int[] locals, Label exit, Label repeat) {
+			output.iinc(index, 1);
+			output.goTo(repeat);
 		}
 		
 		@Override
-		public void compileEnd() {
+		public void compileEnd(MethodOutput output) {
 			// pop the array
-			methodOutput.pop();
+			output.pop();
 		}
 
 		@Override
@@ -174,46 +176,40 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	private class IndexValueIterator implements IZenIterator {
-		private final MethodOutput methodOutput;
-		
-		public IndexValueIterator(MethodOutput methodOutput) {
-			this.methodOutput = methodOutput;
+		@Override
+		public void compileStart(MethodOutput output, int[] locals) {
+			output.iConst0();
+			output.storeInt(locals[0]);
 		}
 
 		@Override
-		public void compileStart(int[] locals) {
-			methodOutput.iConst0();
-			methodOutput.storeInt(locals[0]);
-		}
-
-		@Override
-		public void compilePreIterate(int[] locals, Label exit) {
-			methodOutput.dup();
-			methodOutput.arrayLength();
-			methodOutput.loadInt(locals[0]);
-			methodOutput.ifICmpLE(exit);
+		public void compilePreIterate(MethodOutput output, int[] locals, Label exit) {
+			output.dup();
+			output.arrayLength();
+			output.loadInt(locals[0]);
+			output.ifICmpLE(exit);
 			
-			methodOutput.dup();
-			methodOutput.loadInt(locals[0]);
-			methodOutput.arrayLoad(getBaseType().toASMType());
-			methodOutput.store(getBaseType().toASMType(), locals[1]);
+			output.dup();
+			output.loadInt(locals[0]);
+			output.arrayLoad(getBaseType().toASMType());
+			output.store(getBaseType().toASMType(), locals[1]);
 		}
 		
 		@Override
-		public void compilePostIterate(int[] locals, Label exit, Label repeat) {
-			methodOutput.iinc(locals[0]);
-			methodOutput.goTo(repeat);
+		public void compilePostIterate(MethodOutput output, int[] locals, Label exit, Label repeat) {
+			output.iinc(locals[0]);
+			output.goTo(repeat);
 		}
 		
 		@Override
-		public void compileEnd() {
+		public void compileEnd(MethodOutput output) {
 			// pop the array
-			methodOutput.pop();
+			output.pop();
 		}
 
 		@Override
 		public ZenType getType(int i) {
-			return i == 0 ? INT : getBaseType();
+			return i == 0 ? getEnvironment().getTypes().INT : getBaseType();
 		}
 	}
 }

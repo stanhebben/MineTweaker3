@@ -7,7 +7,7 @@
 package stanhebben.zenscript.definitions;
 
 import java.util.List;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *

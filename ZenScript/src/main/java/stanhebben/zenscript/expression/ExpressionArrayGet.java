@@ -6,10 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -20,8 +21,8 @@ public class ExpressionArrayGet extends Expression {
 	private final Expression index;
 	private final ZenType baseType;
 	
-	public ExpressionArrayGet(ZenPosition position, Expression array, Expression index) {
-		super(position);
+	public ExpressionArrayGet(ZenPosition position, IScopeMethod environment, Expression array, Expression index) {
+		super(position, environment);
 		
 		this.array = array;
 		this.index = index;
@@ -34,12 +35,12 @@ public class ExpressionArrayGet extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		array.compile(result, environment);
-		index.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		array.compile(result, output);
+		index.compile(result, output);
 		
 		if (result) {
-			environment.getOutput().arrayLoad(baseType.toASMType());
+			output.arrayLoad(baseType.toASMType());
 		}
 	}
 }

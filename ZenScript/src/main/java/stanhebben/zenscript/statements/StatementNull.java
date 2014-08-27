@@ -6,20 +6,21 @@
 
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
 public class StatementNull extends Statement {
-	public StatementNull(ZenPosition position) {
-		super(position);
+	public StatementNull(ZenPosition position, IScopeMethod environment) {
+		super(position, environment);
 	}
 
 	@Override
-	public void compile(IEnvironmentMethod environment) {
+	public void compile(MethodOutput output) {
 		
 	}
 }

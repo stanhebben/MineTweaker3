@@ -6,25 +6,26 @@
 
 package stanhebben.zenscript.type;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import zenscript.annotations.CompareType;
+import zenscript.annotations.OperatorType;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.casting.CastingRuleMatchedFunction;
-import stanhebben.zenscript.type.casting.ICastingRule;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.type.natives.IJavaMethod;
+import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.symbolic.type.casting.CastingRuleMatchedFunction;
+import zenscript.symbolic.type.casting.ICastingRule;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -32,113 +33,110 @@ import stanhebben.zenscript.util.ZenPosition;
  */
 public class ZenTypeFunction extends ZenType {
 	private final ZenType returnType;
-	private final ZenType[] argumentTypes;
+	private final List<JavaMethodArgument> arguments;
 	private final String name;
-	private final Map<ZenType, CastingRuleMatchedFunction> implementedInterfaces = new HashMap<ZenType, CastingRuleMatchedFunction>();
 	
-	public ZenTypeFunction(ZenType returnType, List<ParsedFunctionArgument> arguments) {
+	private final Map<ZenType, CastingRuleMatchedFunction> implementedInterfaces = new HashMap<ZenType, CastingRuleMatchedFunction>();
+	private String className = null;
+	
+	public ZenTypeFunction(IScopeGlobal environment, ZenType returnType, List<JavaMethodArgument> arguments) {
+		super(environment);
+		
 		this.returnType = returnType;
-		argumentTypes = new ZenType[arguments.size()];
-		for (int i = 0; i < argumentTypes.length; i++) {
-			argumentTypes[i] = arguments.get(i).getType();
-		}
+		this.arguments = arguments;
+		this.className = environment.makeClassName();
 		
 		StringBuilder nameBuilder = new StringBuilder();
 		nameBuilder.append("function(");
 		boolean first = true;
-		for (ZenType type : argumentTypes) {
+		for (JavaMethodArgument type : arguments) {
 			if (first) {
 				first = false;
 			} else {
 				nameBuilder.append(',');
 			}
-			nameBuilder.append(type.getName());
+			nameBuilder.append(type.getType().getName());
 		}
 		nameBuilder.append(returnType.getName());
 		name = nameBuilder.toString();
 	}
 	
-	public ZenTypeFunction(ZenType returnType, ZenType[] argumentTypes) {
-		this.returnType = returnType;
-		this.argumentTypes = argumentTypes;
-		
-		StringBuilder nameBuilder = new StringBuilder();
-		nameBuilder.append("function(");
-		for (ZenType type : argumentTypes) {
-			nameBuilder.append(type.getName());
-		}
-		nameBuilder.append(')');
-		nameBuilder.append(returnType.getName());
-		name = nameBuilder.toString();
+	public ZenType getReturnType() {
+		return returnType;
+	}
+	
+	public List<JavaMethodArgument> getArguments() {
+		return arguments;
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal global) {
-		throw new UnsupportedOperationException("functions cannot yet be used as any value");
+	public String getAnyClassName() {
+		// TODO: make any for functions
+		return null;
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		environment.error(position, "Functions have no members");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
 		environment.error(position, "Functions have no static members");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
+	public IZenIterator makeIterator(int numValues, MethodOutput output) {
 		return null;
 	}
 	
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
 		if (followCasters) {
-			constructExpansionCastingRules(environment, rules);
+			constructExpansionCastingRules(rules);
 		}
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
+	public ICastingRule getCastingRule(ZenType type) {
 		if (implementedInterfaces.containsKey(type)) {
 			return implementedInterfaces.get(type);
 		}
 		
-		Class cls = type.toJavaClass();
+		TypeRegistry types = getEnvironment().getTypes();
+		List<IJavaMethod> methods = type.getMethods();
 		
-		System.out.println("Can cast this function to " + cls.getName() + "?");
+		if (methods.isEmpty()) {
+			return null;
+		}
 		
-		if (cls.isInterface() && cls.getMethods().length == 1) {
-			// this is a functional interface
-			// do the method signatures match?
-			Method method = cls.getMethods()[0];
-			ZenType methodReturnType = environment.getType(method.getGenericReturnType());
+		for (IJavaMethod method : methods) {
+			ZenType methodReturnType = method.getReturnType();
 			ICastingRule returnCastingRule = null;
 			if (!returnType.equals(methodReturnType)) {
-				returnCastingRule = returnType.getCastingRule(environment.getType(method.getGenericReturnType()), environment);
+				returnCastingRule = returnType.getCastingRule(methodReturnType);
 				if (returnCastingRule == null) {
 					System.out.println("Return types don't match");
-					return null;
+					continue;
 				}
 			}
 			
-			java.lang.reflect.Type[] methodParameters = method.getGenericParameterTypes();
-			if (methodParameters.length < argumentTypes.length) {
+			JavaMethodArgument[] methodArguments = method.getArguments();
+			if (methodArguments.length < arguments.size()) {
 				System.out.println("Argument count doesn't match");
 				return null;
 			}
 			
-			ICastingRule[] argumentCastingRules = new ICastingRule[argumentTypes.length];
+			ICastingRule[] argumentCastingRules = new ICastingRule[arguments.size()];
 			for (int i = 0; i < argumentCastingRules.length; i++) {
-				ZenType argumentType = environment.getType(methodParameters[i]);
-				if (!argumentType.equals(argumentTypes[i])) {
-					argumentCastingRules[i] = argumentType.getCastingRule(argumentTypes[i], environment);
+				ZenType argumentType = methodArguments[i].getType();
+				if (!argumentType.equals(arguments.get(i).getType())) {
+					argumentCastingRules[i] = argumentType.getCastingRule(arguments.get(i).getType());
 					if (argumentCastingRules[i] == null) {
 						System.out.println("Argument " + i + " doesn't match");
-						System.out.println("Cannot cast " + argumentType.getName() + " to " + argumentTypes[i].getName());
+						System.out.println("Cannot cast " + argumentType.getName() + " to " + arguments.get(i).getType().getName());
 						return null;
 					}
 				}
@@ -169,44 +167,50 @@ public class ZenTypeFunction extends ZenType {
 	}
 
 	@Override
-	public boolean isPointer() {
+	public boolean isNullable() {
 		return true;
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IEnvironmentGlobal environment, Expression value, OperatorType operator) {
+	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IEnvironmentGlobal environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+		return new ExpressionInvalid(position, environment);
+	}
+	
+	@Override
+	public List<IJavaMethod> getMethods() {
+		// TODO: implement the method
+		return null;
 	}
 
-	@Override
+	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
+			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		return null; // TODO: complete
 	}
 	
 	@Override
 	public ZenType[] predictCallTypes(int numArguments) {
-		return Arrays.copyOf(argumentTypes, numArguments);
-	}
+		return Arrays.copyOf(arguments, numArguments);
+	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -220,7 +224,17 @@ public class ZenTypeFunction extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position) {
-		return new ExpressionNull(position);
+	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+		return new ExpressionNull(position, environment);
+	}
+
+	@Override
+	public ZenType nullable() {
+		return this;
+	}
+
+	@Override
+	public ZenType nonNull() {
+		return this;
 	}
 }

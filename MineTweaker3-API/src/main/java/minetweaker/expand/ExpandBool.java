@@ -8,8 +8,8 @@ package minetweaker.expand;
 
 import minetweaker.api.data.DataBool;
 import minetweaker.api.data.IData;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenExpansion;
 
 /**
  *

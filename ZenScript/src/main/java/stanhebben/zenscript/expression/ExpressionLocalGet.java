@@ -6,10 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -18,8 +19,8 @@ import stanhebben.zenscript.util.ZenPosition;
 public class ExpressionLocalGet extends Expression {
 	private final SymbolLocal variable;
 	
-	public ExpressionLocalGet(ZenPosition position, SymbolLocal variable) {
-		super(position);
+	public ExpressionLocalGet(ZenPosition position, IScopeMethod environment, SymbolLocal variable) {
+		super(position, environment);
 		
 		this.variable = variable;
 	}
@@ -30,8 +31,8 @@ public class ExpressionLocalGet extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		int local = environment.getLocal(variable);
-		environment.getOutput().load(variable.getType().toASMType(), local);
+	public void compile(boolean result, MethodOutput output) {
+		int local = output.getLocal(variable);
+		output.load(variable.getType().toASMType(), local);
 	}
 }

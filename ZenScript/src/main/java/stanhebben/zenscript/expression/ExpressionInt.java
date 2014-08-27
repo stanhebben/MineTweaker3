@@ -6,15 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeByte;
-import stanhebben.zenscript.type.ZenTypeInt;
-import stanhebben.zenscript.type.ZenTypeLong;
-import stanhebben.zenscript.type.ZenTypeShort;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -24,15 +20,15 @@ public class ExpressionInt extends Expression {
 	private final long value;
 	private final ZenType type;
 	
-	public ExpressionInt(ZenPosition position, long value, ZenType type) {
-		super(position);
+	public ExpressionInt(ZenPosition position, IScopeMethod environment, long value, ZenType type) {
+		super(position, environment);
 		
 		this.value = value;
 		this.type = type;
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, ZenType type) {
+	public Expression cast(ZenPosition position, ZenType type) {
 		if (type == this.type) return this;
 		
 		switch (type.getNumberType()) {
@@ -40,13 +36,13 @@ public class ExpressionInt extends Expression {
 			case ZenType.NUM_SHORT:
 			case ZenType.NUM_INT:
 			case ZenType.NUM_LONG:
-				return new ExpressionInt(getPosition(), value, type);
+				return new ExpressionInt(getPosition(), getEnvironment(), value, type);
 			case ZenType.NUM_FLOAT:
 			case ZenType.NUM_DOUBLE:
-				return new ExpressionFloat(getPosition(), value, type);
+				return new ExpressionFloat(getPosition(), getEnvironment(), value, type);
 		}
 		
-		return super.cast(position, environment, type);
+		return super.cast(position, type);
 	}
 
 	@Override
@@ -55,17 +51,18 @@ public class ExpressionInt extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		if (!result) return;
 		
-		MethodOutput output = environment.getOutput();
-		if (type == ZenTypeByte.INSTANCE) {
+		TypeRegistry types = getEnvironment().getTypes();
+		
+		if (type == types.BYTE) {
 			output.biPush((byte) value);
-		} else if (type == ZenTypeShort.INSTANCE) {
+		} else if (type == types.SHORT) {
 			output.siPush((short) value);
-		} else if (type == ZenTypeInt.INSTANCE) {
+		} else if (type == types.INT) {
 			output.constant((int) value);
-		} else if (type == ZenTypeLong.INSTANCE) {
+		} else if (type == types.LONG) {
 			output.constant(value);
 		} else {
 			throw new RuntimeException("Internal compiler error: int constant type is not an int");

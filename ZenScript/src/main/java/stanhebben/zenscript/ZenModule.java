@@ -1,5 +1,7 @@
 package stanhebben.zenscript;
 
+import zenscript.lexer.ZenTokener;
+import zenscript.parser.ParsedFile;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,11 +22,11 @@ import org.objectweb.asm.Opcodes;
 import stanhebben.zenscript.compiler.ClassNameGenerator;
 import stanhebben.zenscript.compiler.EnvironmentClass;
 import stanhebben.zenscript.compiler.EnvironmentGlobal;
-import stanhebben.zenscript.compiler.EnvironmentMethod;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.definitions.ParsedFunction;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.compiler.ScopeMethod;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import zenscript.parser.elements.ParsedFunction;
+import zenscript.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementReturn;
 import stanhebben.zenscript.symbols.SymbolArgument;
@@ -52,7 +54,7 @@ public class ZenModule {
 	 * @param environmentGlobal global compile environment
 	 * @param debug enable debug mode (outputs classes to generated directory)
 	 */
-	public static void compileScripts(String mainFileName, List<ZenParsedFile> scripts, IEnvironmentGlobal environmentGlobal, boolean debug) {
+	public static void compileScripts(String mainFileName, List<ParsedFile> scripts, IScopeGlobal environmentGlobal, boolean debug) {
 		ClassWriter clsMain = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		clsMain.visitSource(mainFileName, null);
 		
@@ -60,7 +62,7 @@ public class ZenModule {
 		MethodOutput mainRun = new MethodOutput(clsMain, Opcodes.ACC_PUBLIC, "run", "()V", null, null);
 		mainRun.start();
 		
-		for (ZenParsedFile script : scripts) {
+		for (ParsedFile script : scripts) {
 			for (Map.Entry<String, ParsedFunction> function : script.getFunctions().entrySet()) {
 				ParsedFunction fn = function.getValue();
 				environmentGlobal.putValue(function.getKey(), new SymbolZenStaticMethod(
@@ -72,7 +74,7 @@ public class ZenModule {
 			}
 		}
 		
-		for (ZenParsedFile script : scripts) {
+		for (ParsedFile script : scripts) {
 			ClassWriter clsScript = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 			clsScript.visitSource(script.getFileName(), null);
 			EnvironmentClass environmentScript = new EnvironmentClass(clsScript, script.getEnvironment());
@@ -84,7 +86,7 @@ public class ZenModule {
 				
 				String signature = fn.getSignature();
 				MethodOutput methodOutput = new MethodOutput(clsScript, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, function.getKey(), signature, null, null);
-				EnvironmentMethod methodEnvironment = new EnvironmentMethod(methodOutput, environmentScript);
+				ScopeMethod methodEnvironment = new ScopeMethod(methodOutput, environmentScript);
 
 				List<ParsedFunctionArgument> arguments = function.getValue().getArguments();
 				for (int i = 0; i < arguments.size(); i++) {
@@ -117,7 +119,7 @@ public class ZenModule {
 
 			if (script.getStatements().size() > 0) {
 				MethodOutput scriptOutput = new MethodOutput(clsScript, Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "__script__", "()V", null, null);
-				IEnvironmentMethod functionMethod = new EnvironmentMethod(scriptOutput, environmentScript);
+				IScopeMethod functionMethod = new ScopeMethod(scriptOutput, environmentScript);
 				//scriptOutput.enableDebug();
 				scriptOutput.start();
 				for (Statement statement : script.getStatements()) {
@@ -194,10 +196,10 @@ public class ZenModule {
 		FileInputStream input = new FileInputStream(single);
 		Reader reader = new InputStreamReader(new BufferedInputStream(input));
 		ZenTokener parser = new ZenTokener(reader, environment);
-		ZenParsedFile file = new ZenParsedFile(filename, className, parser, environmentGlobal);
+		ParsedFile file = new ParsedFile(filename, className, parser, environmentGlobal);
 		reader.close();
 		
-		List<ZenParsedFile> files = new ArrayList<ZenParsedFile>();
+		List<ParsedFile> files = new ArrayList<ParsedFile>();
 		files.add(file);
 		
 		compileScripts(filename, files, environmentGlobal, false);
@@ -242,7 +244,7 @@ public class ZenModule {
 				nameGen
 		);
 		
-		List<ZenParsedFile> files = new ArrayList<ZenParsedFile>();
+		List<ParsedFile> files = new ArrayList<ParsedFile>();
 		
 		ZipFile zipFile = new ZipFile(file);
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -255,7 +257,7 @@ public class ZenModule {
 				
 				Reader reader = new InputStreamReader(new BufferedInputStream(zipFile.getInputStream(entry)));
 				ZenTokener parser = new ZenTokener(reader, environment);
-				ZenParsedFile pfile = new ZenParsedFile(filename, className, parser, environmentGlobal);
+				ParsedFile pfile = new ParsedFile(filename, className, parser, environmentGlobal);
 				files.add(pfile);
 				reader.close();
 			}

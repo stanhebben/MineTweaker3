@@ -7,7 +7,7 @@
 package minetweaker.api.recipes;
 
 import minetweaker.api.item.IItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenClass;
 
 /**
  *

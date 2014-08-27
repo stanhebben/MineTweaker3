@@ -6,9 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -18,8 +19,8 @@ public class ExpressionArgument extends Expression {
 	private final int id;
 	private final ZenType type;
 	
-	public ExpressionArgument(ZenPosition position, int id, ZenType type) {
-		super(position);
+	public ExpressionArgument(ZenPosition position, IScopeMethod environment, int id, ZenType type) {
+		super(position, environment);
 		
 		this.id = id;
 		this.type = type;
@@ -31,7 +32,7 @@ public class ExpressionArgument extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		environment.getOutput().load(type.toASMType(), id);
+	public void compile(boolean result, MethodOutput output) {
+		output.load(type.toASMType(), id);
 	}
 }

@@ -5,10 +5,10 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import zenscript.annotations.CompareType;
+import zenscript.annotations.OperatorType;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArithmeticBinary;
 import stanhebben.zenscript.expression.ExpressionArithmeticCompare;
@@ -16,94 +16,63 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionFloat;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import static stanhebben.zenscript.type.ZenType.ANY;
-import static stanhebben.zenscript.type.ZenType.BYTE;
-import static stanhebben.zenscript.type.ZenType.BYTEOBJECT;
-import static stanhebben.zenscript.type.ZenType.BYTE_VALUEOF;
-import static stanhebben.zenscript.type.ZenType.LONG;
-import static stanhebben.zenscript.type.ZenType.STRING;
-import stanhebben.zenscript.type.casting.CastingRuleF2D;
-import stanhebben.zenscript.type.casting.CastingRuleF2I;
-import stanhebben.zenscript.type.casting.CastingRuleF2L;
-import stanhebben.zenscript.type.casting.CastingRuleI2B;
-import stanhebben.zenscript.type.casting.CastingRuleI2S;
-import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.natives.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
-import static stanhebben.zenscript.util.AnyClassWriter.METHOD_ASFLOAT;
-import static stanhebben.zenscript.util.AnyClassWriter.METHOD_ASSTRING;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
 import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import stanhebben.zenscript.value.IAny;
+import zenscript.runtime.IAny;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.symbolic.type.casting.CastingRuleF2D;
+import zenscript.symbolic.type.casting.CastingRuleF2I;
+import zenscript.symbolic.type.casting.CastingRuleF2L;
+import zenscript.symbolic.type.casting.CastingRuleI2B;
+import zenscript.symbolic.type.casting.CastingRuleI2S;
+import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.symbolic.util.CommonMethods;
+import zenscript.util.ZenPosition;
 
 public class ZenTypeFloat extends ZenType {
-	public static final ZenTypeFloat INSTANCE = new ZenTypeFloat();
-	
-	//private static final JavaMethod FLOAT_TOSTRING = JavaMethod.get(EMPTY_REGISTRY, Float.class, "toString", float.class);
 	private static final String ANY_NAME = "any/AnyFloat";
 	private static final String ANY_NAME_2 = "any.AnyFloat";
 	
-	private ZenTypeFloat() {}
+	public ZenTypeFloat(IScopeGlobal environment) {
+		super(environment);
+	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
+	public IZenIterator makeIterator(int numValues, MethodOutput output) {
 		return null;
 	}
 
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
-		rules.registerCastingRule(BYTE, new CastingRuleI2B(new CastingRuleF2I(null)));
-		rules.registerCastingRule(BYTEOBJECT, new CastingRuleStaticMethod(BYTE_VALUEOF, new CastingRuleI2B(new CastingRuleF2I(null))));
-		rules.registerCastingRule(SHORT, new CastingRuleI2S(new CastingRuleF2I(null)));
-		rules.registerCastingRule(SHORTOBJECT, new CastingRuleStaticMethod(SHORT_VALUEOF, new CastingRuleI2S(new CastingRuleF2I(null))));
-		rules.registerCastingRule(INT, new CastingRuleF2I(null));
-		rules.registerCastingRule(INTOBJECT, new CastingRuleStaticMethod(INT_VALUEOF, new CastingRuleF2I(null)));
-		rules.registerCastingRule(LONG, new CastingRuleF2L(null));
-		rules.registerCastingRule(LONGOBJECT, new CastingRuleStaticMethod(LONG_VALUEOF, new CastingRuleF2L(null)));
-		rules.registerCastingRule(FLOATOBJECT, new CastingRuleStaticMethod(FLOAT_VALUEOF));
-		rules.registerCastingRule(DOUBLE, new CastingRuleF2D(null));
-		rules.registerCastingRule(DOUBLEOBJECT, new CastingRuleStaticMethod(DOUBLE_VALUEOF, new CastingRuleF2D(null)));
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+		TypeRegistry types = getEnvironment().getTypes();
+		CommonMethods methods = types.getCommonMethods();
 		
-		rules.registerCastingRule(STRING, new CastingRuleStaticMethod(FLOAT_TOSTRING_STATIC));
-		rules.registerCastingRule(ANY, new CastingRuleStaticMethod(JavaMethod.getStatic(getAnyClassName(environment), "valueOf", ANY, FLOAT)));
+		rules.registerCastingRule(types.BYTE, new CastingRuleI2B(new CastingRuleF2I(null, types), types));
+		rules.registerCastingRule(types.BYTEOBJECT, new CastingRuleStaticMethod(methods.BYTE_VALUEOF, new CastingRuleI2B(new CastingRuleF2I(null, types), types)));
+		rules.registerCastingRule(types.SHORT, new CastingRuleI2S(new CastingRuleF2I(null, types), types));
+		rules.registerCastingRule(types.SHORTOBJECT, new CastingRuleStaticMethod(methods.SHORT_VALUEOF, new CastingRuleI2S(new CastingRuleF2I(null, types), types)));
+		rules.registerCastingRule(types.INT, new CastingRuleF2I(null, types));
+		rules.registerCastingRule(types.INTOBJECT, new CastingRuleStaticMethod(methods.INT_VALUEOF, new CastingRuleF2I(null, types)));
+		rules.registerCastingRule(types.LONG, new CastingRuleF2L(null, types));
+		rules.registerCastingRule(types.LONGOBJECT, new CastingRuleStaticMethod(methods.LONG_VALUEOF, new CastingRuleF2L(null, types)));
+		rules.registerCastingRule(types.FLOATOBJECT, new CastingRuleStaticMethod(methods.FLOAT_VALUEOF));
+		rules.registerCastingRule(types.DOUBLE, new CastingRuleF2D(null, types));
+		rules.registerCastingRule(types.DOUBLEOBJECT, new CastingRuleStaticMethod(methods.DOUBLE_VALUEOF, new CastingRuleF2D(null, types)));
+		
+		rules.registerCastingRule(types.STRING, new CastingRuleStaticMethod(methods.FLOAT_TOSTRING_STATIC));
+		rules.registerCastingRule(types.ANY, new CastingRuleStaticMethod(JavaMethod.getStatic(getAnyClassName(), "valueOf", types.ANY, types.FLOAT)));
 		
 		if (followCasters) {
-			constructExpansionCastingRules(environment, rules);
+			constructExpansionCastingRules(rules);
 		}
 	}
-
-	/*@Override
-	public boolean canCastImplicit(ZenType type, IEnvironmentGlobal environment) {
-		return (type.getNumberType() != 0)
-				|| type == ZenTypeString.INSTANCE
-				|| type == ANY
-				|| canCastExpansion(environment, type);
-	}
-
-	@Override
-	public boolean canCastExplicit(ZenType type, IEnvironmentGlobal environment) {
-		return type.getNumberType() != 0
-				|| type == ZenTypeString.INSTANCE
-				|| type == ANY
-				|| canCastExpansion(environment, type);
-	}
-	
-	@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, Expression value, ZenType type) {
-		if (type.getNumberType() > 0 || type == STRING) {
-			return new ExpressionAs(position, value, type);
-		} else if (canCastExpansion(environment, type)) {
-			return castExpansion(position, environment, value, type);
-		} else {
-			return new ExpressionAs(position, value, type);
-		}
-	}*/
 
 	@Override
 	public Type toASMType() {
@@ -116,19 +85,25 @@ public class ZenTypeFloat extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
-		IPartialExpression result = memberExpansion(position, environment, value.eval(environment), name);
+	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+		IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
 		if (result == null) {
 			environment.error(position, "float value has no members");
-			return new ExpressionInvalid(position, ZenTypeAny.INSTANCE);
+			return new ExpressionInvalid(position, environment);
 		} else {
 			return result;
 		}
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
-		return null;
+	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+		IPartialExpression result = staticMemberExpansion(position, environment, name);
+		if (result == null) {
+			environment.error(position, "float value has no static members");
+			return new ExpressionInvalid(position, environment);
+		} else {
+			return result;
+		}
 	}
 
 	@Override
@@ -137,91 +112,48 @@ public class ZenTypeFloat extends ZenType {
 	}
 
 	@Override
-	public boolean isPointer() {
+	public boolean isNullable() {
 		return false;
+	}
+	
+	@Override
+	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+		return new ExpressionArithmeticUnary(position, environment, operator, value);
+	}
+
+	@Override
+	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+		if (operator == OperatorType.CAT) {
+			TypeRegistry types = environment.getTypes();
+			
+			return types.STRING.binary(
+					position,
+					environment,
+					left.cast(position, types.STRING),
+					right.cast(position, types.STRING),
+					OperatorType.CAT);
+		}
+		
+		return new ExpressionArithmeticBinary(position, environment, operator, left, right.cast(position, this));
+	}
+	
+	@Override
+	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+		environment.error(position, "float doesn't support this operation");
+		return new ExpressionInvalid(position, environment);
+	}
+	
+	@Override
+	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+		return new ExpressionArithmeticCompare(position, environment, type, left, right.cast(position, this));
 	}
 
 	/*@Override
-	public void compileCast(ZenPosition position, IEnvironmentMethod environment, ZenType type) {
-		MethodOutput output = environment.getOutput();
-		
-		if (type == BYTE) {
-			output.f2i();
-			output.i2b();
-		} else if (type == ZenTypeByteObject.INSTANCE) {
-			output.f2i();
-			output.i2b();
-			output.invokeStatic(Byte.class, "valueOf", Byte.class, byte.class);
-		} else if (type == SHORT) {
-			output.f2i();
-			output.i2s();
-		} else if (type == ZenTypeShortObject.INSTANCE) {
-			output.f2i();
-			output.i2s();
-			output.invokeStatic(Short.class, "valueOf", Short.class, short.class);
-		} else if (type == INT) {
-			output.f2i();
-		} else if (type == ZenTypeIntObject.INSTANCE) {
-			output.f2i();
-			output.invokeStatic(Integer.class, "valueOf", Integer.class, int.class);
-		} else if (type == LONG) {
-			output.f2l();
-		} else if (type == ZenTypeLongObject.INSTANCE) {
-			output.f2l();
-			output.invokeStatic(Long.class, "valueOf", Long.class, long.class);
-		} else if (type == FLOAT) {
-			// nothing to do
-		} else if (type == ZenTypeFloatObject.INSTANCE) {
-			output.invokeStatic(Float.class, "valueOf", Float.class, float.class);
-		} else if (type == DOUBLE) {
-			output.f2d();
-		} else if (type == ZenTypeDoubleObject.INSTANCE) {
-			output.f2d();
-			output.invokeStatic(Double.class, "valueOf", Double.class, double.class);
-		} else if (type == STRING) {
-			output.invokeStatic(Float.class, "toString", String.class, float.class);
-		} else if (type == ANY) {
-			output.invokeStatic(getAnyClassName(environment), "valueOf", "(F)" + signature(IAny.class));
-		} else if (!compileCastExpansion(position, environment, type)) {
-			environment.error(position, "cannot cast " + this + " to " + type);
-		}
-	}*/
-	
-	@Override
-	public Expression unary(ZenPosition position, IEnvironmentGlobal environment, Expression value, OperatorType operator) {
-		return new ExpressionArithmeticUnary(position, operator, value);
-	}
-
-	@Override
-	public Expression binary(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, OperatorType operator) {
-		if (operator == OperatorType.CAT) {
-			return STRING.binary(
-					position,
-					environment,
-					left.cast(position, environment, STRING),
-					right.cast(position, environment, STRING), OperatorType.CAT);
-		}
-		
-		return new ExpressionArithmeticBinary(position, operator, left, right.cast(position, environment, this));
-	}
-	
-	@Override
-	public Expression trinary(ZenPosition position, IEnvironmentGlobal environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "float doesn't support this operation");
-		return new ExpressionInvalid(position);
-	}
-	
-	@Override
-	public Expression compare(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
-		return new ExpressionArithmeticCompare(position, type, left, right.cast(position, environment, this));
-	}
-
-	@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
+			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call a float value");
-		return new ExpressionInvalid(position);
-	}
+		return new ExpressionInvalid(position, environment);
+	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -234,7 +166,9 @@ public class ZenTypeFloat extends ZenType {
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal environment) {
+	public String getAnyClassName() {
+		IScopeGlobal environment = getEnvironment();
+		
 		if (!environment.containsClass(ANY_NAME_2)) {
 			environment.putClass(ANY_NAME_2, new byte[0]);
 			environment.putClass(ANY_NAME_2, AnyClassWriter.construct(new AnyDefinitionFloat(environment), ANY_NAME, Type.FLOAT_TYPE));
@@ -244,15 +178,27 @@ public class ZenTypeFloat extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position) {
-		return new ExpressionFloat(position, 0.0, FLOAT);
+	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+		return new ExpressionFloat(position, environment, 0.0, environment.getTypes().FLOAT);
+	}
+	
+	@Override
+	public ZenType nullable() {
+		return getEnvironment().getTypes().FLOATOBJECT;
+	}
+	
+	@Override
+	public ZenType nonNull() {
+		return this;
 	}
 	
 	private class AnyDefinitionFloat implements IAnyDefinition {
-		private final IEnvironmentGlobal environment;
+		private final IScopeGlobal environment;
+		private final TypeRegistry types;
 		
-		public AnyDefinitionFloat(IEnvironmentGlobal environment) {
+		public AnyDefinitionFloat(IScopeGlobal environment) {
 			this.environment = environment;
+			types = environment.getTypes();
 		}
 
 		@Override
@@ -309,7 +255,7 @@ public class ZenTypeFloat extends ZenType {
 			
 			TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
-				expansion.compileAnyCanCastImplicit(FLOAT, output, environment, 0);
+				expansion.compileAnyCanCastImplicit(types.FLOAT, output, environment, 0);
 			}
 			
 			output.iConst0();
@@ -324,7 +270,7 @@ public class ZenTypeFloat extends ZenType {
 		public void defineStaticAs(MethodOutput output) {
 			TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
-				expansion.compileAnyCast(FLOAT, output, environment, 0, 1);
+				expansion.compileAnyCast(types.FLOAT, output, environment, 0, 1);
 			}
 			
 			throwCastException(output, "float", 1);
@@ -351,7 +297,7 @@ public class ZenTypeFloat extends ZenType {
 			output.dup();
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fAdd();
 			output.invokeSpecial(ANY_NAME, "<init>", "(F)V");
 			output.returnObject();
@@ -363,7 +309,7 @@ public class ZenTypeFloat extends ZenType {
 			output.dup();
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fSub();
 			output.invokeSpecial(ANY_NAME, "<init>", "(F)V");
 			output.returnObject();
@@ -381,10 +327,10 @@ public class ZenTypeFloat extends ZenType {
 			getValue(output);
 			output.invokeVirtual(StringBuilder.class, "append", StringBuilder.class, float.class);
 			output.loadObject(1);
-			METHOD_ASSTRING.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asString", String.class);
 			output.invokeVirtual(StringBuilder.class, "append", StringBuilder.class, String.class);
 			output.invokeVirtual(StringBuilder.class, "toString", String.class);
-			output.invokeStatic(STRING.getAnyClassName(environment), "valueOf", "(Ljava/lang/String;)" + signature(IAny.class));
+			output.invokeStatic(types.STRING.getAnyClassName(), "valueOf", "(Ljava/lang/String;)" + signature(IAny.class));
 			output.returnObject();
 		}
 
@@ -394,7 +340,7 @@ public class ZenTypeFloat extends ZenType {
 			output.dup();
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fMul();
 			output.invokeSpecial(ANY_NAME, "<init>", "(F)V");
 			output.returnObject();
@@ -406,7 +352,7 @@ public class ZenTypeFloat extends ZenType {
 			output.dup();
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fDiv();
 			output.invokeSpecial(ANY_NAME, "<init>", "(F)V");
 			output.returnObject();
@@ -418,7 +364,7 @@ public class ZenTypeFloat extends ZenType {
 			output.dup();
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fRem();
 			output.invokeSpecial(ANY_NAME, "<init>", "(F)V");
 			output.returnObject();
@@ -449,7 +395,7 @@ public class ZenTypeFloat extends ZenType {
 			// return Float.compare(x, y)
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.invokeStatic(Float.class, "compare", int.class, float.class, float.class);
 			output.returnInt();
 		}
@@ -557,7 +503,7 @@ public class ZenTypeFloat extends ZenType {
 			output.store(Type.FLOAT_TYPE, localValue);
 			TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
-				expansion.compileAnyCast(FLOAT, output, environment, localValue, 1);
+				expansion.compileAnyCast(types.FLOAT, output, environment, localValue, 1);
 			}
 			
 			throwCastException(output, "float", 1);
@@ -608,7 +554,7 @@ public class ZenTypeFloat extends ZenType {
 			
 			getValue(output);
 			output.loadObject(1);
-			METHOD_ASFLOAT.invokeVirtual(output);
+			output.invokeInterface(IAny.class, "asFloat", float.class);
 			output.fCmp();
 			output.ifICmpNE(lblNope);
 			

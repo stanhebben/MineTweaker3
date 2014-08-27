@@ -6,7 +6,6 @@
 
 package stanhebben.zenscript.compiler;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -14,18 +13,18 @@ import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stan
  */
-public class EnvironmentScript implements IEnvironmentGlobal {
-	private final IEnvironmentGlobal parent;
+public class EnvironmentScript implements IScopeGlobal {
+	private final IScopeGlobal parent;
 	private final Map<String, IZenSymbol> imports;
 	
-	public EnvironmentScript(IEnvironmentGlobal parent) {
+	public EnvironmentScript(IScopeGlobal parent) {
 		this.parent = parent;
 		imports = new HashMap<String, IZenSymbol>();
 	}
@@ -56,13 +55,13 @@ public class EnvironmentScript implements IEnvironmentGlobal {
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, ZenPosition position) {
+	public IPartialExpression getValue(String name, ZenPosition position, IScopeMethod environment) {
 		if (imports.containsKey(name)) {
 			IZenSymbol imprt = imports.get(name);
 			if (imprt == null) throw new RuntimeException("How could this happen?");
-			return imprt.instance(position);
+			return imprt.instance(position, environment);
 		} else {
-			return parent.getValue(name, position);
+			return parent.getValue(name, position, environment);
 		}
 	}
 
@@ -78,8 +77,8 @@ public class EnvironmentScript implements IEnvironmentGlobal {
 	}
 
 	@Override
-	public ZenType getType(Type type) {
-		return parent.getType(type);
+	public TypeRegistry getTypes() {
+		return parent.getTypes();
 	}
 
 	@Override

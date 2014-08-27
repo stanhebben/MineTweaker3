@@ -11,15 +11,15 @@ import java.util.List;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import stanhebben.zenscript.compiler.EnvironmentClass;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.compiler.EnvironmentMethod;
-import stanhebben.zenscript.compiler.IEnvironmentClass;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.compiler.ScopeMethod;
+import stanhebben.zenscript.compiler.IScopeClass;
+import zenscript.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.SymbolArgument;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.descriptor;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
@@ -55,7 +55,7 @@ public class ExpressionJavaLambda extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, IScopeMethod environment) {
 		if (!result) return;
 		
 		Method method = interfaceClass.getMethods()[0];
@@ -75,8 +75,8 @@ public class ExpressionJavaLambda extends Expression {
 		
 		MethodOutput output = new MethodOutput(cw, Opcodes.ACC_PUBLIC, method.getName(), descriptor(method), null, null);
 		
-		IEnvironmentClass environmentClass = new EnvironmentClass(cw, environment);
-		IEnvironmentMethod environmentMethod = new EnvironmentMethod(output, environmentClass);
+		IScopeClass environmentClass = new EnvironmentClass(cw, environment);
+		IScopeMethod environmentMethod = new ScopeMethod(output, environmentClass);
 		
 		for (int i = 0; i < arguments.size(); i++) {
 			environmentMethod.putValue(

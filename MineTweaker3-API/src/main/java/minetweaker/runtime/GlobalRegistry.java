@@ -20,14 +20,14 @@ import minetweaker.IBracketHandler;
 import minetweaker.IRecipeRemover;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
-import stanhebben.zenscript.IZenErrorLogger;
+import zenscript.IZenErrorLogger;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.compiler.ClassNameGenerator;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.TypeRegistry;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.Token;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticField;
@@ -38,7 +38,7 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeNative;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -107,7 +107,7 @@ public class GlobalRegistry {
 		}
 	}
 	
-	public static IZenSymbol resolveBracket(IEnvironmentGlobal environment, List<Token> tokens) {
+	public static IZenSymbol resolveBracket(IScopeGlobal environment, List<Token> tokens) {
 		for (IBracketHandler handler : bracketHandlers) {
 			IZenSymbol symbol = handler.resolve(environment, tokens);
 			if (symbol != null) {
@@ -137,7 +137,7 @@ public class GlobalRegistry {
 		}
 	}
 	
-	public static IEnvironmentGlobal makeGlobalEnvironment(Map<String, byte[]> classes) {
+	public static IScopeGlobal makeGlobalEnvironment(Map<String, byte[]> classes) {
 		return new MyGlobalEnvironment(classes);
 	}
 	
@@ -182,7 +182,7 @@ public class GlobalRegistry {
 		}
 
 		@Override
-		public IZenSymbol getBracketed(IEnvironmentGlobal environment, List<Token> tokens) {
+		public IZenSymbol getBracketed(IScopeGlobal environment, List<Token> tokens) {
 			return resolveBracket(environment, tokens);
 		}
 
@@ -197,7 +197,7 @@ public class GlobalRegistry {
 		}
 	}
 	
-	private static class MyGlobalEnvironment implements IEnvironmentGlobal {
+	private static class MyGlobalEnvironment implements IScopeGlobal {
 		private final Map<String, byte[]> classes;
 		private final Map<String, IZenSymbol> symbols;
 		private final ClassNameGenerator generator;

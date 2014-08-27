@@ -6,13 +6,14 @@
 
 package stanhebben.zenscript.symbols;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
 public interface IZenSymbol {
-	public IPartialExpression instance(ZenPosition position);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment);
 }

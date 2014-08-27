@@ -2,14 +2,14 @@ package minetweaker.api.data;
 
 import java.util.List;
 import java.util.Map;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMemberGetter;
-import stanhebben.zenscript.annotations.ZenMemberSetter;
-import stanhebben.zenscript.annotations.ZenOperator;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMemberGetter;
+import zenscript.annotations.ZenMemberSetter;
+import zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenOperator;
 
 /**
  * Generic data interface. A data element may contain any kind of basic data

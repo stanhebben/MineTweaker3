@@ -1,26 +1,20 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeBool;
-import stanhebben.zenscript.type.ZenTypeByte;
-import stanhebben.zenscript.type.ZenTypeDouble;
-import stanhebben.zenscript.type.ZenTypeFloat;
-import stanhebben.zenscript.type.ZenTypeInt;
-import stanhebben.zenscript.type.ZenTypeLong;
-import stanhebben.zenscript.type.ZenTypeShort;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.annotations.CompareType;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 public class ExpressionArithmeticCompare extends Expression {
 	private final Expression a;
 	private final Expression b;
 	private final CompareType type;
 	
-	public ExpressionArithmeticCompare(ZenPosition position, CompareType type, Expression a, Expression b) {
-		super(position);
+	public ExpressionArithmeticCompare(ZenPosition position, IScopeMethod method, CompareType type, Expression a, Expression b) {
+		super(position, method);
 		
 		this.a = a;
 		this.b = b;
@@ -29,17 +23,16 @@ public class ExpressionArithmeticCompare extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return ZenType.BOOL;
+		return getEnvironment().getTypes().BOOL;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		a.compile(result, environment);
-		b.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		a.compile(result, output);
+		b.compile(result, output);
 		
 		if (result) {
-			MethodOutput output = environment.getOutput();
-			if (a.getType() == ZenType.BOOL) {
+			if (a.getType() == getEnvironment().getTypes().BOOL) {
 				if (type == CompareType.EQ) {
 					Label onThen = new Label();
 					Label onEnd = new Label();
@@ -61,21 +54,22 @@ public class ExpressionArithmeticCompare extends Expression {
 					output.iConst1();
 					output.label(onEnd);
 				} else {
-					environment.error(getPosition(), "this kind of comparison is not supported on bool values");
+					getEnvironment().error(getPosition(), "this kind of comparison is not supported on bool values");
 				}
 			} else {
 				Label onThen = new Label();
 				Label onEnd = new Label();
 				
-				if (a.getType() == ZenTypeLong.INSTANCE) {
+				TypeRegistry types = getEnvironment().getTypes();
+				if (a.getType() == types.LONG) {
 					output.lCmp();
-				} else if (a.getType() == ZenTypeFloat.INSTANCE) {
+				} else if (a.getType() == types.FLOAT) {
 					output.fCmp();
-				} else if (a.getType() == ZenTypeDouble.INSTANCE) {
+				} else if (a.getType() == types.DOUBLE) {
 					output.dCmp();
-				} else if (a.getType() == ZenTypeByte.INSTANCE
-						|| a.getType() == ZenTypeShort.INSTANCE
-						|| a.getType() == ZenTypeInt.INSTANCE) {
+				} else if (a.getType() == types.BYTE
+						|| a.getType() == types.SHORT
+						|| a.getType() == types.INT) {
 					// nothing to do
 				} else {
 					throw new RuntimeException("Unsupported type for arithmetic compare");
@@ -89,7 +83,7 @@ public class ExpressionArithmeticCompare extends Expression {
 					case LT: output.ifICmpLT(onThen); break;
 					case GT: output.ifICmpGT(onThen); break;
 					default:
-						environment.error(getPosition(), "this kind of comparison is not supported on int values");
+						getEnvironment().error(getPosition(), "this kind of comparison is not supported on int values");
 						return;
 				}
 				

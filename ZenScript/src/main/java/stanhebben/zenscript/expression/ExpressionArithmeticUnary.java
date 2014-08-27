@@ -1,24 +1,22 @@
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeBool;
-import stanhebben.zenscript.type.ZenTypeByte;
-import stanhebben.zenscript.type.ZenTypeDouble;
-import stanhebben.zenscript.type.ZenTypeFloat;
-import stanhebben.zenscript.type.ZenTypeInt;
-import stanhebben.zenscript.type.ZenTypeLong;
-import stanhebben.zenscript.type.ZenTypeShort;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.annotations.OperatorType;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 public class ExpressionArithmeticUnary extends Expression {
 	private final Expression base;
 	private final OperatorType operator;
 	
-	public ExpressionArithmeticUnary(ZenPosition position, OperatorType operator, Expression base) {
-		super(position);
+	public ExpressionArithmeticUnary(
+			ZenPosition position,
+			IScopeMethod environment,
+			OperatorType operator,
+			Expression base) {
+		super(position, environment);
 		
 		this.base = base;
 		this.operator = operator;
@@ -30,18 +28,19 @@ public class ExpressionArithmeticUnary extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		base.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		base.compile(result, output);
 		
-		MethodOutput output = environment.getOutput();
 		if (result) {
+			TypeRegistry types = getEnvironment().getTypes();
+			
 			ZenType type = base.getType();
-			if (type == ZenType.BOOL) {
+			if (type == types.BOOL) {
 				if (operator == OperatorType.NOT) {
 					output.iNot();
 					return;
 				}
-			} else if (type == ZenTypeByte.INSTANCE || type == ZenTypeShort.INSTANCE || type == ZenTypeInt.INSTANCE) {
+			} else if (type == types.BYTE || type == types.SHORT || type == types.INT) {
 				if (operator == OperatorType.NOT) {
 					output.iNot();
 					return;
@@ -49,7 +48,7 @@ public class ExpressionArithmeticUnary extends Expression {
 					output.iNeg();
 					return;
 				}
-			} else if (type == ZenTypeLong.INSTANCE) {
+			} else if (type == types.LONG) {
 				if (operator == OperatorType.NOT) {
 					output.lNot();
 					return;
@@ -57,12 +56,12 @@ public class ExpressionArithmeticUnary extends Expression {
 					output.lNeg();
 					return;
 				}
-			} else if (type == ZenTypeFloat.INSTANCE) {
+			} else if (type == types.FLOAT) {
 				if (operator == OperatorType.NEG) {
 					output.fNeg();
 					return;
 				}
-			} else if (type == ZenTypeDouble.INSTANCE) {
+			} else if (type == types.DOUBLE) {
 				if (operator == OperatorType.NEG) {
 					output.fNeg();
 					return;
@@ -70,6 +69,6 @@ public class ExpressionArithmeticUnary extends Expression {
 			}
 		}
 		
-		environment.error(getPosition(), "Invalid operation");
+		getEnvironment().error(getPosition(), "Invalid operation");
 	}
 }

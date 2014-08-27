@@ -8,13 +8,13 @@ package stanhebben.zenscript.expression;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import zenscript.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -24,7 +24,7 @@ public class ExpressionJavaMethodStatic extends Expression {
 	private final JavaMethod method;
 	private final ZenType type;
 	
-	public ExpressionJavaMethodStatic(ZenPosition position, JavaMethod method, IEnvironmentGlobal environment) {
+	public ExpressionJavaMethodStatic(ZenPosition position, JavaMethod method, IScopeGlobal environment) {
 		super(position);
 		
 		this.method = method;
@@ -43,7 +43,7 @@ public class ExpressionJavaMethodStatic extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, IScopeMethod environment) {
 		// TODO: compile
 	}
 }

@@ -8,17 +8,14 @@ package stanhebben.zenscript.type.natives;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
-import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import static stanhebben.zenscript.util.StringUtil.methodMatchingError;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -53,12 +50,12 @@ public class ZenNativeMember {
 		}
 	}
 
-	public IPartialExpression instance(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value) {
-		return new InstanceGetValue(position, value);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+		return new InstanceGetValue(position, environment, value);
 	}
 
-	public IPartialExpression instance(ZenPosition position, IEnvironmentGlobal environment) {
-		return new StaticGetValue(position);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		return new StaticGetValue(position, environment);
 	}
 	
 	public void addMethod(JavaMethod method) {
@@ -67,29 +64,31 @@ public class ZenNativeMember {
 	
 	private class InstanceGetValue implements IPartialExpression {
 		private final ZenPosition position;
+		private final IScopeMethod environment;
 		private final IPartialExpression value;
 		
-		public InstanceGetValue(ZenPosition position, IPartialExpression value) {
+		public InstanceGetValue(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
 			this.position = position;
+			this.environment = environment;
 			this.value = value;
 		}
 		
 		@Override
-		public Expression eval(IEnvironmentGlobal environment) {
-			return new ExpressionCallVirtual(position, environment, getter, value.eval(environment));
+		public Expression eval() {
+			return new ExpressionCallVirtual(position, environment, getter, value.eval());
 		}
 
 		@Override
-		public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
-			return new ExpressionCallVirtual(position, environment, setter, value.eval(environment), other);
+		public Expression assign(ZenPosition position, Expression other) {
+			return new ExpressionCallVirtual(position, environment, setter, value.eval(), other);
 		}
 
 		@Override
-		public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+		public IPartialExpression getMember(ZenPosition position, String name) {
 			return getter.getReturnType().getMember(position, environment, this, name);
 		}
 
-		@Override
+		/*@Override
 		public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
 			IJavaMethod method = JavaMethod.select(false, methods, environment, values);
 			if (method == null) {
@@ -103,7 +102,7 @@ public class ZenNativeMember {
 		@Override
 		public ZenType[] predictCallTypes(int numArguments) {
 			return JavaMethod.predict(methods, numArguments);
-		}
+		}*/
 		
 		@Override
 		public IZenSymbol toSymbol() {
@@ -116,35 +115,42 @@ public class ZenNativeMember {
 		}
 
 		@Override
-		public ZenType toType(IEnvironmentGlobal environment) {
+		public ZenType toType(List<ZenType> genericTypes) {
 			environment.error(position, "not a valid type");
-			return ZenType.ANY;
+			return environment.getTypes().ANY;
+		}
+		
+		@Override
+		public List<IJavaMethod> getMethods() {
+			return getter.getReturnType().getMethods();
 		}
 	}
 	
 	private class StaticGetValue implements IPartialExpression {
 		private final ZenPosition position;
+		private final IScopeMethod environment;
 		
-		public StaticGetValue(ZenPosition position) {
+		public StaticGetValue(ZenPosition position, IScopeMethod environment) {
 			this.position = position;
+			this.environment = environment;
 		}
 		
 		@Override
-		public Expression eval(IEnvironmentGlobal environment) {
+		public Expression eval() {
 			return new ExpressionCallStatic(position, environment, setter);
 		}
 
 		@Override
-		public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
+		public Expression assign(ZenPosition position, Expression other) {
 			return new ExpressionCallStatic(position, environment, setter);
 		}
 
 		@Override
-		public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+		public IPartialExpression getMember(ZenPosition position, String name) {
 			return getter.getReturnType().getMember(position, environment, this, name);
 		}
 
-		@Override
+		/*@Override
 		public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
 			IJavaMethod method = JavaMethod.select(true, methods, environment, values);
 			if (method == null) {
@@ -158,7 +164,7 @@ public class ZenNativeMember {
 		@Override
 		public ZenType[] predictCallTypes(int numArguments) {
 			return JavaMethod.predict(methods, numArguments);
-		}
+		}*/
 
 		@Override
 		public IZenSymbol toSymbol() {
@@ -169,18 +175,23 @@ public class ZenNativeMember {
 		public ZenType getType() {
 			return getter.getReturnType();
 		}
-
+		
 		@Override
-		public ZenType toType(IEnvironmentGlobal environment) {
+		public ZenType toType(List<ZenType> genericTypes) {
 			environment.error(position, "not a valid type");
-			return ZenType.ANY;
+			return environment.getTypes().ANY;
+		}
+		
+		@Override
+		public List<IJavaMethod> getMethods() {
+			return getter.getReturnType().getMethods();
 		}
 	}
 	
 	private class StaticSymbol implements IZenSymbol {
 		@Override
-		public IPartialExpression instance(ZenPosition position) {
-			return new StaticGetValue(position);
+		public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+			return new StaticGetValue(position, environment);
 		}
 	}
 }

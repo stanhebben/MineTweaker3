@@ -7,11 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeString;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -20,8 +19,8 @@ import stanhebben.zenscript.util.ZenPosition;
 public class ExpressionStringConcat extends Expression {
 	private final List<Expression> values;
 	
-	public ExpressionStringConcat(ZenPosition position, List<Expression> values) {
-		super(position);
+	public ExpressionStringConcat(ZenPosition position, IScopeMethod environment, List<Expression> values) {
+		super(position, environment);
 		
 		this.values = values;
 	}
@@ -32,14 +31,12 @@ public class ExpressionStringConcat extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return ZenTypeString.INSTANCE;
+		return getEnvironment().getTypes().STRING;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			MethodOutput output = environment.getOutput();
-			
 			// Step 1: construct StringBuilder
 			output.newObject(StringBuilder.class);
 			output.dup();
@@ -47,7 +44,7 @@ public class ExpressionStringConcat extends Expression {
 			
 			// Step 2: concatenate Strings
 			for (Expression value : values) {
-				value.compile(true, environment);
+				value.compile(true, output);
 				output.invoke(StringBuilder.class, "append", StringBuilder.class, String.class);
 			}
 			
@@ -55,7 +52,7 @@ public class ExpressionStringConcat extends Expression {
 			output.invoke(StringBuilder.class, "toString", String.class);
 		} else {
 			for (Expression value : values) {
-				value.compile(false, environment);
+				value.compile(false, output);
 			}
 		}
 	}

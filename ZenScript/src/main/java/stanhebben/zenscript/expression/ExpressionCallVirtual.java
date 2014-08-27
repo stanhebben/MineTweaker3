@@ -6,12 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -25,16 +24,16 @@ public class ExpressionCallVirtual extends Expression {
 	
 	public ExpressionCallVirtual(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeMethod environment,
 			IJavaMethod method,
 			Expression receiver,
 			Expression... arguments) {
-		super(position);
+		super(position, environment);
 		
 		this.method = method;
 		
 		this.receiver = receiver;
-		this.arguments = JavaMethod.rematch(position, method, environment, arguments);
+		this.arguments = arguments;
 	}
 
 	@Override
@@ -43,16 +42,11 @@ public class ExpressionCallVirtual extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		receiver.compile(true, environment);
+	public void compile(boolean result, MethodOutput output) {
+		method.invokeVirtual(output, receiver, arguments);
 		
-		for (Expression argument : arguments) {
-			argument.compile(true, environment);
-		}
-		
-		method.invokeVirtual(environment.getOutput());
-		if (method.getReturnType() != ZenType.VOID && !result) {
-			environment.getOutput().pop(method.getReturnType().isLarge());
+		if (method.getReturnType() != getEnvironment().getTypes().VOID && !result) {
+			output.pop(method.getReturnType().isLarge());
 		}
 	}
 }

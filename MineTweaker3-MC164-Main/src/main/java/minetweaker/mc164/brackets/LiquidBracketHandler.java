@@ -9,15 +9,15 @@ import minetweaker.runtime.GlobalRegistry;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.Token;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -35,7 +35,7 @@ public class LiquidBracketHandler implements IBracketHandler {
 	}
 
 	@Override
-	public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
+	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens) {
 		if (tokens.size() > 2) {
 			if (tokens.get(0).getValue().equals("liquid") && tokens.get(1).getValue().equals(":")) {
 				return find(environment, tokens, 2, tokens.size());
@@ -45,7 +45,7 @@ public class LiquidBracketHandler implements IBracketHandler {
 		return null;
 	}
 	
-	private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens, int startIndex, int endIndex) {
+	private IZenSymbol find(IScopeGlobal environment, List<Token> tokens, int startIndex, int endIndex) {
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
 			Token token = tokens.get(i);
@@ -61,10 +61,10 @@ public class LiquidBracketHandler implements IBracketHandler {
 	}
 	
 	private class LiquidReferenceSymbol implements IZenSymbol {
-		private final IEnvironmentGlobal environment;
+		private final IScopeGlobal environment;
 		private final String name;
 		
-		public LiquidReferenceSymbol(IEnvironmentGlobal environment, String name) {
+		public LiquidReferenceSymbol(IScopeGlobal environment, String name) {
 			this.environment = environment;
 			this.name = name;
 		}

@@ -1,6 +1,6 @@
 package minetweaker.api.mods;
 
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenGetter;
 
 /**
  * 

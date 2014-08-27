@@ -1,8 +1,8 @@
 package minetweaker.api.block;
 
 import minetweaker.api.data.IData;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  * Block interface. Used to interact with blocks in the world.

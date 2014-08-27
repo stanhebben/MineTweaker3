@@ -2,9 +2,9 @@ package minetweaker.api.entity;
 
 import minetweaker.api.util.Position3f;
 import minetweaker.api.world.IDimension;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenSetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenSetter;
 
 /**
  * Entity interface. Used to obtain information about entities, and modify

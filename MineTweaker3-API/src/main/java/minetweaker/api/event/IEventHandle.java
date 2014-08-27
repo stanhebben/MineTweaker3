@@ -1,8 +1,8 @@
 package minetweaker.api.event;
 
 import java.io.Closeable;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenMethod;
 
 /**
  * Represents an event handle. Event handles are used to cancel event listeners.

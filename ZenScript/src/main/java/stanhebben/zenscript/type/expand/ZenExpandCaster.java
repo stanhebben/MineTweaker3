@@ -6,16 +6,16 @@
 
 package stanhebben.zenscript.type.expand;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.casting.CastingRuleDelegateStaticMethod;
-import stanhebben.zenscript.type.casting.CastingRuleStaticMethod;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
+import zenscript.symbolic.type.casting.CastingRuleDelegateStaticMethod;
+import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -32,14 +32,14 @@ public class ZenExpandCaster {
 		return method.getReturnType();
 	}
 	
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules) {
+	public void constructCastingRules(ICastingRuleDelegate rules) {
 		ZenType type = method.getReturnType();
 		rules.registerCastingRule(type, new CastingRuleStaticMethod(method));
 		
-		type.constructCastingRules(environment, new CastingRuleDelegateStaticMethod(rules, method), false);
+		type.constructCastingRules(new CastingRuleDelegateStaticMethod(rules, method), false);
 	}
 	
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, Expression expression) {
+	public Expression cast(ZenPosition position, IScopeMethod environment, Expression expression) {
 		return new ExpressionCallStatic(position, environment, method, expression);
 	}
 	

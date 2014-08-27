@@ -7,34 +7,34 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import zenscript.annotations.CompareType;
+import zenscript.annotations.OperatorType;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.casting.CastingRuleNone;
-import stanhebben.zenscript.type.casting.ICastingRule;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.type.casting.CastingRuleNone;
+import zenscript.symbolic.type.casting.ICastingRule;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
 public class ZenTypeNull extends ZenType {
-	public static final ZenTypeNull INSTANCE = new ZenTypeNull();
 	private static final Type TYPE = Type.getType(Object.class);
 	
-	private ZenTypeNull() {
-		
+	public ZenTypeNull(IScopeGlobal environment) {
+		super(environment);
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type, IEnvironmentGlobal environment) {
-		if (type.isPointer()) {
+	public ICastingRule getCastingRule(ZenType type) {
+		if (type.isNullable()) {
 			return new CastingRuleNone(this, type);
 		} else {
 			return null;
@@ -42,72 +42,62 @@ public class ZenTypeNull extends ZenType {
 	}
 
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
 		
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IEnvironmentGlobal environment, Expression value, OperatorType operator) {
-		environment.error(position, "null has not operators");
-		return new ExpressionInvalid(position);
+	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+		environment.error(position, "null has no operators");
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression binary(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, OperatorType operator) {
-		environment.error(position, "null has not operators");
-		return new ExpressionInvalid(position);
+	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+		environment.error(position, "null has no operators");
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IEnvironmentGlobal environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "null has not operators");
-		return new ExpressionInvalid(position);
+	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+		environment.error(position, "null has no operators");
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
-		environment.error(position, "null has not operators");
-		return new ExpressionInvalid(position);
+	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+		environment.error(position, "null has no operators");
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		environment.error(position, "null doesn't have members");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
 		environment.error(position, "null doesn't have static members");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
-	@Override
+	/*@Override
 	public Expression call(
 			ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call null values");
 		return new ExpressionInvalid(position);
-	}
+	}*/
 
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod environment) {
+	public IZenIterator makeIterator(int numValues, MethodOutput output) {
 		return null;
 	}
 
-	/*@Override
-	public boolean canCastImplicit(ZenType type, IEnvironmentGlobal environment) {
-		return type.isPointer();
-	}*/
-
 	@Override
-	public boolean canCastExplicit(ZenType type, IEnvironmentGlobal environment) {
-		return type.isPointer();
+	public boolean canCastExplicit(ZenType type) {
+		return type.isNullable();
 	}
-	
-	/*@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, Expression value, ZenType type) {
-		return value;
-	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -130,14 +120,9 @@ public class ZenTypeNull extends ZenType {
 	}
 
 	@Override
-	public boolean isPointer() {
+	public boolean isNullable() {
 		return true;
 	}
-
-	/*@Override
-	public void compileCast(ZenPosition position, IEnvironmentMethod environment, ZenType type) {
-		// nothing to do
-	}*/
 
 	@Override
 	public String getName() {
@@ -145,12 +130,22 @@ public class ZenTypeNull extends ZenType {
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal environment) {
+	public String getAnyClassName() {
 		throw new UnsupportedOperationException("The null type does not have an any type");
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position) {
-		return new ExpressionNull(position);
+	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+		return new ExpressionNull(position, environment);
+	}
+
+	@Override
+	public ZenType nullable() {
+		return this;
+	}
+
+	@Override
+	public ZenType nonNull() {
+		throw new UnsupportedOperationException("Null type cannot be non-null");
 	}
 }

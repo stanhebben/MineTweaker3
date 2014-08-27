@@ -6,9 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -18,8 +19,8 @@ public class ExpressionStringContains extends Expression {
 	private final Expression haystack;
 	private final Expression needle;
 	
-	public ExpressionStringContains(ZenPosition position, Expression haystack, Expression needle) {
-		super(position);
+	public ExpressionStringContains(ZenPosition position, IScopeMethod environment, Expression haystack, Expression needle) {
+		super(position, environment);
 		
 		this.haystack = haystack;
 		this.needle = needle;
@@ -27,16 +28,16 @@ public class ExpressionStringContains extends Expression {
 	
 	@Override
 	public ZenType getType() {
-		return ZenType.STRING;
+		return getEnvironment().getTypes().BOOL;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		haystack.compile(result, environment);
-		needle.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		haystack.compile(result, output);
+		needle.compile(result, output);
 		
 		if (result) {
-			environment.getOutput().invokeVirtual(String.class, "contains", CharSequence.class);
+			output.invokeVirtual(String.class, "contains", CharSequence.class);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package minetweaker.api.item;
 
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenMethod;
 
 /**
  * Transformations can be used to modify an ingredient after it is used in a

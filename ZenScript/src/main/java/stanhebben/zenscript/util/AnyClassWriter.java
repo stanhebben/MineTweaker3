@@ -10,53 +10,15 @@ import java.util.Iterator;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
-import static stanhebben.zenscript.util.ZenTypeUtil.EMPTY_REGISTRY;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import stanhebben.zenscript.value.IAny;
+import zenscript.runtime.IAny;
 
 /**
  *
  * @author Stan
  */
 public class AnyClassWriter {
-	public static final IJavaMethod METHOD_NOT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "not");
-	public static final IJavaMethod METHOD_NEG = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "neg");
-	public static final IJavaMethod METHOD_ADD = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "add", IAny.class);
-	public static final IJavaMethod METHOD_CAT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "cat", IAny.class);
-	public static final IJavaMethod METHOD_SUB = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "sub", IAny.class);
-	public static final IJavaMethod METHOD_MUL = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "mul", IAny.class);
-	public static final IJavaMethod METHOD_DIV = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "div", IAny.class);
-	public static final IJavaMethod METHOD_MOD = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "mod", IAny.class);
-	public static final IJavaMethod METHOD_AND = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "and", IAny.class);
-	public static final IJavaMethod METHOD_OR = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "or", IAny.class);
-	public static final IJavaMethod METHOD_XOR = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "xor", IAny.class);
-	public static final IJavaMethod METHOD_RANGE = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "range", IAny.class);
-	public static final IJavaMethod METHOD_COMPARETO = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "compareTo", IAny.class);
-	public static final IJavaMethod METHOD_CONTAINS = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "contains", IAny.class);
-	public static final IJavaMethod METHOD_MEMBERGET = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "memberGet", String.class);
-	public static final IJavaMethod METHOD_MEMBERSET = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "memberSet", String.class, IAny.class);
-	public static final IJavaMethod METHOD_MEMBERCALL = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "memberCall", String.class, IAny[].class);
-	public static final IJavaMethod METHOD_INDEXGET = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "indexGet", IAny.class);
-	public static final IJavaMethod METHOD_INDEXSET = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "indexSet", IAny.class, IAny.class);
-	public static final IJavaMethod METHOD_CALL = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "call", IAny[].class);
-	public static final IJavaMethod METHOD_ASBOOL = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asBool");
-	public static final IJavaMethod METHOD_ASBYTE = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asByte");
-	public static final IJavaMethod METHOD_ASSHORT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asShort");
-	public static final IJavaMethod METHOD_ASINT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asInt");
-	public static final IJavaMethod METHOD_ASLONG = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asLong");
-	public static final IJavaMethod METHOD_ASFLOAT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asFloat");
-	public static final IJavaMethod METHOD_ASDOUBLE = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asDouble");
-	public static final IJavaMethod METHOD_ASSTRING = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "asString");
-	public static final IJavaMethod METHOD_AS = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "as", Class.class);
-	public static final IJavaMethod METHOD_IS = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "is", Class.class);
-	public static final IJavaMethod METHOD_CANCASTIMPLICIT = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "canCastImplicit", Class.class);
-	public static final IJavaMethod METHOD_GETNUMBERTYPE = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "getNumberType");
-	public static final IJavaMethod METHOD_ITERATORSINGLE = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "iteratorSingle");
-	public static final IJavaMethod METHOD_ITERATORMULTI = JavaMethod.get(EMPTY_REGISTRY, IAny.class, "iteratorMulti", int.class);
-	
 	private static final String SIG_ANY = "()" + signature(IAny.class);
 	private static final String SIG_ANY_ANY = "(" + signature(IAny.class) + ")" + signature(IAny.class);
 	private static final String SIG_ANY_INT = "(" + signature(IAny.class) + ")I";

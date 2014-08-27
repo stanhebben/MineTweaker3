@@ -9,6 +9,7 @@ package stanhebben.zenscript.type.iterator;
 import java.util.Iterator;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
@@ -20,51 +21,51 @@ import stanhebben.zenscript.util.MethodOutput;
 
 	
 public class IteratorList implements IZenIterator {
-	private final MethodOutput methodOutput;
+	private final IScopeGlobal environment;
 	private final ZenType iteratorType;
 	private int iterator;
 
-	public IteratorList(MethodOutput methodOutput, ZenType iteratorType) {
-		this.methodOutput = methodOutput;
+	public IteratorList(IScopeGlobal environment, ZenType iteratorType) {
+		this.environment = environment;
 		this.iteratorType = iteratorType;
 	}
 
 	@Override
-	public void compileStart(int[] locals) {
-		iterator = methodOutput.local(Type.getType(Iterator.class));
-		methodOutput.invokeInterface(Iterable.class, "iterator", Iterator.class);
-		methodOutput.storeObject(iterator);
-		methodOutput.iConst0();
-		methodOutput.storeInt(locals[0]);
+	public void compileStart(MethodOutput output, int[] locals) {
+		iterator = output.local(Type.getType(Iterator.class));
+		output.invokeInterface(Iterable.class, "iterator", Iterator.class);
+		output.storeObject(iterator);
+		output.iConst0();
+		output.storeInt(locals[0]);
 	}
 
 	@Override
-	public void compilePreIterate(int[] locals, Label exit) {
-		methodOutput.dup();
-		methodOutput.invokeInterface(
+	public void compilePreIterate(MethodOutput output, int[] locals, Label exit) {
+		output.dup();
+		output.invokeInterface(
 				Iterator.class,
 				"hasNext",
 				boolean.class);
-		methodOutput.ifEQ(exit);
+		output.ifEQ(exit);
 
-		methodOutput.dup();
-		methodOutput.invokeInterface(Iterator.class, "next", Object.class);
-		methodOutput.store(iteratorType.toASMType(), locals[1]);
+		output.dup();
+		output.invokeInterface(Iterator.class, "next", Object.class);
+		output.store(iteratorType.toASMType(), locals[1]);
 	}
 
 	@Override
-	public void compilePostIterate(int[] locals, Label exit, Label repeat) {
-		methodOutput.iinc(locals[0]);
-		methodOutput.goTo(repeat);
+	public void compilePostIterate(MethodOutput output, int[] locals, Label exit, Label repeat) {
+		output.iinc(locals[0]);
+		output.goTo(repeat);
 	}
 
 	@Override
-	public void compileEnd() {
-		methodOutput.pop();
+	public void compileEnd(MethodOutput output) {
+		output.pop();
 	}
 
 	@Override
 	public ZenType getType(int i) {
-		return i == 0 ? ZenType.INT : iteratorType;
+		return i == 0 ? environment.getTypes().INT : iteratorType;
 	}
 }

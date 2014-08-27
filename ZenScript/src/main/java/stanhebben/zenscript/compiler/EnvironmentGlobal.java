@@ -6,23 +6,22 @@
 
 package stanhebben.zenscript.compiler;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.IZenErrorLogger;
+import zenscript.IZenErrorLogger;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
-public class EnvironmentGlobal implements IEnvironmentGlobal {
+public class EnvironmentGlobal implements IScopeGlobal {
 	private final IZenCompileEnvironment environment;
 	private final IZenErrorLogger errors;
 	private final Map<String, byte[]> classes;
@@ -38,7 +37,7 @@ public class EnvironmentGlobal implements IEnvironmentGlobal {
 		this.errors = environment.getErrorLogger();
 		this.classes = classes;
 		this.nameGen = nameGen;
-		this.types = environment.getTypeRegistry();
+		this.types = environment.getTypes();
 		this.local = new HashMap<String, IZenSymbol>();
 	}
 	
@@ -47,8 +46,8 @@ public class EnvironmentGlobal implements IEnvironmentGlobal {
 	}
 	
 	@Override
-	public ZenType getType(Type type) {
-		return types.getType(type);
+	public TypeRegistry getTypes() {
+		return types;
 	}
 	
 	@Override
@@ -87,12 +86,12 @@ public class EnvironmentGlobal implements IEnvironmentGlobal {
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, ZenPosition position) {
+	public IPartialExpression getValue(String name, ZenPosition position, IScopeMethod environment) {
 		if (local.containsKey(name)) {
-			return local.get(name).instance(position);
+			return local.get(name).instance(position, environment);
 		} else {
-			IZenSymbol symbol = environment.getGlobal(name);
-			return symbol == null ? null : symbol.instance(position);
+			IZenSymbol symbol = this.environment.getGlobal(name);
+			return symbol == null ? null : symbol.instance(position, environment);
 		}
 	}
 

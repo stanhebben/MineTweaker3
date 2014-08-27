@@ -6,10 +6,11 @@
 
 package stanhebben.zenscript.symbols;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -33,7 +34,7 @@ public class SymbolLocal implements IZenSymbol {
 	}
 
 	@Override
-	public IPartialExpression instance(ZenPosition position) {
-		return new PartialLocal(position, this);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		return new PartialLocal(position, environment, this);
 	}
 }

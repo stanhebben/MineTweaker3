@@ -15,7 +15,6 @@ import minetweaker.api.client.IClient;
 import minetweaker.api.event.IEventManager;
 import minetweaker.api.game.IGame;
 import minetweaker.api.mods.ILoadedMods;
-import minetweaker.runtime.ITweaker;
 import minetweaker.runtime.ILogger;
 import minetweaker.runtime.MTTweaker;
 import minetweaker.api.recipes.IRecipeManager;
@@ -23,14 +22,14 @@ import minetweaker.api.oredict.IOreDict;
 import minetweaker.api.recipes.IFurnaceManager;
 import minetweaker.api.server.IServer;
 import minetweaker.runtime.GlobalRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticField;
 import stanhebben.zenscript.symbols.SymbolJavaStaticGetter;
 import stanhebben.zenscript.symbols.SymbolJavaStaticMethod;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenExpansion;
 
 /**
  * Provides access to the MineTweaker API.
@@ -96,7 +95,7 @@ public class MineTweakerAPI {
 	 * The Tweaker is where you apply undoable actions. Any kind of action that
 	 * reloads with the scripts should always be submitted to the tweaker.
 	 */
-	public static final ITweaker tweaker = new MTTweaker();
+	private static final MTTweaker TWEAKER = new MTTweaker();
 	
 	/**
 	 * The logger can be used to write logging messages to the client. Error and
@@ -154,7 +153,7 @@ public class MineTweakerAPI {
 	 * @param action action object
 	 */
 	public static void apply(IUndoableAction action) {
-		tweaker.apply(action);
+		TWEAKER.apply(action);
 	}
 	
 	/**

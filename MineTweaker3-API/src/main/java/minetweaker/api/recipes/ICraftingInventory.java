@@ -8,9 +8,9 @@ package minetweaker.api.recipes;
 
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
 
 /**
  * Crafting inventory interface. The crafting inventory is the 2x2 grid in the

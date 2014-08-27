@@ -6,8 +6,8 @@
 
 package minetweaker.api.entity;
 
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  *

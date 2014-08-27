@@ -6,11 +6,12 @@
 
 package stanhebben.zenscript;
 
+import zenscript.IZenErrorLogger;
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.TypeRegistry;
-import stanhebben.zenscript.parser.Token;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
+import zenscript.symbolic.TypeRegistry;
 
 /**
  *
@@ -23,9 +24,9 @@ public interface IZenCompileEnvironment {
 	
 	public IZenSymbol getDollar(String name);
 	
-	public IZenSymbol getBracketed(IEnvironmentGlobal environment, List<Token> tokens);
+	public IZenSymbol getBracketed(IScopeGlobal environment, List<Token> tokens);
 	
-	public TypeRegistry getTypeRegistry();
+	public TypeRegistry getTypes();
 	
 	public TypeExpansion getExpansion(String type);
 }

@@ -6,14 +6,16 @@
 
 package stanhebben.zenscript.expression.partial;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import java.util.Collections;
+import java.util.List;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolPackage;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -21,46 +23,48 @@ import stanhebben.zenscript.util.ZenPosition;
  */
 public class PartialPackage implements IPartialExpression {
 	private final ZenPosition position;
+	private final IScopeMethod environment;
 	private final SymbolPackage contents;
 	
-	public PartialPackage(ZenPosition position, SymbolPackage contents) {
+	public PartialPackage(ZenPosition position, IScopeMethod environment, SymbolPackage contents) {
 		this.position = position;
+		this.environment = environment;
 		this.contents = contents;
 	}
 
 	@Override
-	public Expression eval(IEnvironmentGlobal environment) {
+	public Expression eval() {
 		environment.error(position, "Cannot use package name as expression");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
+	public Expression assign(ZenPosition position, Expression other) {
 		environment.error(position, "Cannot assign to a package");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+	public IPartialExpression getMember(ZenPosition position, String name) {
 		IZenSymbol member = contents.get(name);
 		if (member == null) {
 			environment.error(position, "No such member: " + name);
-			return new ExpressionInvalid(position);
+			return new ExpressionInvalid(position, environment);
 		} else {
-			return member.instance(position);
+			return member.instance(position, environment);
 		}
 	}
 
-	@Override
-	public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+	/*@Override
+	public Expression call(ZenPosition position, Expression... values) {
 		environment.error(position, "cannot call a package");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public ZenType[] predictCallTypes(int numArguments) {
 		return new ZenType[numArguments];
-	}
+	}*/
 
 	@Override
 	public IZenSymbol toSymbol() {
@@ -73,8 +77,13 @@ public class PartialPackage implements IPartialExpression {
 	}
 
 	@Override
-	public ZenType toType(IEnvironmentGlobal environment) {
+	public ZenType toType(List<ZenType> types) {
 		environment.error(position, "not a valid type");
-		return ZenType.ANY;
+		return environment.getTypes().ANY;
+	}
+
+	@Override
+	public List<IJavaMethod> getMethods() {
+		return Collections.EMPTY_LIST;
 	}
 }

@@ -1,7 +1,7 @@
 package minetweaker.api.block;
 
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  * Blocks definitions provide additional information about blocks.

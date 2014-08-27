@@ -6,47 +6,36 @@
 
 package stanhebben.zenscript.expression;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeAny;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.type.ZenTypeNative;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
 public class ExpressionFunction extends Expression {
-	private final List<ParsedFunctionArgument> arguments;
-	private final ZenType returnType;
+	private final ZenTypeFunction functionType;
 	private final List<Statement> statements;
 	
-	private final ZenTypeFunction functionType;
-	
-	public ExpressionFunction(ZenPosition position, List<ParsedFunctionArgument> arguments, ZenType returnType, List<Statement> statements) {
-		super(position);
+	public ExpressionFunction(ZenPosition position, IScopeMethod environment, List<JavaMethodArgument> arguments, ZenType returnType, List<Statement> statements) {
+		super(position, environment);
 		
 		System.out.println("Function expression: " + arguments.size() + " arguments");
 		
-		this.arguments = arguments;
-		this.returnType = returnType;
 		this.statements = statements;
 		
-		ZenType[] argumentTypes = new ZenType[arguments.size()];
-		for (int i = 0; i < arguments.size(); i++) {
-			argumentTypes[i] = arguments.get(i).getType();
-		}
-		functionType = new ZenTypeFunction(returnType, argumentTypes);
+		functionType = new ZenTypeFunction(environment, returnType, arguments);
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, ZenType type) {
+	public Expression cast(ZenPosition position, ZenType type) {
 		if (type instanceof ZenTypeNative) {
 			ZenTypeNative nativeType = (ZenTypeNative) type;
 			Class nativeClass = nativeType.getNativeClass();
@@ -93,7 +82,7 @@ public class ExpressionFunction extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		// TODO: implement
 		// TODO: make sure the function is compiled properly
 		throw new UnsupportedOperationException("not yet implemented");

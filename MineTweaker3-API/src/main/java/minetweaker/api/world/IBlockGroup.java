@@ -7,9 +7,9 @@
 package minetweaker.api.world;
 
 import minetweaker.api.block.IBlock;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

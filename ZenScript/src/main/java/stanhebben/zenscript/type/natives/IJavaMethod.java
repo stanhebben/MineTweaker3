@@ -6,7 +6,6 @@
 
 package stanhebben.zenscript.type.natives;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
@@ -18,19 +17,23 @@ import stanhebben.zenscript.util.MethodOutput;
 public interface IJavaMethod {
 	public boolean isStatic();
 	
+	public boolean isVarargs();
+	
 	public boolean accepts(int numArguments);
-	
-	public boolean accepts(IEnvironmentGlobal environment, Expression... arguments);
-	
-	public int getPriority(IEnvironmentGlobal environment, Expression... arguments);
 	
 	public void invokeVirtual(MethodOutput output);
 	
 	public void invokeStatic(MethodOutput output);
 	
-	public ZenType[] getParameterTypes();
+	public void invokeSpecial(MethodOutput output);
+	
+	public void invokeVirtual(MethodOutput output, Expression receiver, Expression[] arguments);
+	
+	public void invokeStatic(MethodOutput output, Expression[] arguments);
+	
+	public JavaMethodArgument[] getArguments();
+	
+	public int getArgumentIndex(String name);
 	
 	public ZenType getReturnType();
-	
-	public boolean isVarargs();
 }

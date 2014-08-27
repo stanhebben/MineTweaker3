@@ -8,13 +8,13 @@ package stanhebben.zenscript.expression;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.definitions.ParsedFunctionArgument;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import zenscript.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -28,7 +28,7 @@ public class ExpressionJavaMethodCurled extends Expression {
 	public ExpressionJavaMethodCurled(
 			ZenPosition position,
 			JavaMethod method,
-			IEnvironmentGlobal environment,
+			IScopeGlobal environment,
 			Expression receiver) {
 		super(position);
 		
@@ -49,7 +49,7 @@ public class ExpressionJavaMethodCurled extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, IScopeMethod environment) {
 		// TODO: compile
 	}
 }

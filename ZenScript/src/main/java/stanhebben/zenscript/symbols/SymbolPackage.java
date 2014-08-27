@@ -9,11 +9,12 @@ package stanhebben.zenscript.symbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import stanhebben.zenscript.IZenErrorLogger;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import zenscript.IZenErrorLogger;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialPackage;
-import stanhebben.zenscript.util.StringUtil;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.StringUtil;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -77,7 +78,7 @@ public class SymbolPackage implements IZenSymbol {
 	}
 	
 	@Override
-	public IPartialExpression instance(ZenPosition position) {
-		return new PartialPackage(position, this);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		return new PartialPackage(position, environment, this);
 	}
 }

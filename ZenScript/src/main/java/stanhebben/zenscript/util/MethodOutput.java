@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.util;
 
+import zenscript.util.ZenPosition;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,8 @@ import org.objectweb.asm.Opcodes;
 import static org.objectweb.asm.Opcodes.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
+import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.symbols.SymbolLocal;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 
@@ -27,6 +30,8 @@ public class MethodOutput {
 //	private static final boolean debug = true;
 	
 	private final LocalVariablesSorter visitor;
+	private final HashMap<SymbolLocal, Integer> locals;
+	private final HashMap<Statement, ControlLabels> controlLabels;
 	
 	private boolean debug = false;
 	private int labelIndex = 1;
@@ -35,14 +40,34 @@ public class MethodOutput {
 	public MethodOutput(ClassVisitor cls, int access, String name, String descriptor, String signature, String[] exceptions) {
 		MethodVisitor methodVisitor = cls.visitMethod(access, name, descriptor, signature, exceptions);
 		visitor = new LocalVariablesSorter(access, descriptor, methodVisitor);
+		this.locals = new HashMap<SymbolLocal, Integer>();
+		controlLabels = new HashMap<Statement, ControlLabels>();
 	}
 	
 	public MethodOutput(LocalVariablesSorter visitor) {
 		this.visitor = visitor;
+		this.locals = new HashMap<SymbolLocal, Integer>();
+		this.controlLabels = new HashMap<Statement, ControlLabels>();
 	}
 	
 	public void enableDebug() {
 		debug = true;
+	}
+	
+	public void putControlLabels(Statement statement, ControlLabels labels) {
+		controlLabels.put(statement, labels);
+	}
+	
+	public ControlLabels getControlLabels(Statement statement) {
+		return controlLabels.get(statement);
+	}
+	
+	public int getLocal(SymbolLocal variable) {
+		if (!locals.containsKey(variable)) {
+			locals.put(variable, local(variable.getType().toASMType()));
+		}
+		
+		return locals.get(variable);
 	}
 	
 	public void start() {
@@ -720,6 +745,21 @@ public class MethodOutput {
 		visitor.visitMethodInsn(INVOKESPECIAL, owner, name, descriptor);
 	}
 	
+	public void invokeSpecial(Class owner, String name, Class result, Class... arguments) {
+		StringBuilder descriptor = new StringBuilder();
+		descriptor.append('(');
+		for (Class argument : arguments) {
+			descriptor.append(signature(argument));
+		}
+		descriptor.append(')');
+		descriptor.append(result == null ? 'V' : signature(result));
+		
+		if (debug)
+			System.out.println("invokeSpecial " + internal(owner) + '.' + name + descriptor);
+		
+		visitor.visitMethodInsn(INVOKESPECIAL, internal(owner), name, descriptor.toString());
+	}
+	
 	public void invoke(Class owner, String name, Class result, Class... arguments) {
 		if (owner.isInterface()) {
 			invokeInterface(owner, name, result, arguments);
@@ -784,6 +824,13 @@ public class MethodOutput {
 			System.out.println("newObject " + type);
 		
 		visitor.visitTypeInsn(NEW, type);
+	}
+	
+	public void newObject(Type type) {
+		if (debug)
+			System.out.println("newObject" + type.getClassName());
+		
+		visitor.visitTypeInsn(NEW, type.getInternalName());
 	}
 	
 	public void construct(Class type, Class... arguments) {
@@ -1026,10 +1073,24 @@ public class MethodOutput {
 		visitor.visitInsn(ATHROW);
 	}
 	
+	public void lookupSwitch(Label lblDefault, int[] values, Label[] lblCases) {
+		visitor.visitLookupSwitchInsn(lblDefault, values, lblCases);
+	}
+	
 	public void position(ZenPosition position) {
 		Label label = new Label();
 		visitor.visitLabel(label);
 		visitor.visitLineNumber(position.getLine(), label);
+	}
+	
+	public static class ControlLabels {
+		public final Label continueLabel;
+		public final Label breakLabel;
+		
+		public ControlLabels(Label continueLabel, Label breakLabel) {
+			this.continueLabel = continueLabel;
+			this.breakLabel = breakLabel;
+		}
 	}
 	
 	private String getLabelName(Label lbl) {

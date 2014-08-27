@@ -1,28 +1,27 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
-import stanhebben.zenscript.type.casting.ICastingRule;
+import zenscript.symbolic.type.casting.ICastingRule;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 public class ExpressionArray extends Expression {
 	private final Expression[] contents;
 	private final ZenTypeArrayBasic type;
 	
-	public ExpressionArray(ZenPosition position, ZenTypeArrayBasic type, Expression... contents) {
-		super(position);
+	public ExpressionArray(ZenPosition position, IScopeMethod environment, ZenTypeArrayBasic type, Expression... contents) {
+		super(position, environment);
 		
 		this.contents = contents;
 		this.type = type;
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, ZenType type) {
+	public Expression cast(ZenPosition position, ZenType type) {
 		if (this.type.equals(type)) {
 			return this;
 		}
@@ -31,17 +30,17 @@ public class ExpressionArray extends Expression {
 			ZenTypeArrayBasic arrayType = (ZenTypeArrayBasic) type;
 			Expression[] newContents = new Expression[contents.length];
 			for (int i = 0; i < contents.length; i++) {
-				newContents[i] = contents[i].cast(position, environment, arrayType.getBaseType());
+				newContents[i] = contents[i].cast(position, arrayType.getBaseType());
 			}
 			
-			return new ExpressionArray(getPosition(), arrayType, newContents);
+			return new ExpressionArray(getPosition(), getEnvironment(), arrayType, newContents);
 		} else {
-			ICastingRule castingRule = this.type.getCastingRule(type, environment);
+			ICastingRule castingRule = this.type.getCastingRule(type);
 			if (castingRule == null) {
-				environment.error(position, "cannot cast " + this.type + " to " + type);
-				return new ExpressionInvalid(position, type);
+				getEnvironment().error(position, "cannot cast " + this.type + " to " + type);
+				return new ExpressionInvalid(position, getEnvironment(), type);
 			} else {
-				return new ExpressionAs(position, this, castingRule);
+				return new ExpressionAs(position, getEnvironment(), this, castingRule);
 			}
 		}
 	}
@@ -52,18 +51,17 @@ public class ExpressionArray extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		ZenType baseType = type.getBaseType();
 		Type asmBaseType = type.getBaseType().toASMType();
 		
-		MethodOutput output = environment.getOutput();
 		output.constant(contents.length);
 		output.newArray(asmBaseType);
 		
 		for (int i = 0; i < contents.length; i++) {
 			output.dup();
 			output.constant(i);
-			contents[i].cast(this.getPosition(), environment, baseType).compile(result, environment);
+			contents[i].cast(this.getPosition(), baseType).compile(result, output);
 			output.arrayStore(asmBaseType);
 		}
 	}

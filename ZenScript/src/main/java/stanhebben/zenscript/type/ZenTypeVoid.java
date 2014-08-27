@@ -7,69 +7,54 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import zenscript.annotations.CompareType;
+import zenscript.annotations.OperatorType;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stanneke
  */
 public class ZenTypeVoid extends ZenType {
-	public static final ZenTypeVoid INSTANCE = new ZenTypeVoid();
-	
-	private ZenTypeVoid() {}
+	public ZenTypeVoid(IScopeGlobal environment) {
+		super(environment);
+	}
 	
 	@Override
 	public IPartialExpression getMember(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeMethod environment,
 			IPartialExpression value,
 			String name) {
 		environment.error(position, "void doesn't have members");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public IPartialExpression getStaticMember(
 			ZenPosition position,
-			IEnvironmentGlobal environment,
+			IScopeMethod environment,
 			String name) {
 		environment.error(position, "void doesn't have static members");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
+	public IZenIterator makeIterator(int numValues, MethodOutput output) {
 		return null;
 	}
 
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
 		
 	}
-
-	/*@Override
-	public boolean canCastImplicit(ZenType type, IEnvironmentGlobal environment) {
-		return type == this || canCastExpansion(environment, type);
-	}
-
-	@Override
-	public boolean canCastExplicit(ZenType type, IEnvironmentGlobal environment) {
-		return type == this || canCastExpansion(environment, type);
-	}
-	
-	@Override
-	public Expression cast(ZenPosition position, IEnvironmentGlobal environment, Expression value, ZenType type) {
-		environment.error(position, "cannot cast void to other type");
-		return new ExpressionInvalid(position, type);
-	}*/
 
 	@Override
 	public Type toASMType() {
@@ -87,55 +72,44 @@ public class ZenTypeVoid extends ZenType {
 	}
 
 	@Override
-	public boolean isPointer() {
+	public boolean isNullable() {
 		return false;
 	}
-
-	/*@Override
-	public void compileCast(ZenPosition position, IEnvironmentMethod environment, ZenType type) {
-		if (type == this) {
-			// nothing to do
-		} else {
-			if (!compileCastExpansion(position, environment, type)) {
-				environment.error(position, "cannot cast " + this + " to " + type);
-			}
-		}
-	}*/
 	
 	@Override
 	public Expression unary(
-			ZenPosition position, IEnvironmentGlobal environment, Expression value, OperatorType operator) {
+			ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public Expression binary(
-			ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, OperatorType operator) {
+			ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public Expression trinary(
-			ZenPosition position, IEnvironmentGlobal environment, Expression first, Expression second, Expression third, OperatorType operator) {
+			ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
 	public Expression compare(
-			ZenPosition position, IEnvironmentGlobal environment, Expression left, Expression right, CompareType type) {
+			ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, this);
+		return new ExpressionInvalid(position, environment);
 	}
 
-	@Override
+	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
+			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call a void");
 		return new ExpressionInvalid(position, this);
-	}
+	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -148,12 +122,22 @@ public class ZenTypeVoid extends ZenType {
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal environment) {
+	public String getAnyClassName() {
 		throw new UnsupportedOperationException("Cannot convert void to anything, not even any");
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position) {
+	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
 		throw new RuntimeException("void has no default value");
+	}
+
+	@Override
+	public ZenType nullable() {
+		return this;
+	}
+
+	@Override
+	public ZenType nonNull() {
+		return this;
 	}
 }

@@ -1,8 +1,8 @@
 package minetweaker;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.parser.Token;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 
 /**
@@ -28,5 +28,5 @@ public interface IBracketHandler {
 	 * @param tokens token stream to be detected
 	 * @return the resolved symbol, or null
 	 */
-	public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens);
+	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens);
 }

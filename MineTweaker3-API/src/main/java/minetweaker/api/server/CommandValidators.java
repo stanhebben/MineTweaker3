@@ -8,8 +8,8 @@ package minetweaker.api.server;
 
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  *

@@ -6,11 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeDouble;
-import stanhebben.zenscript.type.ZenTypeFloat;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -20,8 +19,8 @@ public class ExpressionFloat extends Expression {
 	private final double value;
 	private final ZenType type;
 	
-	public ExpressionFloat(ZenPosition position, double value, ZenType type) {
-		super(position);
+	public ExpressionFloat(ZenPosition position, IScopeMethod environment, double value, ZenType type) {
+		super(position, environment);
 		
 		this.value = value;
 		this.type = type;
@@ -33,13 +32,13 @@ public class ExpressionFloat extends Expression {
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		if (!result) return;
 		
-		if (type == ZenTypeFloat.INSTANCE) {
-			environment.getOutput().constant((float) value);
-		} else if (type == ZenTypeDouble.INSTANCE) {
-			environment.getOutput().constant(value);
+		if (type == getEnvironment().getTypes().FLOAT) {
+			output.constant((float) value);
+		} else if (type == getEnvironment().getTypes().DOUBLE) {
+			output.constant(value);
 		} else {
 			throw new RuntimeException("Internal compiler error: source type is not a floating point type");
 		}

@@ -1,61 +1,54 @@
 package stanhebben.zenscript.statements;
 
+import java.util.List;
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.EnvironmentScope;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.parser.expression.ParsedExpression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 public class StatementForeach extends Statement {
-	private final String[] varnames;
-	private final ParsedExpression list;
-	private final Statement body;
+	private final List<SymbolLocal> variables;
+	private final Expression list;
+	private final IZenIterator iterator;
+	private Statement body;
 	
-	public StatementForeach(ZenPosition position, String[] varnames, ParsedExpression list, Statement body) {
-		super(position);
+	public StatementForeach(ZenPosition position, IScopeMethod environment, List<SymbolLocal> variables, Expression list, IZenIterator iterator) {
+		super(position, environment);
 		
-		this.varnames = varnames;
+		this.variables = variables;
 		this.list = list;
+		this.iterator = iterator;
+	}
+	
+	public void setBody(Statement body) {
 		this.body = body;
 	}
 
 	@Override
-	public void compile(IEnvironmentMethod environment) {
-		Expression cList = list.compile(environment, ZenType.ANYARRAY).eval(environment);
-		ZenType listType = cList.getType();
+	public void compile(MethodOutput output) {
+		output.position(getPosition());
 		
-		IZenIterator iterator = listType.makeIterator(varnames.length, environment);
-		if (iterator == null) {
-			environment.error(getPosition(), "No iterator with " + varnames.length + " variables");
-			return;
-		}
-		
-		MethodOutput methodOutput = environment.getOutput();
-		environment.getOutput().position(getPosition());
-		
-		IEnvironmentMethod local = new EnvironmentScope(environment);
-		int[] localVariables = new int[varnames.length];
+		int[] localVariables = new int[variables.size()];
 		for (int i = 0; i < localVariables.length; i++) {
-			SymbolLocal localVar = new SymbolLocal(iterator.getType(i), true);
-			local.putValue(varnames[i], localVar, getPosition());
-			localVariables[i] = local.getLocal(localVar);
+			localVariables[i] = output.getLocal(variables.get(i));
 		}
 		
-		cList.compile(true, environment);
-		iterator.compileStart(localVariables);
+		list.compile(true, output);
+		iterator.compileStart(output, localVariables);
 		
-		Label repeat = new Label();
-		Label exit = new Label();
+		Label lblRepeat = new Label();
+		Label lblBreak = new Label();
+		output.putControlLabels(this, new MethodOutput.ControlLabels(lblRepeat, lblBreak));
 		
-		methodOutput.label(repeat);
-		iterator.compilePreIterate(localVariables, exit);
-		body.compile(local);
-		iterator.compilePostIterate(localVariables, exit, repeat);
-		methodOutput.label(exit);
+		output.label(lblRepeat);
+		iterator.compilePreIterate(output, localVariables, lblBreak);
+		body.compile(output);
+		iterator.compilePostIterate(output, localVariables, lblBreak, lblRepeat);
+		output.label(lblBreak);
+		iterator.compileEnd(output);
 	}
 }

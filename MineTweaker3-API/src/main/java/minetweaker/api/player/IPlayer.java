@@ -9,9 +9,9 @@ package minetweaker.api.player;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.data.IData;
 import minetweaker.api.item.IItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

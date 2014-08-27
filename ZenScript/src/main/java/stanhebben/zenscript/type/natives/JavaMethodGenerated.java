@@ -6,14 +6,10 @@
 
 package stanhebben.zenscript.type.natives;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import java.util.HashMap;
+import java.util.Map;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeArray;
-import static stanhebben.zenscript.type.natives.JavaMethod.PRIORITY_HIGH;
-import static stanhebben.zenscript.type.natives.JavaMethod.PRIORITY_INVALID;
-import static stanhebben.zenscript.type.natives.JavaMethod.PRIORITY_LOW;
-import static stanhebben.zenscript.type.natives.JavaMethod.PRIORITY_MEDIUM;
 import stanhebben.zenscript.util.MethodOutput;
 
 /**
@@ -27,7 +23,8 @@ public class JavaMethodGenerated implements IJavaMethod {
 	private final String owner;
 	private final String name;
 	
-	private final ZenType[] parameterTypes;
+	private final JavaMethodArgument[] arguments;
+	private final Map<String, Integer> argumentByName;
 	private final boolean[] optional;
 	private final ZenType returnType;
 	
@@ -40,7 +37,7 @@ public class JavaMethodGenerated implements IJavaMethod {
 			String owner,
 			String name,
 			ZenType returnType,
-			ZenType[] arguments,
+			JavaMethodArgument[] arguments,
 			boolean[] optional) {
 		this.isStatic = isStatic;
 		this.isInterface = isInterface;
@@ -49,17 +46,24 @@ public class JavaMethodGenerated implements IJavaMethod {
 		this.name = name;
 		
 		this.returnType = returnType;
-		this.parameterTypes = arguments;
+		this.arguments = arguments;
 		this.optional = optional;
 		
 		StringBuilder descriptorString = new StringBuilder();
 		descriptorString.append('(');
-		for (ZenType argument : arguments) {
-			descriptorString.append(argument.getSignature());
+		for (JavaMethodArgument argument : arguments) {
+			descriptorString.append(argument.getType().getSignature());
 		}
 		descriptorString.append(')');
 		descriptorString.append(returnType.getSignature());
 		descriptor = descriptorString.toString();
+		
+		argumentByName = new HashMap<String, Integer>();
+		for (int i = 0; i < arguments.length; i++) {
+			if (arguments[i].getName() != null) {
+				argumentByName.put(arguments[i].getName(), i);
+			}
+		}
 	}
 	
 	@Override
@@ -74,12 +78,12 @@ public class JavaMethodGenerated implements IJavaMethod {
 	
 	@Override
 	public boolean accepts(int numArguments) {
-		if (numArguments > parameterTypes.length) {
+		if (numArguments > arguments.length) {
 			return isVarargs;
-		} if (numArguments == parameterTypes.length) {
+		} if (numArguments == arguments.length) {
 			return true;
 		} else {
-			for (int i = numArguments; i < parameterTypes.length; i++) {
+			for (int i = numArguments; i < arguments.length; i++) {
 				if (!optional[i]) return false;
 			}
 			return true;
@@ -87,86 +91,47 @@ public class JavaMethodGenerated implements IJavaMethod {
 	}
 	
 	@Override
-	public boolean accepts(IEnvironmentGlobal environment, Expression... arguments) {
-		return getPriority(environment, arguments) > 0;
-	}
-
-	@Override
-	public int getPriority(IEnvironmentGlobal environment, Expression... arguments) {
-		int result = PRIORITY_HIGH;
-		if (arguments.length > parameterTypes.length) {
-			if (isVarargs) {
-				ZenType arrayType = parameterTypes[parameterTypes.length - 1];
-				ZenType baseType = ((ZenTypeArray) arrayType).getBaseType();
-				for (int i = parameterTypes.length - 1; i < arguments.length; i++) {
-					ZenType argType = arguments[i].getType();
-					if (argType.equals(baseType)) {
-						// OK
-					} else if (argType.canCastImplicit(baseType, environment)) {
-						result = Math.min(result, PRIORITY_LOW);
-					} else {
-						return PRIORITY_INVALID;
-					}
-				}
-			} else {
-				return PRIORITY_INVALID;
-			}
-		} else if (arguments.length < parameterTypes.length) {
-			result = PRIORITY_MEDIUM;
-			
-			int checkUntil = parameterTypes.length;
-			if (isVarargs) {
-				checkUntil--;
-			}
-			
-			checkOptional: for (int i = arguments.length; i < checkUntil; i++) {
-				if (!optional[i]) {
-					return PRIORITY_INVALID;
-				}
-			}
-		}
-		
-		int checkUntil = arguments.length;
-		if (arguments.length == parameterTypes.length && isVarargs) {
-			ZenType arrayType = parameterTypes[parameterTypes.length - 1];
-			ZenType baseType = ((ZenTypeArray) arrayType).getBaseType();
-			ZenType argType = arguments[arguments.length - 1].getType();
-			
-			if (argType.equals(arrayType)) {
-				// OK
-			} else if (argType.equals(baseType)) {
-				// OK
-			} else if (argType.canCastImplicit(arrayType, environment)) {
-				result = Math.min(result, PRIORITY_LOW);
-			} else if (argType.canCastImplicit(baseType, environment)) {
-				result = Math.min(result, PRIORITY_LOW);
-			} else {
-				return PRIORITY_INVALID;
-			}
-			
-			checkUntil = arguments.length - 1;
-		}
-		
-		for (int i = 0; i < checkUntil; i++) {
-			ZenType argType = arguments[i].getType();
-			ZenType paramType = parameterTypes[i];
-			if (!argType.equals(paramType)) {
-				if (argType.canCastImplicit(paramType, environment)) {
-					result = Math.min(result, PRIORITY_LOW);
-				} else {
-					return PRIORITY_INVALID;
-				}
-			}
-		}
-		
-		return result;
-	}
-
-	@Override
 	public void invokeVirtual(MethodOutput output) {
 		if (isStatic) {
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException("Cannot call static methods as virtual");
 		} else {
+			if (isInterface) {
+				output.invokeInterface(owner, name, descriptor);
+			} else {
+				output.invokeVirtual(owner, name, descriptor);
+			}
+		}
+	}
+	
+	@Override
+	public void invokeStatic(MethodOutput output) {
+		if (!isStatic) {
+			throw new UnsupportedOperationException("Cannot call virtual methods as static");
+		} else {
+			output.invokeStatic(owner, name, descriptor);
+		}
+	}
+	
+	@Override
+	public void invokeSpecial(MethodOutput output) {
+		if (isStatic) {
+			throw new UnsupportedOperationException("Cannot call static methods as special");
+		} else {
+			output.invokeSpecial(owner, name, descriptor);
+		}
+	}
+	
+	@Override
+	public void invokeVirtual(MethodOutput output, Expression receiver, Expression[] arguments) {
+		if (isStatic) {
+			throw new UnsupportedOperationException("Cannot call static methods as virtual");
+		} else {
+			receiver.compile(true, output);
+			
+			for (Expression argument : arguments) {
+				argument.compile(true, output);
+			}
+			
 			if (isInterface) {
 				output.invokeInterface(owner, name, descriptor);
 			} else {
@@ -176,10 +141,14 @@ public class JavaMethodGenerated implements IJavaMethod {
 	}
 
 	@Override
-	public void invokeStatic(MethodOutput output) {
+	public void invokeStatic(MethodOutput output, Expression[] arguments) {
 		if (!isStatic) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			throw new UnsupportedOperationException("Cannot call virtual methods as static");
 		} else {
+			for (Expression argument : arguments) {
+				argument.compile(true, output);
+			}
+			
 			output.invokeStatic(owner, name, descriptor);
 		}
 	}
@@ -188,9 +157,14 @@ public class JavaMethodGenerated implements IJavaMethod {
 	public ZenType getReturnType() {
 		return returnType;
 	}
-	
+
 	@Override
-	public ZenType[] getParameterTypes() {
-		return parameterTypes;
+	public JavaMethodArgument[] getArguments() {
+		return arguments;
+	}
+
+	@Override
+	public int getArgumentIndex(String name) {
+		return argumentByName.containsKey(name) ? argumentByName.get(name) : -1;
 	}
 }

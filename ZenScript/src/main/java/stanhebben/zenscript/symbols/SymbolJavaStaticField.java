@@ -7,10 +7,10 @@
 package stanhebben.zenscript.symbols;
 
 import java.lang.reflect.Field;
-import stanhebben.zenscript.compiler.ITypeRegistry;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.ExpressionJavaStaticField;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -19,16 +19,14 @@ import stanhebben.zenscript.util.ZenPosition;
 public class SymbolJavaStaticField implements IZenSymbol {
 	private final Class cls;
 	private final Field field;
-	private final ITypeRegistry types;
 	
-	public SymbolJavaStaticField(Class cls, Field field, ITypeRegistry types) {
+	public SymbolJavaStaticField(Class cls, Field field) {
 		this.cls = cls;
 		this.field = field;
-		this.types = types;
 	}
 	
 	@Override
-	public IPartialExpression instance(ZenPosition position) {
-		return new ExpressionJavaStaticField(position, cls, field, types);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		return new ExpressionJavaStaticField(position, environment, cls, field);
 	}
 }

@@ -1,7 +1,7 @@
 package minetweaker.api.item;
 
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenMethod;
 
 /**
  * An item transformer modifies an item stack. Used to apply damage, grab multiple

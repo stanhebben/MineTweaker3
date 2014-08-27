@@ -8,16 +8,20 @@ package stanhebben.zenscript.type;
 
 import java.util.List;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.expression.ExpressionListGet;
+import stanhebben.zenscript.expression.ExpressionListLength;
+import stanhebben.zenscript.expression.ExpressionListSet;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.casting.CastingRuleDelegateList;
-import stanhebben.zenscript.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import zenscript.symbolic.type.casting.CastingRuleDelegateList;
+import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -26,33 +30,33 @@ import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 public class ZenTypeArrayList extends ZenTypeArray {
 	private final Type type;
 	
-	public ZenTypeArrayList(ZenType baseType) {
-		super(baseType);
+	public ZenTypeArrayList(IScopeGlobal environment, ZenType baseType) {
+		super(environment, baseType);
 		
 		type = Type.getType(List.class);
 	}
 
 	@Override
-	public IPartialExpression getMemberLength(ZenPosition position, IEnvironmentGlobal environment, IPartialExpression value) {
-		return new ExpressionListLength(position, value.eval(environment));
+	public IPartialExpression getMemberLength(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+		return new ExpressionListLength(position, environment, value.eval());
 	}
 	
 	@Override
-	public void constructCastingRules(IEnvironmentGlobal environment, ICastingRuleDelegate rules, boolean followCasters) {
-		ICastingRuleDelegate arrayRules = new CastingRuleDelegateList(rules, this);
-		getBaseType().constructCastingRules(environment, arrayRules, followCasters);
+	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+		ICastingRuleDelegate arrayRules = new CastingRuleDelegateList(getEnvironment(), rules, this);
+		getBaseType().constructCastingRules(arrayRules, followCasters);
 		
 		if (followCasters) {
-			constructExpansionCastingRules(environment, rules);
+			constructExpansionCastingRules(rules);
 		}
 	}
 	
 	@Override
-	public IZenIterator makeIterator(int numValues, IEnvironmentMethod methodOutput) {
+	public IZenIterator makeIterator(int numValues) {
 		if (numValues == 1) {
-			return new IteratorIterable(methodOutput.getOutput(), getBaseType());
+			return new IteratorIterable(getBaseType());
 		} else if (numValues == 2) {
-			return new IteratorList(methodOutput.getOutput(), getBaseType());
+			return new IteratorList(getEnvironment(), getBaseType());
 		} else {
 			return null;
 		}
@@ -64,7 +68,7 @@ public class ZenTypeArrayList extends ZenTypeArray {
 	}
 	
 	@Override
-	public String getAnyClassName(IEnvironmentGlobal global) {
+	public String getAnyClassName() {
 		return null;
 	}
 
@@ -79,38 +83,12 @@ public class ZenTypeArrayList extends ZenTypeArray {
 	}
 	
 	@Override
-	public Expression indexGet(ZenPosition position, IEnvironmentGlobal environment, Expression array, Expression index) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public Expression indexGet(ZenPosition position, IScopeMethod environment, Expression array, Expression index) {
+		return new ExpressionListGet(position, environment, array, index);
 	}
 
 	@Override
-	public Expression indexSet(ZenPosition position, IEnvironmentGlobal environment, Expression array, Expression index, Expression value) {
-		// TODO: implement
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	
-	private class ExpressionListLength extends Expression {
-		private final Expression value;
-		
-		public ExpressionListLength(ZenPosition position, Expression value) {
-			super(position);
-			
-			this.value = value;
-		}
-
-		@Override
-		public ZenType getType() {
-			return ZenTypeInt.INSTANCE;
-		}
-
-		@Override
-		public void compile(boolean result, IEnvironmentMethod environment) {
-			value.compile(result, environment);
-			
-			if (result) {
-				environment.getOutput().invokeInterface(List.class, "size", int.class);
-			}
-		}
+	public Expression indexSet(ZenPosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
+		return new ExpressionListSet(position, environment, array, index, value);
 	}
 }

@@ -1,7 +1,7 @@
 package minetweaker.api.entity;
 
 import minetweaker.api.item.IItemStack;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenGetter;
 
 /**
  * Represents an item entity. Item entities are entities representing an item

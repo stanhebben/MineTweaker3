@@ -18,17 +18,17 @@ import minetweaker.api.item.IngredientAny;
 import static minetweaker.api.minecraft.MineTweakerMC.getIItemStackWildcardSize;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
-import stanhebben.zenscript.ZenTokener;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import zenscript.lexer.ZenTokener;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.Token;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -67,7 +67,7 @@ public class ItemBracketHandler implements IBracketHandler {
 	}
 
 	@Override
-	public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
+	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens) {
 		// any symbol
 		if (tokens.size() == 1 && tokens.get(0).getValue().equals("*")) {
 			return symbolAny;
@@ -85,7 +85,7 @@ public class ItemBracketHandler implements IBracketHandler {
 			if (tokens.get(0).getValue().equals("item") && tokens.get(1).getValue().equals(":")) {
 				fromIndex = 2;
 			}
-			if (tokens.get(tokens.size() - 1).getType() == ZenTokener.T_INTVALUE
+			if (tokens.get(tokens.size() - 1).getType() == ZenTokener.TOKEN_INTVALUE
 					&& tokens.get(tokens.size() - 2).getValue().equals(":")) {
 				toIndex = tokens.size() - 2;
 				meta = Integer.parseInt(tokens.get(tokens.size() - 1).getValue());
@@ -99,7 +99,7 @@ public class ItemBracketHandler implements IBracketHandler {
 		return find(environment, tokens, fromIndex, toIndex, meta);
 	}
 	
-	private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens, int startIndex, int endIndex, int meta) {
+	private IZenSymbol find(IScopeGlobal environment, List<Token> tokens, int startIndex, int endIndex, int meta) {
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
 			Token token = tokens.get(i);
@@ -115,11 +115,11 @@ public class ItemBracketHandler implements IBracketHandler {
 	}
 	
 	private class ItemReferenceSymbol implements IZenSymbol {
-		private final IEnvironmentGlobal environment;
+		private final IScopeGlobal environment;
 		private final String name;
 		private final int meta;
 		
-		public ItemReferenceSymbol(IEnvironmentGlobal environment, String name, int meta) {
+		public ItemReferenceSymbol(IScopeGlobal environment, String name, int meta) {
 			this.environment = environment;
 			this.name = name;
 			this.meta = meta;

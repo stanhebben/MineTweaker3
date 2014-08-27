@@ -18,40 +18,38 @@ import stanhebben.zenscript.util.MethodOutput;
  * @author Stan
  */
 public class IteratorIterable implements IZenIterator {
-	private final MethodOutput methodOutput;
 	private final ZenType iteratorType;
 	private int iterator;
 
-	public IteratorIterable(MethodOutput methodOutput, ZenType iteratorType) {
-		this.methodOutput = methodOutput;
+	public IteratorIterable(ZenType iteratorType) {
 		this.iteratorType = iteratorType;
 	}
 
 	@Override
-	public void compileStart(int[] locals) {
-		iterator = methodOutput.local(Type.getType(Iterator.class));
-		methodOutput.invokeInterface(Iterable.class, "iterator", Iterator.class);
-		methodOutput.storeObject(iterator);
+	public void compileStart(MethodOutput output, int[] locals) {
+		iterator = output.local(Type.getType(Iterator.class));
+		output.invokeInterface(Iterable.class, "iterator", Iterator.class);
+		output.storeObject(iterator);
 	}
 
 	@Override
-	public void compilePreIterate(int[] locals, Label exit) {
-		methodOutput.loadObject(iterator);
-		methodOutput.invokeInterface(
+	public void compilePreIterate(MethodOutput output, int[] locals, Label exit) {
+		output.loadObject(iterator);
+		output.invokeInterface(
 				Iterator.class,
 				"hasNext",
 				boolean.class);
-		methodOutput.ifEQ(exit);
+		output.ifEQ(exit);
 
-		methodOutput.loadObject(iterator);
-		methodOutput.invokeInterface(Iterator.class, "next", Object.class);
-		methodOutput.checkCast(iteratorType.toASMType().getInternalName());
-		methodOutput.store(iteratorType.toASMType(), locals[0]);
+		output.loadObject(iterator);
+		output.invokeInterface(Iterator.class, "next", Object.class);
+		output.checkCast(iteratorType.toASMType().getInternalName());
+		output.store(iteratorType.toASMType(), locals[0]);
 	}
 
 	@Override
-	public void compilePostIterate(int[] locals, Label exit, Label repeat) {
-		methodOutput.goTo(repeat);
+	public void compilePostIterate(MethodOutput output, int[] locals, Label exit, Label repeat) {
+		output.goTo(repeat);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class IteratorIterable implements IZenIterator {
 	}
 
 	@Override
-	public void compileEnd() {
-		methodOutput.pop();
+	public void compileEnd(MethodOutput output) {
+		output.pop();
 	}
 }

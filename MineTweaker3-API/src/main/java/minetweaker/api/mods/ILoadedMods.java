@@ -6,10 +6,10 @@
 
 package minetweaker.api.mods;
 
-import stanhebben.zenscript.annotations.IterableSimple;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenOperator;
+import zenscript.annotations.IterableSimple;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenOperator;
 
 /**
  *

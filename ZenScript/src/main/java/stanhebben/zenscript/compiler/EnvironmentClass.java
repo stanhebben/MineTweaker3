@@ -6,7 +6,6 @@
 
 package stanhebben.zenscript.compiler;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,32 +14,25 @@ import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.symbolic.TypeRegistry;
+import zenscript.util.ZenPosition;
 
 /**
  *
  * @author Stan
  */
-public class EnvironmentClass implements IEnvironmentClass {
-	private final ClassVisitor output;
-	private final IEnvironmentGlobal global;
+public class EnvironmentClass implements IScopeClass {
+	private final IScopeGlobal global;
 	private final Map<String, IZenSymbol> local;
 	
-	public EnvironmentClass(ClassVisitor output, IEnvironmentGlobal global) {
-		this.output = output;
+	public EnvironmentClass(IScopeGlobal global) {
 		this.global = global;
 		this.local = new HashMap<String, IZenSymbol>();
 	}
-
+	
 	@Override
-	public ClassVisitor getClassOutput() {
-		return output;
-	}
-
-	@Override
-	public ZenType getType(Type type) {
-		return global.getType(type);
+	public TypeRegistry getTypes() {
+		return global.getTypes();
 	}
 
 	@Override
@@ -69,11 +61,11 @@ public class EnvironmentClass implements IEnvironmentClass {
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, ZenPosition position) {
+	public IPartialExpression getValue(String name, ZenPosition position, IScopeMethod environment) {
 		if (local.containsKey(name)) {
-			return local.get(name).instance(position);
+			return local.get(name).instance(position, environment);
 		} else {
-			return global.getValue(name, position);
+			return global.getValue(name, position, environment);
 		}
 	}
 

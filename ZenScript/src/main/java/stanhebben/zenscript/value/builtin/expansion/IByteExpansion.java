@@ -6,7 +6,7 @@
 
 package stanhebben.zenscript.value.builtin.expansion;
 
-import stanhebben.zenscript.value.IAny;
+import zenscript.runtime.IAny;
 
 /**
  *

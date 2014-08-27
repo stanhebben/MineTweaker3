@@ -9,8 +9,8 @@ package minetweaker.expand;
 import java.util.Map;
 import minetweaker.api.data.DataMap;
 import minetweaker.api.data.IData;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenExpansion;
 
 /**
  *

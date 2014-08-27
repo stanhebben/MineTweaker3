@@ -21,51 +21,49 @@ import stanhebben.zenscript.util.MethodOutput;
  * @author Stan
  */
 public class IteratorMap implements IZenIterator {
-	private final MethodOutput methodOutput;
 	private final ZenTypeAssociative type;
 	private int iterator;
 	
-	public IteratorMap(MethodOutput methodOutput, ZenTypeAssociative type) {
-		this.methodOutput = methodOutput;
+	public IteratorMap(ZenTypeAssociative type) {
 		this.type = type;
 	}
 
 	@Override
-	public void compileStart(int[] locals) {
-		methodOutput.invokeInterface(Map.class, "entrySet", Set.class);
+	public void compileStart(MethodOutput output, int[] locals) {
+		output.invokeInterface(Map.class, "entrySet", Set.class);
 
-		iterator = methodOutput.local(Type.getType(Iterator.class));
-		methodOutput.invokeInterface(Set.class, "iterator", Iterator.class);
-		methodOutput.storeObject(iterator);
+		iterator = output.local(Type.getType(Iterator.class));
+		output.invokeInterface(Set.class, "iterator", Iterator.class);
+		output.storeObject(iterator);
 	}
 
 	@Override
-	public void compilePreIterate(int[] locals, Label exit) {
-		methodOutput.loadObject(iterator);
-		methodOutput.invokeInterface(
+	public void compilePreIterate(MethodOutput output, int[] locals, Label exit) {
+		output.loadObject(iterator);
+		output.invokeInterface(
 				Iterator.class,
 				"hasNext",
 				boolean.class);
-		methodOutput.ifEQ(exit);
+		output.ifEQ(exit);
 
-		methodOutput.loadObject(iterator);
-		methodOutput.invokeInterface(Iterator.class, "next", Object.class);
-		methodOutput.dup();
+		output.loadObject(iterator);
+		output.invokeInterface(Iterator.class, "next", Object.class);
+		output.dup();
 
-		methodOutput.invokeInterface(Map.Entry.class, "getKey", Object.class);
-		methodOutput.store(type.getKeyType().toASMType(), locals[0]);
+		output.invokeInterface(Map.Entry.class, "getKey", Object.class);
+		output.store(type.getKeyType().toASMType(), locals[0]);
 
-		methodOutput.invokeInterface(Map.Entry.class, "getValue", Object.class);
-		methodOutput.store(type.getValueType().toASMType(), locals[1]);
+		output.invokeInterface(Map.Entry.class, "getValue", Object.class);
+		output.store(type.getValueType().toASMType(), locals[1]);
 	}
 
 	@Override
-	public void compilePostIterate(int[] locals, Label exit, Label repeat) {
-		methodOutput.goTo(repeat);
+	public void compilePostIterate(MethodOutput output, int[] locals, Label exit, Label repeat) {
+		output.goTo(repeat);
 	}
 
 	@Override
-	public void compileEnd() {
+	public void compileEnd(MethodOutput output) {
 		
 	}
 

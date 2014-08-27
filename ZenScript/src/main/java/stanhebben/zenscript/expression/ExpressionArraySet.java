@@ -6,9 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -19,8 +20,8 @@ public class ExpressionArraySet extends Expression {
 	private final Expression index;
 	private final Expression value;
 	
-	public ExpressionArraySet(ZenPosition position, Expression array, Expression index, Expression value) {
-		super(position);
+	public ExpressionArraySet(ZenPosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
+		super(position, environment);
 		
 		this.array = array;
 		this.index = index;
@@ -29,17 +30,27 @@ public class ExpressionArraySet extends Expression {
 	
 	@Override
 	public ZenType getType() {
-		return ZenType.VOID;
+		return value.getType();
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
-		array.compile(result, environment);
-		index.compile(result, environment);
-		value.compile(result, environment);
-		
+	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			environment.getOutput().arrayStore(value.getType().toASMType());
+			value.compile(result, output);
+			array.compile(result, output);
+			index.compile(result, output);
+			
+			if (value.getType().isLarge()) {
+				output.dup2X2();
+			} else {
+				output.dupX2();
+			}
+		} else {
+			array.compile(result, output);
+			index.compile(result, output);
+			value.compile(result, output);
 		}
+		
+		output.arrayStore(value.getType().toASMType());
 	}
 }

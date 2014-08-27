@@ -1,17 +1,18 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 public class ExpressionConditional extends Expression {
 	private final Expression condition;
 	private final Expression onIf;
 	private final Expression onElse;
 	
-	public ExpressionConditional(ZenPosition position, Expression condition, Expression onIf, Expression onElse) {
-		super(position);
+	public ExpressionConditional(ZenPosition position, IScopeMethod environment, Expression condition, Expression onIf, Expression onElse) {
+		super(position, environment);
 		
 		this.condition = condition;
 		this.onIf = onIf;
@@ -20,19 +21,19 @@ public class ExpressionConditional extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return onIf.getType(); // TODO: improve
+		return onIf.getType(); // TODO: improve this - merge types
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		Label lblElse = new Label();
 		Label lblExit = new Label();
 		
-		condition.compileIf(lblElse, environment);
-		onIf.compile(result, environment);
-		environment.getOutput().goTo(lblExit);
-		environment.getOutput().label(lblElse);
-		onElse.compile(result, environment);
-		environment.getOutput().label(lblExit);
+		condition.compileElse(lblElse, output);
+		onIf.compile(result, output);
+		output.goTo(lblExit);
+		output.label(lblElse);
+		onElse.compile(result, output);
+		output.label(lblExit);
 	}
 }

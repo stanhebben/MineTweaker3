@@ -6,8 +6,8 @@ import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.item.IItemDefinition;
 import minetweaker.api.liquid.ILiquidDefinition;
 import minetweaker.api.world.IBiome;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  * Game interface. Used to obtain general game information.

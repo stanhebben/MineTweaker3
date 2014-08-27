@@ -6,8 +6,8 @@
 
 package stanhebben.zenscript.expression.partial;
 
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import java.util.List;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionInvalid;
@@ -15,7 +15,7 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticGetter;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -23,30 +23,32 @@ import stanhebben.zenscript.util.ZenPosition;
  */
 public class PartialStaticGetter implements IPartialExpression {
 	private final ZenPosition position;
+	private final IScopeMethod environment;
 	private final IJavaMethod method;
 	
-	public PartialStaticGetter(ZenPosition position, IJavaMethod method) {
+	public PartialStaticGetter(ZenPosition position, IScopeMethod environment, IJavaMethod method) {
 		this.position = position;
+		this.environment = environment;
 		this.method = method;
 	}
 
 	@Override
-	public Expression eval(IEnvironmentGlobal environment) {
+	public Expression eval() {
 		return new ExpressionCallStatic(position, environment, method);
 	}
 
 	@Override
-	public Expression assign(ZenPosition position, IEnvironmentGlobal environment, Expression other) {
+	public Expression assign(ZenPosition position, Expression other) {
 		environment.error(position, "cannot alter this final");
-		return new ExpressionInvalid(position);
+		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IEnvironmentGlobal environment, String name) {
+	public IPartialExpression getMember(ZenPosition position, String name) {
 		return method.getReturnType().getMember(position, environment, this, name);
 	}
 
-	@Override
+	/*@Override
 	public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
 		environment.error(position, "value cannot be called");
 		return new ExpressionInvalid(position);
@@ -55,7 +57,7 @@ public class PartialStaticGetter implements IPartialExpression {
 	@Override
 	public ZenType[] predictCallTypes(int numArguments) {
 		return new ZenType[numArguments];
-	}
+	}*/
 
 	@Override
 	public IZenSymbol toSymbol() {
@@ -68,8 +70,13 @@ public class PartialStaticGetter implements IPartialExpression {
 	}
 
 	@Override
-	public ZenType toType(IEnvironmentGlobal environment) {
+	public ZenType toType(List<ZenType> genericTypes) {
 		environment.error(position, "not a valid type");
-		return ZenType.ANY;
+		return environment.getTypes().ANY;
+	}
+
+	@Override
+	public List<IJavaMethod> getMethods() {
+		return method.getReturnType().getMethods();
 	}
 }

@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.Map;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeBool;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 /**
@@ -21,8 +21,8 @@ public class ExpressionMapContains extends Expression {
 	private final Expression map;
 	private final Expression key;
 	
-	public ExpressionMapContains(ZenPosition position, Expression map, Expression key) {
-		super(position);
+	public ExpressionMapContains(ZenPosition position, IScopeMethod environment, Expression map, Expression key) {
+		super(position, environment);
 		
 		this.map = map;
 		this.key = key;
@@ -30,16 +30,16 @@ public class ExpressionMapContains extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return ZenType.BOOL;
+		return getEnvironment().getTypes().ANY;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
+		map.compile(result, output);
+		key.compile(result, output);
+
 		if (result) {
-			map.compile(result, environment);
-			key.compile(result, environment);
-			
-			environment.getOutput().invokeInterface(internal(Map.class), "containsKey", "()Ljava/lang/Object;");
+			output.invokeInterface(internal(Map.class), "containsKey", "()Ljava/lang/Object;");
 		}
 	}
 }

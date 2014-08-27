@@ -7,12 +7,11 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.annotations.CompareType;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import zenscript.annotations.CompareType;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeBool;
 import stanhebben.zenscript.util.MethodOutput;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -22,8 +21,8 @@ public class ExpressionCompareGeneric extends Expression {
 	private final Expression value; // should return a compareTo value (<=>0)
 	private final CompareType type;
 	
-	public ExpressionCompareGeneric(ZenPosition position, Expression value, CompareType type) {
-		super(position);
+	public ExpressionCompareGeneric(ZenPosition position, IScopeMethod environment, Expression value, CompareType type) {
+		super(position, environment);
 		
 		this.value = value;
 		this.type = type;
@@ -31,14 +30,14 @@ public class ExpressionCompareGeneric extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return ZenType.BOOL;
+		return getEnvironment().getTypes().BOOL;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {;
-		value.compile(result, environment);
+	public void compile(boolean result, MethodOutput output) {
+		value.compile(result, output);
+		
 		if (result) {
-			MethodOutput output = environment.getOutput();
 			Label lblThen = new Label();
 			Label lblEnd = new Label();
 			

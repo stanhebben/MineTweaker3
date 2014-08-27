@@ -7,7 +7,7 @@
 package minetweaker.api.server;
 
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenClass;
 
 /**
  *

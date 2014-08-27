@@ -12,10 +12,10 @@ import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.data.DataString;
 import minetweaker.api.data.IData;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.Optional;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

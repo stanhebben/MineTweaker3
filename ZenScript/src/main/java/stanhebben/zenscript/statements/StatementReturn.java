@@ -1,24 +1,21 @@
 package stanhebben.zenscript.statements;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.parser.expression.ParsedExpression;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 public class StatementReturn extends Statement {
-	private final ZenType returnType;
-	private final ParsedExpression expression;
+	private final Expression expression;
 	
-	public StatementReturn(ZenPosition position, ZenType returnType, ParsedExpression expression) {
-		super(position);
+	public StatementReturn(ZenPosition position, IScopeMethod environment, Expression expression) {
+		super(position, environment);
 		
-		this.returnType = returnType;
 		this.expression = expression;
 	}
 	
-	public ParsedExpression getExpression() {
+	public Expression getExpression() {
 		return expression;
 	}
 	
@@ -28,17 +25,16 @@ public class StatementReturn extends Statement {
 	}
 
 	@Override
-	public void compile(IEnvironmentMethod environment) {
-		environment.getOutput().position(getPosition());
+	public void compile(MethodOutput output) {
+		output.position(getPosition());
 		
 		if (expression == null) {
-			environment.getOutput().ret();
+			output.ret();
 		} else {
-			Expression cExpression = expression.compile(environment, returnType).eval(environment);
-			cExpression.compile(true, environment);
+			expression.compile(true, output);
 			
-			Type returnType = cExpression.getType().toASMType();
-			environment.getOutput().returnType(returnType);
+			Type asmReturnType = expression.getType().toASMType();
+			output.returnType(asmReturnType);
 		}
 	}
 }

@@ -7,7 +7,7 @@
 package stanhebben.zenscript.type.natives;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 
@@ -34,8 +34,8 @@ public class ZenNativeCaster {
 		}
 	}
 	
-	public void compileAnyCanCastImplicit(ZenType type, MethodOutput output, IEnvironmentGlobal environment, int localClass) {
-		String casterAny = method.getReturnType().getAnyClassName(environment);
+	public void compileAnyCanCastImplicit(ZenType type, MethodOutput output, IScopeGlobal environment, int localClass) {
+		String casterAny = method.getReturnType().getAnyClassName();
 		if (casterAny == null) {
 			// TODO: make sure no type ever does this
 			return;
@@ -50,7 +50,7 @@ public class ZenNativeCaster {
 		output.label(skip);
 	}
 	
-	public void compileAnyCast(ZenType type, MethodOutput output, IEnvironmentGlobal environment, int localValue, int localClass) {
+	public void compileAnyCast(ZenType type, MethodOutput output, IScopeGlobal environment, int localValue, int localClass) {
 		Label skip = new Label();
 		output.loadObject(localClass);
 		output.constant(method.getReturnType().toASMType());
@@ -62,7 +62,7 @@ public class ZenNativeCaster {
 		output.returnType(method.getReturnType().toASMType());
 		output.label(skip);
 		
-		String casterAny = method.getReturnType().getAnyClassName(environment);
+		String casterAny = method.getReturnType().getAnyClassName();
 		if (casterAny == null)
 			// TODO: make sure this isn't necessary
 			return;

@@ -12,15 +12,15 @@ import minetweaker.annotations.BracketHandler;
 import static minetweaker.api.minecraft.MineTweakerMC.getOreDict;
 import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.runtime.GlobalRegistry;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.Token;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.natives.IJavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -33,7 +33,7 @@ public class OreBracketHandler implements IBracketHandler {
 	}
 	
 	@Override
-	public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
+	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens) {
 		if (tokens.size() > 2) {
 			if (tokens.get(0).getValue().equals("ore") && tokens.get(1).getValue().equals(":")) {
 				return find(environment, tokens, 2, tokens.size());
@@ -43,7 +43,7 @@ public class OreBracketHandler implements IBracketHandler {
 		return null;
 	}
 	
-	private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens, int startIndex, int endIndex) {
+	private IZenSymbol find(IScopeGlobal environment, List<Token> tokens, int startIndex, int endIndex) {
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
 			Token token = tokens.get(i);
@@ -54,10 +54,10 @@ public class OreBracketHandler implements IBracketHandler {
 	}
 	
 	private class OreReferenceSymbol implements IZenSymbol {
-		private final IEnvironmentGlobal environment;
+		private final IScopeGlobal environment;
 		private final String name;
 		
-		public OreReferenceSymbol(IEnvironmentGlobal environment, String name) {
+		public OreReferenceSymbol(IScopeGlobal environment, String name) {
 			this.environment = environment;
 			this.name = name;
 		}

@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.Map;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeInt;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 /**
@@ -20,22 +20,23 @@ import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 public class ExpressionMapSize extends Expression {
 	private final Expression map;
 	
-	public ExpressionMapSize(ZenPosition position, Expression map) {
-		super(position);
+	public ExpressionMapSize(ZenPosition position, IScopeMethod environment, Expression map) {
+		super(position, environment);
 		
 		this.map = map;
 	}
 
 	@Override
 	public ZenType getType() {
-		return ZenTypeInt.INSTANCE;
+		return getEnvironment().getTypes().INT;
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
+		map.compile(result, output);
+		
 		if (result) {
-			map.compile(true, environment);
-			environment.getOutput().invokeInterface(internal(Map.class), "size", "()I");
+			output.invokeInterface(internal(Map.class), "size", "()I");
 		}
 	}
 }

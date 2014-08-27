@@ -3,13 +3,13 @@ package minetweaker.api.item;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.data.IData;
 import minetweaker.api.liquid.ILiquidStack;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenOperator;
-import stanhebben.zenscript.annotations.ZenSetter;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenCaster;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenOperator;
+import zenscript.annotations.ZenSetter;
 
 /**
  * Contains an item stack. An item stack consists of an item definition, 

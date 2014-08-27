@@ -17,17 +17,18 @@ import minetweaker.api.item.IngredientAny;
 import static minetweaker.api.minecraft.MineTweakerMC.getIItemStackWildcardSize;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
-import stanhebben.zenscript.ZenTokener;
-import stanhebben.zenscript.compiler.IEnvironmentGlobal;
+import zenscript.lexer.ZenTokener;
+import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.parser.Token;
+import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -83,7 +84,7 @@ public class ItemBracketHandler implements IBracketHandler {
 	}
 
 	@Override
-	public IZenSymbol resolve(IEnvironmentGlobal environment, List<Token> tokens) {
+	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens) {
 		// any symbol
 		if (tokens.size() == 1 && tokens.get(0).getValue().equals("*")) {
 			return symbolAny;
@@ -101,7 +102,7 @@ public class ItemBracketHandler implements IBracketHandler {
 			if (tokens.get(0).getValue().equals("item") && tokens.get(1).getValue().equals(":")) {
 				fromIndex = 2;
 			}
-			if (tokens.get(tokens.size() - 1).getType() == ZenTokener.T_INTVALUE
+			if (tokens.get(tokens.size() - 1).getType() == ZenTokener.TOKEN_INTVALUE
 					&& tokens.get(tokens.size() - 2).getValue().equals(":")) {
 				toIndex = tokens.size() - 2;
 				meta = Integer.parseInt(tokens.get(tokens.size() - 1).getValue());
@@ -112,17 +113,17 @@ public class ItemBracketHandler implements IBracketHandler {
 			}
 		}
 		
-		return find(environment, tokens, fromIndex, toIndex, meta);
+		return find(tokens, fromIndex, toIndex, meta);
 	}
 	
-	private IZenSymbol find(IEnvironmentGlobal environment, List<Token> tokens, int startIndex, int endIndex, int meta) {
-		if (endIndex == startIndex + 1 && tokens.get(startIndex).getType() == ZenTokener.T_INTVALUE) {
+	private IZenSymbol find(List<Token> tokens, int startIndex, int endIndex, int meta) {
+		if (endIndex == startIndex + 1 && tokens.get(startIndex).getType() == ZenTokener.TOKEN_INTVALUE) {
 			int id = Integer.parseInt(tokens.get(startIndex).getValue());
 			if (id < 0 || id > Item.itemsList.length || Item.itemsList[id] == null) {
 				return null;
 			}
 			
-			return new ItemReferenceSymbolId(environment, id, meta);
+			return new ItemReferenceSymbolId(id, meta);
 		}
 		
 		StringBuilder valueBuilder = new StringBuilder();
@@ -132,53 +133,49 @@ public class ItemBracketHandler implements IBracketHandler {
 		}
 		
 		if (itemNames.containsKey(valueBuilder.toString())) {
-			return new ItemReferenceSymbol(environment, valueBuilder.toString(), meta);
+			return new ItemReferenceSymbol(valueBuilder.toString(), meta);
 		}
 		
 		return null;
 	}
 	
 	private class ItemReferenceSymbol implements IZenSymbol {
-		private final IEnvironmentGlobal environment;
 		private final String name;
 		private final int meta;
 		
-		public ItemReferenceSymbol(IEnvironmentGlobal environment, String name, int meta) {
-			this.environment = environment;
+		public ItemReferenceSymbol(String name, int meta) {
 			this.name = name;
 			this.meta = meta;
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position) {
+		public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
 			return new ExpressionCallStatic(
 					position,
 					environment,
 					method,
-					new ExpressionString(position, name),
-					new ExpressionInt(position, meta, ZenType.INT));
+					new ExpressionString(position, environment, name),
+					new ExpressionInt(position, environment, meta, environment.getTypes().INT));
 		}
 	}
 	
 	private class ItemReferenceSymbolId implements IZenSymbol {
-		private final IEnvironmentGlobal environment;
 		private final int id;
 		private final int meta;
 		
-		public ItemReferenceSymbolId(IEnvironmentGlobal environment, int id, int meta) {
-			this.environment = environment;
+		public ItemReferenceSymbolId(int id, int meta) {
 			this.id = id;
 			this.meta = meta;
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position) {
+		public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
 			return new ExpressionCallStatic(
 					position,
 					environment,
 					method2,
-					new ExpressionInt(position, id, ZenType.INT),
-					new ExpressionInt(position, meta, ZenType.INT));
+					new ExpressionInt(position, environment, id, environment.getTypes().INT),
+					new ExpressionInt(position, environment, meta, environment.getTypes().INT));
 		}
 	}
 }

@@ -6,10 +6,11 @@
 
 package stanhebben.zenscript.symbols;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialStaticMethod;
 import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.util.ZenPosition;
+import zenscript.util.ZenPosition;
 
 /**
  *
@@ -23,7 +24,7 @@ public class SymbolJavaStaticMethod implements IZenSymbol {
 	}
 
 	@Override
-	public IPartialExpression instance(ZenPosition position) {
-		return new PartialStaticMethod(position, method);
+	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		return new PartialStaticMethod(position, environment, method);
 	}
 }

@@ -1,23 +1,22 @@
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
-import stanhebben.zenscript.parser.expression.ParsedExpression;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 
 public class StatementExpression extends Statement {
-	private final ParsedExpression expression;
+	private final Expression expression;
 	
-	public StatementExpression(ZenPosition position, ParsedExpression expression) {
-		super(position);
+	public StatementExpression(ZenPosition position, IScopeMethod environment, Expression expression) {
+		super(position, environment);
 		
 		this.expression = expression;
 	}
 
 	@Override
-	public void compile(IEnvironmentMethod environment) {
-		environment.getOutput().position(getPosition());
-		expression.compile(environment, null)
-				.eval(environment)
-				.compile(false, environment);
+	public void compile(MethodOutput output) {
+		output.position(getPosition());
+		expression.compile(false, output);
 	}
 }

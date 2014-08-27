@@ -7,10 +7,11 @@
 package stanhebben.zenscript.expression;
 
 import java.util.Map;
-import stanhebben.zenscript.compiler.IEnvironmentMethod;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeVoid;
-import stanhebben.zenscript.util.ZenPosition;
+import stanhebben.zenscript.util.MethodOutput;
+import zenscript.util.ZenPosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 /**
@@ -22,29 +23,42 @@ public class ExpressionMapIndexSet extends Expression {
 	private final Expression index;
 	private final Expression value;
 	
-	private final ZenType type;
-	
-	public ExpressionMapIndexSet(ZenPosition position, Expression map, Expression index, Expression value) {
-		super(position);
+	public ExpressionMapIndexSet(ZenPosition position, IScopeMethod environment, Expression map, Expression index, Expression value) {
+		super(position, environment);
 		
 		this.map = map;
 		this.index = index;
 		this.value = value;
-		
-		type = ZenTypeVoid.INSTANCE;
 	}
 
 	@Override
 	public ZenType getType() {
-		return type;
+		return value.getType();
 	}
 
 	@Override
-	public void compile(boolean result, IEnvironmentMethod environment) {
+	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			map.compile(result, environment);
-			index.compile(result, environment);
-			environment.getOutput().invokeInterface(
+			value.compile(result, output);
+			map.compile(result, output);
+			index.compile(result, output);
+			
+			if (value.getType().isLarge()) {
+				output.dup2X2();
+			} else {
+				output.dupX2();
+			}
+			
+			output.invokeInterface(
+					internal(Map.class),
+					"put",
+					"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+		} else {
+			map.compile(result, output);
+			index.compile(result, output);
+			value.compile(result, output);
+			
+			output.invokeInterface(
 					internal(Map.class),
 					"put",
 					"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
