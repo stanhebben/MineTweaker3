@@ -13,6 +13,7 @@ import minetweaker.annotations.BracketHandler;
 import minetweaker.annotations.ModOnly;
 import minetweaker.api.client.IClient;
 import minetweaker.api.event.IEventManager;
+import minetweaker.api.formatting.IFormatter;
 import minetweaker.api.game.IGame;
 import minetweaker.api.mods.ILoadedMods;
 import minetweaker.runtime.ILogger;
@@ -21,6 +22,7 @@ import minetweaker.api.recipes.IRecipeManager;
 import minetweaker.api.oredict.IOreDict;
 import minetweaker.api.recipes.IFurnaceManager;
 import minetweaker.api.server.IServer;
+import minetweaker.api.vanilla.IVanilla;
 import minetweaker.runtime.GlobalRegistry;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticField;
@@ -87,6 +89,8 @@ public class MineTweakerAPI {
 		registerGlobalSymbol("client", getJavaStaticFieldSymbol(MineTweakerAPI.class, "client"));
 		registerGlobalSymbol("game", getJavaStaticFieldSymbol(MineTweakerAPI.class, "game"));
 		registerGlobalSymbol("loadedMods", getJavaStaticFieldSymbol(MineTweakerAPI.class, "loadedMods"));
+		registerGlobalSymbol("format", getJavaStaticFieldSymbol(MineTweakerAPI.class, "format"));
+		registerGlobalSymbol("vanilla", getJavaStaticFieldSymbol(MineTweakerAPI.class, "vanilla"));
 	}
 	
 	private MineTweakerAPI() {}
@@ -95,7 +99,8 @@ public class MineTweakerAPI {
 	 * The Tweaker is where you apply undoable actions. Any kind of action that
 	 * reloads with the scripts should always be submitted to the tweaker.
 	 */
-	private static final MTTweaker TWEAKER = new MTTweaker();
+	@Deprecated
+	public static final ITweaker tweaker = new MTTweaker();
 	
 	/**
 	 * The logger can be used to write logging messages to the client. Error and
@@ -146,6 +151,16 @@ public class MineTweakerAPI {
 	 * Access point to mods list.
 	 */
 	public static ILoadedMods loadedMods = null;
+	
+	/**
+	 * Access point to the text formatter.
+	 */
+	public static IFormatter format = null;
+	
+	/**
+	 * Access point to the vanilla functions and data.
+	 */
+	public static IVanilla vanilla = null;
 	
 	/**
 	 * Applies this given action.

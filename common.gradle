@@ -2,8 +2,7 @@
 // configurable properties
 // -----------------------
 
-ext.mineTweakerVersion="3.0.7"
-ext.mineTweakerDebug="true"
+apply from: rootProject.file('configuration.gradle')
 
 // -- end of configurable properties
 
@@ -17,21 +16,4 @@ repositories {
 		name = "sonatype"
 		url = "https://oss.sonatype.org/content/repositories/snapshots/"
 	}
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
 }

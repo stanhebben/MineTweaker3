@@ -6,6 +6,7 @@
 
 package minetweaker.mc172.client;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import minetweaker.api.client.IClient;
 import minetweaker.api.minecraft.MineTweakerMC;
 import minetweaker.api.player.IPlayer;
@@ -25,5 +26,10 @@ public class MCClient implements IClient {
 	@Override
 	public IPlayer getPlayer() {
 		return player;
+	}
+
+	@Override
+	public String getLanguage() {
+		return FMLClientHandler.instance().getCurrentLanguage();
 	}
 }

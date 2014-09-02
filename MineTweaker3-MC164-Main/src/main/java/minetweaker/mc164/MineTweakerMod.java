@@ -8,6 +8,7 @@ package minetweaker.mc164;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
@@ -26,6 +27,8 @@ import minetweaker.api.event.PlayerLoggedInEvent;
 import minetweaker.api.event.PlayerLoggedOutEvent;
 import minetweaker.api.logger.FileLogger;
 import minetweaker.api.minecraft.MineTweakerMC;
+import minetweaker.mc164.client.MCClient;
+import minetweaker.mc164.formatting.MCFormatter;
 import minetweaker.mc164.furnace.FuelTweaker;
 import minetweaker.mc164.furnace.MCFurnaceManager;
 import minetweaker.mc164.game.MCGame;
@@ -36,9 +39,13 @@ import minetweaker.mc164.oredict.MCOreDict;
 import minetweaker.mc164.recipes.MCRecipeManager;
 import minetweaker.mc164.server.MCServer;
 import minetweaker.mc164.util.MineTweakerHacks;
+import minetweaker.mc164.util.MineTweakerPlatformUtils;
+import minetweaker.mc164.vanilla.MCVanilla;
 import minetweaker.runtime.IScriptProvider;
 import minetweaker.runtime.providers.ScriptProviderCascade;
+import minetweaker.runtime.providers.ScriptProviderCustom;
 import minetweaker.runtime.providers.ScriptProviderDirectory;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.NetHandler;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -74,6 +81,8 @@ public class MineTweakerMod {
 	
 	public final MCRecipeManager recipes;
 	private final IScriptProvider scriptsGlobal;
+	private final ScriptProviderCustom scriptsIMC;
+	
 	private final Map<String, INetworkManager> networkByUser = new HashMap<String, INetworkManager>();
 	private final Map<INetworkManager, NetHandler> userByNetwork = new HashMap<INetworkManager, NetHandler>();
 	
@@ -83,7 +92,9 @@ public class MineTweakerMod {
 				recipes = new MCRecipeManager(),
 				new MCFurnaceManager(),
 				MCGame.INSTANCE,
-				new MCLoadedMods());
+				new MCLoadedMods(),
+				new MCFormatter(),
+				new MCVanilla());
 		
 		MineTweakerImplementationAPI.logger.addLogger(new FileLogger(new File("minetweaker.log")));
 		MineTweakerImplementationAPI.platform = MCPlatformFunctions.INSTANCE;
@@ -94,6 +105,7 @@ public class MineTweakerMod {
 		}
 		
 		scriptsGlobal = new ScriptProviderDirectory(globalDir);
+		scriptsIMC = new ScriptProviderCustom("intermod");
 		MineTweakerImplementationAPI.setScriptProvider(scriptsGlobal);
 	}
 	
@@ -131,6 +143,20 @@ public class MineTweakerMod {
 	// ##########################
 	
 	@EventHandler
+    public void onIMCEvent(FMLInterModComms.IMCEvent event) {
+        for (final FMLInterModComms.IMCMessage imcMessage : event.getMessages()) {
+            if (imcMessage.key.equalsIgnoreCase("addMineTweakerScript")) {
+				if (imcMessage.isStringMessage()) {
+					scriptsIMC.add("imc", imcMessage.getStringValue());
+				} else if (imcMessage.isNBTMessage()) {
+					NBTTagCompound message = imcMessage.getNBTValue();
+					scriptsIMC.add(message.getString("name"), message.getString("content"));
+				}
+            }
+        }
+    }
+	
+	@EventHandler
 	public void onLoad(FMLPreInitializationEvent ev) {
 		
 	}
@@ -155,13 +181,17 @@ public class MineTweakerMod {
 		// starts before loading worlds
 		// perfect place to start MineTweaker!
 		
+		if (MineTweakerPlatformUtils.isClient()) {
+			MineTweakerAPI.client = new MCClient();
+		}
+		
 		File scriptsDir = new File(MineTweakerHacks.getWorldDirectory(ev.getServer()), "scripts");
 		if (!scriptsDir.exists()) {
 			scriptsDir.mkdir();
 		}
 		
 		IScriptProvider scriptsLocal = new ScriptProviderDirectory(scriptsDir);
-		IScriptProvider cascaded = new ScriptProviderCascade(scriptsGlobal, scriptsLocal);
+		IScriptProvider cascaded = new ScriptProviderCascade(scriptsIMC, scriptsGlobal, scriptsLocal);
 		
 		MineTweakerImplementationAPI.setScriptProvider(cascaded);
 		MineTweakerImplementationAPI.onServerStart(new MCServer(ev.getServer()));

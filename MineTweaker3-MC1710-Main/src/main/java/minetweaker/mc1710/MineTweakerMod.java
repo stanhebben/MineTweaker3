@@ -9,6 +9,7 @@ package minetweaker.mc1710;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
@@ -21,6 +22,8 @@ import java.io.File;
 import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.logger.FileLogger;
+import minetweaker.mc1710.client.MCClient;
+import minetweaker.mc1710.formatting.MCFormatter;
 import minetweaker.mc1710.furnace.FuelTweaker;
 import minetweaker.mc1710.furnace.MCFurnaceManager;
 import minetweaker.mc1710.game.MCGame;
@@ -33,9 +36,13 @@ import minetweaker.mc1710.oredict.MCOreDict;
 import minetweaker.mc1710.recipes.MCRecipeManager;
 import minetweaker.mc1710.server.MCServer;
 import minetweaker.mc1710.util.MineTweakerHacks;
+import minetweaker.mc1710.util.MineTweakerPlatformUtils;
+import minetweaker.mc1710.vanilla.MCVanilla;
 import minetweaker.runtime.IScriptProvider;
 import minetweaker.runtime.providers.ScriptProviderCascade;
+import minetweaker.runtime.providers.ScriptProviderCustom;
 import minetweaker.runtime.providers.ScriptProviderDirectory;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -74,15 +81,19 @@ public class MineTweakerMod {
 	
 	public final MCRecipeManager recipes;
 	private final IScriptProvider scriptsGlobal;
+	private final ScriptProviderCustom scriptsIMC;
 	
 	public MineTweakerMod() {
-		MineTweakerAPI.oreDict = new MCOreDict();
-		MineTweakerAPI.recipes = recipes = new MCRecipeManager();
-		MineTweakerImplementationAPI.logger.addLogger(new FileLogger(new File("minetweaker.log")));
-		MineTweakerAPI.game = MCGame.INSTANCE;
-		MineTweakerAPI.furnace = new MCFurnaceManager();
-		MineTweakerAPI.loadedMods = new MCLoadedMods();
+		MineTweakerImplementationAPI.init(
+				new MCOreDict(),
+				recipes = new MCRecipeManager(),
+				new MCFurnaceManager(),
+				MCGame.INSTANCE,
+				new MCLoadedMods(),
+				new MCFormatter(),
+				new MCVanilla());
 		
+		MineTweakerImplementationAPI.logger.addLogger(new FileLogger(new File("minetweaker.log")));
 		MineTweakerImplementationAPI.platform = MCPlatformFunctions.INSTANCE;
 		
 		File globalDir = new File("scripts");
@@ -90,6 +101,14 @@ public class MineTweakerMod {
 			globalDir.mkdirs();
 		}
 		
+		/*try {
+			String data = Resources.toString(Resources.getResource(MineTweakerMod.class, "/minetweaker/myscript.zs"), Charsets.UTF_8);
+			
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}*/
+		
+		scriptsIMC = new ScriptProviderCustom("intermod");
 		scriptsGlobal = new ScriptProviderDirectory(globalDir);
 		MineTweakerImplementationAPI.setScriptProvider(scriptsGlobal);
 	}
@@ -97,6 +116,20 @@ public class MineTweakerMod {
 	// ##########################
 	// ### FML Event Handlers ###
 	// ##########################
+	
+	@EventHandler
+    public void onIMCEvent(FMLInterModComms.IMCEvent event) {
+        for (final FMLInterModComms.IMCMessage imcMessage : event.getMessages()) {
+            if (imcMessage.key.equalsIgnoreCase("addMineTweakerScript")) {
+				if (imcMessage.isStringMessage()) {
+					scriptsIMC.add("imc", imcMessage.getStringValue());
+				} else if (imcMessage.isNBTMessage()) {
+					NBTTagCompound message = imcMessage.getNBTValue();
+					scriptsIMC.add(message.getString("name"), message.getString("content"));
+				}
+            }
+        }
+    }
 	
 	@EventHandler
 	public void onLoad(FMLPreInitializationEvent ev) {
@@ -120,13 +153,17 @@ public class MineTweakerMod {
 		// starts before loading worlds
 		// perfect place to start MineTweaker!
 		
+		if (MineTweakerPlatformUtils.isClient()) {
+			MineTweakerAPI.client = new MCClient();
+		}
+		
 		File scriptsDir = new File(MineTweakerHacks.getWorldDirectory(ev.getServer()), "scripts");
 		if (!scriptsDir.exists()) {
 			scriptsDir.mkdir();
 		}
 		
 		IScriptProvider scriptsLocal = new ScriptProviderDirectory(scriptsDir);
-		IScriptProvider cascaded = new ScriptProviderCascade(scriptsGlobal, scriptsLocal);
+		IScriptProvider cascaded = new ScriptProviderCascade(scriptsIMC, scriptsGlobal, scriptsLocal);
 		
 		MineTweakerImplementationAPI.setScriptProvider(cascaded);
 		MineTweakerImplementationAPI.onServerStart(new MCServer(ev.getServer()));

@@ -8,6 +8,7 @@ package minetweaker.api.recipes;
 
 import minetweaker.api.item.IItemStack;
 import zenscript.annotations.ZenClass;
+import minetweaker.api.player.IPlayer;
 
 /**
  *
@@ -21,5 +22,5 @@ public interface ICraftingRecipe {
 	
 	public boolean hasTransformers();
 	
-	public void applyTransformers(ICraftingInventory inventory);
+	public void applyTransformers(ICraftingInventory inventory, IPlayer byPlayer);
 }

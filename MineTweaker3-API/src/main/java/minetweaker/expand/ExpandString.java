@@ -8,11 +8,13 @@ package minetweaker.expand;
 
 import java.util.ArrayList;
 import java.util.List;
+import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.data.DataString;
 import minetweaker.api.data.IData;
 import zenscript.annotations.Optional;
+import minetweaker.api.formatting.IFormattedText;
 import zenscript.annotations.ZenCaster;
 import zenscript.annotations.ZenExpansion;
 import zenscript.annotations.ZenMethod;
@@ -31,6 +33,11 @@ public class ExpandString {
 	@ZenCaster
 	public static IChatMessage asChatMessage(String value) {
 		return MineTweakerImplementationAPI.platform.getMessage(value);
+	}
+	
+	@ZenCaster
+	public static IFormattedText asFormattedText(String value) {
+		return MineTweakerAPI.format.string(value);
 	}
 	
 	@ZenMethod

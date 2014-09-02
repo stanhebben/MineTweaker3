@@ -2,7 +2,9 @@ package minetweaker.api.item;
 
 import java.util.List;
 import zenscript.annotations.OperatorType;
+import minetweaker.api.player.IPlayer;
 import zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.OperatorType;
 import zenscript.annotations.ZenGetter;
 import zenscript.annotations.ZenMethod;
 import zenscript.annotations.ZenOperator;
@@ -118,13 +120,14 @@ public interface IIngredient {
 	public boolean contains(IIngredient ingredient);
 	
 	/**
-	 * Applies transformations, if any, to the given item.
+	 * Applies transformations after crafting, if any, to the given item.
 	 * 
 	 * @param item item to transform
+	 * @param byPlayer player performing the crafting operation
 	 * @return transformed item
 	 */
 	@ZenMethod
-	public IItemStack applyTransform(IItemStack item);
+	public IItemStack applyTransform(IItemStack item, IPlayer byPlayer);
 	
 	/**
 	 * Checks if this ingredient has (or could have) any transformatiosns.
