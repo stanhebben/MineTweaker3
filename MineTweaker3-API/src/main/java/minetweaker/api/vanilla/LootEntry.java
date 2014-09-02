@@ -7,8 +7,8 @@
 package minetweaker.api.vanilla;
 
 import minetweaker.api.item.WeightedItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenGetter;
 
 /**
  *

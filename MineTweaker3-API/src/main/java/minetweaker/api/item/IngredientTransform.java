@@ -2,9 +2,8 @@ package minetweaker.api.item;
 
 import zenscript.annotations.ZenExpansion;
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.Optional;
+import zenscript.annotations.ZenMethod;
 
 /**
  * Transformations can be used to modify an ingredient after it is used in a

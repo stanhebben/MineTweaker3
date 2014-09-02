@@ -8,7 +8,7 @@ import minetweaker.api.liquid.ILiquidDefinition;
 import minetweaker.api.world.IBiome;
 import zenscript.annotations.ZenClass;
 import zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenMethod;
 
 /**
  * Game interface. Used to obtain general game information.

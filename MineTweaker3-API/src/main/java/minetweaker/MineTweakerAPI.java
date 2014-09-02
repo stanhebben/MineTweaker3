@@ -100,7 +100,7 @@ public class MineTweakerAPI {
 	 * reloads with the scripts should always be submitted to the tweaker.
 	 */
 	@Deprecated
-	public static final ITweaker tweaker = new MTTweaker();
+	public static final MTTweaker tweaker = new MTTweaker();
 	
 	/**
 	 * The logger can be used to write logging messages to the client. Error and
@@ -168,7 +168,7 @@ public class MineTweakerAPI {
 	 * @param action action object
 	 */
 	public static void apply(IUndoableAction action) {
-		TWEAKER.apply(action);
+		tweaker.apply(action);
 	}
 	
 	/**

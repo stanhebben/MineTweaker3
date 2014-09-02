@@ -6,9 +6,9 @@
 
 package minetweaker.api.formatting;
 
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenOperator;
+import zenscript.annotations.OperatorType;
+import zenscript.annotations.ZenClass;
+import zenscript.annotations.ZenOperator;
 
 /**
  *

@@ -14,8 +14,8 @@ import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.util.IngredientMap;
 import minetweaker.api.util.IngredientMap.IngredientMapEntry;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

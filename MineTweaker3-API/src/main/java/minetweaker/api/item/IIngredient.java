@@ -4,7 +4,6 @@ import java.util.List;
 import zenscript.annotations.OperatorType;
 import minetweaker.api.player.IPlayer;
 import zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.OperatorType;
 import zenscript.annotations.ZenGetter;
 import zenscript.annotations.ZenMethod;
 import zenscript.annotations.ZenOperator;

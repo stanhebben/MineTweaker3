@@ -6,7 +6,7 @@
 
 package minetweaker.api.formatting;
 
-import stanhebben.zenscript.annotations.ZenMethod;
+import zenscript.annotations.ZenMethod;
 
 /**
  *

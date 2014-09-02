@@ -22,7 +22,7 @@ import minetweaker.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import zenscript.IZenErrorLogger;
 import stanhebben.zenscript.TypeExpansion;
-import stanhebben.zenscript.annotations.ZenExpansion;
+import zenscript.annotations.ZenExpansion;
 import stanhebben.zenscript.compiler.ClassNameGenerator;
 import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.TypeRegistry;
