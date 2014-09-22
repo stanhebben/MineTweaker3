@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -25,6 +25,7 @@ import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import zenscript.runtime.IAny;
+import static zenscript.runtime.IAny.NUM_LONG;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.type.casting.CastingRuleI2B;
 import zenscript.symbolic.type.casting.CastingRuleI2D;
@@ -47,7 +48,7 @@ public class ZenTypeLong extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 

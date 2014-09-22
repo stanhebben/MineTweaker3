@@ -35,8 +35,8 @@ import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeCaster;
 import stanhebben.zenscript.type.natives.ZenNativeMember;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
@@ -98,7 +98,7 @@ public class ZenTypeNative extends ZenType {
 	private Annotation iteratorAnnotation;
 	private ZenType iteratorKeyType;
 	private ZenType iteratorValueType;
-	private IJavaMethod functionalInterface;
+	private IMethod functionalInterface;
 	
 	public ZenTypeNative(IScopeGlobal environment, Class cls, TypeCapture capture) {
 		super(environment);
@@ -382,30 +382,30 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		switch (iteratorType) {
 			case ITERATOR_NONE:
 				break;
 			case ITERATOR_ITERABLE:
 				if (numValues == 1) {
-					return new IteratorIterable(output, iteratorValueType);
+					return new IteratorIterable(iteratorValueType);
 				} else if (numValues == 2) {
-					return new IteratorList(getEnvironment(), output, iteratorValueType);
+					return new IteratorList(getEnvironment(), iteratorValueType);
 				}
 				break;
 			case ITERATOR_MAP:
 				if (numValues == 1) {
-					return new IteratorMapKeys(output, new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
+					return new IteratorMapKeys(new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
 				} else if (numValues == 2) {
-					return new IteratorMap(output, new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
+					return new IteratorMap(new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
 				}
 				break;
 			case ITERATOR_LIST:
 				if (numValues == 1) {
 					// list is also iterable
-					return new IteratorIterable(output, iteratorValueType);
+					return new IteratorIterable(iteratorValueType);
 				} else if (numValues == 2) {
-					return new IteratorList(getEnvironment(), output, iteratorValueType);
+					return new IteratorList(getEnvironment(), iteratorValueType);
 				}
 				break;
 		}
@@ -538,8 +538,8 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public List<IJavaMethod> getMethods() {
-		IJavaMethod functionalInterface = getFunction();
+	public List<IMethod> getMethods() {
+		IMethod functionalInterface = getFunction();
 		
 		if (functionalInterface == null) {
 			return Collections.EMPTY_LIST;
@@ -549,7 +549,7 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public IJavaMethod getFunction() {
+	public IMethod getFunction() {
 		return functionalInterface;
 	}
 

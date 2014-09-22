@@ -6,6 +6,8 @@
 
 package stanhebben.zenscript.type.natives;
 
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
@@ -17,18 +19,18 @@ import stanhebben.zenscript.util.MethodOutput;
  * 
  * @author Stan Hebben
  */
-public class JavaMethodPrefixed implements IJavaMethod {
+public class JavaMethodPrefixed implements IMethod {
 	private final Expression prefix;
-	private final IJavaMethod baseMethod;
-	private final JavaMethodArgument[] arguments;
+	private final IMethod baseMethod;
+	private final MethodArgument[] arguments;
 	
-	public JavaMethodPrefixed(Expression prefix, IJavaMethod baseMethod) {
+	public JavaMethodPrefixed(Expression prefix, IMethod baseMethod) {
 		this.prefix = prefix;
 		this.baseMethod = baseMethod;
 		
-		arguments = new JavaMethodArgument[baseMethod.getArguments().length + 1];
+		arguments = new MethodArgument[baseMethod.getArguments().length + 1];
 		System.arraycopy(baseMethod.getArguments(), 0, arguments, 1, baseMethod.getArguments().length);
-		arguments[0] = new JavaMethodArgument(null, prefix.getType(), null);
+		arguments[0] = new MethodArgument(null, prefix.getType(), null);
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class JavaMethodPrefixed implements IJavaMethod {
 	}
 
 	@Override
-	public JavaMethodArgument[] getArguments() {
+	public MethodArgument[] getArguments() {
 		return arguments;
 	}
 

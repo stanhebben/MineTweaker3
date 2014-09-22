@@ -6,11 +6,13 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -39,5 +41,10 @@ public class ParsedExpressionOpAssign extends ParsedExpression {
 		Expression value = cLeft.getType().binary(getPosition(), environment, cLeft, cRight, operator);
 		
 		return left.compile(environment, predictedType).assign(getPosition(), value);
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return null;
 	}
 }

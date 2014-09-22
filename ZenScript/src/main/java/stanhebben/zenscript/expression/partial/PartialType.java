@@ -14,7 +14,8 @@ import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolType;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
 /**
@@ -76,7 +77,12 @@ public class PartialType implements IPartialExpression {
 	}
 
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		return Collections.EMPTY_LIST;
+	}
+
+	@Override
+	public IPartialExpression via(SymbolicFunction function) {
+		return this;
 	}
 }

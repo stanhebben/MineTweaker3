@@ -15,7 +15,6 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.util.MethodOutput;
 import zenscript.symbolic.type.casting.CastingRuleNone;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
@@ -90,7 +89,7 @@ public class ZenTypeNull extends ZenType {
 	}*/
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 

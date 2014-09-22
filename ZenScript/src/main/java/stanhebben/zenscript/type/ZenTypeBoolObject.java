@@ -14,8 +14,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.JavaMethod;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
@@ -74,8 +73,8 @@ public class ZenTypeBoolObject extends ZenType {
 	}*/
 	
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
-		return BOOL.makeIterator(numValues, output);
+	public IZenIterator makeIterator(int numValues) {
+		return BOOL.makeIterator(numValues);
 	}
 	
 	@Override

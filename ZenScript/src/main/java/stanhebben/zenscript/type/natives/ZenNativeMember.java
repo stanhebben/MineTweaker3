@@ -6,6 +6,8 @@
 
 package stanhebben.zenscript.type.natives;
 
+import zenscript.symbolic.method.JavaMethod;
+import zenscript.symbolic.method.IMethod;
 import java.util.ArrayList;
 import java.util.List;
 import stanhebben.zenscript.compiler.IScopeMethod;
@@ -22,19 +24,19 @@ import zenscript.util.ZenPosition;
  * @author Stan
  */
 public class ZenNativeMember {
-	private IJavaMethod getter;
-	private IJavaMethod setter;
-	private final List<IJavaMethod> methods = new ArrayList<IJavaMethod>();
+	private IMethod getter;
+	private IMethod setter;
+	private final List<IMethod> methods = new ArrayList<IMethod>();
 	
-	public IJavaMethod getGetter() {
+	public IMethod getGetter() {
 		return getter;
 	}
 	
-	public IJavaMethod getSetter() {
+	public IMethod getSetter() {
 		return setter;
 	}
 	
-	public void setGetter(IJavaMethod getter) {
+	public void setGetter(IMethod getter) {
 		if (this.getter == null) {
 			this.getter = getter;
 		} else {
@@ -42,7 +44,7 @@ public class ZenNativeMember {
 		}
 	}
 	
-	public void setSetter(IJavaMethod setter) {
+	public void setSetter(IMethod setter) {
 		if (this.setter == null) {
 			this.setter = setter;
 		} else {
@@ -90,7 +92,7 @@ public class ZenNativeMember {
 
 		/*@Override
 		public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
-			IJavaMethod method = JavaMethod.select(false, methods, environment, values);
+			IMethod method = JavaMethod.select(false, methods, environment, values);
 			if (method == null) {
 				environment.error(position, methodMatchingError(methods, values));
 				return new ExpressionInvalid(position);
@@ -121,7 +123,7 @@ public class ZenNativeMember {
 		}
 		
 		@Override
-		public List<IJavaMethod> getMethods() {
+		public List<IMethod> getMethods() {
 			return getter.getReturnType().getMethods();
 		}
 	}
@@ -152,7 +154,7 @@ public class ZenNativeMember {
 
 		/*@Override
 		public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
-			IJavaMethod method = JavaMethod.select(true, methods, environment, values);
+			IMethod method = JavaMethod.select(true, methods, environment, values);
 			if (method == null) {
 				environment.error(position, methodMatchingError(methods, values));
 				return new ExpressionInvalid(position);
@@ -183,7 +185,7 @@ public class ZenNativeMember {
 		}
 		
 		@Override
-		public List<IJavaMethod> getMethods() {
+		public List<IMethod> getMethods() {
 			return getter.getReturnType().getMethods();
 		}
 	}

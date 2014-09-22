@@ -7,6 +7,7 @@
 package zenscript.parser.expression;
 
 import java.util.List;
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArray;
@@ -15,6 +16,8 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
+import zenscript.runtime.AnyArray;
+import zenscript.runtime.IAny;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.util.ZenPosition;
 
@@ -79,5 +82,17 @@ public class ParsedExpressionArray extends ParsedExpression {
 		} else {
 			return compile(environment, predictedType).eval();
 		}
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny[] values = new IAny[contents.size()];
+		for (int i = 0; i < contents.size(); i++) {
+			values[i] = contents.get(i).eval(environment);
+			if (values[i] == null)
+				return null;
+		}
+		
+		return new AnyArray(values);
 	}
 }

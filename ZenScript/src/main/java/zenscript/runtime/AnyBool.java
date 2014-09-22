@@ -13,15 +13,27 @@ import java.util.Iterator;
  * @author Stan
  */
 public class AnyBool implements IAny {
+	public static final AnyBool TRUE = new AnyBool(true);
+	public static final AnyBool FALSE = new AnyBool(false);
+	
+	public static AnyBool valueOf(boolean value) {
+		return value ? TRUE: FALSE;
+	}
+	
 	private final boolean value;
 	
-	public AnyBool(boolean value) {
+	private AnyBool(boolean value) {
 		this.value = value;
 	}
 	
 	@Override
 	public IAny not() {
-		return new AnyBool(!value);
+		return value ? FALSE : TRUE;
+	}
+	
+	@Override
+	public IAny invert() {
+		throw new UnsupportedOperationException("bool doesn't support the ~ operator");
 	}
 
 	@Override
@@ -61,17 +73,17 @@ public class AnyBool implements IAny {
 
 	@Override
 	public IAny and(IAny value) {
-		return new AnyBool(this.value & value.asBool());
+		return valueOf(this.value & value.asBool());
 	}
 
 	@Override
 	public IAny or(IAny value) {
-		return new AnyBool(this.value | value.asBool());
+		return valueOf(this.value | value.asBool());
 	}
 
 	@Override
 	public IAny xor(IAny value) {
-		return new AnyBool(this.value ^ value.asBool());
+		return valueOf(this.value ^ value.asBool());
 	}
 
 	@Override
@@ -175,8 +187,8 @@ public class AnyBool implements IAny {
 	}
 
 	@Override
-	public int getNumberType() {
-		return 0;
+	public NumberType getNumberType() {
+		return NumberType.NONE;
 	}
 
 	@Override

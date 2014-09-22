@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import zenscript.IZenErrorLogger;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
@@ -37,7 +36,7 @@ public class EnvironmentGlobal implements IScopeGlobal {
 		this.errors = environment.getErrorLogger();
 		this.classes = classes;
 		this.nameGen = nameGen;
-		this.types = environment.getTypes();
+		this.types = new TypeRegistry(this);
 		this.local = new HashMap<String, IZenSymbol>();
 	}
 	
@@ -63,11 +62,6 @@ public class EnvironmentGlobal implements IScopeGlobal {
 	@Override
 	public String makeClassName() {
 		return nameGen.generate();
-	}
-	
-	@Override
-	public TypeExpansion getExpansion(String type) {
-		return environment.getExpansion(type);
 	}
 
 	@Override

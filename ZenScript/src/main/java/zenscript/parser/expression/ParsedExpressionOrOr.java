@@ -6,11 +6,15 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionOrOr;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.AnyBool;
+import zenscript.runtime.AnyNull;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -48,5 +52,21 @@ public class ParsedExpressionOrOr extends ParsedExpression {
 				environment,
 				cLeft.cast(getPosition(), type),
 				cRight.cast(getPosition(), type));
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny leftValue = left.eval(environment);
+		if (leftValue == null)
+			return null;
+		
+		if (leftValue != AnyBool.FALSE && leftValue != AnyNull.INSTANCE)
+			return leftValue;
+		
+		IAny rightValue = right.eval(environment);
+		if (rightValue == null)
+			return null;
+		
+		return rightValue;
 	}
 }

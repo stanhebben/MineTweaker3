@@ -8,7 +8,6 @@ package stanhebben.zenscript.compiler;
 
 import java.util.Set;
 import zenscript.IZenErrorLogger;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
@@ -23,8 +22,6 @@ public interface IScopeGlobal extends IZenErrorLogger {
 	public TypeRegistry getTypes();
 	
 	public IZenCompileEnvironment getEnvironment();
-	
-	public TypeExpansion getExpansion(String name);
 	
 	public String makeClassName();
 	

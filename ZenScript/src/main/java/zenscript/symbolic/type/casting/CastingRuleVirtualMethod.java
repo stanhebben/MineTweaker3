@@ -7,7 +7,7 @@
 package zenscript.symbolic.type.casting;
 
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 
 /**
@@ -16,9 +16,9 @@ import stanhebben.zenscript.util.MethodOutput;
  */
 public class CastingRuleVirtualMethod implements ICastingRule {
 	private final ZenType type;
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public CastingRuleVirtualMethod(ZenType type, IJavaMethod method) {
+	public CastingRuleVirtualMethod(ZenType type, IMethod method) {
 		this.type = type;
 		this.method = method;
 	}

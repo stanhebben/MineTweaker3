@@ -14,7 +14,8 @@ import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
 /**
@@ -24,9 +25,9 @@ import zenscript.util.ZenPosition;
 public class PartialStaticMethod implements IPartialExpression {
 	private final ZenPosition position;
 	private final IScopeMethod environment;
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public PartialStaticMethod(ZenPosition position, IScopeMethod environment, IJavaMethod method) {
+	public PartialStaticMethod(ZenPosition position, IScopeMethod environment, IMethod method) {
 		this.position = position;
 		this.environment = environment;
 		this.method = method;
@@ -82,7 +83,12 @@ public class PartialStaticMethod implements IPartialExpression {
 	}
 
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		return Collections.singletonList(method);
+	}
+
+	@Override
+	public IPartialExpression via(SymbolicFunction function) {
+		return this;
 	}
 }

@@ -5,8 +5,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -16,15 +14,19 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionFloat;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
+import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
 import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import zenscript.annotations.CompareType;
+import zenscript.annotations.OperatorType;
 import zenscript.runtime.IAny;
+import static zenscript.runtime.IAny.NUM_DOUBLE;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.type.casting.CastingRuleD2F;
 import zenscript.symbolic.type.casting.CastingRuleD2I;
@@ -45,7 +47,7 @@ public class ZenTypeDouble extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 

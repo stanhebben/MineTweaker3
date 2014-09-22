@@ -10,7 +10,7 @@ import java.util.List;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
@@ -25,7 +25,7 @@ public interface IPartialExpression {
 	
 	public IPartialExpression getMember(ZenPosition position, String name);
 	
-	public List<IJavaMethod> getMethods();
+	public List<IMethod> getMethods();
 	
 	public IZenSymbol toSymbol();
 	

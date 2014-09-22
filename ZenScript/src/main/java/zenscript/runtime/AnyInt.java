@@ -7,21 +7,20 @@
 package zenscript.runtime;
 
 import java.util.Iterator;
-import stanhebben.zenscript.type.ZenType;
 
 /**
  *
  * @author Stan
  */
-public class AnyInt implements IAny {
+public class AnyInt extends AnyNumber {
 	private final int value;
 	
 	public AnyInt(int value) {
 		this.value = value;
 	}
-
+	
 	@Override
-	public IAny not() {
+	public IAny invert() {
 		return new AnyInt(~value);
 	}
 
@@ -32,12 +31,40 @@ public class AnyInt implements IAny {
 
 	@Override
 	public IAny add(IAny value) {
-		return new AnyInt(this.value + value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value + value.asInt());
+			case LONG:
+				return new AnyLong(this.value + value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return new AnyDouble(this.value + value.asDouble());
+			case NONE:
+				return new AnyString(this.value + value.asString());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
 	public IAny sub(IAny value) {
-		return new AnyInt(this.value - value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value - value.asInt());
+			case LONG:
+				return new AnyLong(this.value - value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return new AnyDouble(this.value - value.asDouble());
+			case NONE:
+				return new AnyInt(this.value - value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
@@ -47,17 +74,59 @@ public class AnyInt implements IAny {
 
 	@Override
 	public IAny mul(IAny value) {
-		return new AnyInt(this.value * value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value * value.asInt());
+			case LONG:
+				return new AnyLong(this.value * value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return new AnyDouble(this.value * value.asDouble());
+			case NONE:
+				return new AnyInt(this.value * value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
 	public IAny div(IAny value) {
-		return new AnyInt(this.value / value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value / value.asInt());
+			case LONG:
+				return new AnyLong(this.value / value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return new AnyDouble(this.value / value.asDouble());
+			case NONE:
+				return new AnyInt(this.value / value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
 	public IAny mod(IAny value) {
-		return new AnyInt(this.value % value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value % value.asInt());
+			case LONG:
+				return new AnyLong(this.value % value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return new AnyDouble(this.value % value.asDouble());
+			case NONE:
+				return new AnyInt(this.value % value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
@@ -67,63 +136,64 @@ public class AnyInt implements IAny {
 
 	@Override
 	public IAny or(IAny value) {
-		return new AnyInt(this.value | value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value | value.asInt());
+			case LONG:
+				return new AnyLong(this.value | value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				throw new UnsupportedOperationException("Cannot | with a double");
+			case NONE:
+				return new AnyInt(this.value | value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
 	public IAny xor(IAny value) {
-		return new AnyInt(this.value ^ value.asInt());
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return new AnyInt(this.value ^ value.asInt());
+			case LONG:
+				return new AnyLong(this.value ^ value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				throw new UnsupportedOperationException("Cannot ^ with a double");
+			case NONE:
+				return new AnyInt(this.value ^ value.asInt());
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
 	public IAny range(IAny value) {
-		// TODO: implement
-		throw new UnsupportedOperationException("not yet supported");
+		return new AnyRange(this.value, value.asInt());
 	}
 
 	@Override
 	public int compareTo(IAny value) {
-		return this.value - value.asInt();
-	}
-
-	@Override
-	public boolean contains(IAny value) {
-		return false;
-	}
-
-	@Override
-	public IAny memberGet(String member) {
-		throw new UnsupportedOperationException("No members in int");
-	}
-
-	@Override
-	public void memberSet(String member, IAny value) {
-		throw new UnsupportedOperationException("No members in int");
-	}
-
-	@Override
-	public IAny memberCall(String member, IAny... values) {
-		throw new UnsupportedOperationException("No members in int");
-	}
-
-	@Override
-	public IAny indexGet(IAny key) {
-		throw new UnsupportedOperationException("Cannot index integers");
-	}
-
-	@Override
-	public void indexSet(IAny key, IAny value) {
-		throw new UnsupportedOperationException("Cannot index integers");
-	}
-
-	@Override
-	public IAny call(IAny... values) {
-		throw new UnsupportedOperationException("Cannot call integers");
-	}
-
-	@Override
-	public boolean asBool() {
-		throw new UnsupportedOperationException("Cannot convert integers to bools");
+		switch (value.getNumberType()) {
+			case BYTE:
+			case SHORT:
+			case INT:
+				return this.value - value.asInt();
+			case LONG:
+				return Long.compare(this.value, value.asLong());
+			case FLOAT:
+			case DOUBLE:
+				return Double.compare(this.value, value.asDouble());
+			case NONE:
+				return this.value - value.asInt();
+			default:
+				throw new AssertionError("Invalid number type: " + value.getNumberType());
+		}
 	}
 
 	@Override
@@ -162,32 +232,44 @@ public class AnyInt implements IAny {
 	}
 
 	@Override
-	public <T> T as(Class<T> cls) {
-		return null;
-	}
-
-	@Override
 	public boolean is(Class<?> cls) {
 		return cls == int.class;
 	}
 
 	@Override
-	public boolean canCastImplicit(Class<?> cls) {
-		return cls == int.class || cls == byte.class || cls == short.class || cls == float.class || cls == double.class;
-	}
-
-	@Override
-	public int getNumberType() {
-		return ZenType.NUM_INT;
+	public NumberType getNumberType() {
+		return NumberType.INT;
 	}
 
 	@Override
 	public Iterator<IAny> iteratorSingle() {
-		throw new UnsupportedOperationException("int doesn't have iterators");
+		return null;
 	}
 
 	@Override
 	public Iterator<IAny[]> iteratorMulti(int n) {
-		throw new UnsupportedOperationException("int doesn't have iterators");
+		return null;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 17 * hash + this.value;
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final AnyInt other = (AnyInt) obj;
+		if (this.value != other.value) {
+			return false;
+		}
+		return true;
 	}
 }

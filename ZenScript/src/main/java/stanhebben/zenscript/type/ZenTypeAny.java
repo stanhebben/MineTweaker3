@@ -15,8 +15,8 @@ import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethodPrefixed;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
@@ -35,7 +35,7 @@ import zenscript.util.ZenPosition;
  * @author Stanneke
  */
 public class ZenTypeAny extends ZenType {
-	private List<IJavaMethod> methods = null;
+	private List<IMethod> methods = null;
 	
 	public ZenTypeAny(IScopeGlobal environment) {
 		super(environment);
@@ -254,7 +254,7 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		if (methods == null)
 			methods = Collections.singletonList(JavaMethod.get(getEnvironment().getTypes(), IAny.class, "call", IAny.class, IAny[].class));
 		
@@ -266,14 +266,14 @@ public class ZenTypeAny extends ZenType {
 		private final IScopeMethod environment;
 		private final Expression value;
 		private final String name;
-		private final List<IJavaMethod> methods;
+		private final List<IMethod> methods;
 		
 		public AnyMember(ZenPosition position, IScopeMethod environment, Expression value, String name) {
 			this.position = position;
 			this.environment = environment;
 			this.value = value;
 			this.name = name;
-			methods = Collections.<IJavaMethod>singletonList(new JavaMethodPrefixed(
+			methods = Collections.<IMethod>singletonList(new JavaMethodPrefixed(
 					new ExpressionString(position, environment, name),
 					environment.getTypes().getCommonMethods().METHOD_MEMBERCALL));
 		}
@@ -294,7 +294,7 @@ public class ZenTypeAny extends ZenType {
 		}
 
 		@Override
-		public List<IJavaMethod> getMethods() {
+		public List<IMethod> getMethods() {
 			return methods;
 		}
 

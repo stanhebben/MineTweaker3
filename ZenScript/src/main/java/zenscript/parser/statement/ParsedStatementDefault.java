@@ -6,6 +6,10 @@
 
 package zenscript.parser.statement;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementNull;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
@@ -25,5 +29,16 @@ public class ParsedStatementDefault extends ParsedStatement {
 	
 	public ParsedStatementDefault(ZenPosition position) {
 		super(position);
+	}
+
+	@Override
+	public Statement compile(IScopeMethod scope) {
+		scope.error(getPosition(), "default statement can only be used inside a switch");
+		return new StatementNull(getPosition(), scope);
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onDefault(getPosition());
 	}
 }

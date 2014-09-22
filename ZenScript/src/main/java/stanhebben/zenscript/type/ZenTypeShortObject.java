@@ -12,11 +12,11 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.JavaMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.JavaMethod;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
+import static zenscript.runtime.IAny.NUM_SHORT;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
 import zenscript.symbolic.type.casting.CastingRuleNullableVirtualMethod;
@@ -74,8 +74,8 @@ public class ZenTypeShortObject extends ZenType {
 	}*/
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
-		return SHORT.makeIterator(numValues, output);
+	public IZenIterator makeIterator(int numValues) {
+		return SHORT.makeIterator(numValues);
 	}
 
 	@Override

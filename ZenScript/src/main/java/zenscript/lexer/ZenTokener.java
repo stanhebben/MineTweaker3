@@ -109,6 +109,7 @@ public class ZenTokener extends TokenStream {
 	public static final int T_THIS = 174;
 	public static final int T_SUPER = 175;
 	public static final int T_EXPAND = 176;
+	public static final int T_IMPLEMENTS = 177;
 	
 	public static final int T_PRIVATE = 180;
 	public static final int T_PUBLIC = 181;
@@ -267,6 +268,7 @@ public class ZenTokener extends TokenStream {
 		KEYWORDS.put("super", T_SUPER);
 		KEYWORDS.put("package", T_PACKAGE);
 		KEYWORDS.put("expand", T_EXPAND);
+		KEYWORDS.put("implements", T_IMPLEMENTS);
 		
 		KEYWORDS.put("private", T_PRIVATE);
 		KEYWORDS.put("public", T_PUBLIC);

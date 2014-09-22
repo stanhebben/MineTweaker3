@@ -9,6 +9,7 @@ package zenscript.parser.statement;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementReturn;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.T_RETURN;
@@ -47,5 +48,10 @@ public class ParsedStatementReturn extends ParsedStatement {
 				getPosition(),
 				scope,
 				value == null ? null : value.compile(scope, scope.getReturnType()).eval());
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

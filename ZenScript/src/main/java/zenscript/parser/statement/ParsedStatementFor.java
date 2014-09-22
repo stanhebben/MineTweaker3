@@ -14,6 +14,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementForeach;
 import stanhebben.zenscript.statements.StatementNull;
+import stanhebben.zenscript.statements.StatementSwitch;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.IZenIterator;
 import zenscript.IZenErrorLogger;
@@ -83,5 +84,10 @@ public class ParsedStatementFor extends ParsedStatement {
 		compiledStatement.setBody(compiledContents);
 		
 		return compiledStatement;
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

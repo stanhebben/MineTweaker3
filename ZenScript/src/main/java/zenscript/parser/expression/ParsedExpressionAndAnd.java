@@ -6,10 +6,12 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionAndAnd;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.AnyBool;
 import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
@@ -38,10 +40,14 @@ public class ParsedExpressionAndAnd extends ParsedExpression {
 	}
 
 	@Override
-	public IAny eval() {
-		IAny leftValue = left.eval();
-		if (leftValue == null) return null;
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny leftValue = left.eval(environment);
+		if (leftValue == null)
+			return null;
+		
 		if (!leftValue.asBool())
-			return new AnyBool(false);
+			return AnyBool.FALSE;
+		
+		return right.eval(environment);
 	}
 }

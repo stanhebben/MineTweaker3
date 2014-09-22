@@ -6,6 +6,10 @@
 
 package zenscript.parser.statement;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementNull;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
@@ -32,5 +36,16 @@ public class ParsedStatementCase extends ParsedStatement {
 		super(position);
 		
 		this.value = value;
+	}
+
+	@Override
+	public Statement compile(IScopeMethod scope) {
+		scope.error(getPosition(), "case must be inside a switch");
+		return new StatementNull(getPosition(), scope);
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onCase(getPosition(), value.compile(scope, forSwitch.getType()).eval());
 	}
 }

@@ -8,7 +8,7 @@ package zenscript.symbolic.type.casting;
 
 import org.objectweb.asm.Label;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 
 /**
@@ -16,15 +16,15 @@ import stanhebben.zenscript.util.MethodOutput;
  * @author Stan
  */
 public class CastingRuleNullableStaticMethod implements ICastingRule {
-	private final IJavaMethod method;
+	private final IMethod method;
 	private final ICastingRule base;
 	
-	public CastingRuleNullableStaticMethod(IJavaMethod method) {
+	public CastingRuleNullableStaticMethod(IMethod method) {
 		this.method = method;
 		base = null;
 	}
 	
-	public CastingRuleNullableStaticMethod(IJavaMethod method, ICastingRule base) {
+	public CastingRuleNullableStaticMethod(IMethod method, ICastingRule base) {
 		this.method = method;
 		this.base = base;
 	}

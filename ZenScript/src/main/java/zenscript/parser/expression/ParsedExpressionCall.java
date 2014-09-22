@@ -6,12 +6,14 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import zenscript.parser.expression.ParsedCallArguments.MatchedArguments;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -48,5 +50,18 @@ public class ParsedExpressionCall extends ParsedExpression {
 					cReceiver.eval(),
 					matchedArguments.arguments);
 		}
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny receiverValue = receiver.eval(environment);
+		if (receiverValue == null)
+			return null;
+		
+		IAny[] argumentValues = arguments.compileValues(environment);
+		if (argumentValues == null)
+			return null;
+		
+		return receiverValue.call(argumentValues);
 	}
 }

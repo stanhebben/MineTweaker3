@@ -8,7 +8,7 @@ package stanhebben.zenscript.expression;
 
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.util.ZenPosition;
 
@@ -17,13 +17,13 @@ import zenscript.util.ZenPosition;
  * @author Stanneke
  */
 public class ExpressionCallStatic extends Expression {
-	private final IJavaMethod method;
+	private final IMethod method;
 	private final Expression[] arguments;
 	
 	public ExpressionCallStatic(
 			ZenPosition position,
 			IScopeMethod environment,
-			IJavaMethod method,
+			IMethod method,
 			Expression... arguments) {
 		super(position, environment);
 		

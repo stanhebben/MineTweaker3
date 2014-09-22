@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionBool;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -41,7 +41,7 @@ public class ZenTypeBool extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 	
@@ -259,7 +259,7 @@ public class ZenTypeBool extends ZenType {
 			output.loadObject(0);
 			output.ifACmpEq(lblCan);
 			
-			TypeExpansion expansion = environment.getExpansion(getName());
+			TypeExpansion expansion = environment.getTypes().getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(types.BOOL, output, environment, 0);
 			}

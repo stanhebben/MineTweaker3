@@ -9,7 +9,7 @@ package stanhebben.zenscript.symbols;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialStaticMethod;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import zenscript.util.ZenPosition;
 
 /**
@@ -17,9 +17,9 @@ import zenscript.util.ZenPosition;
  * @author Stanneke
  */
 public class SymbolJavaStaticMethod implements IZenSymbol {
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public SymbolJavaStaticMethod(IJavaMethod method) {
+	public SymbolJavaStaticMethod(IMethod method) {
 		this.method = method;
 	}
 

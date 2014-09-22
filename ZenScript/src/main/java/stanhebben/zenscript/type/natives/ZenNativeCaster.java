@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.type.natives;
 
+import zenscript.symbolic.method.IMethod;
 import org.objectweb.asm.Label;
 import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.type.ZenType;
@@ -16,9 +17,9 @@ import stanhebben.zenscript.util.MethodOutput;
  * @author Stanneke
  */
 public class ZenNativeCaster {
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public ZenNativeCaster(IJavaMethod method) {
+	public ZenNativeCaster(IMethod method) {
 		this.method = method;
 	}
 	

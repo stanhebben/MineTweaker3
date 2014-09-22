@@ -2,7 +2,6 @@ package minetweaker.mc1710;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.event.PlayerCraftedEvent;
 import minetweaker.api.event.PlayerLoggedInEvent;
@@ -24,7 +23,7 @@ public class FMLEventHandler {
 		if (ev.player instanceof EntityPlayerMP) {
 			EntityPlayerMP player = (EntityPlayerMP) ev.player;
 			MineTweakerMod.NETWORK.sendTo(
-					new MineTweakerLoadScriptsPacket(MineTweakerAPI.tweaker.getScriptData()),
+					new MineTweakerLoadScriptsPacket(MineTweakerImplementationAPI.getTweaker().getScriptData()),
 					player);
 		}
 		

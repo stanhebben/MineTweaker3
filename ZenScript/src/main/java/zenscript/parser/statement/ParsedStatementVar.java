@@ -9,6 +9,7 @@ package zenscript.parser.statement;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementSwitch;
 import stanhebben.zenscript.statements.StatementVar;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
@@ -74,5 +75,10 @@ public class ParsedStatementVar extends ParsedStatement {
 		SymbolLocal symbol = new SymbolLocal(cType, isFinal);
 		scope.putValue(name, symbol, getPosition());
 		return new StatementVar(getPosition(), scope, symbol, cInitializer);
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

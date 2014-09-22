@@ -7,12 +7,11 @@
 package stanhebben.zenscript.statements;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.objectweb.asm.Label;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.util.ZenPosition;
 
@@ -23,7 +22,7 @@ import zenscript.util.ZenPosition;
 public class StatementSwitch extends Statement {
 	private final Expression value;
 	private final List<Statement> contents = new ArrayList<Statement>();
-	private final List<Integer> caseValues = new ArrayList<Integer>();
+	private final List<Expression> caseValues = new ArrayList<Expression>();
 	private final List<Integer> caseLabels = new ArrayList<Integer>();
 	private int defaultLabel = -1;
 	
@@ -33,7 +32,11 @@ public class StatementSwitch extends Statement {
 		this.value = value;
 	}
 	
-	public void onCase(ZenPosition position, int value) {
+	public ZenType getType() {
+		return value.getType();
+	}
+	
+	public void onCase(ZenPosition position, Expression value) {
 		if (caseValues.contains(value)) {
 			getScope().error(position, "this value already has a case assigned");
 		} else {
@@ -57,7 +60,9 @@ public class StatementSwitch extends Statement {
 	@Override
 	public void compile(MethodOutput output) {
 		Label lblBreak = new Label();
-		// TODO
+		
+		
+		// TODO - need precompilation step for the switch values
 		blabla
 	}
 }

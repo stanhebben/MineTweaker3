@@ -10,6 +10,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementContinue;
 import stanhebben.zenscript.statements.StatementNull;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.Token;
 import zenscript.lexer.ZenTokener;
@@ -52,5 +53,10 @@ public class ParsedStatementContinue extends ParsedStatement {
 		} else {
 			return new StatementContinue(getPosition(), scope, controlStatement);
 		}
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

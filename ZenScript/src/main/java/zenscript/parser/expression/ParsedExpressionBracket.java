@@ -7,6 +7,7 @@
 package zenscript.parser.expression;
 
 import java.util.List;
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -14,6 +15,7 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import zenscript.util.ZenPosition;
 import zenscript.lexer.Token;
+import zenscript.runtime.IAny;
 
 /**
  *
@@ -47,5 +49,10 @@ public class ParsedExpressionBracket extends ParsedExpression {
 		} else {
 			return resolved.instance(getPosition(), environment);
 		}
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return environment.evalBracketed(tokens);
 	}
 }

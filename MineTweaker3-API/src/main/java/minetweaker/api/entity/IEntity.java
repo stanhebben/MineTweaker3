@@ -1,6 +1,6 @@
 package minetweaker.api.entity;
 
-import minetweaker.api.util.Position3f;
+import minetweaker.api.math.Vector3d;
 import minetweaker.api.world.IDimension;
 import zenscript.annotations.ZenClass;
 import zenscript.annotations.ZenGetter;
@@ -29,7 +29,7 @@ public interface IEntity {
 	 * @return entity x position
 	 */
 	@ZenGetter("x")
-	public float getX();
+	public double getX();
 	
 	/**
 	 * Retrieves the y position of this entity.
@@ -37,7 +37,7 @@ public interface IEntity {
 	 * @return entity y position
 	 */
 	@ZenGetter("y")
-	public float getY();
+	public double getY();
 	
 	/**
 	 * Retrieves the z position of this entity.
@@ -45,7 +45,7 @@ public interface IEntity {
 	 * @return entity z position
 	 */
 	@ZenGetter("z")
-	public float getZ();
+	public double getZ();
 	
 	/**
 	 * Retrieves the position of this entity.
@@ -53,7 +53,7 @@ public interface IEntity {
 	 * @return entity position
 	 */
 	@ZenGetter("position")
-	public Position3f getPosition();
+	public Vector3d getPosition();
 	
 	/**
 	 * Sets the position of this entity. Instantly moves (teleports) the entity
@@ -62,5 +62,5 @@ public interface IEntity {
 	 * @param position entity position
 	 */
 	@ZenSetter("position")
-	public void setPosition(Position3f position);
+	public void setPosition(Vector3d position);
 }

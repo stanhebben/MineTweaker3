@@ -6,10 +6,13 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.AnyString;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -28,5 +31,10 @@ public class ParsedExpressionString extends ParsedExpression {
 	@Override
 	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
 		return new ExpressionString(getPosition(), environment, value);
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return new AnyString(value);
 	}
 }

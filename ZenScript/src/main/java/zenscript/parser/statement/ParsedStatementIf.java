@@ -11,6 +11,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementIf;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
@@ -50,7 +51,7 @@ public class ParsedStatementIf extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		IAny eval = condition.eval();
+		IAny eval = condition.eval(scope.getEnvironment());
 		if (eval != null) {
 			// compile-time variable
 			if (eval.asBool()) {
@@ -74,5 +75,10 @@ public class ParsedStatementIf extends ParsedStatement {
 			
 			return new StatementIf(getPosition(), scope, compiledCondition, compiledIf, compiledElse);
 		}
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

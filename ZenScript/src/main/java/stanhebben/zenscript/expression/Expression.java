@@ -7,7 +7,7 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import zenscript.parser.expression.ParsedExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.util.ZenPosition;
@@ -109,7 +109,7 @@ public abstract class Expression implements IPartialExpression {
 	}
 	
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		return getType().getMethods();
 	}
 	

@@ -10,6 +10,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.compiler.ScopeStatementBlock;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementSwitch;
 import stanhebben.zenscript.statements.StatementWhile;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
@@ -57,5 +58,10 @@ public class ParsedStatementWhile extends ParsedStatement {
 		ScopeStatementBlock blockScope = new ScopeStatementBlock(scope, result, label);
 		result.setContents(contents.compile(blockScope));
 		return result;
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

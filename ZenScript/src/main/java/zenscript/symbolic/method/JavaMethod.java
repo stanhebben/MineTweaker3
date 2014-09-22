@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package stanhebben.zenscript.type.natives;
+package zenscript.symbolic.method;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -18,6 +18,7 @@ import stanhebben.zenscript.expression.ExpressionFloat;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.natives.JavaMethodGenerated;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.annotations.Named;
 import zenscript.annotations.NotNull;
@@ -33,13 +34,13 @@ import zenscript.symbolic.type.generic.TypeCapture;
  *
  * @author Stan
  */
-public class JavaMethod implements IJavaMethod {
+public class JavaMethod implements IMethod {
 	public static final int PRIORITY_INVALID = -1;
 	public static final int PRIORITY_LOW = 1;
 	public static final int PRIORITY_MEDIUM = 2;
 	public static final int PRIORITY_HIGH = 3;
 	
-	public static IJavaMethod get(TypeRegistry types, Class cls, String name, Class... parameterTypes) {
+	public static IMethod get(TypeRegistry types, Class cls, String name, Class... parameterTypes) {
 		try {
 			Method method = cls.getMethod(name, parameterTypes);
 			if (method == null) {
@@ -53,31 +54,31 @@ public class JavaMethod implements IJavaMethod {
 		}
 	}
 	
-	public static IJavaMethod getStatic(String owner, String name, ZenType returnType, JavaMethodArgument... arguments) {
+	public static IMethod getStatic(String owner, String name, ZenType returnType, MethodArgument... arguments) {
 		return new JavaMethodGenerated(true, false, false, owner, name, returnType, arguments, new boolean[arguments.length]);
 	}
 	
-	public static IJavaMethod getStatic(String owner, String name, ZenType returnType, ZenType... arguments) {
-		JavaMethodArgument[] convertedArguments = new JavaMethodArgument[arguments.length];
+	public static IMethod getStatic(String owner, String name, ZenType returnType, ZenType... arguments) {
+		MethodArgument[] convertedArguments = new MethodArgument[arguments.length];
 		for (int i = 0; i < convertedArguments.length; i++) {
-			convertedArguments[i] = new JavaMethodArgument(null, arguments[i], null);
+			convertedArguments[i] = new MethodArgument(null, arguments[i], null);
 		}
 		return getStatic(owner, name, returnType, convertedArguments);
 	}
 	
-	public static IJavaMethod get(TypeRegistry types, Method method, TypeCapture capture) {
+	public static IMethod get(TypeRegistry types, Method method) {
+		return get(types, method, TypeCapture.EMPTY);
+	}
+	
+	public static IMethod get(TypeRegistry types, Method method, TypeCapture capture) {
 		return new JavaMethod(method, types, capture);
 	}
 	
 	private final Method method;
 	
-	private final JavaMethodArgument[] arguments;
+	private final MethodArgument[] arguments;
 	private final ZenType returnType;
 	private final HashMap<String, Integer> argumentIndices;
-	
-	/*public JavaMethod(Method method, TypeRegistry types) {
-		this(method, types, null, TypeCapture.EMPTY);
-	}*/
 	
 	public JavaMethod(Method method, TypeRegistry types, TypeCapture capture) {
 		this(method, types, null, capture);
@@ -90,7 +91,7 @@ public class JavaMethod implements IJavaMethod {
 		argumentIndices = new HashMap<String, Integer>();
 		
 		Type[] genericParameters = method.getGenericParameterTypes();
-		arguments = new JavaMethodArgument[method.getGenericParameterTypes().length];
+		arguments = new MethodArgument[method.getGenericParameterTypes().length];
 		for (int i = 0; i < arguments.length; i++) {
 			ZenType type = types.getNativeType(null, genericParameters[i], capture);
 			String name = argumentNames == null || i >= argumentNames.length ? null : argumentNames[i];
@@ -137,7 +138,7 @@ public class JavaMethod implements IJavaMethod {
 				}
 			}
 			
-			arguments[i] = new JavaMethodArgument(name, type, defaultValue);
+			arguments[i] = new MethodArgument(name, type, defaultValue);
 			
 			if (name != null) {
 				argumentIndices.put(name, i);
@@ -267,7 +268,7 @@ public class JavaMethod implements IJavaMethod {
 	}
 	
 	@Override
-	public JavaMethodArgument[] getArguments() {
+	public MethodArgument[] getArguments() {
 		return arguments;
 	}
 	

@@ -6,6 +6,11 @@
 
 package zenscript.parser.statement;
 
+import stanhebben.zenscript.compiler.IScopeMethod;
+import stanhebben.zenscript.compiler.ScopeStatementBlock;
+import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
@@ -45,5 +50,21 @@ public class ParsedStatementSwitch extends ParsedStatement {
 		this.label = label;
 		this.value = value;
 		this.contents = contents;
+	}
+
+	@Override
+	public Statement compile(IScopeMethod scope) {
+		Expression cValue = value.compile(scope, null).eval();
+		StatementSwitch forSwitch = new StatementSwitch(getPosition(), scope, cValue);
+		
+		IScopeMethod switchScope = new ScopeStatementBlock(scope, forSwitch, label);
+		contents.compileSwitch(switchScope, forSwitch);
+		
+		return forSwitch;
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

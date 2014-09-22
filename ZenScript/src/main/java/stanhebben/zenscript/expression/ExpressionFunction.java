@@ -12,7 +12,7 @@ import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.type.ZenTypeNative;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import zenscript.symbolic.method.MethodArgument;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.util.ZenPosition;
 
@@ -24,7 +24,7 @@ public class ExpressionFunction extends Expression {
 	private final ZenTypeFunction functionType;
 	private final List<Statement> statements;
 	
-	public ExpressionFunction(ZenPosition position, IScopeMethod environment, List<JavaMethodArgument> arguments, ZenType returnType, List<Statement> statements) {
+	public ExpressionFunction(ZenPosition position, IScopeMethod environment, List<MethodArgument> arguments, ZenType returnType, List<Statement> statements) {
 		super(position, environment);
 		
 		System.out.println("Function expression: " + arguments.size() + " arguments");

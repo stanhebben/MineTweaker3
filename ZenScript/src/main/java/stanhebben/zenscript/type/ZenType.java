@@ -16,18 +16,10 @@ import zenscript.symbolic.type.casting.CastingRuleDelegateMap;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.expand.ZenExpandCaster;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.IMethod;
 import zenscript.util.ZenPosition;
 
 public abstract class ZenType {
-	public static final int NUM_BYTE = 1;
-	public static final int NUM_SHORT = 2;
-	public static final int NUM_INT = 3;
-	public static final int NUM_LONG = 4;
-	public static final int NUM_FLOAT = 5;
-	public static final int NUM_DOUBLE = 6;
-	
 	private final IScopeGlobal environment;
 	private Map<ZenType, ICastingRule> castingRules = null;
 	
@@ -122,15 +114,15 @@ public abstract class ZenType {
 	
 	public abstract ZenType nonNull();
 	
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		return Collections.EMPTY_LIST;
 	}
 	
-	public List<IJavaMethod> getConstructors() {
+	public List<IMethod> getConstructors() {
 		return Collections.EMPTY_LIST;
 	}
 	
-	public IJavaMethod getFunction() {
+	public IMethod getFunction() {
 		return null;
 	}
 	

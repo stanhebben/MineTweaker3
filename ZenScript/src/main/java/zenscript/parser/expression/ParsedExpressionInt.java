@@ -6,11 +6,14 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.AnyLong;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -34,5 +37,10 @@ public class ParsedExpressionInt extends ParsedExpression {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return new AnyLong(value);
 	}
 }

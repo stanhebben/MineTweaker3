@@ -8,6 +8,7 @@ package minetweaker.runtime;
 
 import java.io.IOException;
 import java.io.InputStream;
+import zenscript.parser.IFileLoader;
 
 /**
  *
@@ -15,6 +16,8 @@ import java.io.InputStream;
  */
 public interface IScriptIterator {
 	public String getGroupName();
+	
+	public IFileLoader getGroupFileLoader();
 	
 	public boolean next();
 	

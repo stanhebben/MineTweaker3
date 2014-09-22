@@ -1,30 +1,36 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
  */
-
 package minetweaker.api.block;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import minetweaker.util.ArrayUtil;
 
 /**
- *
- * @author Stan
+ * Implements an or (|) operation on two or more blocks.
+ * 
+ * @author Stan Hebben
  */
-public class BlockPatternOr implements IBlockPattern {
+public final class BlockPatternOr implements IBlockPattern {
 	private final IBlockPattern[] elements;
 	
-	public BlockPatternOr(IBlockPattern[] elements) {
+	/**
+	 * Constructs a block pattern consisting of the given elements.
+	 * 
+	 * @param elements 
+	 */
+	public BlockPatternOr(IBlockPattern... elements) {
 		this.elements = elements;
 	}
 	
-	public BlockPatternOr(IBlockPattern a, IBlockPattern b) {
-		this.elements = new IBlockPattern[] {a, b};
-	}
-
+	// ####################################
+	// ### IBlockPattern implementation ###
+	// ####################################
+	
 	@Override
 	public List<IBlock> getBlocks() {
 		List<IBlock> blocks = new ArrayList<IBlock>();
@@ -64,5 +70,32 @@ public class BlockPatternOr implements IBlockPattern {
 	@Override
 	public IBlockPattern or(IBlockPattern pattern) {
 		return new BlockPatternOr(ArrayUtil.append(elements, pattern));
+	}
+	
+	// #############################
+	// ### Object implementation ###
+	// #############################
+	
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 29 * hash + Arrays.deepHashCode(this.elements);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final BlockPatternOr other = (BlockPatternOr) obj;
+		
+		if (!Arrays.deepEquals(this.elements, other.elements)) {
+			return false;
+		}
+		return true;
 	}
 }

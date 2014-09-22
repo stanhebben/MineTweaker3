@@ -18,9 +18,14 @@ public class AnyString implements IAny {
 	public AnyString(String value) {
 		this.value = value;
 	}
-
+	
 	@Override
 	public IAny not() {
+		throw new UnsupportedOperationException("Cannot perform not on a string");
+	}
+
+	@Override
+	public IAny invert() {
 		throw new UnsupportedOperationException("Cannot perform arithmetic on a string");
 	}
 
@@ -180,8 +185,8 @@ public class AnyString implements IAny {
 	}
 
 	@Override
-	public int getNumberType() {
-		return 0;
+	public NumberType getNumberType() {
+		return NumberType.NONE;
 	}
 
 	@Override
@@ -192,6 +197,28 @@ public class AnyString implements IAny {
 	@Override
 	public Iterator<IAny[]> iteratorMulti(int n) {
 		throw new UnsupportedOperationException("iterator with " + n + " variables not supported");
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 79 * hash + (this.value != null ? this.value.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final AnyString other = (AnyString) obj;
+		if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+			return false;
+		}
+		return true;
 	}
 	
 	private class CharacterIterator implements Iterator<IAny> {

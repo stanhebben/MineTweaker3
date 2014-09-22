@@ -1,7 +1,6 @@
 package minetweaker;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,19 +16,14 @@ import minetweaker.api.formatting.IFormatter;
 import minetweaker.api.game.IGame;
 import minetweaker.api.mods.ILoadedMods;
 import minetweaker.runtime.ILogger;
-import minetweaker.runtime.MTTweaker;
 import minetweaker.api.recipes.IRecipeManager;
 import minetweaker.api.oredict.IOreDict;
 import minetweaker.api.recipes.IFurnaceManager;
 import minetweaker.api.server.IServer;
 import minetweaker.api.vanilla.IVanilla;
 import minetweaker.runtime.GlobalRegistry;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.symbols.SymbolJavaStaticField;
-import stanhebben.zenscript.symbols.SymbolJavaStaticGetter;
-import stanhebben.zenscript.symbols.SymbolJavaStaticMethod;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import minetweaker.runtime.symbol.ITweakerSymbol;
+import minetweaker.runtime.symbol.SymbolUtil;
 import zenscript.annotations.ZenClass;
 import zenscript.annotations.ZenExpansion;
 
@@ -80,27 +74,20 @@ public class MineTweakerAPI {
 			registerClass(cls);
 		}
 		
-		registerGlobalSymbol("logger", getJavaStaticGetterSymbol(MineTweakerAPI.class, "getLogger"));
-		registerGlobalSymbol("recipes", getJavaStaticFieldSymbol(MineTweakerAPI.class, "recipes"));
-		registerGlobalSymbol("furnace", getJavaStaticFieldSymbol(MineTweakerAPI.class, "furnace"));
-		registerGlobalSymbol("oreDict", getJavaStaticFieldSymbol(MineTweakerAPI.class, "oreDict"));
-		registerGlobalSymbol("events", getJavaStaticFieldSymbol(MineTweakerAPI.class, "events"));
-		registerGlobalSymbol("server", getJavaStaticFieldSymbol(MineTweakerAPI.class, "server"));
-		registerGlobalSymbol("client", getJavaStaticFieldSymbol(MineTweakerAPI.class, "client"));
-		registerGlobalSymbol("game", getJavaStaticFieldSymbol(MineTweakerAPI.class, "game"));
-		registerGlobalSymbol("loadedMods", getJavaStaticFieldSymbol(MineTweakerAPI.class, "loadedMods"));
-		registerGlobalSymbol("format", getJavaStaticFieldSymbol(MineTweakerAPI.class, "format"));
-		registerGlobalSymbol("vanilla", getJavaStaticFieldSymbol(MineTweakerAPI.class, "vanilla"));
+		registerGlobalSymbol("logger", SymbolUtil.getStaticGetter(MineTweakerAPI.class, "getLogger"));
+		registerGlobalSymbol("recipes", SymbolUtil.getStaticField(MineTweakerAPI.class, "recipes"));
+		registerGlobalSymbol("furnace", SymbolUtil.getStaticField(MineTweakerAPI.class, "furnace"));
+		registerGlobalSymbol("oreDict", SymbolUtil.getStaticField(MineTweakerAPI.class, "oreDict"));
+		registerGlobalSymbol("events", SymbolUtil.getStaticField(MineTweakerAPI.class, "events"));
+		registerGlobalSymbol("server", SymbolUtil.getStaticField(MineTweakerAPI.class, "server"));
+		registerGlobalSymbol("client", SymbolUtil.getStaticField(MineTweakerAPI.class, "client"));
+		registerGlobalSymbol("game", SymbolUtil.getStaticField(MineTweakerAPI.class, "game"));
+		registerGlobalSymbol("loadedMods", SymbolUtil.getStaticField(MineTweakerAPI.class, "loadedMods"));
+		registerGlobalSymbol("format", SymbolUtil.getStaticField(MineTweakerAPI.class, "format"));
+		registerGlobalSymbol("vanilla", SymbolUtil.getStaticField(MineTweakerAPI.class, "vanilla"));
 	}
 	
 	private MineTweakerAPI() {}
-	
-	/**
-	 * The Tweaker is where you apply undoable actions. Any kind of action that
-	 * reloads with the scripts should always be submitted to the tweaker.
-	 */
-	@Deprecated
-	public static final MTTweaker tweaker = new MTTweaker();
 	
 	/**
 	 * The logger can be used to write logging messages to the client. Error and
@@ -168,7 +155,7 @@ public class MineTweakerAPI {
 	 * @param action action object
 	 */
 	public static void apply(IUndoableAction action) {
-		tweaker.apply(action);
+		MineTweakerImplementationAPI.getTweaker().apply(action);
 	}
 	
 	/**
@@ -314,11 +301,11 @@ public class MineTweakerAPI {
 		
 		for (Annotation annotation : annotatedClass.getAnnotations()) {
 			if (annotation instanceof ZenExpansion) {
-				GlobalRegistry.registerExpansion(annotatedClass);
+				GlobalRegistry.registerAnnotatedClass(annotatedClass);
 			}
 			
 			if (annotation instanceof ZenClass) {
-				GlobalRegistry.registerNativeClass(annotatedClass);
+				GlobalRegistry.registerAnnotatedClass(annotatedClass);
 			}
 			
 			if ((annotation instanceof BracketHandler) && IBracketHandler.class.isAssignableFrom(annotatedClass)) {
@@ -341,7 +328,7 @@ public class MineTweakerAPI {
 	 * @param name symbol name
 	 * @param symbol symbol
 	 */
-	public static void registerGlobalSymbol(String name, IZenSymbol symbol) {
+	public static void registerGlobalSymbol(String name, ITweakerSymbol symbol) {
 		GlobalRegistry.registerGlobal(name, symbol);
 	}
 	
@@ -364,64 +351,5 @@ public class MineTweakerAPI {
 	 */
 	public static void registerBracketHandler(IBracketHandler handler) {
 		GlobalRegistry.registerBracketHandler(handler);
-	}
-	
-	/**
-	 * Creates a symbol that refers to a java method.
-	 * 
-	 * @param cls class that contains the method
-	 * @param name method name
-	 * @param arguments method argument types
-	 * @return corresponding symbol
-	 */
-	public static IZenSymbol getJavaStaticMethodSymbol(Class cls, String name, Class... arguments) {
-		IJavaMethod method = JavaMethod.get(GlobalRegistry.getTypeRegistry(), cls, name, arguments);
-		return new SymbolJavaStaticMethod(method);
-	}
-	
-	/**
-	 * Creates a symbol that refers to a java getter. The getter must be a method
-	 * with no arguments. The given symbol will act as a variable of which the
-	 * value can be retrieved but not set.
-	 * 
-	 * @param cls class that contains the getter method
-	 * @param name name of the method
-	 * @return corresponding symbol
-	 */
-	public static IZenSymbol getJavaStaticGetterSymbol(Class cls, String name) {
-		IJavaMethod method = JavaMethod.get(GlobalRegistry.getTypeRegistry(), cls, name);
-		return new SymbolJavaStaticGetter(method);
-	}
-	
-	/**
-	 * Creates a symbol that refers to a static field. The field must be an
-	 * existing public field in the given class. The field will act as a
-	 * variable that can be retrieved but not set.
-	 * 
-	 * @param cls class that contains the field
-	 * @param name field name (must be public)
-	 * @return corresponding symbol
-	 */
-	public static IZenSymbol getJavaStaticFieldSymbol(Class cls, String name) {
-		try {
-			Field field = cls.getField(name);
-			return new SymbolJavaStaticField(cls, field, GlobalRegistry.getTypeRegistry());
-		} catch (NoSuchFieldException ex) {
-			return null;
-		} catch (SecurityException ex) {
-			return null;
-		}
-	}
-	
-	/**
-	 * Loads a Java method from an existing class.
-	 * 
-	 * @param cls method class
-	 * @param name method name
-	 * @param arguments argument types
-	 * @return java method
-	 */
-	public static IJavaMethod getJavaMethod(Class cls, String name, Class... arguments) {
-		return JavaMethod.get(GlobalRegistry.getTypeRegistry(), cls, name, arguments);
 	}
 }

@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.type.natives.JavaMethodExpanding;
 import zenscript.util.ZenPosition;
 
@@ -27,10 +27,10 @@ import zenscript.util.ZenPosition;
 public class ZenExpandMember {
 	private final ZenType type;
 	private final String name;
-	private IJavaMethod getter;
-	private IJavaMethod setter;
-	private final List<IJavaMethod> staticMethods = new ArrayList<IJavaMethod>();
-	private final List<IJavaMethod> virtualMethods = new ArrayList<IJavaMethod>();
+	private IMethod getter;
+	private IMethod setter;
+	private final List<IMethod> staticMethods = new ArrayList<IMethod>();
+	private final List<IMethod> virtualMethods = new ArrayList<IMethod>();
 	
 	public ZenExpandMember(ZenType type, String name) {
 		this.type = type;
@@ -45,7 +45,7 @@ public class ZenExpandMember {
 		return new StaticGetValue(position, environment);
 	}
 	
-	public void setGetter(IJavaMethod getter) {
+	public void setGetter(IMethod getter) {
 		if (this.getter != null) {
 			throw new RuntimeException(type + "." + name + " already has a getter");
 		} else {
@@ -53,7 +53,7 @@ public class ZenExpandMember {
 		}
 	}
 	
-	public void setSetter(IJavaMethod setter) {
+	public void setSetter(IMethod setter) {
 		if (this.setter != null) {
 			throw new RuntimeException(type + "." + name + " already has a setter");
 		} else {
@@ -61,11 +61,11 @@ public class ZenExpandMember {
 		}
 	}
 	
-	public void addVirtualMethod(IJavaMethod method) {
+	public void addVirtualMethod(IMethod method) {
 		virtualMethods.add(new JavaMethodExpanding(type, method));
 	}
 	
-	public void addStaticMethod(IJavaMethod method) {
+	public void addStaticMethod(IMethod method) {
 		staticMethods.add(method);
 	}
 	
@@ -96,7 +96,7 @@ public class ZenExpandMember {
 		}
 		
 		@Override
-		public List<IJavaMethod> getMethods() {
+		public List<IMethod> getMethods() {
 			return virtualMethods;
 		}
 
@@ -142,7 +142,7 @@ public class ZenExpandMember {
 		}
 		
 		@Override
-		public List<IJavaMethod> getMethods() {
+		public List<IMethod> getMethods() {
 			return staticMethods;
 		}
 

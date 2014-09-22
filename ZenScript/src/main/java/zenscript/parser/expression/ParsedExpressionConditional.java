@@ -6,10 +6,12 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionConditional;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -37,5 +39,19 @@ public class ParsedExpressionConditional extends ParsedExpression {
 				condition.compile(environment, environment.getTypes().BOOL).eval().cast(getPosition(), environment.getTypes().BOOL),
 				ifThen.compile(environment, predictedType).eval(),
 				ifElse.compile(environment, predictedType).eval());
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny conditionValue = condition.eval(environment);
+		if (conditionValue == null)
+			return null;
+		
+		boolean conditionBool = conditionValue.asBool();
+		if (conditionBool) {
+			return ifThen.eval(environment);
+		} else {
+			return ifElse.eval(environment);
+		}
 	}
 }

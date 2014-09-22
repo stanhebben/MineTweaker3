@@ -13,7 +13,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import zenscript.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.JavaMethod;
 import zenscript.util.ZenPosition;
 
 /**

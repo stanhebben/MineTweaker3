@@ -18,9 +18,8 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
-import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.type.casting.CastingRuleMatchedFunction;
 import zenscript.symbolic.type.casting.ICastingRule;
@@ -33,13 +32,13 @@ import zenscript.util.ZenPosition;
  */
 public class ZenTypeFunction extends ZenType {
 	private final ZenType returnType;
-	private final List<JavaMethodArgument> arguments;
+	private final List<MethodArgument> arguments;
 	private final String name;
 	
 	private final Map<ZenType, CastingRuleMatchedFunction> implementedInterfaces = new HashMap<ZenType, CastingRuleMatchedFunction>();
 	private String className = null;
 	
-	public ZenTypeFunction(IScopeGlobal environment, ZenType returnType, List<JavaMethodArgument> arguments) {
+	public ZenTypeFunction(IScopeGlobal environment, ZenType returnType, List<MethodArgument> arguments) {
 		super(environment);
 		
 		this.returnType = returnType;
@@ -49,7 +48,7 @@ public class ZenTypeFunction extends ZenType {
 		StringBuilder nameBuilder = new StringBuilder();
 		nameBuilder.append("function(");
 		boolean first = true;
-		for (JavaMethodArgument type : arguments) {
+		for (MethodArgument type : arguments) {
 			if (first) {
 				first = false;
 			} else {
@@ -65,7 +64,7 @@ public class ZenTypeFunction extends ZenType {
 		return returnType;
 	}
 	
-	public List<JavaMethodArgument> getArguments() {
+	public List<MethodArgument> getArguments() {
 		return arguments;
 	}
 	
@@ -88,7 +87,7 @@ public class ZenTypeFunction extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 	
@@ -106,13 +105,13 @@ public class ZenTypeFunction extends ZenType {
 		}
 		
 		TypeRegistry types = getEnvironment().getTypes();
-		List<IJavaMethod> methods = type.getMethods();
+		List<IMethod> methods = type.getMethods();
 		
 		if (methods.isEmpty()) {
 			return null;
 		}
 		
-		for (IJavaMethod method : methods) {
+		for (IMethod method : methods) {
 			ZenType methodReturnType = method.getReturnType();
 			ICastingRule returnCastingRule = null;
 			if (!returnType.equals(methodReturnType)) {
@@ -123,7 +122,7 @@ public class ZenTypeFunction extends ZenType {
 				}
 			}
 			
-			JavaMethodArgument[] methodArguments = method.getArguments();
+			MethodArgument[] methodArguments = method.getArguments();
 			if (methodArguments.length < arguments.size()) {
 				System.out.println("Argument count doesn't match");
 				return null;
@@ -196,7 +195,7 @@ public class ZenTypeFunction extends ZenType {
 	}
 	
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		// TODO: implement the method
 		return null;
 	}

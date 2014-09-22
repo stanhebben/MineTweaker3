@@ -9,17 +9,18 @@ package minetweaker.mc1710.brackets;
 import java.util.List;
 import minetweaker.IBracketHandler;
 import minetweaker.annotations.BracketHandler;
-import minetweaker.mc1710.oredict.MCOreDictEntry;
 import minetweaker.api.oredict.IOreDictEntry;
-import minetweaker.runtime.GlobalRegistry;
+import minetweaker.mc1710.oredict.MCOreDictEntry;
+import minetweaker.runtime.symbol.SymbolUtil;
 import stanhebben.zenscript.compiler.IScopeGlobal;
+import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.lexer.Token;
+import zenscript.runtime.IAny;
+import zenscript.symbolic.method.IMethod;
 import zenscript.util.ZenPosition;
 
 /**
@@ -32,49 +33,52 @@ public class OreBracketHandler implements IBracketHandler {
 		return new MCOreDictEntry(name);
 	}
 	
+	private final IMethod method;
+	
+	public OreBracketHandler(IScopeGlobal scope) {
+		method = SymbolUtil.getZenStaticMethod(scope, OreBracketHandler.class, "getOre", String.class);
+	}
+	
 	@Override
-	public IZenSymbol resolve(IScopeGlobal environment, List<Token> tokens) {
+	public IZenSymbol resolve(List<Token> tokens) {
 		if (tokens.size() > 2) {
 			if (tokens.get(0).getValue().equals("ore") && tokens.get(1).getValue().equals(":")) {
-				return find(environment, tokens, 2, tokens.size());
+				return find(tokens, 2, tokens.size());
 			}
 		}
 		
 		return null;
 	}
 	
-	private IZenSymbol find(IScopeGlobal environment, List<Token> tokens, int startIndex, int endIndex) {
+	@Override
+	public IAny eval(List<Token> tokens) {
+		return null;
+	}
+	
+	private IZenSymbol find(List<Token> tokens, int startIndex, int endIndex) {
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
 			Token token = tokens.get(i);
 			valueBuilder.append(token.getValue());
 		}
 		
-		return new OreReferenceSymbol(environment, valueBuilder.toString());
+		return new OreReferenceSymbol(valueBuilder.toString());
 	}
 	
 	private class OreReferenceSymbol implements IZenSymbol {
-		private final IScopeGlobal environment;
 		private final String name;
 		
-		public OreReferenceSymbol(IScopeGlobal environment, String name) {
-			this.environment = environment;
+		public OreReferenceSymbol(String name) {
 			this.name = name;
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position) {
-			IJavaMethod method = JavaMethod.get(
-					GlobalRegistry.getTypeRegistry(),
-					OreBracketHandler.class,
-					"getOre",
-					String.class);
-			
+		public IPartialExpression instance(ZenPosition position, IScopeMethod scope) {
 			return new ExpressionCallStatic(
 					position,
-					environment,
+					scope,
 					method,
-					new ExpressionString(position, name));
+					new ExpressionString(position, scope, name));
 		}
 	}
 }

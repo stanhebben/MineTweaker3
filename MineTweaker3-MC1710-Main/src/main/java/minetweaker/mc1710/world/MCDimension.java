@@ -7,6 +7,7 @@
 package minetweaker.mc1710.world;
 
 import minetweaker.api.block.IBlock;
+import minetweaker.api.minecraft.MCBlock;
 import minetweaker.api.minecraft.MineTweakerMC;
 import minetweaker.api.world.IDimension;
 import net.minecraft.world.World;
@@ -20,6 +21,10 @@ public class MCDimension implements IDimension {
 	
 	public MCDimension(World world) {
 		this.world = world;
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 
 	@Override
@@ -40,5 +45,14 @@ public class MCDimension implements IDimension {
 	@Override
 	public IBlock getBlock(int x, int y, int z) {
 		return MineTweakerMC.getBlock(world, x, y, z);
+	}
+
+	@Override
+	public void setBlock(int x, int y, int z, IBlock block, boolean render) {
+		world.setBlock(x, y, z, MCBlock.getBlock(block), block.getMeta(), render ? 2 : 6);
+		
+		if (block.getTileData() != null) {
+			world.setTileEntity(x, y, z, MCBlock.getTileEntity(block));
+		}
 	}
 }

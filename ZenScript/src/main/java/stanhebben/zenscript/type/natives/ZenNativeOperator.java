@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.type.natives;
 
+import zenscript.symbolic.method.IMethod;
 import zenscript.annotations.OperatorType;
 
 /**
@@ -14,9 +15,9 @@ import zenscript.annotations.OperatorType;
  */
 public class ZenNativeOperator {
 	private final OperatorType operator;
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public ZenNativeOperator(OperatorType operator, IJavaMethod method) {
+	public ZenNativeOperator(OperatorType operator, IMethod method) {
 		this.operator = operator;
 		this.method = method;
 	}
@@ -25,7 +26,7 @@ public class ZenNativeOperator {
 		return operator;
 	}
 	
-	public IJavaMethod getMethod() {
+	public IMethod getMethod() {
 		return method;
 	}
 }

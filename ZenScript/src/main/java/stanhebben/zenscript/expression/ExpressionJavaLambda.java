@@ -36,11 +36,12 @@ public class ExpressionJavaLambda extends Expression {
 	
 	public ExpressionJavaLambda(
 			ZenPosition position,
+			IScopeMethod scope,
 			Class interfaceClass,
 			List<ParsedFunctionArgument> arguments,
 			List<Statement> statements,
 			ZenType type) {
-		super(position);
+		super(position, scope);
 		
 		this.interfaceClass = interfaceClass;
 		this.arguments = arguments;

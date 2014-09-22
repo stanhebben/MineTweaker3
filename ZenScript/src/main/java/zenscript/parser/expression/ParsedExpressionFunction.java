@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.objectweb.asm.ClassVisitor;
 import stanhebben.zenscript.IZenCompileEnvironment;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionFunction;
@@ -22,11 +20,12 @@ import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
 import zenscript.parser.elements.ParsedFunctionArgument;
-import zenscript.parser.elements.ParsedFunctionHeader;
+import zenscript.parser.elements.ParsedFunctionSignature;
 import zenscript.parser.statement.ParsedStatement;
+import zenscript.runtime.IAny;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
@@ -36,10 +35,10 @@ import zenscript.util.ZenPosition;
  * @author Stan
  */
 public class ParsedExpressionFunction extends ParsedExpression {
-	private final ParsedFunctionHeader header;
+	private final ParsedFunctionSignature header;
 	private final List<ParsedStatement> statements;
 	
-	public ParsedExpressionFunction(ZenPosition position, ParsedFunctionHeader header, List<ParsedStatement> statements) {
+	public ParsedExpressionFunction(ZenPosition position, ParsedFunctionSignature header, List<ParsedStatement> statements) {
 		super(position);
 		
 		this.header = header;
@@ -49,9 +48,9 @@ public class ParsedExpressionFunction extends ParsedExpression {
 	@Override
 	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
 		ZenType returnType = header.getReturnType().compile(environment);
-		List<JavaMethodArgument> arguments;
+		List<MethodArgument> arguments;
 		
-		IJavaMethod function = predictedType.getFunction();
+		IMethod function = predictedType.getFunction();
 		if (function == null) {
 			arguments = header.getCompiledArguments(environment);
 		} else {
@@ -69,7 +68,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 				}
 			}
 			
-			arguments = new ArrayList<JavaMethodArgument>();
+			arguments = new ArrayList<MethodArgument>();
 			for (int i = 0; i < header.getArguments().size(); i++) {
 				ParsedFunctionArgument argument = header.getArguments().get(i);
 				
@@ -80,18 +79,16 @@ public class ParsedExpressionFunction extends ParsedExpression {
 					defaultValue = argument.getDefaultValue().compile(environment, type).eval();
 				}
 				
-				arguments.add(new JavaMethodArgument(name, type, defaultValue));
+				arguments.add(new MethodArgument(name, type, defaultValue));
 			}
 		}
 		
 		SymbolicFunction functionUnit = new SymbolicFunction(returnType, arguments);
 		EnvironmentFunctionLiteral scope = new EnvironmentFunctionLiteral(environment, functionUnit);
 		
-		List<SymbolLocal> argumentLocals = new ArrayList<SymbolLocal>();
 		for (int i = 0; i < arguments.size(); i++) {
-			JavaMethodArgument argument = arguments.get(i);
+			MethodArgument argument = arguments.get(i);
 			SymbolLocal symbol = new SymbolLocal(argument.getType(), false);
-			argumentLocals.add(symbol);
 			
 			scope.putValue(
 					argument.getName(),
@@ -104,12 +101,13 @@ public class ParsedExpressionFunction extends ParsedExpression {
 			cStatements.add(statement.compile(scope));
 		}
 		
-		// TODO: compile statements
-		Expression result = new ExpressionFunction(getPosition(), environment, arguments, returnType, statements);
-		
-		
-		
+		Expression result = new ExpressionFunction(getPosition(), environment, arguments, returnType, cStatements);
 		return result;
+	}
+	
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return null;
 	}
 	
 	private static class EnvironmentFunctionLiteral implements IScopeMethod {
@@ -124,11 +122,6 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		}
 
 		@Override
-		public ClassVisitor getClassOutput() {
-			return outer.getClassOutput();
-		}
-
-		@Override
 		public TypeRegistry getTypes() {
 			return outer.getTypes();
 		}
@@ -136,11 +129,6 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		@Override
 		public IZenCompileEnvironment getEnvironment() {
 			return outer.getEnvironment();
-		}
-
-		@Override
-		public TypeExpansion getExpansion(String name) {
-			return outer.getExpansion(name);
 		}
 
 		@Override
@@ -190,6 +178,16 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		@Override
 		public void warning(ZenPosition position, String message) {
 			outer.warning(position, message);
+		}
+
+		@Override
+		public Statement getControlStatement(String label) {
+			return null;
+		}
+
+		@Override
+		public ZenType getReturnType() {
+			return functionUnit.getReturnType();
 		}
 	}
 }

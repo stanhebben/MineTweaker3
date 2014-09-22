@@ -39,6 +39,7 @@ import minetweaker.api.vanilla.IVanilla;
 import minetweaker.api.vanilla.LootEntry;
 import minetweaker.api.world.IBiome;
 import minetweaker.runtime.IScriptProvider;
+import minetweaker.runtime.MTTweaker;
 import minetweaker.util.EventList;
 import minetweaker.util.IEventHandler;
 
@@ -63,6 +64,8 @@ public class MineTweakerImplementationAPI {
 	private static final ListenPlayerLoggedOut LISTEN_LOGOUT = new ListenPlayerLoggedOut();
 	private static final ListenBlockInfo LISTEN_BLOCK_INFO = new ListenBlockInfo();
 	private static final EventList<ReloadEvent> ONRELOAD = new EventList<ReloadEvent>();
+	
+	private static final MTTweaker tweaker = new MTTweaker();
 	
 	static {
 		minetweakerCommands = new HashMap<String, MineTweakerCommand>();
@@ -429,6 +432,10 @@ public class MineTweakerImplementationAPI {
 				}));
 	}
 	
+	public static MTTweaker getTweaker() {
+		return tweaker;
+	}
+	
 	/**
 	 * Access point to the event handler implementation.
 	 */
@@ -505,7 +512,7 @@ public class MineTweakerImplementationAPI {
 	 * @param provider script provider
 	 */
 	public static void setScriptProvider(IScriptProvider provider) {
-		MineTweakerAPI.tweaker.setScriptProvider(provider);
+		tweaker.setScriptProvider(provider);
 	}
 	
 	/**
@@ -523,7 +530,7 @@ public class MineTweakerImplementationAPI {
 			events.onPlayerLoggedOut(LISTEN_LOGOUT);
 		}
 		
-		MineTweakerAPI.tweaker.rollback();
+		tweaker.rollback();
 		
 		if (MineTweakerAPI.server != null) {
 			server.addCommand("minetweaker", "", new String[] { "mt" }, new ICommandFunction() {
@@ -558,10 +565,10 @@ public class MineTweakerImplementationAPI {
 		
 		ONRELOAD.publish(new ReloadEvent());
 		
-		MineTweakerAPI.tweaker.load();
+		tweaker.load();
 		
 		if (MineTweakerAPI.server != null) {
-			platform.distributeScripts(MineTweakerAPI.tweaker.getScriptData());
+			platform.distributeScripts(tweaker.getScriptData());
 		}
 	}
 	

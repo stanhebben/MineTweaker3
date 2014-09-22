@@ -8,6 +8,7 @@ package zenscript.parser.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import stanhebben.zenscript.IZenCompileEnvironment;
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IScopeMethod;
@@ -19,7 +20,7 @@ import zenscript.lexer.ParseException;
 import zenscript.lexer.Token;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
-import zenscript.parser.elements.ParsedFunctionHeader;
+import zenscript.parser.elements.ParsedFunctionSignature;
 import zenscript.parser.statement.ParsedStatement;
 import zenscript.parser.type.IParsedType;
 import zenscript.parser.type.TypeParser;
@@ -253,6 +254,13 @@ public abstract class ParsedExpression {
 						position,
 						readUnaryExpression(parser.peek().getPosition(), parser, errorLogger),
 						OperatorType.NEG);
+			
+			case T_TILDE:
+				parser.next();
+				return new ParsedExpressionUnary(
+						position,
+						readUnaryExpression(parser.peek().getPosition(), parser, errorLogger),
+						OperatorType.INVERT);
 				
 			default:
 				return readPostfixExpression(position, parser, errorLogger);
@@ -350,7 +358,7 @@ public abstract class ParsedExpression {
 				// function (argname, argname, ...) { ...contents... }
 				tokener.next();
 				
-				ParsedFunctionHeader header = ParsedFunctionHeader.parse(tokener, errorLogger);
+				ParsedFunctionSignature header = ParsedFunctionSignature.parse(tokener, errorLogger, null);
 				
 				tokener.required(T_AOPEN, "{ expected");
 				
@@ -404,7 +412,7 @@ public abstract class ParsedExpression {
 						}
 					}
 					
-					return new ParsedExpressionMap(position, keys, values);
+					return new ParsedExpressionAssociative(position, keys, values);
 				}
 			}
 			case T_NEW: {
@@ -453,5 +461,5 @@ public abstract class ParsedExpression {
 		return compile(environment, predictedType).eval();
 	}
 	
-	public abstract IAny eval();
+	public abstract IAny eval(IZenCompileEnvironment environment);
 }

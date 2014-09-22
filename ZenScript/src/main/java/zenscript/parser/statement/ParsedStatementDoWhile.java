@@ -11,6 +11,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementDoWhile;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
@@ -59,5 +60,10 @@ public class ParsedStatementDoWhile extends ParsedStatement {
 		ScopeStatementBlock statementScope = new ScopeStatementBlock(scope, compiled, label);
 		compiled.setContents(contents.compile(statementScope));
 		return compiled;
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

@@ -6,6 +6,8 @@
 
 package stanhebben.zenscript.type.natives;
 
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.IMethod;
 import java.util.HashMap;
 import java.util.Map;
 import stanhebben.zenscript.expression.Expression;
@@ -16,14 +18,14 @@ import stanhebben.zenscript.util.MethodOutput;
  *
  * @author Stan
  */
-public class JavaMethodGenerated implements IJavaMethod {
+public class JavaMethodGenerated implements IMethod {
 	private final boolean isStatic;
 	private final boolean isInterface;
 	private final boolean isVarargs;
 	private final String owner;
 	private final String name;
 	
-	private final JavaMethodArgument[] arguments;
+	private final MethodArgument[] arguments;
 	private final Map<String, Integer> argumentByName;
 	private final boolean[] optional;
 	private final ZenType returnType;
@@ -37,7 +39,7 @@ public class JavaMethodGenerated implements IJavaMethod {
 			String owner,
 			String name,
 			ZenType returnType,
-			JavaMethodArgument[] arguments,
+			MethodArgument[] arguments,
 			boolean[] optional) {
 		this.isStatic = isStatic;
 		this.isInterface = isInterface;
@@ -51,7 +53,7 @@ public class JavaMethodGenerated implements IJavaMethod {
 		
 		StringBuilder descriptorString = new StringBuilder();
 		descriptorString.append('(');
-		for (JavaMethodArgument argument : arguments) {
+		for (MethodArgument argument : arguments) {
 			descriptorString.append(argument.getType().getSignature());
 		}
 		descriptorString.append(')');
@@ -159,7 +161,7 @@ public class JavaMethodGenerated implements IJavaMethod {
 	}
 
 	@Override
-	public JavaMethodArgument[] getArguments() {
+	public MethodArgument[] getArguments() {
 		return arguments;
 	}
 

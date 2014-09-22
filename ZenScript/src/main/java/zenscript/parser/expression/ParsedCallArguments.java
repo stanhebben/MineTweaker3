@@ -8,17 +8,19 @@ package zenscript.parser.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArray;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
-import stanhebben.zenscript.type.natives.IJavaMethod;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
+import zenscript.runtime.IAny;
 
 /**
  *
@@ -74,7 +76,7 @@ public class ParsedCallArguments {
 		numUnkeyedValues = numUnkeyed;
 	}
 	
-	public MatchedArguments compile(List<IJavaMethod> methods, IScopeMethod environment) {
+	public MatchedArguments compile(List<IMethod> methods, IScopeMethod environment) {
 		ZenType[] predictedTypes = predict(methods);
 		
 		// We now have the predicted types array and we can use it to compile
@@ -87,7 +89,7 @@ public class ParsedCallArguments {
 		// Now match the expression again to find the actual matching method
 		
 		// do the argument types match exactly?
-		for (IJavaMethod method : methods) {
+		for (IMethod method : methods) {
 			Expression[] matched = match(method, environment, compiled, true);
 			if (matched != null) {
 				return new MatchedArguments(method, matched);
@@ -95,7 +97,7 @@ public class ParsedCallArguments {
 		}
 		
 		// do the argument types match after implicit conversion?
-		for (IJavaMethod method : methods) {
+		for (IMethod method : methods) {
 			Expression[] matched = match(method, environment, compiled, false);
 			if (matched != null) {
 				return new MatchedArguments(method, matched);
@@ -103,6 +105,24 @@ public class ParsedCallArguments {
 		}
 		
 		return null;
+	}
+	
+	public IAny[] compileValues(IZenCompileEnvironment environment) {
+		for (String key : keys) {
+			if (key != null)
+				return null;
+		}
+		
+		IAny[] results = new IAny[values.size()];
+		for (int i = 0; i < results.length; i++) {
+			IAny value = values.get(i).eval(environment);
+			if (value == null)
+				return null;
+			
+			results[i] = value;
+		}
+		
+		return results;
 	}
 	
 	// #######################
@@ -116,11 +136,11 @@ public class ParsedCallArguments {
 	 * @param methods method candidates
 	 * @return predicted types
 	 */
-	private ZenType[] predict(List<IJavaMethod> methods) {
+	private ZenType[] predict(List<IMethod> methods) {
 		ZenType[] predictedTypes = new ZenType[values.size()];
 		boolean[] ambiguous = new boolean[values.size()];
 		
-		outer: for (IJavaMethod method : methods) {
+		outer: for (IMethod method : methods) {
 			if (!method.accepts(values.size()))
 				continue;
 			
@@ -129,7 +149,7 @@ public class ParsedCallArguments {
 			// - the number of arguments is acceptable
 			// - named parameters are all available
 			// - the omitted arguments are optional
-			JavaMethodArgument[] arguments = method.getArguments();
+			MethodArgument[] arguments = method.getArguments();
 			boolean[] isUsed = new boolean[arguments.length - numUnkeyedValues];
 			
 			for (int i = numUnkeyedValues; i < values.size(); i++) {
@@ -188,10 +208,10 @@ public class ParsedCallArguments {
 	 * @param exactly
 	 * @return 
 	 */
-	private Expression[] match(IJavaMethod method, IScopeMethod environment, Expression[] compiled, boolean exactly) {
+	private Expression[] match(IMethod method, IScopeMethod environment, Expression[] compiled, boolean exactly) {
 		int numUnkeyed = numUnkeyedValues;
 		
-		JavaMethodArgument[] arguments = method.getArguments();
+		MethodArgument[] arguments = method.getArguments();
 		
 		if (!method.isVarargs() && numUnkeyed > arguments.length)
 			return null;
@@ -307,7 +327,7 @@ public class ParsedCallArguments {
 	 * @param fromIndex index in the expressions array to assemble from
 	 * @return array expression with vararg values
 	 */
-	private Expression assembleVararg(JavaMethodArgument argument, IScopeMethod environment, Expression[] compiled, int fromIndex) {
+	private Expression assembleVararg(MethodArgument argument, IScopeMethod environment, Expression[] compiled, int fromIndex) {
 		ZenType varargBaseType = ((ZenTypeArray) argument.getType()).getBaseType();
 		
 		// combine varargs into an array expression
@@ -326,10 +346,10 @@ public class ParsedCallArguments {
 	}
 	
 	public class MatchedArguments {
-		public final IJavaMethod method;
+		public final IMethod method;
 		public final Expression[] arguments;
 		
-		public MatchedArguments(IJavaMethod method, Expression[] arguments) {
+		public MatchedArguments(IMethod method, Expression[] arguments) {
 			this.method = method;
 			this.arguments = arguments;
 		}

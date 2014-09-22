@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package zenscript.parser.elements;
 
 import java.util.ArrayList;
@@ -11,7 +5,7 @@ import java.util.List;
 import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import zenscript.symbolic.method.MethodArgument;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.Token;
 import zenscript.lexer.ZenTokener;
@@ -22,11 +16,14 @@ import zenscript.parser.type.ParsedTypeBasic;
 import zenscript.parser.type.TypeParser;
 
 /**
- *
- * @author Stan
+ * Contains a parsed function header. A function header is the combination of
+ * return type, argument types and names (and default values) as well as generic
+ * parameters, if any.
+ * 
+ * @author Stan Hebben
  */
-public class ParsedFunctionHeader {
-	public static ParsedFunctionHeader parse(ZenTokener tokener, IZenErrorLogger errorLogger) {
+public class ParsedFunctionSignature {
+	public static ParsedFunctionSignature parse(ZenTokener tokener, IZenErrorLogger errorLogger, List<ParsedGenericParameter> generics) {
 		List<ParsedFunctionArgument> arguments = new ArrayList<ParsedFunctionArgument>();
 		boolean isVararg = false;
 		
@@ -66,14 +63,16 @@ public class ParsedFunctionHeader {
 			returnType = TypeParser.parse(tokener, errorLogger);
 		}
 		
-		return new ParsedFunctionHeader(arguments, returnType, isVararg);
+		return new ParsedFunctionSignature(generics, arguments, returnType, isVararg);
 	}
 	
+	private final List<ParsedGenericParameter> generics;
 	private final List<ParsedFunctionArgument> arguments;
 	private final IParsedType returnType;
 	private final boolean isVararg;
 	
-	public ParsedFunctionHeader(List<ParsedFunctionArgument> arguments, IParsedType returnType, boolean isVararg) {
+	public ParsedFunctionSignature(List<ParsedGenericParameter> generics, List<ParsedFunctionArgument> arguments, IParsedType returnType, boolean isVararg) {
+		this.generics = generics;
 		this.arguments = arguments;
 		this.returnType = returnType;
 		this.isVararg = isVararg;
@@ -91,8 +90,8 @@ public class ParsedFunctionHeader {
 		return isVararg;
 	}
 	
-	public List<JavaMethodArgument> getCompiledArguments(IScopeGlobal environment) {
-		List<JavaMethodArgument> result = new ArrayList<JavaMethodArgument>();
+	public List<MethodArgument> getCompiledArguments(IScopeGlobal environment) {
+		List<MethodArgument> result = new ArrayList<MethodArgument>();
 		
 		for (int i = 0; i < arguments.size(); i++) {
 			ZenType type = arguments.get(i).getType().compile(environment);
@@ -103,7 +102,7 @@ public class ParsedFunctionHeader {
 			} else {
 				compiledDefaultValue = defaultValue.compile(environment.getTypes().getStaticGlobalEnvironment(), type).eval();
 			}
-			result.add(new JavaMethodArgument(arguments.get(i).getName(), type, compiledDefaultValue));
+			result.add(new MethodArgument(arguments.get(i).getName(), type, compiledDefaultValue));
 		}
 		
 		return result;

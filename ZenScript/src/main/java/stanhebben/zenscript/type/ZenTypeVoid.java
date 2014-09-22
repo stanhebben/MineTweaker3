@@ -14,7 +14,6 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.util.MethodOutput;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
 import zenscript.util.ZenPosition;
 
@@ -47,7 +46,7 @@ public class ZenTypeVoid extends ZenType {
 	}
 
 	@Override
-	public IZenIterator makeIterator(int numValues, MethodOutput output) {
+	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 

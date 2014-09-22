@@ -9,6 +9,7 @@ package zenscript.parser.statement;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementExpression;
+import stanhebben.zenscript.statements.StatementSwitch;
 import zenscript.IZenErrorLogger;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.T_SEMICOLON;
@@ -37,5 +38,10 @@ public class ParsedStatementExpression extends ParsedStatement {
 	@Override
 	public Statement compile(IScopeMethod scope) {
 		return new StatementExpression(getPosition(), scope, expression.compile(scope, null).eval());
+	}
+
+	@Override
+	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+		forSwitch.onStatement(compile(scope));
 	}
 }

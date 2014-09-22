@@ -8,7 +8,7 @@ package stanhebben.zenscript.expression;
 
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.util.ZenPosition;
 
@@ -18,10 +18,10 @@ import zenscript.util.ZenPosition;
  */
 public class ExpressionNew extends Expression {
 	private final ZenType type;
-	private final IJavaMethod constructor;
+	private final IMethod constructor;
 	private final Expression[] arguments;
 	
-	public ExpressionNew(ZenPosition position, IScopeMethod environment, ZenType type, IJavaMethod constructor, Expression[] arguments) {
+	public ExpressionNew(ZenPosition position, IScopeMethod environment, ZenType type, IMethod constructor, Expression[] arguments) {
 		super(position, environment);
 		
 		this.type = type;

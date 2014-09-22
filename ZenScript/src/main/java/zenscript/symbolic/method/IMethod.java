@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package stanhebben.zenscript.type.natives;
+package zenscript.symbolic.method;
 
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
@@ -14,7 +14,7 @@ import stanhebben.zenscript.util.MethodOutput;
  *
  * @author Stan
  */
-public interface IJavaMethod {
+public interface IMethod {
 	public boolean isStatic();
 	
 	public boolean isVarargs();
@@ -31,7 +31,7 @@ public interface IJavaMethod {
 	
 	public void invokeStatic(MethodOutput output, Expression[] arguments);
 	
-	public JavaMethodArgument[] getArguments();
+	public MethodArgument[] getArguments();
 	
 	public int getArgumentIndex(String name);
 	

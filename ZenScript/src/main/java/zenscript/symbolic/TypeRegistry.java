@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.objectweb.asm.ClassVisitor;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.compiler.IScopeGlobal;
@@ -270,11 +269,6 @@ public final class TypeRegistry {
 	
 	private class StaticGlobalEnvironment implements IScopeMethod {
 		@Override
-		public ClassVisitor getClassOutput() {
-			throw new UnsupportedOperationException("Not possible!");
-		}
-
-		@Override
 		public TypeRegistry getTypes() {
 			return TypeRegistry.this;
 		}
@@ -282,11 +276,6 @@ public final class TypeRegistry {
 		@Override
 		public IZenCompileEnvironment getEnvironment() {
 			return environment.getEnvironment();
-		}
-
-		@Override
-		public TypeExpansion getExpansion(String name) {
-			return environment.getExpansion(name);
 		}
 
 		@Override
@@ -336,6 +325,11 @@ public final class TypeRegistry {
 
 		@Override
 		public Statement getControlStatement(String label) {
+			return null;
+		}
+
+		@Override
+		public ZenType getReturnType() {
 			return null;
 		}
 	}

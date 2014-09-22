@@ -15,6 +15,7 @@ public enum OperatorType {
 	OR,
 	AND,
 	XOR,
+	INVERT,
 	NEG,
 	NOT,
 	INDEXSET,

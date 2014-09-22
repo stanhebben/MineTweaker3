@@ -6,10 +6,13 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionFloat;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.AnyDouble;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -32,5 +35,10 @@ public class ParsedExpressionFloat extends ParsedExpression {
 				environment,
 				value,
 				predictedType == environment.getTypes().FLOAT ? predictedType : environment.getTypes().DOUBLE);
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		return new AnyDouble(value);
 	}
 }

@@ -6,9 +6,11 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -29,5 +31,14 @@ public class ParsedExpressionMember extends ParsedExpression {
 	@Override
 	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
 		return value.compile(environment, null).getMember(getPosition(), member);
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny valueValue = value.eval(environment);
+		if (valueValue == null)
+			return null;
+		
+		return valueValue.memberGet(member);
 	}
 }

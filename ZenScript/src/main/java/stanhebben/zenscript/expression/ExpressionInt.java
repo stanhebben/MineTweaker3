@@ -9,6 +9,7 @@ package stanhebben.zenscript.expression;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
+import zenscript.runtime.IAny;
 import zenscript.symbolic.TypeRegistry;
 import zenscript.util.ZenPosition;
 
@@ -32,13 +33,13 @@ public class ExpressionInt extends Expression {
 		if (type == this.type) return this;
 		
 		switch (type.getNumberType()) {
-			case ZenType.NUM_BYTE:
-			case ZenType.NUM_SHORT:
-			case ZenType.NUM_INT:
-			case ZenType.NUM_LONG:
+			case IAny.NUM_BYTE:
+			case IAny.NUM_SHORT:
+			case IAny.NUM_INT:
+			case IAny.NUM_LONG:
 				return new ExpressionInt(getPosition(), getEnvironment(), value, type);
-			case ZenType.NUM_FLOAT:
-			case ZenType.NUM_DOUBLE:
+			case IAny.NUM_FLOAT:
+			case IAny.NUM_DOUBLE:
 				return new ExpressionFloat(getPosition(), getEnvironment(), value, type);
 		}
 		

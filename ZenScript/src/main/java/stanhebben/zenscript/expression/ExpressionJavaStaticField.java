@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package stanhebben.zenscript.expression.partial;
+package stanhebben.zenscript.expression;
 
 import java.lang.reflect.Field;
 import stanhebben.zenscript.compiler.IScopeMethod;
@@ -19,14 +19,12 @@ import zenscript.util.ZenPosition;
  * @author Stan
  */
 public class ExpressionJavaStaticField extends Expression {
-	private final Class cls;
 	private final Field field;
 	private final ZenType type;
 	
-	public ExpressionJavaStaticField(ZenPosition position, IScopeMethod environment, Class cls, Field field) {
+	public ExpressionJavaStaticField(ZenPosition position, IScopeMethod environment, Field field) {
 		super(position, environment);
 		
-		this.cls = cls;
 		this.field = field;
 		type = environment.getTypes().getNativeType(position, field.getGenericType(), TypeCapture.EMPTY);
 	}
@@ -39,7 +37,7 @@ public class ExpressionJavaStaticField extends Expression {
 	@Override
 	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			output.getStaticField(cls, field);
+			output.getStaticField(field.getDeclaringClass(), field);
 		}
 	}
 }

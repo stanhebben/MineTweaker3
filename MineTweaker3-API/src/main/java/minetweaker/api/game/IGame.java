@@ -1,7 +1,14 @@
+/*
+ * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
+ */
 package minetweaker.api.game;
 
 import java.util.List;
+import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockDefinition;
+import minetweaker.api.block.IBlockFactory;
 import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.item.IItemDefinition;
 import minetweaker.api.liquid.ILiquidDefinition;
@@ -94,4 +101,33 @@ public interface IGame {
 	 */
 	@ZenMethod
 	public String localize(String key, String lang);
+	
+	/**
+	 * Gets the block definition for the given ID, or creates a new one if it
+	 * doesn't already exist in the current world.
+	 * 
+	 * @param id block id
+	 * @return block definition
+	 */
+	@ZenMethod
+	public IBlockDefinition makeDefinition(String id);
+	
+	/**
+	 * Registers a simple block with a given ID. Fails if the given ID already
+	 * exists.
+	 * 
+	 * @param meta meta value to be used
+	 * @param block block to register
+	 */
+	@ZenMethod
+	public void registerBlock(int meta, IBlock block);
+	
+	/**
+	 * Registers an advanced block with a given ID. Fails if the given ID
+	 * alreadly exists.
+	 * 
+	 * @param factory block factory to register
+	 */
+	@ZenMethod
+	public void registerAdvancedBlock(IBlockFactory factory);
 }

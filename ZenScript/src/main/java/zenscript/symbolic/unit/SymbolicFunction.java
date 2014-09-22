@@ -11,7 +11,7 @@ import java.util.List;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.JavaMethodArgument;
+import zenscript.symbolic.method.MethodArgument;
 
 /**
  *
@@ -19,13 +19,17 @@ import stanhebben.zenscript.type.natives.JavaMethodArgument;
  */
 public class SymbolicFunction {
 	private final ZenType returnType;
-	private final List<JavaMethodArgument> arguments;
+	private final List<MethodArgument> arguments;
 	
 	private List<SymbolLocal> captured = new ArrayList<SymbolLocal>();
 	
-	public SymbolicFunction(ZenType returnType, List<JavaMethodArgument> arguments) {
+	public SymbolicFunction(ZenType returnType, List<MethodArgument> arguments) {
 		this.returnType = returnType;
 		this.arguments = arguments;
+	}
+	
+	public ZenType getReturnType() {
+		return returnType;
 	}
 	
 	public IPartialExpression addCapture(SymbolLocal local) {

@@ -6,11 +6,13 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -35,5 +37,13 @@ public class ParsedExpressionDollar extends ParsedExpression {
 		} else {
 			return symbol.instance(getPosition(), environment);
 		}
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		if (name == null)
+			return null;
+		
+		return environment.evalDollar(name);
 	}
 }

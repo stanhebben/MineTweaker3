@@ -15,7 +15,7 @@ import stanhebben.zenscript.expression.ExpressionLocalSet;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
@@ -81,7 +81,7 @@ public class PartialLocal implements IPartialExpression {
 	}
 
 	@Override
-	public List<IJavaMethod> getMethods() {
+	public List<IMethod> getMethods() {
 		return variable.getType().getMethods();
 	}
 

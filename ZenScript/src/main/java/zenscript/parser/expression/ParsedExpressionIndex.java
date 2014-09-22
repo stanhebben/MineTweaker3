@@ -6,11 +6,13 @@
 
 package zenscript.parser.expression;
 
+import stanhebben.zenscript.IZenCompileEnvironment;
 import zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
 /**
@@ -34,5 +36,18 @@ public class ParsedExpressionIndex extends ParsedExpression {
 		Expression cValue = value.compile(environment, null).eval();
 		Expression cIndex = index.compile(environment, null).eval();
 		return cValue.getType().binary(getPosition(), environment, cValue, cIndex, OperatorType.INDEXGET);
+	}
+
+	@Override
+	public IAny eval(IZenCompileEnvironment environment) {
+		IAny valueValue = value.eval(environment);
+		if (valueValue == null)
+			return null;
+		
+		IAny indexValue = index.eval(environment);
+		if (indexValue == null)
+			return null;
+		
+		return valueValue.indexGet(indexValue);
 	}
 }

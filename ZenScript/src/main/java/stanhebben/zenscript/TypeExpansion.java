@@ -24,7 +24,7 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.expand.ZenExpandCaster;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
-import stanhebben.zenscript.type.natives.JavaMethod;
+import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.symbolic.TypeRegistry;

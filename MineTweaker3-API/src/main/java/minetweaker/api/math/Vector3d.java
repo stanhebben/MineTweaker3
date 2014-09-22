@@ -4,39 +4,39 @@
  * and open the template in the editor.
  */
 
-package minetweaker.api.util;
+package minetweaker.api.math;
 
 import zenscript.annotations.ZenClass;
 import zenscript.annotations.ZenGetter;
 
 /**
  *
- * @author Stan
+ * @author Stan Hebben
  */
-@ZenClass("minetweaker.util.Position3f")
-public class Position3f {
-	private final float x;
-	private final float y;
-	private final float z;
+@ZenClass("minetweaker.util.Vector3f")
+public class Vector3d {
+	private final double x;
+	private final double y;
+	private final double z;
 	
-	public Position3f(float x, float y, float z) {
+	public Vector3d(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
 	@ZenGetter("x")
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 	
 	@ZenGetter("y")
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 	
 	@ZenGetter("z")
-	public float getZ() {
+	public double getZ() {
 		return z;
 	}
 }

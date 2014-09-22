@@ -13,7 +13,7 @@ import stanhebben.zenscript.type.ZenType;
 import zenscript.symbolic.type.casting.CastingRuleDelegateStaticMethod;
 import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.type.natives.IJavaMethod;
+import zenscript.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
 import zenscript.util.ZenPosition;
 
@@ -22,9 +22,9 @@ import zenscript.util.ZenPosition;
  * @author Stanneke
  */
 public class ZenExpandCaster {
-	private final IJavaMethod method;
+	private final IMethod method;
 	
-	public ZenExpandCaster(IJavaMethod method) {
+	public ZenExpandCaster(IMethod method) {
 		this.method = method;
 	}
 	

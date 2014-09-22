@@ -23,17 +23,17 @@ import zenscript.util.ZenPosition;
 public class ParsedFunction {
 	public static ParsedFunction parse(ZenTokener parser, IZenErrorLogger errorLogger) {
 		parser.next();
+		
+		List<ParsedGenericParameter> genericParameters = ParsedGenericParameters.parse(parser, errorLogger);
 		Token tName = parser.required(ZenTokener.TOKEN_ID, "identifier expected");
 
-		ParsedFunctionHeader header = ParsedFunctionHeader.parse(parser, errorLogger);
+		ParsedFunctionSignature header = ParsedFunctionSignature.parse(parser, errorLogger, genericParameters);
 		
 		parser.required(T_AOPEN, "{ expected");
 		
 		ArrayList<ParsedStatement> statements = new ArrayList<ParsedStatement>();
-		if (parser.optional(T_ACLOSE) == null) {
-			while (parser.optional(T_ACLOSE) == null) {
-				statements.add(ParsedStatement.parse(parser, errorLogger));
-			}
+		while (parser.optional(T_ACLOSE) == null) {
+			statements.add(ParsedStatement.parse(parser, errorLogger));
 		}
 		
 		return new ParsedFunction(tName.getPosition(), tName.getValue(), header, statements);
@@ -41,12 +41,12 @@ public class ParsedFunction {
 	
 	private final ZenPosition position;
 	private final String name;
-	private final ParsedFunctionHeader header;
+	private final ParsedFunctionSignature header;
 	private final List<ParsedStatement> statements;
 	
 	//private final String signature;
 	
-	private ParsedFunction(ZenPosition position, String name, ParsedFunctionHeader header, List<ParsedStatement> statements) {
+	private ParsedFunction(ZenPosition position, String name, ParsedFunctionSignature header, List<ParsedStatement> statements) {
 		this.position = position;
 		this.name = name;
 		this.header = header;
@@ -74,7 +74,7 @@ public class ParsedFunction {
 		return signature;
 	}*/
 	
-	public ParsedFunctionHeader getHeader() {
+	public ParsedFunctionSignature getHeader() {
 		return header;
 	}
 	
