@@ -16,19 +16,19 @@ import stanhebben.zenscript.type.ZenTypeArrayList;
  * @author Stan
  */
 public class CastingRuleDelegateList implements ICastingRuleDelegate {
-	private final IScopeGlobal environment;
+	private final IScopeGlobal scope;
 	private final ICastingRuleDelegate base;
 	private final ZenTypeArrayList from;
 	
-	public CastingRuleDelegateList(IScopeGlobal environment, ICastingRuleDelegate base, ZenTypeArrayList from) {
-		this.environment = environment;
+	public CastingRuleDelegateList(IScopeGlobal scope, ICastingRuleDelegate base, ZenTypeArrayList from) {
+		this.scope = scope;
 		this.base = base;
 		this.from = from;
 	}
 
 	@Override
 	public void registerCastingRule(ZenType type, ICastingRule rule) {
-		base.registerCastingRule(new ZenTypeArrayBasic(environment, type), new CastingRuleListArray(rule, from, new ZenTypeArrayBasic(environment, type)));
-		base.registerCastingRule(new ZenTypeArrayList(environment, type), new CastingRuleListList(rule, from, new ZenTypeArrayList(environment, type)));
+		base.registerCastingRule(new ZenTypeArrayBasic(type), new CastingRuleListArray(rule, from, new ZenTypeArrayBasic(type)));
+		base.registerCastingRule(new ZenTypeArrayList(type), new CastingRuleListList(rule, from, new ZenTypeArrayList(type)));
 	}
 }

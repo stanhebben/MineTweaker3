@@ -46,6 +46,6 @@ public class ParsedStatementCase extends ParsedStatement {
 
 	@Override
 	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
-		forSwitch.onCase(getPosition(), value.compile(scope, forSwitch.getType()).eval());
+		forSwitch.onCase(getPosition(), value.compile(scope, forSwitch.getType()));
 	}
 }

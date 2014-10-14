@@ -24,43 +24,6 @@ import zenscript.util.ZenPosition;
  */
 public class ParsedImport {
 	public static ParsedImport parse(ZenTokener tokener, IZenErrorLogger errorLogger) {
-		
-		/*for (Import imprt : imports) {
-			List<String> name = imprt.getName();
-			IPartialExpression type = null;
-			
-			StringBuilder nameSoFar = new StringBuilder();
-			
-			for (String part : name) {
-				if (type == null) {
-					nameSoFar.append(part);
-					type = environment.getValue(part, imprt.getPosition());
-					if (type == null) {
-						environment.error(imprt.getPosition(), "could not find package " + type);
-						break;
-					}
-				} else {
-					nameSoFar.append('.').append(part);
-					type = type.getMember(imprt.getPosition(), environment, part);
-					if (type == null) {
-						environment.error(imprt.getPosition(), "could not find type or package " + nameSoFar);
-						break;
-					}
-				}
-			}
-			
-			if (type != null) {
-				IZenSymbol symbol = type.toSymbol();
-				if (symbol == null) {
-					environmentScript.error(imprt.getPosition(), "Not a valid type");
-				} else {
-					environmentScript.putValue(imprt.getRename(), type.toSymbol(), imprt.getPosition());
-				}
-			} else {
-				environmentScript.putValue(imprt.getRename(), new SymbolType(ZenType.ANY), imprt.getPosition());
-			}
-		}*/
-		
 		ZenPosition position = tokener.required(T_IMPORT, "import expected").getPosition();
 		
 		List<String> importName = new ArrayList<String>();

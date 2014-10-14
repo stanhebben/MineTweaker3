@@ -37,7 +37,7 @@ public class ParsedStatementExpression extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		return new StatementExpression(getPosition(), scope, expression.compile(scope, null).eval());
+		return new StatementExpression(getPosition(), scope, expression.compile(scope, null));
 	}
 
 	@Override

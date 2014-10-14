@@ -54,7 +54,7 @@ public class ParsedStatementSwitch extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		Expression cValue = value.compile(scope, null).eval();
+		Expression cValue = value.compile(scope, null);
 		StatementSwitch forSwitch = new StatementSwitch(getPosition(), scope, cValue);
 		
 		IScopeMethod switchScope = new ScopeStatementBlock(scope, forSwitch, label);

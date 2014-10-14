@@ -11,7 +11,6 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import zenscript.parser.type.IParsedType;
-import zenscript.parser.type.ParsedTypeBasic;
 import zenscript.runtime.IAny;
 import zenscript.util.ZenPosition;
 
@@ -31,10 +30,10 @@ public class ParsedExpressionCast extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		ZenType compiledType = type.compile(environment);
 		
-		return value.compile(environment, compiledType).eval().cast(getPosition(), compiledType);
+		return value.compile(environment, compiledType).cast(getPosition(), compiledType);
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public class ParsedStatementDoWhile extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		Expression compiledCondition = condition.compile(scope, scope.getTypes().BOOL).eval();
+		Expression compiledCondition = condition.compile(scope, scope.getTypes().BOOL);
 		StatementDoWhile compiled = new StatementDoWhile(getPosition(), scope, compiledCondition);
 		
 		ScopeStatementBlock statementScope = new ScopeStatementBlock(scope, compiled, label);

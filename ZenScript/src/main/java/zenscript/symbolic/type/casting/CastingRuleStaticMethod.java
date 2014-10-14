@@ -38,7 +38,7 @@ public class CastingRuleStaticMethod implements ICastingRule {
 
 	@Override
 	public ZenType getInputType() {
-		return method.getArguments()[0].getType();
+		return method.getMethodHeader().getArguments().get(0).getType();
 	}
 
 	@Override

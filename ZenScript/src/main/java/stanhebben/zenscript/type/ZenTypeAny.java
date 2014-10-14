@@ -18,7 +18,6 @@ import stanhebben.zenscript.symbols.IZenSymbol;
 import zenscript.symbolic.method.IMethod;
 import zenscript.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethodPrefixed;
-import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import zenscript.runtime.IAny;
 import zenscript.symbolic.TypeRegistry;
@@ -62,7 +61,7 @@ public class ZenTypeAny extends ZenType {
 	public ICastingRule getCastingRule(ZenType type) {
 		ICastingRule base = super.getCastingRule(type);
 		if (base == null) {
-			return new CastingRuleAnyAs(type, getEnvironment().getTypes());
+			return new CastingRuleAnyAs(type, getScope().getTypes());
 		} else {
 			return base;
 		}
@@ -70,8 +69,9 @@ public class ZenTypeAny extends ZenType {
 	
 	@Override
 	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
+		
 		rules.registerCastingRule(types.BOOL, methods.CAST_ANY_BOOL);
 		rules.registerCastingRule(types.BOOLOBJECT, new CastingRuleNullableStaticMethod(methods.BOOL_VALUEOF, methods.CAST_ANY_BOOL));
 		rules.registerCastingRule(types.BYTE, methods.CAST_ANY_BYTE);
@@ -124,75 +124,142 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
 		CommonMethods methods = environment.getTypes().getCommonMethods();
+		ZenType any = environment.getTypes().ANY;
 		
 		switch (operator) {
 			case NEG:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_NEG, value);
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_NEG,
+						values[0]);
 			case NOT:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_NOT, value);
-			default:
-				return new ExpressionInvalid(position, environment);
-		}
-	}
-
-	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		TypeRegistry types = getEnvironment().getTypes();
-		CommonMethods methods = types.getCommonMethods();
-		
-		ZenType any = types.ANY;
-		
-		switch (operator) {
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_NOT,
+						values[0]);
 			case ADD:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_ADD, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_ADD,
+						values[0],
+						values[1].cast(position, any));
 			case CAT:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_CAT, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_CAT,
+						values[0],
+						values[1].cast(position, any));
 			case SUB:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_SUB, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_SUB,
+						values[0],
+						values[1].cast(position, any));
 			case MUL:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_MUL, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_MUL,
+						values[0],
+						values[1].cast(position, any));
 			case DIV:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_DIV, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_DIV,
+						values[0],
+						values[1].cast(position, any));
 			case MOD:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_MOD, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_MOD,
+						values[0],
+						values[1].cast(position, any));
 			case AND:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_AND, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_AND,
+						values[0],
+						values[1].cast(position, any));
 			case OR:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_OR, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_OR,
+						values[0],
+						values[1].cast(position, any));
 			case XOR:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_XOR, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_XOR,
+						values[0],
+						values[1].cast(position, any));
 			case CONTAINS:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_CONTAINS, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_CONTAINS,
+						values[0],
+						values[1].cast(position, any));
 			case INDEXGET:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_INDEXGET, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_INDEXGET,
+						values[0],
+						values[1].cast(position, any));
 			case RANGE:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_RANGE, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_RANGE,
+						values[0],
+						values[1].cast(position, any));
 			case COMPARE:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_COMPARETO, left, right.cast(position, any));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_COMPARETO,
+						values[0],
+						values[1].cast(position, any));
 			case MEMBERGETTER:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_MEMBERGET, left, right.cast(position, types.STRING));
-			default:
-				return new ExpressionInvalid(position, environment);
-		}
-	}
-
-	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		TypeRegistry types = getEnvironment().getTypes();
-		CommonMethods methods = types.getCommonMethods();
-		
-		switch (operator) {
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_MEMBERGET,
+						values[0],
+						values[1].cast(position, environment.getTypes().STRING));
 			case INDEXSET:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_INDEXSET, first, second.cast(position, types.ANY), third.cast(position, types.ANY));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_INDEXSET,
+						values[0],
+						values[1].cast(position, any),
+						values[2].cast(position, any));
 			case MEMBERSETTER:
-				return new ExpressionCallVirtual(position, environment, methods.METHOD_MEMBERSET, first, second.cast(position, types.STRING), third.cast(position, types.ANY));
+				return new ExpressionCallVirtual(
+						position,
+						environment,
+						methods.METHOD_MEMBERSET,
+						values[0],
+						values[1].cast(position, environment.getTypes().STRING),
+						values[2].cast(position, any));
 			default:
 				return new ExpressionInvalid(position, environment);
 		}
 	}
-
+	
 	@Override
 	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		Expression comparator = new ExpressionCallVirtual(
@@ -208,26 +275,7 @@ public class ZenTypeAny extends ZenType {
 				comparator,
 				type);
 	}
-
-	/*@Override
-	public Expression call(ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
-		return new ExpressionCallVirtual(
-				position,
-				environment,
-				METHOD_CALL,
-				receiver,
-				arguments);
-	}
 	
-	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		ZenType[] result = new ZenType[numArguments];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = ANY;
-		}
-		return result;
-	}*/
-
 	@Override
 	public String getName() {
 		return "any";
@@ -256,7 +304,7 @@ public class ZenTypeAny extends ZenType {
 	@Override
 	public List<IMethod> getMethods() {
 		if (methods == null)
-			methods = Collections.singletonList(JavaMethod.get(getEnvironment().getTypes(), IAny.class, "call", IAny.class, IAny[].class));
+			methods = Collections.singletonList(JavaMethod.get(getScope().getTypes(), IAny.class, "call", IAny.class, IAny[].class));
 		
 		return methods;
 	}

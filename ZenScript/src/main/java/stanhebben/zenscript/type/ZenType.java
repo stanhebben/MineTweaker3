@@ -1,11 +1,12 @@
 package stanhebben.zenscript.type;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.TypeExpansion;
+import zenscript.symbolic.type.TypeExpansion;
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
 import stanhebben.zenscript.compiler.IScopeGlobal;
@@ -16,37 +17,33 @@ import zenscript.symbolic.type.casting.CastingRuleDelegateMap;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.type.expand.ZenExpandCaster;
+import zenscript.symbolic.MemberVirtual;
 import zenscript.symbolic.method.IMethod;
 import zenscript.util.ZenPosition;
 
 public abstract class ZenType {
-	private final IScopeGlobal environment;
+	private final IScopeGlobal scope;
 	private Map<ZenType, ICastingRule> castingRules = null;
+	private final List<TypeExpansion> expansions = new ArrayList<TypeExpansion>();
 	
 	public ZenType(IScopeGlobal environment) {
-		this.environment = environment;
+		this.scope = environment;
 	}
 	
-	public abstract Expression unary(
-			ZenPosition position,
-			IScopeMethod environment,
-			Expression value,
-			OperatorType operator);
+	public IScopeGlobal getScope() {
+		return scope;
+	}
 	
-	public abstract Expression binary(
-			ZenPosition position,
-			IScopeMethod environment,
-			Expression left,
-			Expression right,
-			OperatorType operator);
+	public void addExpansion(TypeExpansion expansion)
+	{
+		expansions.add(expansion);
+	}
 	
-	public abstract Expression trinary(
+	public abstract Expression operator(
 			ZenPosition position,
 			IScopeMethod environment,
-			Expression first,
-			Expression second,
-			Expression third,
-			OperatorType operator);
+			OperatorType operator,
+			Expression... values);
 	
 	public abstract Expression compare(
 			ZenPosition position,
@@ -131,84 +128,52 @@ public abstract class ZenType {
 		return getName();
 	}
 	
-	protected IScopeGlobal getEnvironment() {
-		return environment;
-	}
-	
-	protected Expression unaryExpansion(
+	protected Expression expandOperator(
 			ZenPosition position,
 			IScopeMethod environment,
-			Expression value,
-			OperatorType operator) {
-		TypeExpansion expansion = environment.getExpansion(getName());
-		if (expansion != null) {
-			return expansion.unary(position, environment, value, operator);
+			OperatorType operator,
+			Expression... values) {
+		for (TypeExpansion expansion : expansions) {
+			Expression expansionOperator = expansion.operatorExact(position, environment, operator, values);
+			if (expansionOperator != null)
+				return expansionOperator;
 		}
+		
+		for (TypeExpansion expansion : expansions) {
+			Expression expansionOperator = expansion.operator(position, environment, operator, values);
+			if (expansionOperator != null)
+				return expansionOperator;
+		}
+		
 		return null;
 	}
 	
-	protected Expression binaryExpansion(
-			ZenPosition position,
-			IScopeMethod environment,
-			Expression left,
-			Expression right,
-			OperatorType operator) {
-		TypeExpansion expansion = environment.getExpansion(getName());
-		if (expansion != null) {
-			return expansion.binary(position, environment, left, right, operator);
+	protected void memberExpansion(MemberVirtual member) {
+		for (TypeExpansion expansion : expansions) {
+			if (expansion.getScope().isVisible(member.getScope()))
+				expansion.expandMember(member);
 		}
-		return null;
 	}
 	
-	protected Expression trinaryExpansion(
-			ZenPosition position,
-			IScopeMethod environment,
-			Expression first,
-			Expression second,
-			Expression third,
-			OperatorType operator) {
-		TypeExpansion expansion = environment.getExpansion(getName());
-		if (expansion != null) {
-			return expansion.ternary(position, environment, first, second, third, operator);
+	protected void staticMemberExpansion(MemberStatic member) {
+		for (TypeExpansion expansion : expansions) {
+			if (expansion.getScope().isVisible(member.getScope()))
+				expansion.expandStaticMember(member);
 		}
-		return null;
-	}
-	
-	protected IPartialExpression memberExpansion(
-			ZenPosition position,
-			IScopeMethod environment,
-			Expression value,
-			String member) {
-		TypeExpansion expansion = environment.getExpansion(getName());
-		if (expansion != null) {
-			return expansion.instanceMember(position, environment, value, member);
-		}
-		return null;
-	}
-	
-	protected IPartialExpression staticMemberExpansion(
-			ZenPosition position,
-			IScopeMethod environment,
-			String member) {
-		TypeExpansion expansion = environment.getExpansion(getName());
-		if (expansion != null) {
-			return expansion.staticMember(position, environment, member);
-		}
-		return null;
 	}
 	
 	protected void constructExpansionCastingRules(ICastingRuleDelegate rules) {
-		TypeExpansion expansion = environment.getExpansion(getName());
+		TypeExpansion expansion = scope.getExpansion(getName());
 		if (expansion != null) {
-			expansion.constructCastingRules(environment, rules);
+			expansion.constructCastingRules(scope, rules);
 		}
 	}
 	
 	protected boolean canCastExpansion(ZenType toType) {
 		String name = getName();
-		TypeExpansion expansion = environment.getExpansion(name);
+		TypeExpansion expansion = scope.getExpansion(name);
 		if (expansion != null) {
-			ZenExpandCaster caster = expansion.getCaster(toType, environment);
+			ZenExpandCaster caster = expansion.getCaster(toType, scope);
 			if (caster != null) {
 				return true;
 			}

@@ -6,6 +6,7 @@
 
 package minetweaker.mc164.item;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import minetweaker.MineTweakerAPI;
@@ -24,6 +25,7 @@ import minetweaker.api.item.IngredientOr;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.liquid.ILiquidStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
+import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.api.player.IPlayer;
 import minetweaker.mc164.actions.SetTranslationAction;
 import minetweaker.mc164.block.MCItemBlock;
@@ -64,6 +66,13 @@ public class MCItemStack implements IItemStack {
 		stack = itemStack;
 		items = Collections.<IItemStack>singletonList(this);
 		this.tag = tag;
+	}
+	
+	private MCItemStack(ItemStack itemStack, IData tag, boolean wildcardSize) {
+		stack = itemStack;
+		items = Collections.<IItemStack>singletonList(this);
+		this.tag = tag;
+		this.wildcardSize = wildcardSize;
 	}
 
 	@Override
@@ -144,6 +153,13 @@ public class MCItemStack implements IItemStack {
 		result.stackTagCompound = stack.stackTagCompound;
 		return new MCItemStack(result, tag);
 	}
+	
+	@Override
+	public IItemStack anyAmount() {
+		ItemStack result = new ItemStack(stack.getItem(), 1, stack.getItemDamage());
+		result.stackTagCompound = stack.stackTagCompound;
+		return new MCItemStack(result, tag, true);
+	}
 
 	@Override
 	public IItemStack withTag(IData tag) {
@@ -222,6 +238,9 @@ public class MCItemStack implements IItemStack {
 
 	@Override
 	public boolean matches(IItemStack item) {
+		if (item == null)
+			return false;
+		
 		ItemStack internal = getItemStack(item);
 		if (internal == null) {
 			throw new RuntimeException("Invalid item: " + item);
@@ -236,6 +255,9 @@ public class MCItemStack implements IItemStack {
 
 	@Override
 	public boolean contains(IIngredient ingredient) {
+		if (ingredient == null)
+			return false;
+		
 		List<IItemStack> iitems = ingredient.getItems();
 		if (iitems == null || iitems.size() != 1) return false;
 		return matches(iitems.get(0));
@@ -263,6 +285,23 @@ public class MCItemStack implements IItemStack {
 	@Override
 	public Object getInternal() {
 		return stack;
+	}
+	
+	@Override
+	public List<IOreDictEntry> getOres() {
+		List<IOreDictEntry> result = new ArrayList<IOreDictEntry>();
+		
+		for (String key : OreDictionary.getOreNames()) {
+			for (ItemStack is : OreDictionary.getOres(key)) {
+				if (is.getItem() == stack.getItem()
+						&& (is.getItemDamage() == OreDictionary.WILDCARD_VALUE || is.getItemDamage() == stack.getItemDamage())) {
+					result.add(MineTweakerAPI.oreDict.get(key));
+					break;
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	// #############################

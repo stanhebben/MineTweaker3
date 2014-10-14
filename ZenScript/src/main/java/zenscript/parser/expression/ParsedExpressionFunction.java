@@ -20,18 +20,20 @@ import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.MethodArgument;
 import zenscript.parser.elements.ParsedFunctionArgument;
 import zenscript.parser.elements.ParsedFunctionSignature;
 import zenscript.parser.statement.ParsedStatement;
 import zenscript.runtime.IAny;
 import zenscript.symbolic.TypeRegistry;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.MethodHeader;
 import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
 /**
- *
+ * TODO: review code quality and possible bugs
+ * 
  * @author Stan
  */
 public class ParsedExpressionFunction extends ParsedExpression {
@@ -46,51 +48,55 @@ public class ParsedExpressionFunction extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		ZenType returnType = header.getReturnType().compile(environment);
-		List<MethodArgument> arguments;
+	public IPartialExpression compilePartial(IScopeMethod scope, ZenType predictedType) {
+		MethodHeader compiledHeader = header.compile(scope);
 		
-		IMethod function = predictedType.getFunction();
-		if (function == null) {
-			arguments = header.getCompiledArguments(environment);
-		} else {
-			List<ZenType> argumentTypes = new ArrayList<ZenType>();
-			for (ParsedFunctionArgument argument : header.getArguments()) {
-				argumentTypes.add(argument.getType().compile(environment));
-			}
-			
-			if (returnType == environment.getTypes().ANY)
-				returnType = function.getReturnType();
-			
-			for (int i = 0; i < argumentTypes.size(); i++) {
-				if (i < function.getArguments().length && argumentTypes.get(i) == environment.getTypes().ANY) {
-					argumentTypes.set(i, function.getArguments()[i].getType());
+		if (predictedType != null) {
+			IMethod function = predictedType.getFunction();
+			if (function != null) {
+				MethodHeader predictedHeader = function.getMethodHeader();
+
+				List<ZenType> argumentTypes = new ArrayList<ZenType>();
+				for (ParsedFunctionArgument argument : header.getArguments()) {
+					argumentTypes.add(argument.getType().compile(scope));
 				}
-			}
-			
-			arguments = new ArrayList<MethodArgument>();
-			for (int i = 0; i < header.getArguments().size(); i++) {
-				ParsedFunctionArgument argument = header.getArguments().get(i);
-				
-				String name = argument.getName();
-				ZenType type = argumentTypes.get(i);
-				Expression defaultValue = null;
-				if (argument.getDefaultValue() != null) {
-					defaultValue = argument.getDefaultValue().compile(environment, type).eval();
+
+				ZenType newReturnType = compiledHeader.getReturnType();
+				if (compiledHeader.getReturnType() == scope.getTypes().ANY)
+					newReturnType = predictedHeader.getReturnType();
+
+				for (int i = 0; i < argumentTypes.size(); i++) {
+					if (i < predictedHeader.getArguments().size() && argumentTypes.get(i) == scope.getTypes().ANY) {
+						argumentTypes.set(i, predictedHeader.getArguments().get(i).getType());
+					}
+				}
+
+				List<MethodArgument> newArguments = new ArrayList<MethodArgument>();
+				for (int i = 0; i < header.getArguments().size(); i++) {
+					ParsedFunctionArgument argument = header.getArguments().get(i);
+
+					String name = argument.getName();
+					ZenType type = argumentTypes.get(i);
+					Expression defaultValue = null;
+					if (argument.getDefaultValue() != null) {
+						defaultValue = argument.getDefaultValue().compile(scope, type);
+					}
+
+					newArguments.add(new MethodArgument(name, type, defaultValue));
 				}
 				
-				arguments.add(new MethodArgument(name, type, defaultValue));
+				compiledHeader = new MethodHeader(newReturnType, newArguments, predictedHeader.isVarargs());
 			}
 		}
 		
-		SymbolicFunction functionUnit = new SymbolicFunction(returnType, arguments);
-		EnvironmentFunctionLiteral scope = new EnvironmentFunctionLiteral(environment, functionUnit);
+		SymbolicFunction functionUnit = new SymbolicFunction(compiledHeader);
+		EnvironmentFunctionLiteral functionScope = new EnvironmentFunctionLiteral(scope, functionUnit);
 		
-		for (int i = 0; i < arguments.size(); i++) {
-			MethodArgument argument = arguments.get(i);
+		for (int i = 0; i < compiledHeader.getArguments().size(); i++) {
+			MethodArgument argument = compiledHeader.getArguments().get(i);
 			SymbolLocal symbol = new SymbolLocal(argument.getType(), false);
 			
-			scope.putValue(
+			functionScope.putValue(
 					argument.getName(),
 					symbol,
 					header.getArguments().get(i).getPosition());
@@ -98,10 +104,10 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		
 		List<Statement> cStatements = new ArrayList<Statement>();
 		for (ParsedStatement statement : statements) {
-			cStatements.add(statement.compile(scope));
+			cStatements.add(statement.compile(functionScope));
 		}
 		
-		Expression result = new ExpressionFunction(getPosition(), environment, arguments, returnType, cStatements);
+		Expression result = new ExpressionFunction(getPosition(), scope, compiledHeader, cStatements);
 		return result;
 	}
 	
@@ -187,7 +193,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 
 		@Override
 		public ZenType getReturnType() {
-			return functionUnit.getReturnType();
+			return functionUnit.getHeader().getReturnType();
 		}
 	}
 }

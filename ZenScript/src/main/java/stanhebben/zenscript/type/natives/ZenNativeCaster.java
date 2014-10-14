@@ -24,7 +24,7 @@ public class ZenNativeCaster {
 	}
 	
 	public ZenType getReturnType() {
-		return method.getReturnType();
+		return method.getMethodHeader().getReturnType();
 	}
 	
 	public void compile(MethodOutput output) {
@@ -36,7 +36,7 @@ public class ZenNativeCaster {
 	}
 	
 	public void compileAnyCanCastImplicit(ZenType type, MethodOutput output, IScopeGlobal environment, int localClass) {
-		String casterAny = method.getReturnType().getAnyClassName();
+		String casterAny = method.getMethodHeader().getReturnType().getAnyClassName();
 		if (casterAny == null) {
 			// TODO: make sure no type ever does this
 			return;

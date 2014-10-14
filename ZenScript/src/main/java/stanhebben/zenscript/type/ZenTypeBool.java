@@ -47,7 +47,7 @@ public class ZenTypeBool extends ZenType {
 	
 	@Override
 	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
 		rules.registerCastingRule(types.STRING, new CastingRuleStaticMethod(methods.BOOL_TOSTRING_STATIC));
@@ -77,47 +77,28 @@ public class ZenTypeBool extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		return new ExpressionArithmeticUnary(position, environment, operator, value);
-	}
-	
-	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
+		TypeRegistry types = getScope().getTypes();
 		
-		if (operator == OperatorType.CAT) {
-			return types.STRING.binary(
-					position,
-					environment,
-					left.cast(position, types.STRING),
-					right.cast(position, types.STRING), OperatorType.CAT);
+		switch (operator) {
+			case NOT:
+			case INVERT:
+				return new ExpressionArithmeticUnary(position, environment, operator, values[0]);
+			case CAT:
+				return types.STRING.operator(
+						position,
+						environment,
+						OperatorType.CAT,
+						values[0].cast(position, types.STRING),
+						values[1].cast(position, types.STRING));
+			case AND:
+			case OR:
+			case XOR:
+				return new ExpressionArithmeticBinary(position, environment, operator, values[0], values[1].cast(position, this));
+			default:
+				environment.error(position, "unsupported bool operator: " + operator.getOperatorString());
+				return new ExpressionInvalid(position, environment);
 		}
-		
-		if (right.getType().canCastImplicit(types.BOOL)) {
-			switch (operator) {
-				case AND:
-				case OR:
-				case XOR:
-					if (right.getType() != types.BOOL) {
-						right = right.cast(position, types.BOOL);
-					}
-					
-					return new ExpressionArithmeticBinary(position, environment, operator, left, right);
-				default:
-					environment.error(position, "unsupported bool operator: " + operator);
-					return new ExpressionInvalid(position, environment);
-			}
-		} else {
-			environment.error(right.getPosition(), "not a valid bool value");
-			return new ExpressionInvalid(position, environment);
-		}
-	}
-	
-	@Override
-	public Expression trinary(
-			ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "operation not supported on a bool value");
-		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
@@ -130,13 +111,6 @@ public class ZenTypeBool extends ZenType {
 			return new ExpressionInvalid(position, environment);
 		}
 	}
-	
-	/*@Override
-	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "cannot call a boolean value");
-		return new ExpressionInvalid(position);
-	}*/
 	
 	@Override
 	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
@@ -172,11 +146,11 @@ public class ZenTypeBool extends ZenType {
 	
 	@Override
 	public String getAnyClassName() {
-		IScopeGlobal environment = getEnvironment();
+		IScopeGlobal scope = getScope();
 		
-		if (!environment.containsClass(ANY_NAME_2)) {
-			environment.putClass(ANY_NAME_2, new byte[0]);
-			environment.putClass(ANY_NAME_2, AnyClassWriter.construct(new AnyDefinitionBool(environment), ANY_NAME, Type.BOOLEAN_TYPE));
+		if (!scope.containsClass(ANY_NAME_2)) {
+			scope.putClass(ANY_NAME_2, new byte[0]);
+			scope.putClass(ANY_NAME_2, AnyClassWriter.construct(new AnyDefinitionBool(scope), ANY_NAME, Type.BOOLEAN_TYPE));
 		}
 		
 		return ANY_NAME;
@@ -189,7 +163,7 @@ public class ZenTypeBool extends ZenType {
 	
 	@Override
 	public ZenType nullable() {
-		return getEnvironment().getTypes().BOOLOBJECT;
+		return getScope().getTypes().BOOLOBJECT;
 	}
 	
 	@Override

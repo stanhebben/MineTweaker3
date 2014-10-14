@@ -1041,6 +1041,20 @@ public class MethodOutput {
 		visitor.visitFieldInsn(PUTFIELD, internal(owner), name, signature(descriptor));
 	}
 	
+	public void getInstanceField(Field field) {
+		if (debug)
+			System.out.println("getField " + field.getDeclaringClass().getName() + '.' + field.getName() + ":" + signature(field.getType()));
+		
+		visitor.visitFieldInsn(GETFIELD, internal(field.getDeclaringClass()), field.getName(), signature(field.getType()));
+	}
+	
+	public void putInstanceField(Field field) {
+		if (debug)
+			System.out.println("putField " + field.getDeclaringClass().getName() + '.' + field.getName() + ":" + signature(field.getType()));
+		
+		visitor.visitFieldInsn(PUTFIELD, internal(field.getDeclaringClass()), field.getName(), signature(field.getType()));
+	}
+	
 	public void getStaticField(String owner, String name, String descriptor) {
 		if (debug)
 			System.out.println("getStatic " + owner + '.' + name + ":" + descriptor);
@@ -1048,11 +1062,11 @@ public class MethodOutput {
 		visitor.visitFieldInsn(GETSTATIC, owner, name, descriptor);
 	}
 	
-	public void getStaticField(Class owner, Field field) {
+	public void getStaticField(Field field) {
 		if (debug)
-			System.out.println("getField " + owner.getName() + '.' + field.getName() + ":" + signature(field.getType()));
+			System.out.println("getField " + field.getDeclaringClass().getName() + '.' + field.getName() + ":" + signature(field.getType()));
 		
-		visitor.visitFieldInsn(GETSTATIC, internal(owner), field.getName(), signature(field.getType()));
+		visitor.visitFieldInsn(GETSTATIC, internal(field.getDeclaringClass()), field.getName(), signature(field.getType()));
 	}
 	
 	public void putStaticField(String owner, String name, String descriptor) {
@@ -1062,11 +1076,11 @@ public class MethodOutput {
 		visitor.visitFieldInsn(PUTSTATIC, owner, name, descriptor);
 	}
 	
-	public void putStaticField(Class owner, Field field) {
+	public void putStaticField(Field field) {
 		if (debug)
-			System.out.println("putStatic " + owner.getName() + '.' + field.getName() + ":" + signature(field.getType()));
+			System.out.println("putStatic " + field.getDeclaringClass().getName() + '.' + field.getName() + ":" + signature(field.getType()));
 		
-		visitor.visitFieldInsn(PUTSTATIC, internal(owner), field.getName(), signature(field.getType()));
+		visitor.visitFieldInsn(PUTSTATIC, internal(field.getDeclaringClass()), field.getName(), signature(field.getType()));
 	}
 	
 	public void aThrow() {

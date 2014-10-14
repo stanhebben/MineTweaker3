@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package zenscript.parser.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 import zenscript.IZenErrorLogger;
-import zenscript.lexer.Token;
 import zenscript.lexer.ZenTokener;
-import static zenscript.lexer.ZenTokener.TOKEN_ID;
 import static zenscript.lexer.ZenTokener.T_IMPLEMENTS;
 import static zenscript.lexer.ZenTokener.T_THIS;
 import zenscript.parser.type.IParsedType;
@@ -21,11 +18,13 @@ import zenscript.parser.type.TypeParser;
  *
  * @author Stan
  */
-public class ParsedGenericParameter {
-	public static ParsedGenericParameter parse(ZenTokener tokener, IZenErrorLogger errors) {
-		Token name = tokener.required(TOKEN_ID, "identifier expected");
+public class ParsedGenericParameter
+{
+	public static ParsedGenericParameter parse(ZenTokener tokener, IZenErrorLogger errors)
+	{
+		String name = tokener.requiredIdentifier();
 		List<IParsedGenericBound> bounds = new ArrayList<IParsedGenericBound>();
-		
+
 		while (true) {
 			if (tokener.optional(T_IMPLEMENTS) != null) {
 				IParsedType type = TypeParser.parse(tokener, errors);
@@ -37,14 +36,15 @@ public class ParsedGenericParameter {
 				break;
 			}
 		}
-		
-		return new ParsedGenericParameter(name.getValue(), bounds);
+
+		return new ParsedGenericParameter(name, bounds);
 	}
-	
+
 	private final String name;
 	private final List<IParsedGenericBound> bounds;
-	
-	public ParsedGenericParameter(String name, List<IParsedGenericBound> bounds) {
+
+	public ParsedGenericParameter(String name, List<IParsedGenericBound> bounds)
+	{
 		this.name = name;
 		this.bounds = bounds;
 	}

@@ -17,6 +17,7 @@ import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.symbolic.unit.SymbolicFunction;
 import zenscript.util.ZenPosition;
 
 /**
@@ -126,6 +127,12 @@ public class ZenNativeMember {
 		public List<IMethod> getMethods() {
 			return getter.getReturnType().getMethods();
 		}
+
+		@Override
+		public IPartialExpression via(SymbolicFunction function)
+		{
+			return this;
+		}
 	}
 	
 	private class StaticGetValue implements IPartialExpression {
@@ -187,6 +194,12 @@ public class ZenNativeMember {
 		@Override
 		public List<IMethod> getMethods() {
 			return getter.getReturnType().getMethods();
+		}
+
+		@Override
+		public IPartialExpression via(SymbolicFunction function)
+		{
+			return this;
 		}
 	}
 	

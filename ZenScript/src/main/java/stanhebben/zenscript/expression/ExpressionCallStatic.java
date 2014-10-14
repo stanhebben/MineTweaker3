@@ -33,15 +33,15 @@ public class ExpressionCallStatic extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return method.getReturnType();
+		return method.getMethodHeader().getReturnType();
 	}
 
 	@Override
 	public void compile(boolean result, MethodOutput output) {
 		method.invokeStatic(output, arguments);
 		
-		if (method.getReturnType() != getEnvironment().getTypes().VOID && !result) {
-			output.pop(method.getReturnType().isLarge());
+		if (method.getMethodHeader().getReturnType() != getEnvironment().getTypes().VOID && !result) {
+			output.pop(method.getMethodHeader().getReturnType().isLarge());
 		}
 	}
 }

@@ -28,7 +28,7 @@ public class CastingRuleDelegateArray implements ICastingRuleDelegate {
 
 	@Override
 	public void registerCastingRule(ZenType type, ICastingRule rule) {
-		base.registerCastingRule(new ZenTypeArrayBasic(environment, type), new CastingRuleArrayArray(rule, from, new ZenTypeArrayBasic(environment, type)));
-		base.registerCastingRule(new ZenTypeArrayList(environment, type), new CastingRuleArrayList(rule, from, new ZenTypeArrayList(environment, type)));
+		base.registerCastingRule(new ZenTypeArrayBasic(type), new CastingRuleArrayArray(rule, from, new ZenTypeArrayBasic(type)));
+		base.registerCastingRule(new ZenTypeArrayList(type), new CastingRuleArrayList(rule, from, new ZenTypeArrayList(type)));
 	}
 }

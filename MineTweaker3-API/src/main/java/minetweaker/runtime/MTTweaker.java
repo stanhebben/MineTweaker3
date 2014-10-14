@@ -133,8 +133,7 @@ public final class MTTweaker {
 					} catch (ParseException ex) {
 						MineTweakerAPI.logError("Error parsing " + ex.getPosition() + ": " + ex.getExplanation());
 					} catch (Throwable ex) {
-						MineTweakerAPI.logError("Error loading " + script.getName() + ": " + ex.toString());
-						ex.printStackTrace();
+						MineTweakerAPI.logError("Error loading " + script.getName() + ": " + ex.toString(), ex);
 					}
 					
 					if (reader != null) {
@@ -155,6 +154,10 @@ public final class MTTweaker {
 				} catch (Throwable ex) {
 					MineTweakerAPI.logError("Error executing " + script.getGroupName() + ": " + ex.getMessage());
 					ex.printStackTrace();
+					ZenModule module = new ZenModule(classes, MineTweakerAPI.class.getClassLoader());
+					module.getMain().run();
+				} catch (Throwable ex) {
+					MineTweakerAPI.logError("Error executing " + script.getGroupName() + ": " + ex.getMessage(), ex);
 				}*/
 			}
 		}

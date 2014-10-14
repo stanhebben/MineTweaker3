@@ -53,7 +53,7 @@ public class ParsedStatementWhile extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		Expression cCondition = condition.compile(scope, scope.getTypes().BOOL).eval();
+		Expression cCondition = condition.compile(scope, scope.getTypes().BOOL);
 		StatementWhile result = new StatementWhile(getPosition(), scope, cCondition);
 		ScopeStatementBlock blockScope = new ScopeStatementBlock(scope, result, label);
 		result.setContents(contents.compile(blockScope));

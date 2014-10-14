@@ -9,8 +9,6 @@ package stanhebben.zenscript.compiler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.objectweb.asm.ClassVisitor;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.symbols.IZenSymbol;
@@ -38,11 +36,6 @@ public class EnvironmentClass implements IScopeClass {
 	@Override
 	public IZenCompileEnvironment getEnvironment() {
 		return global.getEnvironment();
-	}
-
-	@Override
-	public TypeExpansion getExpansion(String name) {
-		return global.getExpansion(name);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ public class ParsedExpressionCall extends ParsedExpression {
 	}
 	
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		IPartialExpression cReceiver = receiver.compile(environment, null);
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		IPartialExpression cReceiver = receiver.compilePartial(environment, null);
 		
 		MatchedArguments matchedArguments = arguments.compile(cReceiver.getMethods(), environment);
 		if (matchedArguments.method.isStatic()) {
@@ -58,7 +58,7 @@ public class ParsedExpressionCall extends ParsedExpression {
 		if (receiverValue == null)
 			return null;
 		
-		IAny[] argumentValues = arguments.compileValues(environment);
+		IAny[] argumentValues = arguments.compileConstants(environment);
 		if (argumentValues == null)
 			return null;
 		

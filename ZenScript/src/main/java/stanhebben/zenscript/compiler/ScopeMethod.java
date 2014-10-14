@@ -9,11 +9,9 @@ package stanhebben.zenscript.compiler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.statements.StatementSwitch;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import zenscript.symbolic.TypeRegistry;
@@ -52,11 +50,6 @@ public class ScopeMethod implements IScopeMethod {
 	@Override
 	public IZenCompileEnvironment getEnvironment() {
 		return environment.getEnvironment();
-	}
-
-	@Override
-	public TypeExpansion getExpansion(String name) {
-		return environment.getExpansion(name);
 	}
 	
 	@Override

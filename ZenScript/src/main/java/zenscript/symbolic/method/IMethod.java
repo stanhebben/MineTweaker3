@@ -8,6 +8,7 @@ package zenscript.symbolic.method;
 
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
 
 /**
@@ -16,10 +17,6 @@ import stanhebben.zenscript.util.MethodOutput;
  */
 public interface IMethod {
 	public boolean isStatic();
-	
-	public boolean isVarargs();
-	
-	public boolean accepts(int numArguments);
 	
 	public void invokeVirtual(MethodOutput output);
 	
@@ -31,9 +28,9 @@ public interface IMethod {
 	
 	public void invokeStatic(MethodOutput output, Expression[] arguments);
 	
-	public MethodArgument[] getArguments();
+	public ZenTypeFunction getFunctionType();
 	
-	public int getArgumentIndex(String name);
+	public MethodHeader getMethodHeader();
 	
 	public ZenType getReturnType();
 }

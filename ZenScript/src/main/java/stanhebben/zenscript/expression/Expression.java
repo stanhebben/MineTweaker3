@@ -17,7 +17,7 @@ import zenscript.symbolic.unit.SymbolicFunction;
 public abstract class Expression implements IPartialExpression {	
 	public static final Expression parse(ZenTokener parser, IScopeMethod environment, ZenType predictedType) {
 		return ParsedExpression.parse(parser, environment)
-				.compile(environment, predictedType)
+				.compilePartial(environment, predictedType)
 				.eval();
 	}
 	

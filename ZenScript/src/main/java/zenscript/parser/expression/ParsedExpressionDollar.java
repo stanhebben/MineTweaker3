@@ -29,7 +29,7 @@ public class ParsedExpressionDollar extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		IZenSymbol symbol = environment.getEnvironment().getDollar(name);
 		if (symbol == null) {
 			environment.error(getPosition(), "Dollar variable not found: " + name);

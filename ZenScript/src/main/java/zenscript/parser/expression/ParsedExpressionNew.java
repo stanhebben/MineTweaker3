@@ -32,7 +32,7 @@ public class ParsedExpressionNew extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		ZenType cType = type.compile(environment);
 		MatchedArguments compiledArguments = callArguments.compile(cType.getConstructors(), environment);
 		return new ExpressionNew(getPosition(), environment, cType, compiledArguments.method, compiledArguments.arguments);

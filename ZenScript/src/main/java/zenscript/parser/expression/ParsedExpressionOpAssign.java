@@ -33,14 +33,14 @@ public class ParsedExpressionOpAssign extends ParsedExpression {
 	}
 	
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		// TODO: validate if the prediction rules are sound
-		Expression cLeft = left.compile(environment, predictedType).eval();
-		Expression cRight = right.compile(environment, cLeft.getType()).eval();
+		Expression cLeft = left.compile(environment, predictedType);
+		Expression cRight = right.compile(environment, cLeft.getType());
 		
 		Expression value = cLeft.getType().binary(getPosition(), environment, cLeft, cRight, operator);
 		
-		return left.compile(environment, predictedType).assign(getPosition(), value);
+		return left.compilePartial(environment, predictedType).assign(getPosition(), value);
 	}
 
 	@Override

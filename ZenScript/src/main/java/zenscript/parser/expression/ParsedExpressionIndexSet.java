@@ -33,11 +33,11 @@ public class ParsedExpressionIndexSet extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		// TODO: improve prediction in this expression
-		Expression cValue = value.compile(environment, null).eval();
-		Expression cIndex = index.compile(environment, null).eval();
-		Expression cSetValue = setValue.compile(environment, null).eval();
+		Expression cValue = value.compile(environment, null);
+		Expression cIndex = index.compile(environment, null);
+		Expression cSetValue = setValue.compile(environment, null);
 		return cValue.getType().trinary(getPosition(), environment, cValue, cIndex, cSetValue,OperatorType.INDEXSET);
 	} 
 

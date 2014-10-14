@@ -6,41 +6,38 @@
 
 package stanhebben.zenscript.type.natives;
 
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.method.IMethod;
+import java.util.List;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.AbstractMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.MethodHeader;
 
 /**
- * An expanding method is a static method that acts as a virtual method for an
- * existing class. The "this" parameter becomes the first parameter for the 
- * static method.
+ * This method, when called, will add an expression as first argument to
+ * another method.
  * 
  * @author Stan Hebben
  */
-public class JavaMethodPrefixed implements IMethod {
+public class JavaMethodPrefixed extends AbstractMethod {
 	private final Expression prefix;
 	private final IMethod baseMethod;
-	private final MethodArgument[] arguments;
+	private final ZenTypeFunction functionType;
 	
 	public JavaMethodPrefixed(Expression prefix, IMethod baseMethod) {
 		this.prefix = prefix;
 		this.baseMethod = baseMethod;
 		
-		arguments = new MethodArgument[baseMethod.getArguments().length + 1];
-		System.arraycopy(baseMethod.getArguments(), 0, arguments, 1, baseMethod.getArguments().length);
-		arguments[0] = new MethodArgument(null, prefix.getType(), null);
+		MethodHeader baseHeader = baseMethod.getMethodHeader();
+		List<MethodArgument> newArguments = baseHeader.getArguments().subList(1, baseHeader.getArguments().size());
+		functionType = new ZenTypeFunction(new MethodHeader(baseHeader.getReturnType(), newArguments, baseHeader.isVarargs()));
 	}
 
 	@Override
 	public boolean isStatic() {
 		return baseMethod.isStatic();
-	}
-
-	@Override
-	public boolean accepts(int numArguments) {
-		return baseMethod.accepts(numArguments - 1);
 	}
 	
 	@Override
@@ -77,22 +74,8 @@ public class JavaMethodPrefixed implements IMethod {
 	}
 
 	@Override
-	public MethodArgument[] getArguments() {
-		return arguments;
-	}
-
-	@Override
-	public int getArgumentIndex(String name) {
-		return baseMethod.getArgumentIndex(name) + 1;
-	}
-
-	@Override
-	public ZenType getReturnType() {
-		return baseMethod.getReturnType();
-	}
-
-	@Override
-	public boolean isVarargs() {
-		return baseMethod.isVarargs();
+	public ZenTypeFunction getFunctionType()
+	{
+		return functionType;
 	}
 }

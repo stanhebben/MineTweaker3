@@ -32,13 +32,13 @@ public class ParsedExpressionConditional extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		return new ExpressionConditional(
 				getPosition(),
 				environment,
-				condition.compile(environment, environment.getTypes().BOOL).eval().cast(getPosition(), environment.getTypes().BOOL),
-				ifThen.compile(environment, predictedType).eval(),
-				ifElse.compile(environment, predictedType).eval());
+				condition.compile(environment, environment.getTypes().BOOL).cast(getPosition(), environment.getTypes().BOOL),
+				ifThen.compile(environment, predictedType),
+				ifElse.compile(environment, predictedType));
 	}
 
 	@Override

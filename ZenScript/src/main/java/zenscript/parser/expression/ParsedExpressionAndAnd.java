@@ -31,12 +31,12 @@ public class ParsedExpressionAndAnd extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		return new ExpressionAndAnd(
 				getPosition(),
 				environment,
-				left.compile(environment, predictedType).eval(),
-				right.compile(environment, predictedType).eval());
+				left.compile(environment, predictedType),
+				right.compile(environment, predictedType));
 	}
 
 	@Override

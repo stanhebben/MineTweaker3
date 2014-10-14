@@ -31,9 +31,9 @@ public class ParsedExpressionRange extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		Expression compiledFrom = from.compile(environment, environment.getTypes().INT).eval();
-		Expression compiledTo = to.compile(environment, environment.getTypes().INT).eval();
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		Expression compiledFrom = from.compile(environment, environment.getTypes().INT);
+		Expression compiledTo = to.compile(environment, environment.getTypes().INT);
 		return new ExpressionIntegerRange(getPosition(), environment, compiledFrom, compiledTo);
 	}
 

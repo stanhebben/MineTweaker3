@@ -29,8 +29,8 @@ public class ParsedExpressionMember extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		return value.compile(environment, null).getMember(getPosition(), member);
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		return value.compilePartial(environment, null).getMember(getPosition(), member);
 	}
 
 	@Override

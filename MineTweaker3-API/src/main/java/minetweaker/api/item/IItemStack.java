@@ -1,5 +1,6 @@
 package minetweaker.api.item;
 
+import java.util.List;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.data.IData;
 import minetweaker.api.liquid.ILiquidStack;
@@ -10,6 +11,14 @@ import zenscript.annotations.ZenGetter;
 import zenscript.annotations.ZenMethod;
 import zenscript.annotations.ZenOperator;
 import zenscript.annotations.ZenSetter;
+import minetweaker.api.oredict.IOreDictEntry;
+import stanhebben.zenscript.annotations.OperatorType;
+import stanhebben.zenscript.annotations.ZenCaster;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenMethod;
+import stanhebben.zenscript.annotations.ZenOperator;
+import stanhebben.zenscript.annotations.ZenSetter;
 
 /**
  * Contains an item stack. An item stack consists of an item definition, 
@@ -156,6 +165,14 @@ public interface IItemStack extends IIngredient {
 	public IItemStack withAmount(int amount);
 	
 	/**
+	 * Creates an item stack with wildcard stack size.
+	 * 
+	 * @return new, modified item stack
+	 */
+	@ZenMethod
+	public IItemStack anyAmount();
+	
+	/**
 	 * Creates an item stack with the given nbt tag. Ignores existing tags.
 	 * 
 	 * @param tag item tag to be assigned
@@ -180,4 +197,13 @@ public interface IItemStack extends IIngredient {
 	 */
 	@ZenCaster
 	public IBlock asBlock();
+	
+	/**
+	 * Retrieves all the ores referring to this item. Includes wildcard ore
+	 * entries.
+	 * 
+	 * @return ore entries containing this item stack
+	 */
+	@ZenGetter("ores")
+	public List<IOreDictEntry> getOres();
 }

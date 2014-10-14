@@ -31,7 +31,7 @@ public class ParsedExpressionBracket extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		IZenSymbol resolved = environment.getEnvironment().getBracketed(environment, tokens);
 		if (resolved == null) {
 			StringBuilder builder = new StringBuilder();

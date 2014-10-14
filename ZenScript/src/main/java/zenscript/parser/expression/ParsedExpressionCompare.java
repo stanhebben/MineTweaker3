@@ -38,11 +38,12 @@ public class ParsedExpressionCompare extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		Expression cLeft = left.compile(environment, null).eval();
-		Expression cRight = right.compile(environment, null).eval();
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		Expression cLeft = left.compile(environment, null);
+		Expression cRight = right.compile(environment, null);
 		
-		return cLeft.getType().compare(getPosition(), environment, cLeft, cRight, type)
+		return cLeft.getType()
+				.compare(getPosition(), environment, cLeft, cRight, type)
 				.cast(getPosition(), predictedType);
 	}
 

@@ -30,7 +30,7 @@ public class ParsedExpressionInt extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		Expression result = new ExpressionInt(getPosition(), environment, value, environment.getTypes().INT);
 		if (predictedType != null) {
 			result = result.cast(getPosition(), predictedType);

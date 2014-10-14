@@ -12,7 +12,6 @@ import java.util.Map;
 import org.objectweb.asm.Type;
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
@@ -21,6 +20,7 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import zenscript.symbolic.method.IMethod;
 import zenscript.symbolic.method.MethodArgument;
 import zenscript.symbolic.TypeRegistry;
+import zenscript.symbolic.method.MethodHeader;
 import zenscript.symbolic.type.casting.CastingRuleMatchedFunction;
 import zenscript.symbolic.type.casting.ICastingRule;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
@@ -31,24 +31,22 @@ import zenscript.util.ZenPosition;
  * @author Stanneke
  */
 public class ZenTypeFunction extends ZenType {
-	private final ZenType returnType;
-	private final List<MethodArgument> arguments;
 	private final String name;
+	private final MethodHeader header;
 	
 	private final Map<ZenType, CastingRuleMatchedFunction> implementedInterfaces = new HashMap<ZenType, CastingRuleMatchedFunction>();
 	private String className = null;
 	
-	public ZenTypeFunction(IScopeGlobal environment, ZenType returnType, List<MethodArgument> arguments) {
-		super(environment);
+	public ZenTypeFunction(MethodHeader header) {
+		super(header.getReturnType().getEnvironment());
 		
-		this.returnType = returnType;
-		this.arguments = arguments;
-		this.className = environment.makeClassName();
+		this.header = header;
+		this.className = getScope().makeClassName();
 		
 		StringBuilder nameBuilder = new StringBuilder();
 		nameBuilder.append("function(");
 		boolean first = true;
-		for (MethodArgument type : arguments) {
+		for (MethodArgument type : header.getArguments()) {
 			if (first) {
 				first = false;
 			} else {
@@ -56,16 +54,12 @@ public class ZenTypeFunction extends ZenType {
 			}
 			nameBuilder.append(type.getType().getName());
 		}
-		nameBuilder.append(returnType.getName());
+		nameBuilder.append(header.getReturnType().getName());
 		name = nameBuilder.toString();
 	}
 	
-	public ZenType getReturnType() {
-		return returnType;
-	}
-	
-	public List<MethodArgument> getArguments() {
-		return arguments;
+	public MethodHeader getHeader() {
+		return header;
 	}
 	
 	@Override
@@ -112,30 +106,30 @@ public class ZenTypeFunction extends ZenType {
 		}
 		
 		for (IMethod method : methods) {
-			ZenType methodReturnType = method.getReturnType();
+			ZenType methodReturnType = method.getMethodHeader().getReturnType();
 			ICastingRule returnCastingRule = null;
-			if (!returnType.equals(methodReturnType)) {
-				returnCastingRule = returnType.getCastingRule(methodReturnType);
+			if (!header.getReturnType().equals(methodReturnType)) {
+				returnCastingRule = header.getReturnType().getCastingRule(methodReturnType);
 				if (returnCastingRule == null) {
 					System.out.println("Return types don't match");
 					continue;
 				}
 			}
 			
-			MethodArgument[] methodArguments = method.getArguments();
-			if (methodArguments.length < arguments.size()) {
+			List<MethodArgument> methodArguments = method.getMethodHeader().getArguments();
+			if (methodArguments.size() < header.getArguments().size()) {
 				System.out.println("Argument count doesn't match");
 				return null;
 			}
 			
-			ICastingRule[] argumentCastingRules = new ICastingRule[arguments.size()];
+			ICastingRule[] argumentCastingRules = new ICastingRule[header.getArguments().size()];
 			for (int i = 0; i < argumentCastingRules.length; i++) {
-				ZenType argumentType = methodArguments[i].getType();
-				if (!argumentType.equals(arguments.get(i).getType())) {
-					argumentCastingRules[i] = argumentType.getCastingRule(arguments.get(i).getType());
+				ZenType argumentType = methodArguments.get(i).getType();
+				if (!argumentType.equals(header.getArguments().get(i).getType())) {
+					argumentCastingRules[i] = argumentType.getCastingRule(header.getArguments().get(i).getType());
 					if (argumentCastingRules[i] == null) {
 						System.out.println("Argument " + i + " doesn't match");
-						System.out.println("Cannot cast " + argumentType.getName() + " to " + arguments.get(i).getType().getName());
+						System.out.println("Cannot cast " + argumentType.getName() + " to " + header.getArguments().get(i).getType().getName());
 						return null;
 					}
 				}

@@ -8,7 +8,6 @@ package stanhebben.zenscript.type.expand;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;

@@ -23,6 +23,6 @@ public class ParsedTypeArray implements IParsedType {
 
 	@Override
 	public ZenType compile(IScopeGlobal environment) {
-		return new ZenTypeArrayBasic(environment, baseType.compile(environment));
+		return new ZenTypeArrayBasic(baseType.compile(environment));
 	}
 }

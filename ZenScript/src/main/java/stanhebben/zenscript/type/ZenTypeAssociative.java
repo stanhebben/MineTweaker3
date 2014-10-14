@@ -10,14 +10,11 @@ import java.util.Map;
 import org.objectweb.asm.Type;
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCompareGeneric;
 import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.ExpressionMapContains;
 import stanhebben.zenscript.expression.ExpressionMapIndexGet;
-import stanhebben.zenscript.expression.ExpressionMapIndexSet;
 import stanhebben.zenscript.expression.ExpressionMapSize;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
@@ -41,8 +38,8 @@ public class ZenTypeAssociative extends ZenType {
 	
 	private final String name;
 	
-	public ZenTypeAssociative(IScopeGlobal environment, ZenType valueType, ZenType keyType) {
-		super(environment);
+	public ZenTypeAssociative(ZenType valueType, ZenType keyType) {
+		super(valueType.getScope());
 		
 		this.valueType = valueType;
 		this.keyType = keyType;
@@ -67,7 +64,7 @@ public class ZenTypeAssociative extends ZenType {
 	
 	@Override
 	public ICastingRule getCastingRule(ZenType type) {
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		
 		ICastingRule base = super.getCastingRule(type);
 		if (base == null && type instanceof ZenTypeAssociative && keyType == types.ANY && valueType == types.ANY) {
@@ -88,10 +85,10 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		Expression result = unaryExpansion(position, environment, value, operator);
+	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
+		Expression result = expandOperator(position, environment, operator, values);
 		if (result == null) {
-			environment.error(position, "associative arrays don't have unary operators");
+			environment.error(position, "associative array doesn't have this operator");
 			return new ExpressionInvalid(position, environment);
 		} else {
 			return result;
@@ -99,45 +96,8 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		if (operator == OperatorType.CONTAINS) {
-			return new ExpressionMapContains(position, environment, left, right.cast(position, keyType));
-		} else if (operator == OperatorType.INDEXGET) {
-			return new ExpressionMapIndexGet(position, environment, left, right.cast(position, keyType));
-		} else {
-			Expression result = binaryExpansion(position, environment, left, right, operator);
-			if (result == null) {
-				environment.error(position, "associative arrays don't support this operation");
-				return new ExpressionInvalid(position, environment);
-			} else {
-				return result;
-			}
-		}
-	}
-
-	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		if (operator == OperatorType.INDEXSET) {
-			return new ExpressionMapIndexSet(
-					position,
-					environment,
-					first,
-					second.cast(position, keyType),
-					third.cast(position, valueType));
-		} else {
-			Expression result = trinaryExpansion(position, environment, first, second, third, operator);
-			if (result == null) {
-				environment.error(position, "associative arrays don't support this operation");
-				return new ExpressionInvalid(position, environment);
-			} else {
-				return result;
-			}
-		}
-	}
-
-	@Override
 	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
-		Expression result = binaryExpansion(position, environment, left, right, OperatorType.COMPARE);
+		Expression result = operator(position, environment, OperatorType.COMPARE, left, right);
 		if (result == null) {
 			environment.error(position, "cannot compare associative arrays");
 			return new ExpressionInvalid(position, environment);
@@ -148,7 +108,7 @@ public class ZenTypeAssociative extends ZenType {
 
 	@Override
 	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		
 		if (name.equals("length")) {
 			return new ExpressionMapSize(position, environment, value.eval());

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.IZenCompileEnvironment;
 import stanhebben.zenscript.statements.Statement;
@@ -65,11 +64,6 @@ public class ScopeStatementBlock implements IScopeMethod {
 	@Override
 	public IZenCompileEnvironment getEnvironment() {
 		return outer.getEnvironment();
-	}
-
-	@Override
-	public TypeExpansion getExpansion(String name) {
-		return outer.getExpansion(name);
 	}
 
 	@Override

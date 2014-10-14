@@ -6,90 +6,52 @@
 
 package stanhebben.zenscript.type.natives;
 
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.method.IMethod;
-import java.util.HashMap;
-import java.util.Map;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.AbstractMethod;
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.MethodHeader;
 
 /**
  *
  * @author Stan
  */
-public class JavaMethodGenerated implements IMethod {
+public class JavaMethodGenerated extends AbstractMethod {
 	private final boolean isStatic;
 	private final boolean isInterface;
-	private final boolean isVarargs;
 	private final String owner;
 	private final String name;
 	
-	private final MethodArgument[] arguments;
-	private final Map<String, Integer> argumentByName;
-	private final boolean[] optional;
-	private final ZenType returnType;
-	
 	private final String descriptor;
+	private final ZenTypeFunction functionType;
 
 	public JavaMethodGenerated(
 			boolean isStatic,
 			boolean isInterface,
-			boolean isVarargs,
 			String owner,
 			String name,
-			ZenType returnType,
-			MethodArgument[] arguments,
-			boolean[] optional) {
+			MethodHeader header) {
 		this.isStatic = isStatic;
 		this.isInterface = isInterface;
-		this.isVarargs = isVarargs;
 		this.owner = owner;
 		this.name = name;
 		
-		this.returnType = returnType;
-		this.arguments = arguments;
-		this.optional = optional;
-		
 		StringBuilder descriptorString = new StringBuilder();
 		descriptorString.append('(');
-		for (MethodArgument argument : arguments) {
+		for (MethodArgument argument : header.getArguments()) {
 			descriptorString.append(argument.getType().getSignature());
 		}
 		descriptorString.append(')');
-		descriptorString.append(returnType.getSignature());
+		descriptorString.append(header.getReturnType().getSignature());
 		descriptor = descriptorString.toString();
 		
-		argumentByName = new HashMap<String, Integer>();
-		for (int i = 0; i < arguments.length; i++) {
-			if (arguments[i].getName() != null) {
-				argumentByName.put(arguments[i].getName(), i);
-			}
-		}
+		functionType = new ZenTypeFunction(header);
 	}
 	
 	@Override
 	public boolean isStatic() {
 		return isStatic;
-	}
-	
-	@Override
-	public boolean isVarargs() {
-		return isVarargs;
-	}
-	
-	@Override
-	public boolean accepts(int numArguments) {
-		if (numArguments > arguments.length) {
-			return isVarargs;
-		} if (numArguments == arguments.length) {
-			return true;
-		} else {
-			for (int i = numArguments; i < arguments.length; i++) {
-				if (!optional[i]) return false;
-			}
-			return true;
-		}
 	}
 	
 	@Override
@@ -156,17 +118,8 @@ public class JavaMethodGenerated implements IMethod {
 	}
 
 	@Override
-	public ZenType getReturnType() {
-		return returnType;
-	}
-
-	@Override
-	public MethodArgument[] getArguments() {
-		return arguments;
-	}
-
-	@Override
-	public int getArgumentIndex(String name) {
-		return argumentByName.containsKey(name) ? argumentByName.get(name) : -1;
+	public ZenTypeFunction getFunctionType()
+	{
+		return functionType;
 	}
 }

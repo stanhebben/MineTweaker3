@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import stanhebben.zenscript.IZenCompileEnvironment;
-import stanhebben.zenscript.TypeExpansion;
 import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -106,9 +105,9 @@ public final class TypeRegistry {
 		DOUBLEOBJECT = new ZenTypeDoubleObject(environment, DOUBLE);
 		STRING = new ZenTypeString(environment);
 		
-		ANYARRAY = new ZenTypeArrayBasic(environment, ANY);
-		ANYARRAYLIST = new ZenTypeArrayList(environment, ANY);
-		ANYMAP = new ZenTypeAssociative(environment, ANY, ANY);
+		ANYARRAY = new ZenTypeArrayBasic(ANY);
+		ANYARRAYLIST = new ZenTypeArrayList(ANY);
+		ANYMAP = new ZenTypeAssociative(ANY, ANY);
 		
 		nativeTypes = new HashMap<Class, ZenType>();
 		
@@ -237,7 +236,7 @@ public final class TypeRegistry {
 		if (nativeTypes.containsKey(cls)) {
 			return nativeTypes.get(cls);
 		} else if (cls.isArray()) {
-			ZenType result = new ZenTypeArrayBasic(environment, getNativeType(position, cls.getComponentType(), capture));
+			ZenType result = new ZenTypeArrayBasic(getNativeType(position, cls.getComponentType(), capture));
 			nativeTypes.put(cls, result);
 			return result;
 		} else {
@@ -250,7 +249,7 @@ public final class TypeRegistry {
 	
 	private ZenType getListType(ParameterizedType type) {
 		if (type.getRawType() == List.class) {
-			return new ZenTypeArrayList(environment, getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.EMPTY));
+			return new ZenTypeArrayList(getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.EMPTY));
 		}
 		
 		return null;
@@ -259,7 +258,6 @@ public final class TypeRegistry {
 	private ZenType getMapType(ParameterizedType type) {
 		if (type.getRawType() == Map.class) {
 			return new ZenTypeAssociative(
-					environment,
 					getNativeType(null, type.getActualTypeArguments()[1], TypeCapture.EMPTY),
 					getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.EMPTY));
 		}

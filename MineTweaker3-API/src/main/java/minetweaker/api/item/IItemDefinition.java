@@ -2,6 +2,12 @@ package minetweaker.api.item;
 
 import zenscript.annotations.Optional;
 import zenscript.annotations.ZenClass;
+import java.util.List;
+import minetweaker.api.oredict.IOreDictEntry;
+import stanhebben.zenscript.annotations.Optional;
+import stanhebben.zenscript.annotations.ZenClass;
+import stanhebben.zenscript.annotations.ZenGetter;
+import stanhebben.zenscript.annotations.ZenMethod;
 import zenscript.annotations.ZenGetter;
 import zenscript.annotations.ZenMethod;
 
@@ -40,4 +46,13 @@ public interface IItemDefinition {
 	 */
 	@ZenMethod
 	public IItemStack makeStack(@Optional int meta);
+	
+	/**
+	 * Returns all ore entries containing this item. Also contains ore entries
+	 * that refer to a specific sub-item.
+	 * 
+	 * @return 
+	 */
+	@ZenGetter("ores")
+	public List<IOreDictEntry> getOres();
 }

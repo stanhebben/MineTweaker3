@@ -8,13 +8,13 @@ package stanhebben.zenscript.type;
 
 import zenscript.annotations.CompareType;
 import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCompareGeneric;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
+import zenscript.symbolic.MemberVirtual;
 import zenscript.util.ZenPosition;
 
 /**
@@ -25,8 +25,8 @@ public abstract class ZenTypeArray extends ZenType {
 	private final ZenType base;
 	private final String name;
 	
-	public ZenTypeArray(IScopeGlobal environment, ZenType base) {
-		super(environment);
+	public ZenTypeArray(ZenType base) {
+		super(base.getScope());
 		
 		this.base = base;
 		name = base + "[]";
@@ -57,6 +57,9 @@ public abstract class ZenTypeArray extends ZenType {
 		if (name.equals("length")) {
 			return getMemberLength(position, environment, value);
 		} else {
+			MemberVirtual assembled = new MemberVirtual(position, environment, this, name, false);
+			
+
 			IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
 			if (result == null) {
 				environment.error(position, "no such member in array: " + name);
@@ -84,11 +87,14 @@ public abstract class ZenTypeArray extends ZenType {
 	}
 	
 	@Override
-	public final Expression unary(
-			ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		Expression result = unaryExpansion(position, environment, value, operator);
+	public final Expression operator(
+			ZenPosition position,
+			IScopeMethod environment,
+			OperatorType operator,
+			Expression... values) {
+		Expression result = expandOperator(position, environment, operator, values);
 		if (result == null) {
-			environment.error(position, "Array has no unary operators");
+			environment.error(position, "Array has no such unary operator");
 			return new ExpressionInvalid(position, environment);
 		} else {
 			return result;
@@ -96,41 +102,9 @@ public abstract class ZenTypeArray extends ZenType {
 	}
 
 	@Override
-	public final Expression binary(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		if (operator == OperatorType.INDEXGET) {
-			return indexGet(position, environment, left, right);
-		} else {
-			Expression result = binaryExpansion(position, environment, left, right, operator);
-			if (result == null) {
-				environment.error(position, getName() + " doesn't have such operator");
-				return new ExpressionInvalid(position, environment);
-			} else {
-				return result;
-			}
-		}
-	}
-
-	@Override
-	public final Expression trinary(
-			ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		if (operator == OperatorType.INDEXSET) {
-			return indexSet(position, environment, first, second, third);
-		} else {
-			Expression result = trinaryExpansion(position, environment, first, second, third, operator);
-			if (result == null) {
-				environment.error(position, getName() + " doesn't have such operator");
-				return new ExpressionInvalid(position, environment);
-			} else {
-				return result;
-			}
-		}
-	}
-
-	@Override
 	public final Expression compare(
 			ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
-		Expression compare = binaryExpansion(position, environment, left, right, OperatorType.COMPARE);
+		Expression compare = operator(position, environment, OperatorType.COMPARE, left, right);
 		if (compare == null) {
 			environment.error(position, "Arrays cannot be compared");
 			return new ExpressionInvalid(position, environment);
@@ -139,13 +113,6 @@ public abstract class ZenTypeArray extends ZenType {
 		}
 	}
 
-	/*@Override
-	public final Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "Cannot call an array");
-		return new ExpressionInvalid(position);
-	}*/
-	
 	@Override
 	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);

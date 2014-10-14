@@ -26,7 +26,6 @@ public class ParsedTypeAssociative implements IParsedType {
 	@Override
 	public ZenType compile(IScopeGlobal environment) {
 		return new ZenTypeAssociative(
-				environment,
 				valueType.compile(environment),
 				keyType.compile(environment));
 	}

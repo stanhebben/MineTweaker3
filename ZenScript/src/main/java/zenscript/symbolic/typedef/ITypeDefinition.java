@@ -9,13 +9,14 @@ import java.util.List;
 import org.objectweb.asm.ClassVisitor;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
+import zenscript.symbolic.method.IMethod;
 
 /**
- *
+ * Compilable type definition. Can be directly compiled to a Java class.
  * @author Stan
  */
 public interface ITypeDefinition {
-	public void addMethod(I);
+	public void addMethod(IMethod method);
 	
 	/**
 	 * Adds a value map to the type definition. Will create a hashmap field mapping
@@ -27,7 +28,7 @@ public interface ITypeDefinition {
 	 * @param values key values
 	 * @return field name
 	 */
-	public String addValueMap(ZenType type, List<Expression> values);
+	public String addSwitchValueMap(ZenType type, List<Expression> values);
 	
 	/**
 	 * Compiles this type definition.

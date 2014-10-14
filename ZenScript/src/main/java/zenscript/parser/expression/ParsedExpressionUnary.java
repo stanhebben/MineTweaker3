@@ -31,9 +31,9 @@ public class ParsedExpressionUnary extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		// TODO: improve type predictions?
-		Expression cValue = value.compile(environment, predictedType).eval();
+		Expression cValue = value.compile(environment, predictedType);
 		return cValue.getType().unary(getPosition(), environment, cValue, operator);
 	}
 

@@ -31,10 +31,10 @@ public class ParsedExpressionIndex extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		// TODO: improve type prediction for this
-		Expression cValue = value.compile(environment, null).eval();
-		Expression cIndex = index.compile(environment, null).eval();
+		Expression cValue = value.compile(environment, null);
+		Expression cIndex = index.compile(environment, null);
 		return cValue.getType().binary(getPosition(), environment, cValue, cIndex, OperatorType.INDEXGET);
 	}
 

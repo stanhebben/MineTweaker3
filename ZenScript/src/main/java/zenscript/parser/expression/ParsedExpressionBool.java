@@ -29,7 +29,7 @@ public class ParsedExpressionBool extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		return new ExpressionBool(getPosition(), environment, value);
 	}
 

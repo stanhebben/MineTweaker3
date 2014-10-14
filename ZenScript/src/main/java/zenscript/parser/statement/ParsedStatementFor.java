@@ -63,7 +63,7 @@ public class ParsedStatementFor extends ParsedStatement {
 
 	@Override
 	public Statement compile(IScopeMethod scope) {
-		Expression compiledSource = source.compile(scope, null).eval();
+		Expression compiledSource = source.compile(scope, null);
 		IZenIterator iterator = compiledSource.getType().makeIterator(names.size());
 		if (iterator == null) {
 			scope.error(getPosition(), compiledSource.getType().getName() + " has no iterator with " + names.size() + " variables.");

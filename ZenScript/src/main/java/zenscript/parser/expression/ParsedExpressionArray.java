@@ -35,7 +35,7 @@ public class ParsedExpressionArray extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		ZenType predictedBaseType = null;
 		ZenTypeArrayBasic arrayType = environment.getTypes().ANYARRAY;
 		ICastingRule castingRule = null;
@@ -65,7 +65,7 @@ public class ParsedExpressionArray extends ParsedExpression {
 		
 		Expression[] cContents = new Expression[contents.size()];
 		for (int i = 0; i < contents.size(); i++) {
-			cContents[i] = contents.get(i).compile(environment, predictedBaseType).eval();
+			cContents[i] = contents.get(i).compile(environment, predictedBaseType);
 		}
 		Expression result = new ExpressionArray(getPosition(), environment, arrayType, cContents);
 		if (castingRule != null) {
@@ -78,9 +78,9 @@ public class ParsedExpressionArray extends ParsedExpression {
 	@Override
 	public Expression compileKey(IScopeMethod environment, ZenType predictedType) {
 		if (contents.size() == 1 && contents.get(0) instanceof ParsedExpressionVariable) {
-			return contents.get(0).compile(environment, predictedType).eval();
+			return contents.get(0).compile(environment, predictedType);
 		} else {
-			return compile(environment, predictedType).eval();
+			return compile(environment, predictedType);
 		}
 	}
 

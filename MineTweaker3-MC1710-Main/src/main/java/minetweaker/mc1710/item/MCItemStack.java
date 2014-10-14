@@ -6,6 +6,7 @@
 
 package minetweaker.mc1710.item;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import minetweaker.MineTweakerAPI;
@@ -24,6 +25,7 @@ import minetweaker.api.item.IngredientOr;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.liquid.ILiquidStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
+import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.api.player.IPlayer;
 import minetweaker.mc1710.actions.SetTranslationAction;
 import minetweaker.mc1710.block.MCItemBlock;
@@ -65,6 +67,13 @@ public class MCItemStack implements IItemStack {
 		stack = itemStack;
 		items = Collections.<IItemStack>singletonList(this);
 		this.tag = tag;
+	}
+	
+	private MCItemStack(ItemStack itemStack, IData tag, boolean wildcardSize) {
+		stack = itemStack;
+		items = Collections.<IItemStack>singletonList(this);
+		this.tag = tag;
+		this.wildcardSize = wildcardSize;
 	}
 
 	@Override
@@ -139,6 +148,13 @@ public class MCItemStack implements IItemStack {
 			result.stackTagCompound = stack.stackTagCompound;
 			return new MCItemStack(result, tag);
 		}
+	}
+	
+	@Override
+	public IItemStack anyAmount() {
+		ItemStack result = new ItemStack(stack.getItem(), 1, stack.getItemDamage());
+		result.stackTagCompound = stack.stackTagCompound;
+		return new MCItemStack(result, tag, true);
 	}
 
 	@Override
@@ -262,6 +278,23 @@ public class MCItemStack implements IItemStack {
 		} else {
 			return new MCItemBlock(stack);
 		}
+	}
+	
+	@Override
+	public List<IOreDictEntry> getOres() {
+		List<IOreDictEntry> result = new ArrayList<IOreDictEntry>();
+		
+		for (String key : OreDictionary.getOreNames()) {
+			for (ItemStack is : OreDictionary.getOres(key)) {
+				if (is.getItem() == stack.getItem()
+						&& (is.getItemDamage() == OreDictionary.WILDCARD_VALUE || is.getItemDamage() == stack.getItemDamage())) {
+					result.add(MineTweakerAPI.oreDict.get(key));
+					break;
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	// #############################

@@ -6,6 +6,8 @@
 
 package zenscript.parser.statement;
 
+import java.util.ArrayList;
+import java.util.List;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementSwitch;
@@ -20,6 +22,17 @@ import zenscript.util.ZenPosition;
  * @author Stan
  */
 public abstract class ParsedStatement {
+	public static List<ParsedStatement> parseBlock(ZenTokener tokener, IZenErrorLogger errorLogger) {
+		tokener.required(T_AOPEN, "{ expected");
+		
+		ArrayList<ParsedStatement> statements = new ArrayList<ParsedStatement>();
+		while (tokener.optional(T_ACLOSE) == null) {
+			statements.add(ParsedStatement.parse(tokener, errorLogger));
+		}
+		
+		return statements;
+	}
+	
 	public static ParsedStatement parse(ZenTokener tokener, IZenErrorLogger errorLogger) {
 		Token next = tokener.peek();
 		switch (next.getType()) {

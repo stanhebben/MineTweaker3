@@ -47,7 +47,7 @@ public class ParsedStatementReturn extends ParsedStatement {
 		return new StatementReturn(
 				getPosition(),
 				scope,
-				value == null ? null : value.compile(scope, scope.getReturnType()).eval());
+				value == null ? null : value.compile(scope, scope.getReturnType()));
 	}
 
 	@Override

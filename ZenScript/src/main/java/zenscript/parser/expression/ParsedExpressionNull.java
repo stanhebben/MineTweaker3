@@ -25,7 +25,7 @@ public class ParsedExpressionNull extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		return new ExpressionNull(getPosition(), environment);
 	}
 

@@ -7,13 +7,13 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import zenscript.symbolic.method.MethodArgument;
 import zenscript.IZenErrorLogger;
-import zenscript.lexer.Token;
 import zenscript.lexer.ZenTokener;
 import static zenscript.lexer.ZenTokener.*;
 import zenscript.parser.expression.ParsedExpression;
 import zenscript.parser.type.IParsedType;
 import zenscript.parser.type.ParsedTypeBasic;
 import zenscript.parser.type.TypeParser;
+import zenscript.symbolic.method.MethodHeader;
 
 /**
  * Contains a parsed function header. A function header is the combination of
@@ -25,57 +25,47 @@ import zenscript.parser.type.TypeParser;
 public class ParsedFunctionSignature {
 	public static ParsedFunctionSignature parse(ZenTokener tokener, IZenErrorLogger errorLogger, List<ParsedGenericParameter> generics) {
 		List<ParsedFunctionArgument> arguments = new ArrayList<ParsedFunctionArgument>();
-		boolean isVararg = false;
 		
 		tokener.required(T_BROPEN, "( expected");
 		
-		boolean canHaveMore = tokener.optional(T_BRCLOSE) == null;
-		
-		while (canHaveMore) {
-			Token argName = tokener.required(TOKEN_ID, "identifier expected");
-			IParsedType argType = ParsedTypeBasic.ANY;
-			ParsedExpression defaultValue = null;
+		if (tokener.optional(T_BRCLOSE) == null) {
+			ParsedFunctionArgument argument;
+			do {
+				argument = ParsedFunctionArgument.parse(tokener, errorLogger);
+				arguments.add(argument);
+			} while (!argument.isVarArg() && tokener.optional(T_COMMA) != null);
 			
-			if (tokener.optional(T_AS) != null) {
-				argType = TypeParser.parse(tokener, errorLogger);
-			}
-			
-			if (tokener.optional(T_ASSIGN) != null) {
-				defaultValue = ParsedExpression.parse(tokener, errorLogger);
-			}
-			
-			if (tokener.optional(T_DOT3) != null) {
-				isVararg = true;
-				tokener.required(T_BRCLOSE, ") expected");
-				
-				canHaveMore = false;
-			} else if (tokener.optional(T_COMMA) == null) {
-				tokener.required(T_BRCLOSE, ") expected");
-				
-				canHaveMore = false;
-			}
-			
-			arguments.add(new ParsedFunctionArgument(argName.getPosition(), argName.getValue(), argType, defaultValue));
+			tokener.required(T_BRCLOSE, ") or ; expected");
 		}
 		
 		IParsedType returnType = ParsedTypeBasic.ANY;
-		if (tokener.optional(T_AS) != null) {
-			returnType = TypeParser.parse(tokener, errorLogger);
-		}
 		
-		return new ParsedFunctionSignature(generics, arguments, returnType, isVararg);
+		if (tokener.optional(T_AS) != null)
+			returnType = TypeParser.parse(tokener, errorLogger);
+		
+		return new ParsedFunctionSignature(generics, arguments, returnType);
 	}
 	
 	private final List<ParsedGenericParameter> generics;
 	private final List<ParsedFunctionArgument> arguments;
 	private final IParsedType returnType;
-	private final boolean isVararg;
 	
-	public ParsedFunctionSignature(List<ParsedGenericParameter> generics, List<ParsedFunctionArgument> arguments, IParsedType returnType, boolean isVararg) {
+	public ParsedFunctionSignature(List<ParsedGenericParameter> generics, List<ParsedFunctionArgument> arguments, IParsedType returnType) {
 		this.generics = generics;
 		this.arguments = arguments;
 		this.returnType = returnType;
-		this.isVararg = isVararg;
+	}
+	
+	public MethodHeader compile(IScopeGlobal scope) {
+		ZenType compiledReturnType = this.returnType.compile(scope);
+		List<MethodArgument> compiledArguments = new ArrayList<MethodArgument>();
+		
+		for (ParsedFunctionArgument argument : arguments) {
+			compiledArguments.add(argument.compile(scope));
+		}
+		
+		boolean isVararg = !arguments.isEmpty() && arguments.get(arguments.size() - 1).isVarArg();
+		return new MethodHeader(compiledReturnType, compiledArguments, isVararg);
 	}
 	
 	public List<ParsedFunctionArgument> getArguments() {
@@ -87,22 +77,22 @@ public class ParsedFunctionSignature {
 	}
 	
 	public boolean isVararg() {
-		return isVararg;
+		return !arguments.isEmpty() && arguments.get(arguments.size() - 1).isVarArg();
 	}
 	
 	public List<MethodArgument> getCompiledArguments(IScopeGlobal environment) {
 		List<MethodArgument> result = new ArrayList<MethodArgument>();
 		
-		for (int i = 0; i < arguments.size(); i++) {
-			ZenType type = arguments.get(i).getType().compile(environment);
-			ParsedExpression defaultValue = arguments.get(i).getDefaultValue();
-			Expression compiledDefaultValue;
-			if (defaultValue == null) {
-				compiledDefaultValue = null;
-			} else {
-				compiledDefaultValue = defaultValue.compile(environment.getTypes().getStaticGlobalEnvironment(), type).eval();
+		for (ParsedFunctionArgument argument : arguments) {
+			ZenType type = argument.getType().compile(environment);
+			ParsedExpression defaultValue = argument.getDefaultValue();
+			Expression compiledDefaultValue = null;
+			
+			if (defaultValue != null) {
+				compiledDefaultValue = defaultValue.compile(environment.getTypes().getStaticGlobalEnvironment(), type);
 			}
-			result.add(new MethodArgument(arguments.get(i).getName(), type, compiledDefaultValue));
+			
+			result.add(new MethodArgument(argument.getName(), type, compiledDefaultValue));
 		}
 		
 		return result;

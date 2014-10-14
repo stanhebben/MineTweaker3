@@ -8,7 +8,6 @@ package stanhebben.zenscript.type;
 
 import java.util.List;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IScopeGlobal;
 import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionListGet;
@@ -17,7 +16,6 @@ import stanhebben.zenscript.expression.ExpressionListSet;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
-import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import zenscript.symbolic.type.casting.CastingRuleDelegateList;
 import zenscript.symbolic.type.casting.ICastingRuleDelegate;
@@ -30,8 +28,8 @@ import zenscript.util.ZenPosition;
 public class ZenTypeArrayList extends ZenTypeArray {
 	private final Type type;
 	
-	public ZenTypeArrayList(IScopeGlobal environment, ZenType baseType) {
-		super(environment, baseType);
+	public ZenTypeArrayList(ZenType baseType) {
+		super(baseType);
 		
 		type = Type.getType(List.class);
 	}
@@ -43,7 +41,7 @@ public class ZenTypeArrayList extends ZenTypeArray {
 	
 	@Override
 	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		ICastingRuleDelegate arrayRules = new CastingRuleDelegateList(getEnvironment(), rules, this);
+		ICastingRuleDelegate arrayRules = new CastingRuleDelegateList(getScope(), rules, this);
 		getBaseType().constructCastingRules(arrayRules, followCasters);
 		
 		if (followCasters) {
@@ -56,7 +54,7 @@ public class ZenTypeArrayList extends ZenTypeArray {
 		if (numValues == 1) {
 			return new IteratorIterable(getBaseType());
 		} else if (numValues == 2) {
-			return new IteratorList(getEnvironment(), getBaseType());
+			return new IteratorList(getScope(), getBaseType());
 		} else {
 			return null;
 		}

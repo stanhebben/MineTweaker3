@@ -53,7 +53,7 @@ public class ParsedStatementIf extends ParsedStatement {
 	public Statement compile(IScopeMethod scope) {
 		IAny eval = condition.eval(scope.getEnvironment());
 		if (eval != null) {
-			// compile-time variable
+			// compilePartial-time variable
 			if (eval.asBool()) {
 				ScopeStatementBlock ifScope = new ScopeStatementBlock(scope);
 				return onIf.compile(ifScope);
@@ -63,7 +63,7 @@ public class ParsedStatementIf extends ParsedStatement {
 			}
 		} else {
 			// runtime variable
-			Expression compiledCondition = condition.compile(scope, scope.getTypes().BOOL).eval();
+			Expression compiledCondition = condition.compile(scope, scope.getTypes().BOOL);
 			ScopeStatementBlock ifScope = new ScopeStatementBlock(scope);
 			Statement compiledIf = onIf.compile(ifScope);
 			Statement compiledElse = null;

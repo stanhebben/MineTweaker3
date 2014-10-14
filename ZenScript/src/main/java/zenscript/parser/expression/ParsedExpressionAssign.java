@@ -29,12 +29,12 @@ public class ParsedExpressionAssign extends ParsedExpression {
 	}
 	
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		IPartialExpression cLeft = left.compile(environment, predictedType);
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		IPartialExpression cLeft = left.compilePartial(environment, predictedType);
 		
 		return cLeft.assign(
 				getPosition(),
-				right.compile(environment, cLeft.getType()).eval()
+				right.compile(environment, cLeft.getType())
 		);
 	}
 

@@ -35,11 +35,6 @@ public class EnvironmentScript implements IScopeGlobal {
 	}
 
 	@Override
-	public TypeExpansion getExpansion(String name) {
-		return parent.getExpansion(name);
-	}
-
-	@Override
 	public String makeClassName() {
 		return parent.makeClassName();
 	}

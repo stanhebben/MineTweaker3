@@ -8,4 +8,5 @@ dependencies {
     compile group: 'org.ow2.asm', name: 'asm-commons', version:'4.2'
 	//compile files("${System.properties['java.home']}/../lib/tools.jar")
 	//compile files("libs/tools.jar")
+	testCompile group: 'junit', name: 'junit', version: '4.+' 
 }

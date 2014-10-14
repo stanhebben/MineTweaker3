@@ -33,9 +33,9 @@ public class ParsedExpressionOrOr extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
-		Expression cLeft = left.compile(environment, predictedType).eval();
-		Expression cRight = right.compile(environment, predictedType).eval();
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
+		Expression cLeft = left.compile(environment, predictedType);
+		Expression cRight = right.compile(environment, predictedType);
 		
 		ZenType type;
 		if (cRight.getType().canCastImplicit(cLeft.getType())) {

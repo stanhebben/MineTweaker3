@@ -42,7 +42,7 @@ public class ParsedExpressionAssociative extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		ZenType predictedKeyType = null;
 		ZenType predictedValueType = null;
 		ICastingRule castingRule = null;
@@ -72,7 +72,7 @@ public class ParsedExpressionAssociative extends ParsedExpression {
 		
 		for (int i = 0; i < keys.size(); i++) {
 			cKeys[i] = keys.get(i).compileKey(environment, predictedKeyType);
-			cValues[i] = values.get(i).compile(environment, predictedValueType).eval();
+			cValues[i] = values.get(i).compile(environment, predictedValueType);
 		}
 		
 		Expression result = new ExpressionMap(getPosition(), environment, cKeys, cValues, mapType);

@@ -1,5 +1,8 @@
 package minetweaker;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,6 +33,7 @@ import minetweaker.api.mods.IMod;
 import minetweaker.api.oredict.IOreDict;
 import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.api.player.IPlayer;
+import minetweaker.api.recipes.ICraftingRecipe;
 import minetweaker.api.recipes.IFurnaceManager;
 import minetweaker.api.recipes.IRecipeManager;
 import minetweaker.api.server.ICommandFunction;
@@ -127,7 +131,7 @@ public class MineTweakerImplementationAPI {
 				
 				MineTweakerAPI.logCommand("Liquids:");
 				for (ILiquidDefinition liquid : liquids) {
-					MineTweakerAPI.logCommand("<" + liquid.getName() + "> -- " + liquid.getDisplayName());
+					MineTweakerAPI.logCommand("<liquid:" + liquid.getName() + "> -- " + liquid.getDisplayName());
 				}
 				
 				if (player != null) {
@@ -180,6 +184,56 @@ public class MineTweakerImplementationAPI {
 			}
 		}));
 		
+		minetweakerCommands.put("recipes", new MineTweakerCommand(
+				"recipes",
+				new String[] {
+					"/minetweaker recipes",
+					"   Lists all crafting recipes in the game",
+					"/minetweaker recipes hand",
+					"   Lists all crafting recipes for the item in your hand",
+					"   Also copies the recipes to clipboard"
+				}, new ICommandFunction() {
+			@Override
+			public void execute(String[] arguments, IPlayer player)
+			{
+				if (arguments.length == 0) {
+					if (player != null) {
+						player.sendChat("Generating recipe list, this could take a while...");
+					}
+					
+					MineTweakerAPI.logCommand("Recipes:");
+					for (ICraftingRecipe recipe : MineTweakerAPI.recipes.getAll()) {
+						MineTweakerAPI.logCommand(recipe.toCommandString());
+					}
+
+					if (player != null) {
+						player.sendChat("Recipe list generated; see minetweaker.log in your minecraft dir");
+					}
+				} else if (arguments[0].equals("hand") && player != null) {
+					IItemStack item = player.getCurrentItem();
+					
+					List<ICraftingRecipe> recipes = MineTweakerAPI.recipes.getRecipesFor(item.anyAmount());
+					if (recipes.isEmpty()) {
+						player.sendChat("No crafting recipes found for that item");
+					} else {
+						StringBuilder recipesString = new StringBuilder();
+						
+						for (ICraftingRecipe recipe : recipes) {
+							MineTweakerAPI.logCommand(recipe.toCommandString());
+							player.sendChat(recipe.toCommandString());
+							recipesString.append(recipe.toCommandString()).append("\n");
+						}
+						
+						copyToClipboard(recipesString.toString());
+					}
+				} else {
+					if (player != null) {
+						player.sendChat("Invalid arguments for recipes command");
+					}
+				}
+			}
+				}));
+		
 		minetweakerCommands.put("inventory", new MineTweakerCommand(
 				"inventory",
 				new String[] {
@@ -201,13 +255,22 @@ public class MineTweakerImplementationAPI {
 				"hand",
 				new String[] {
 					"/minetweaker hand",
-					"    Outputs the name of the item in your hand"
+					"    Outputs the name of the item in your hand",
+					"    Also copies the name to clipboard and prints",
+					"    oredict entries"
 				}, new ICommandFunction() {
 			@Override
 			public void execute(String[] arguments, IPlayer player) {
 				IItemStack hand = player.getCurrentItem();
 				if (hand != null) {
-					player.sendChat(hand.toString());
+					String value = hand.toString();
+					player.sendChat(value);
+					copyToClipboard(value);
+					
+					List<IOreDictEntry> entries = hand.getOres();
+					for (IOreDictEntry entry : entries) {
+						player.sendChat("Is in <ore:" + entry.getName() + ">");
+					}
 				}
 			}
 		}));
@@ -581,6 +644,16 @@ public class MineTweakerImplementationAPI {
 	 */
 	public static void addMineTweakerCommand(String name, String[] description, ICommandFunction function) {
 		MineTweakerAPI.apply(new AddMineTweakerCommandAction(new MineTweakerCommand(name, description, function)));
+	}
+	
+	// ##############################
+	// ### Private static methods ###
+	// ##############################
+	
+	private static void copyToClipboard(String value) {
+		StringSelection stringSelection = new StringSelection(value);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
 	}
 	
 	// ############################

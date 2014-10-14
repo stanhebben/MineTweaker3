@@ -35,10 +35,10 @@ public class ParsedExpressionBinary extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compile(IScopeMethod environment, ZenType predictedType) {
+	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		// TODO: make better predictions
-		Expression cLeft = left.compile(environment, predictedType).eval();
-		Expression cRight = right.compile(environment, predictedType).eval();
+		Expression cLeft = left.compile(environment, predictedType);
+		Expression cRight = right.compile(environment, predictedType);
 		return cLeft.getType().binary(getPosition(), environment, cLeft, cRight, operator);
 	}
 

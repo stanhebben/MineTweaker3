@@ -1,19 +1,28 @@
 package zenscript.lexer;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import zenscript.util.ZenPosition;
 
 /**
  * A tokener is capable of splitting a single file into tokens. It's intended
  * for use by LL(*) parsers.
- * 
+ *
  * @author Stan Hebben
  */
-public class ZenTokener extends TokenStream {
+public class ZenTokener extends TokenStream
+{
+
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final HashMap<String, Integer> KEYWORDS;
-	
+
 	public static final int TOKEN_ID = 1;
 	public static final int TOKEN_INTVALUE = 2;
 	public static final int T_FLOATVALUE = 3;
@@ -60,7 +69,7 @@ public class ZenTokener extends TokenStream {
 	public static final int T_NOTEQ = 42;
 	public static final int T_NOT = 43;
 	public static final int T_DOLLAR = 45;
-	
+
 	public static final int T_ANY = 99;
 	public static final int T_BOOL = 100;
 	public static final int T_BYTE = 101;
@@ -73,7 +82,7 @@ public class ZenTokener extends TokenStream {
 	public static final int T_FUNCTION = 108;
 	public static final int T_IN = 109;
 	public static final int T_VOID = 110;
-	
+
 	public static final int T_AS = 120;
 	public static final int T_VERSION = 121;
 	public static final int T_IF = 122;
@@ -93,15 +102,15 @@ public class ZenTokener extends TokenStream {
 	public static final int T_NEW = 136;
 	public static final int T_WHILE = 137;
 	public static final int T_DO = 138;
-	
+
 	public static final int T_NULL = 140;
 	public static final int T_TRUE = 141;
 	public static final int T_FALSE = 142;
-	
+
 	public static final int T_IMPORT = 160;
 	public static final int T_INCLUDE = 161;
 	public static final int T_PACKAGE = 162;
-	
+
 	public static final int T_INTERFACE = 170;
 	public static final int T_CLASS = 171;
 	public static final int T_STRUCT = 172;
@@ -110,14 +119,14 @@ public class ZenTokener extends TokenStream {
 	public static final int T_SUPER = 175;
 	public static final int T_EXPAND = 176;
 	public static final int T_IMPLEMENTS = 177;
-	
+
 	public static final int T_PRIVATE = 180;
 	public static final int T_PUBLIC = 181;
 	public static final int T_EXPORT = 182;
 	public static final int T_GET = 183;
 	public static final int T_SET = 184;
 	public static final int T_FINAL = 185;
-	
+
 	private static final String[] REGEXPS = {
 		"#[^\n]*[\n\\e]",
 		"//[^\n]*[\n\\e]",
@@ -125,49 +134,49 @@ public class ZenTokener extends TokenStream {
 		"[ \t\r\n]*",
 		"[a-zA-Z_][a-zA-Z_0-9]*",
 		"\\-?(0|[1-9][0-9]*)\\.[0-9]+([eE][\\+\\-]?[0-9]+)?",
-        "\\-?(0|[1-9][0-9]*)",
+		"\\-?(0|[1-9][0-9]*)",
 		"\"([^\"\\\\]|\\\\([\'\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))*\"",
 		"\'([^\'\\\\]|\\\\([\'\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))*\'",
-        "\\{",
-        "\\}",
-        "\\[",
-        "\\]",
-        "\\.\\.",
-        "\\.",
-        ",",
-        "\\+=",
-        "\\+",
-        "\\-=",
-        "\\-",
-        "\\*=",
-        "\\*",
-        "/=",
-        "/",
-        "%=",
-        "%",
-        "\\|=",
-        "\\|\\|",
-        "\\|",
-        "&=",
-        "&&",
-        "&",
-        "\\^=",
-        "\\^",
-        "\\?",
-        ":",
-        "\\(",
-        "\\)",
+		"\\{",
+		"\\}",
+		"\\[",
+		"\\]",
+		"\\.\\.",
+		"\\.",
+		",",
+		"\\+=",
+		"\\+",
+		"\\-=",
+		"\\-",
+		"\\*=",
+		"\\*",
+		"/=",
+		"/",
+		"%=",
+		"%",
+		"\\|=",
+		"\\|\\|",
+		"\\|",
+		"&=",
+		"&&",
+		"&",
+		"\\^=",
+		"\\^",
+		"\\?",
+		":",
+		"\\(",
+		"\\)",
 		"~=",
-        "~",
-        ";",
-        "<=",
-        "<",
-        ">=",
-        ">",
-        "==",
-        "=",
-        "!=",
-        "!",
+		"~",
+		";",
+		"<=",
+		"<",
+		">=",
+		">",
+		"==",
+		"=",
+		"!=",
+		"!",
 		"$"
 	};
 	private static final int[] FINALS = {
@@ -223,7 +232,7 @@ public class ZenTokener extends TokenStream {
 		T_DOLLAR
 	};
 	private static final CompiledDFA DFA = new NFA(REGEXPS, FINALS).toDFA().optimize().compile();
-	
+
 	static {
 		KEYWORDS = new HashMap<String, Integer>();
 		KEYWORDS.put("any", T_ANY);
@@ -238,7 +247,7 @@ public class ZenTokener extends TokenStream {
 		KEYWORDS.put("function", T_FUNCTION);
 		KEYWORDS.put("in", T_IN);
 		KEYWORDS.put("void", T_VOID);
-		
+
 		KEYWORDS.put("as", T_AS);
 		KEYWORDS.put("version", T_VERSION);
 		KEYWORDS.put("if", T_IF);
@@ -252,14 +261,14 @@ public class ZenTokener extends TokenStream {
 		KEYWORDS.put("finally", T_FINALLY);
 		KEYWORDS.put("continue", T_CONTINUE);
 		KEYWORDS.put("break", T_BREAK);
-		
+
 		KEYWORDS.put("null", T_NULL);
 		KEYWORDS.put("true", T_TRUE);
 		KEYWORDS.put("false", T_FALSE);
-		
+
 		KEYWORDS.put("import", T_IMPORT);
 		KEYWORDS.put("include", T_INCLUDE);
-		
+
 		KEYWORDS.put("interface", T_INTERFACE);
 		KEYWORDS.put("class", T_CLASS);
 		KEYWORDS.put("struct", T_STRUCT);
@@ -269,7 +278,7 @@ public class ZenTokener extends TokenStream {
 		KEYWORDS.put("package", T_PACKAGE);
 		KEYWORDS.put("expand", T_EXPAND);
 		KEYWORDS.put("implements", T_IMPLEMENTS);
-		
+
 		KEYWORDS.put("private", T_PRIVATE);
 		KEYWORDS.put("public", T_PUBLIC);
 		KEYWORDS.put("export", T_EXPORT);
@@ -277,38 +286,74 @@ public class ZenTokener extends TokenStream {
 		KEYWORDS.put("get", T_GET);
 		KEYWORDS.put("set", T_SET);
 	}
-	
+
+	public static ZenTokener fromInputStream(InputStream inputStream) throws IOException
+	{
+		return new ZenTokener(new InputStreamReader(inputStream, UTF8));
+	}
+
 	/**
 	 * Constructs a tokener from the given reader.
-	 * 
+	 *
 	 * @param contents file reader
 	 * @throws IOException if the file could not be read properly
 	 */
-	public ZenTokener(Reader contents) throws IOException {
+	public ZenTokener(Reader contents) throws IOException
+	{
 		super(contents, DFA);
 	}
-	
+
 	/**
 	 * Constructs a tokener from the given string.
-	 * 
+	 *
 	 * @param contents content string
 	 * @throws IOException shouldn't happen
 	 */
-	public ZenTokener(String contents) throws IOException {
+	public ZenTokener(String contents) throws IOException
+	{
 		super(new StringReader(contents), DFA);
 	}
 	
+	public ZenPosition getPosition()
+	{
+		// try to reuse position from peek() if possible
+		if (peek() == null) {
+			return new ZenPosition(getFile(), getLine(), getLineOffset());
+		} else {
+			return peek().getPosition();
+		}
+	}
+
+	public List<String> parseIdentifierDotSequence()
+	{
+		List<String> name = new ArrayList<String>();
+		String nameFirst = requiredIdentifier();
+		name.add(nameFirst);
+
+		while (optional(T_DOT) != null) {
+			String namePart = requiredIdentifier();
+			name.add(namePart);
+		}
+
+		return name;
+	}
+
+	public String requiredIdentifier()
+	{
+		return required(TOKEN_ID, "identifier expected").getValue();
+	}
+
 	// ##################################
 	// ### TokenStream implementation ###
 	// ##################################
 	
 	@Override
-	public Token process(Token token) {
-		if (token.getType() == TOKEN_ID) {
-			if (KEYWORDS.containsKey(token.getValue())) {
-				return new Token(token.getValue(), KEYWORDS.get(token.getValue()), token.getPosition());
-			}
+	public Token process(Token token)
+	{
+		if (token.getType() == TOKEN_ID && KEYWORDS.containsKey(token.getValue())) {
+			return new Token(token.getValue(), KEYWORDS.get(token.getValue()), token.getPosition());
 		}
+
 		return token;
 	}
 }

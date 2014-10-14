@@ -6,11 +6,16 @@
 
 package stanhebben.zenscript.type.natives;
 
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.method.IMethod;
+import java.util.ArrayList;
+import java.util.List;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
+import zenscript.symbolic.method.AbstractMethod;
+import zenscript.symbolic.method.IMethod;
+import zenscript.symbolic.method.MethodArgument;
+import zenscript.symbolic.method.MethodHeader;
 
 /**
  * An expanding method is a static method that acts as a virtual method for an
@@ -19,28 +24,28 @@ import stanhebben.zenscript.util.MethodOutput;
  * 
  * @author Stan Hebben
  */
-public class JavaMethodExpanding implements IMethod {
+public class JavaMethodExpanding extends AbstractMethod {
 	private final ZenType addedType;
 	private final IMethod baseMethod;
-	private final MethodArgument[] arguments;
+	private final ZenTypeFunction functionType;
 	
 	public JavaMethodExpanding(ZenType addedType, IMethod baseMethod) {
 		this.addedType = addedType;
 		this.baseMethod = baseMethod;
 		
-		arguments = new MethodArgument[baseMethod.getArguments().length + 1];
-		System.arraycopy(baseMethod.getArguments(), 0, arguments, 1, baseMethod.getArguments().length);
-		arguments[0] = new MethodArgument(null, addedType, null);
+		MethodHeader originalHeader = baseMethod.getMethodHeader();
+		
+		List<MethodArgument> arguments = new ArrayList<MethodArgument>();
+		arguments.add(new MethodArgument(null, addedType, null));
+		arguments.addAll(baseMethod.getMethodHeader().getArguments());
+		MethodHeader newHeader = new MethodHeader(originalHeader.getReturnType(), arguments, originalHeader.isVarargs());
+		
+		functionType = new ZenTypeFunction(newHeader);
 	}
 
 	@Override
 	public boolean isStatic() {
 		return false;
-	}
-
-	@Override
-	public boolean accepts(int numArguments) {
-		return baseMethod.accepts(numArguments - 1);
 	}
 
 	@Override
@@ -73,22 +78,8 @@ public class JavaMethodExpanding implements IMethod {
 	}
 
 	@Override
-	public MethodArgument[] getArguments() {
-		return arguments;
-	}
-
-	@Override
-	public int getArgumentIndex(String name) {
-		return baseMethod.getArgumentIndex(name) + 1;
-	}
-
-	@Override
-	public ZenType getReturnType() {
-		return baseMethod.getReturnType();
-	}
-
-	@Override
-	public boolean isVarargs() {
-		return baseMethod.isVarargs();
+	public ZenTypeFunction getFunctionType()
+	{
+		return functionType;
 	}
 }
