@@ -21,37 +21,37 @@ public class DataList implements IData {
 
 	@Override
 	public boolean asBool() {
-		throw new RuntimeException("Cannot convert a list to a bool");
+		throw new IllegalDataException("Cannot convert a list to a bool");
 	}
 
 	@Override
 	public byte asByte() {
-		throw new RuntimeException("Cannot convert a list to a byte");
+		throw new IllegalDataException("Cannot convert a list to a byte");
 	}
 
 	@Override
 	public short asShort() {
-		throw new RuntimeException("Cannot convert a list to a short");
+		throw new IllegalDataException("Cannot convert a list to a short");
 	}
 
 	@Override
 	public int asInt() {
-		throw new RuntimeException("Cannot convert a list to an int");
+		throw new IllegalDataException("Cannot convert a list to an int");
 	}
 
 	@Override
 	public long asLong() {
-		throw new RuntimeException("Cannot convert a list to a long");
+		throw new IllegalDataException("Cannot convert a list to a long");
 	}
 
 	@Override
 	public float asFloat() {
-		throw new RuntimeException("Cannot convert a list to a float");
+		throw new IllegalDataException("Cannot convert a list to a float");
 	}
 
 	@Override
 	public double asDouble() {
-		throw new RuntimeException("Cannot convert a list to a double");
+		throw new IllegalDataException("Cannot convert a list to a double");
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class DataList implements IData {
 	
 	@Override
 	public Map<String, IData> asMap() {
-		throw new RuntimeException("Cannot convert a list to a map");
+		return null;
 	}
 
 	@Override
@@ -87,20 +87,28 @@ public class DataList implements IData {
 
 	@Override
 	public byte[] asByteArray() {
-		byte[] result = new byte[values.size()];
-		for (int i = 0; i < values.size(); i++) {
-			result[i] = values.get(i).asByte();
+		try {
+			byte[] result = new byte[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				result[i] = values.get(i).asByte();
+			}
+			return result;
+		} catch (IllegalDataException ex) {
+			return null;
 		}
-		return result;
 	}
 
 	@Override
 	public int[] asIntArray() {
-		int[] result = new int[values.size()];
-		for (int i = 0; i < values.size(); i++) {
-			result[i] = values.get(i).asInt();
+		try {
+			int[] result = new int[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				result[i] = values.get(i).asInt();
+			}
+			return result;
+		} catch (IllegalDataException ex) {
+			return null;
 		}
-		return result;
 	}
 
 	@Override
@@ -111,7 +119,7 @@ public class DataList implements IData {
 	@Override
 	public void setAt(int i, IData value) {
 		if (immutable) {
-			throw new RuntimeException("this list is immutable");
+			throw new UnsupportedOperationException("this list is immutable");
 		} else {
 			values.set(i, value);
 		}
@@ -119,12 +127,12 @@ public class DataList implements IData {
 
 	@Override
 	public IData memberGet(String name) {
-		throw new RuntimeException("Lists don't have members");
+		throw new UnsupportedOperationException("Lists don't have members");
 	}
 
 	@Override
 	public void memberSet(String name, IData data) {
-		throw new RuntimeException("Lists don't have members");
+		throw new UnsupportedOperationException("Lists don't have members");
 	}
 
 	@Override
@@ -134,11 +142,29 @@ public class DataList implements IData {
 
 	@Override
 	public boolean contains(IData data) {
+		List<IData> dataValues = data.asList();
+		if (dataValues != null && containsList(dataValues))
+			return true;
+		
 		for (IData value : values) {
-			if (value.equals(data)) return true;
+			if (value.contains(data))
+				return true;
 		}
 		
 		return false;
+	}
+	
+	private boolean containsList(List<IData> dataValues) {
+		outer: for (IData dataValue : dataValues) {
+			for (IData value : values) {
+				if (value.contains(dataValue))
+					continue outer;
+			}
+
+			return false;
+		}
+		
+		return true;
 	}
 	
 	@Override

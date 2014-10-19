@@ -12,6 +12,7 @@ import zenscript.annotations.ZenMethod;
 import zenscript.annotations.ZenOperator;
 import zenscript.annotations.ZenSetter;
 import minetweaker.api.oredict.IOreDictEntry;
+import minetweaker.api.oredict.IOreDictEntry;
 import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.annotations.ZenCaster;
 import stanhebben.zenscript.annotations.ZenClass;

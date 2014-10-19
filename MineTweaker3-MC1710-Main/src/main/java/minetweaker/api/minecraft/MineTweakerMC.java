@@ -9,6 +9,7 @@ import minetweaker.api.block.IBlockDefinition;
 import minetweaker.api.data.IData;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
+import minetweaker.api.item.IngredientUnknown;
 import minetweaker.api.liquid.ILiquidStack;
 import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.api.player.IPlayer;
@@ -415,6 +416,11 @@ public class MineTweakerMC {
 	 * @param ingredient minecraft ingredient
 	 * @return minetweaker ingredient
 	 */
+	public static FluidStack getLiquidStack(ILiquidStack stack) {
+		if (stack == null)
+			return null;
+		
+		return (FluidStack) stack.getInternal();
 	public static IIngredient getIIngredient(Object ingredient) {
 		if (ingredient == null) {
 			return null;
@@ -429,6 +435,47 @@ public class MineTweakerMC {
 			
 			if (entry == null) {
 				throw new IllegalArgumentException("No matching oredict entry: " + ingredient);
+			}
+			
+			return entry;
+		} else {
+			throw new IllegalArgumentException("Not a valid ingredient: " + ingredient);
+		}
+	}
+	
+	private static final HashMap<List, IOreDictEntry> oreDictArrays = new HashMap<List, IOreDictEntry>();
+	public static IOreDictEntry getOreDictEntryFromArray(List array) {
+		if (!oreDictArrays.containsKey(array)) {
+			for (String ore : OreDictionary.getOreNames()) {
+				if (OreDictionary.getOres(ore) == array) {
+					oreDictArrays.put(array, MineTweakerAPI.oreDict.get(ore));
+				}
+			}
+		}
+		
+		return oreDictArrays.get(array);
+	}
+	
+	/**
+	 * Converts a Minecraft ingredient to a MineTweaker ingredient.
+	 * 
+	 * @param ingredient minecraft ingredient
+	 * @return minetweaker ingredient
+	 */
+	public static IIngredient getIIngredient(Object ingredient) {
+		if (ingredient == null) {
+			return null;
+		} else if (ingredient instanceof String) {
+			return MineTweakerAPI.oreDict.get((String) ingredient);
+		} else if (ingredient instanceof Item) {
+			return getIItemStack(new ItemStack((Item) ingredient, 1, 0));
+		} else if (ingredient instanceof ItemStack) {
+			return getIItemStack((ItemStack) ingredient);
+		} else if (ingredient instanceof List) {
+			IOreDictEntry entry = getOreDictEntryFromArray((List) ingredient);
+			
+			if (entry == null) {
+				return IngredientUnknown.INSTANCE;
 			}
 			
 			return entry;

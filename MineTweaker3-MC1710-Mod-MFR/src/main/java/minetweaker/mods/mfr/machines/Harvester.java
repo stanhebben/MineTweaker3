@@ -50,6 +50,16 @@ public class Harvester {
 	}
 	
 	@ZenMethod
+	public static void addHarvestable(IItemStack item, WeightedItemStack drop, @Optional String type) {
+		addHarvestable(item.asBlock(), drop, type);
+	}
+	
+	@ZenMethod
+	public static void addHarvestable(IItemStack item, WeightedItemStack[] drops, @Optional String type) {
+		addHarvestable(item.asBlock(), drops, type);
+	}
+	
+	@ZenMethod
 	public static void addHarvestable(IBlockPattern block, WeightedItemStack drop, @Optional String type) {
 		addHarvestable(block, new WeightedItemStack[] { drop }, type);
 	}
@@ -117,7 +127,8 @@ public class Harvester {
 		public HarvestType getHarvestType() {
 			// WARNING: first type will be used
 			// Also, take into account the possibility of having no harvestable yet
-			return harvestables.isEmpty() ? HarvestType.Normal : harvestables.get(0).type;
+			HarvestType result = harvestables.isEmpty() ? HarvestType.Normal : harvestables.get(0).type;
+			return result;
 		}
 
 		@Override
@@ -127,8 +138,10 @@ public class Harvester {
 
 		@Override
 		public boolean canBeHarvested(World world, Map<String, Boolean> map, int x, int y, int z) {
+			IBlock block = MineTweakerMC.getBlock(world, x, y, z);
+			
 			for (TweakerHarvestable harvestable : harvestables) {
-				if (harvestable.block.matches(MineTweakerMC.getBlock(world, x, y, z)))
+				if (harvestable.block.matches(block))
 					return true;
 			}
 			

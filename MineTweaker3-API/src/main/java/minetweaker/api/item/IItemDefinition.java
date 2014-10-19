@@ -4,6 +4,8 @@ import zenscript.annotations.Optional;
 import zenscript.annotations.ZenClass;
 import java.util.List;
 import minetweaker.api.oredict.IOreDictEntry;
+import java.util.List;
+import minetweaker.api.oredict.IOreDictEntry;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenGetter;

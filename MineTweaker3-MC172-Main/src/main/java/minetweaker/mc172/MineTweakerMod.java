@@ -27,6 +27,8 @@ import minetweaker.mc172.furnace.FuelTweaker;
 import minetweaker.mc172.furnace.MCFurnaceManager;
 import minetweaker.mc172.game.MCGame;
 import minetweaker.mc172.mods.MCLoadedMods;
+import minetweaker.mc172.network.MineTweakerCopyClipboardHandler;
+import minetweaker.mc172.network.MineTweakerCopyClipboardPacket;
 import minetweaker.mc172.network.MineTweakerLoadScriptsHandler;
 import minetweaker.mc172.network.MineTweakerLoadScriptsPacket;
 import minetweaker.mc172.network.MineTweakerOpenBrowserHandler;
@@ -49,7 +51,7 @@ import net.minecraftforge.common.MinecraftForge;
  * 
  * @author Stan Hebben
  */
-@Mod(modid = MineTweakerMod.MODID, version = "3.0.9")
+@Mod(modid = MineTweakerMod.MODID, version = "3.0.9B")
 public class MineTweakerMod {
 	public static final String MODID = "MineTweaker3";
 	public static final String MCVERSION = "1.7.2";
@@ -72,6 +74,7 @@ public class MineTweakerMod {
 	static {
 		NETWORK.registerMessage(MineTweakerLoadScriptsHandler.class, MineTweakerLoadScriptsPacket.class, 0, Side.CLIENT);
 		NETWORK.registerMessage(MineTweakerOpenBrowserHandler.class, MineTweakerOpenBrowserPacket.class, 1, Side.CLIENT);
+		NETWORK.registerMessage(MineTweakerCopyClipboardHandler.class, MineTweakerCopyClipboardPacket.class, 2, Side.CLIENT);
 	}
 	
 	@Mod.Instance(MODID)

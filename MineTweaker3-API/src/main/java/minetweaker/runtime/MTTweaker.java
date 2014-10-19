@@ -131,8 +131,9 @@ public final class MTTweaker {
 					} catch (IOException ex) {
 						MineTweakerAPI.logError("Could not load script " + script.getName() + ": " + ex.getMessage());
 					} catch (ParseException ex) {
-						MineTweakerAPI.logError("Error parsing " + ex.getPosition() + ": " + ex.getExplanation());
-					} catch (Throwable ex) {
+						//ex.printStackTrace();
+						MineTweakerAPI.logError("Error parsing " + ex.getFile().getFileName() + ":" + ex.getLine() + " -- " + ex.getExplanation());
+					} catch (Exception ex) {
 						MineTweakerAPI.logError("Error loading " + script.getName() + ": " + ex.toString(), ex);
 					}
 					
@@ -158,7 +159,7 @@ public final class MTTweaker {
 					module.getMain().run();
 				} catch (Throwable ex) {
 					MineTweakerAPI.logError("Error executing " + script.getGroupName() + ": " + ex.getMessage(), ex);
-				}*/
+				}
 			}
 		}
 		

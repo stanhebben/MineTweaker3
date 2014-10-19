@@ -57,7 +57,7 @@ import net.minecraftforge.common.MinecraftForge;
  * 
  * @author Stan Hebben
  */
-@Mod(modid = MineTweakerMod.MODID, version = "3.0.9")
+@Mod(modid = MineTweakerMod.MODID, version = "3.0.9B")
 @NetworkMod(clientSideRequired = true, serverSideRequired = true, channels = {MCPacketHandler.CHANNEL_SERVERSCRIPT, MCPacketHandler.CHANNEL_OPENBROWSER}, packetHandler = MCPacketHandler.class)
 public class MineTweakerMod {
 	public static final String MODID = "MineTweaker3";
@@ -137,6 +137,14 @@ public class MineTweakerMod {
 			networkByUser.get(user).addToSendQueue(new Packet250CustomPayload(
 					MCPacketHandler.CHANNEL_OPENBROWSER,
 					MCPacketHandler.UTF8.encode(url).array()));
+		}
+	}
+	
+	public void copyToClipboard(String user, String data) {
+		if (networkByUser.containsKey(user)) {
+			networkByUser.get(user).addToSendQueue(new Packet250CustomPayload(
+					MCPacketHandler.CHANNEL_OPENBROWSER,
+					MCPacketHandler.UTF8.encode(data).array()));
 		}
 	}
 	

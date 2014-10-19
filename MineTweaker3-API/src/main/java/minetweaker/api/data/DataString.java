@@ -57,22 +57,22 @@ public class DataString implements IData {
 	
 	@Override
 	public List<IData> asList() {
-		throw new UnsupportedOperationException("Cannot cast a string to a list");
+		return null;
 	}
 	
 	@Override
 	public Map<String, IData> asMap() {
-		throw new UnsupportedOperationException("Cannot cast a string to a map");
+		return null;
 	}
 
 	@Override
 	public byte[] asByteArray() {
-		throw new RuntimeException("Cannot cast a string to a byte array");
+		return null;
 	}
 
 	@Override
 	public int[] asIntArray() {
-		throw new RuntimeException("Cannot cast a string to an int array");
+		return null;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class DataString implements IData {
 
 	@Override
 	public void setAt(int i, IData value) {
-		throw new RuntimeException("Strings are immutable");
+		throw new UnsupportedOperationException("Strings are immutable");
 	}
 
 	@Override
@@ -90,13 +90,13 @@ public class DataString implements IData {
 		if (name.equals("length")) {
 			return new DataInt(value.length());
 		} else {
-			throw new RuntimeException("no such member: " + name);
+			throw new UnsupportedOperationException("no such member: " + name);
 		}
 	}
 
 	@Override
 	public void memberSet(String name, IData data) {
-		throw new RuntimeException("Strings are immutable");
+		throw new UnsupportedOperationException("Strings are immutable");
 	}
 
 	@Override

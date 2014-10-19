@@ -38,6 +38,11 @@ public class ParsedExpressionVariable extends ParsedExpression {
 	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
 		IPartialExpression result = environment.getValue(name, getPosition(), environment);
 		if (result == null) {
+			if (predictedType == null) {
+				environment.error(getPosition(), "could not find " + name);
+				return new ExpressionInvalid(getPosition());
+			}
+			
 			// enable usage of static members of the same type as the predicted type (eg. enum values)
 			IPartialExpression member = predictedType.getStaticMember(getPosition(), environment, name);
 			if (member == null || member.getType().getCastingRule(predictedType) == null) {

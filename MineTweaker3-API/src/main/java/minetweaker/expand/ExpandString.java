@@ -19,6 +19,7 @@ import zenscript.annotations.ZenCaster;
 import zenscript.annotations.ZenExpansion;
 import zenscript.annotations.ZenMethod;
 import stanhebben.zenscript.annotations.OperatorType;
+import stanhebben.zenscript.annotations.OperatorType;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenCaster;
 import stanhebben.zenscript.annotations.ZenExpansion;

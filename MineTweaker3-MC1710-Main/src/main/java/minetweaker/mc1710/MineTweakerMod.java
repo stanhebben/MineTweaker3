@@ -28,6 +28,8 @@ import minetweaker.mc1710.furnace.FuelTweaker;
 import minetweaker.mc1710.furnace.MCFurnaceManager;
 import minetweaker.mc1710.game.MCGame;
 import minetweaker.mc1710.mods.MCLoadedMods;
+import minetweaker.mc1710.network.MineTweakerCopyClipboardHandler;
+import minetweaker.mc1710.network.MineTweakerCopyClipboardPacket;
 import minetweaker.mc1710.network.MineTweakerLoadScriptsHandler;
 import minetweaker.mc1710.network.MineTweakerLoadScriptsPacket;
 import minetweaker.mc1710.network.MineTweakerOpenBrowserHandler;
@@ -51,7 +53,11 @@ import net.minecraftforge.common.MinecraftForge;
  * 
  * @author Stan Hebben
  */
+<<<<<<< HEAD
 @Mod(modid = MineTweakerMod.MODID, version = "3.0.9")
+=======
+@Mod(modid = MineTweakerMod.MODID, version = "3.0.9B")
+>>>>>>> master
 public class MineTweakerMod {
 	public static final String MODID = "MineTweaker3";
 	public static final String MCVERSION = "1.7.10";
@@ -76,6 +82,7 @@ public class MineTweakerMod {
 	static {
 		NETWORK.registerMessage(MineTweakerLoadScriptsHandler.class, MineTweakerLoadScriptsPacket.class, 0, Side.CLIENT);
 		NETWORK.registerMessage(MineTweakerOpenBrowserHandler.class, MineTweakerOpenBrowserPacket.class, 1, Side.CLIENT);
+		NETWORK.registerMessage(MineTweakerCopyClipboardHandler.class, MineTweakerCopyClipboardPacket.class, 2, Side.CLIENT);
 	}
 	
 	@Mod.Instance(MODID)
@@ -101,14 +108,6 @@ public class MineTweakerMod {
 		File globalDir = new File("scripts");
 		if (!globalDir.exists()) {
 			globalDir.mkdirs();
-		}
-		
-		/*try {
-			String data = Resources.toString(Resources.getResource(MineTweakerMod.class, "/minetweaker/myscript.zs"), Charsets.UTF_8);
-			
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}*/
 		
 		scriptsIMC = new ScriptProviderCustom("intermod");
 		scriptsGlobal = new ScriptProviderDirectory(globalDir);
