@@ -8,9 +8,9 @@ package minetweaker.api.recipes;
 
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
-import zenscript.annotations.Optional;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

@@ -1,6 +1,6 @@
 package minetweaker.api.item;
 
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenClass;
 
 /**
  * Item conditions apply additional conditions on item stacks.

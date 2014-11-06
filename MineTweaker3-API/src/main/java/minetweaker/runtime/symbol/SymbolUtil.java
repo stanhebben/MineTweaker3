@@ -8,12 +8,13 @@ package minetweaker.runtime.symbol;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import stanhebben.zenscript.symbols.SymbolJavaStaticField;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.field.JavaField;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
 
 /**
  *
@@ -76,7 +77,7 @@ public class SymbolUtil {
 			if ((field.getModifiers() & Modifier.STATIC) == 0)
 				return null;
 			
-			return new SymbolJavaStaticField(field);
+			return new SymbolStaticField(new JavaField(field, scope.getTypes()));
 		} catch (NoSuchFieldException ex) {
 			return null;
 		}

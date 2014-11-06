@@ -7,33 +7,33 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
 public class ExpressionNull extends Expression {
-	public ExpressionNull(ZenPosition position, IScopeMethod environment) {
+	public ExpressionNull(CodePosition position, IScopeMethod environment) {
 		super(position, environment);
 	}
 	
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
+	public Expression cast(CodePosition position, ZenType type) {
 		if (type.isNullable()) {
 			return this;
 		} else {
-			getEnvironment().error(position, "Cannot convert null to " + type);
-			return new ExpressionInvalid(position, getEnvironment());
+			getScope().error(position, "Cannot convert null to " + type);
+			return new ExpressionInvalid(position, getScope());
 		}
 	}
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().NULL;
+		return getScope().getTypes().NULL;
 	}
 
 	@Override

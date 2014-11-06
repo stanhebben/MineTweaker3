@@ -8,9 +8,12 @@ package stanhebben.zenscript.type;
 
 import java.util.Map;
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.MemberStatic;
+import org.openzen.zencode.symbolic.MemberVirtual;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCompareGeneric;
 import stanhebben.zenscript.expression.ExpressionInvalid;
@@ -22,11 +25,11 @@ import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleMap;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleMap;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -56,22 +59,22 @@ public class ZenTypeAssociative extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters) {
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(accessScope, rules);
 		}
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type) {
+	public ICastingRule getCastingRule(AccessScope accessScope, ZenType type) {
 		TypeRegistry types = getScope().getTypes();
 		
-		ICastingRule base = super.getCastingRule(type);
+		ICastingRule base = super.getCastingRule(accessScope, type);
 		if (base == null && type instanceof ZenTypeAssociative && keyType == types.ANY && valueType == types.ANY) {
 			ZenTypeAssociative aType = (ZenTypeAssociative) type;
 			return new CastingRuleMap(
-					types.ANY.getCastingRule(aType.keyType),
-					types.ANY.getCastingRule(aType.valueType),
+					types.ANY.getCastingRule(accessScope, aType.keyType),
+					types.ANY.getCastingRule(accessScope, aType.valueType),
 					this,
 					aType);
 		} else {
@@ -85,7 +88,7 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
+	public Expression operator(CodePosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
 		Expression result = expandOperator(position, environment, operator, values);
 		if (result == null) {
 			environment.error(position, "associative array doesn't have this operator");
@@ -96,7 +99,7 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		Expression result = operator(position, environment, OperatorType.COMPARE, left, right);
 		if (result == null) {
 			environment.error(position, "cannot compare associative arrays");
@@ -107,22 +110,23 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod scope, IPartialExpression value, String name) {
 		TypeRegistry types = getScope().getTypes();
 		
 		if (name.equals("length")) {
-			return new ExpressionMapSize(position, environment, value.eval());
-		} else if (types.STRING.canCastImplicit(keyType)) {
+			return new ExpressionMapSize(position, scope, value.eval());
+		} else if (types.STRING.canCastImplicit(scope.getAccessScope(), keyType)) {
 			return new ExpressionMapIndexGet(
 					position,
-					environment,
+					scope,
 					value.eval(),
-					new ExpressionString(position, environment, name).cast(position, keyType));
+					new ExpressionString(position, scope, name).cast(position, keyType));
 		} else {
-			IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
-			if (result == null) {
-				environment.error(position, "this array is not indexable with strings");
-				return new ExpressionInvalid(position, environment, valueType);
+			MemberVirtual result = new MemberVirtual(position, scope, value.eval(), name);
+			memberExpansion(result);
+			if (result.isEmpty()) {
+				scope.error(position, "this array is not indexable with strings");
+				return new ExpressionInvalid(position, scope, valueType);
 			} else {
 				return result;
 			}
@@ -130,8 +134,9 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
-		IPartialExpression result = staticMemberExpansion(position, environment, name);
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
+		MemberStatic result = new MemberStatic(position, environment, valueType, name);
+		staticMemberExpansion(result);
 		if (result == null) {
 			environment.error(position, "associative arrays don't have static members");
 			return new ExpressionInvalid(position, environment);
@@ -141,7 +146,7 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	/*@Override
-	public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call associative arrays");
 		return new ExpressionInvalid(position);
 	}
@@ -165,8 +170,8 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public boolean canCastExplicit(ZenType type) {
-		return type == this || canCastAssociative(type) || canCastExpansion(type);
+	public boolean canCastExplicit(AccessScope accessScope, ZenType type) {
+		return type == this || canCastImplicit(accessScope, type) || canCastAssociative(accessScope, type);
 	}
 
 	@Override
@@ -200,7 +205,7 @@ public class ZenTypeAssociative extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 	
@@ -214,13 +219,13 @@ public class ZenTypeAssociative extends ZenType {
 		return this;
 	}
 	
-	private boolean canCastAssociative(ZenType type) {
+	private boolean canCastAssociative(AccessScope accessScope, ZenType type) {
 		if (!(type instanceof ZenTypeAssociative)) {
 			return false;
 		}
 		
 		ZenTypeAssociative atype = (ZenTypeAssociative) type;
-		return getKeyType().canCastImplicit(atype.getKeyType())
-				&& getValueType().canCastImplicit(atype.getValueType());
+		return getKeyType().canCastImplicit(accessScope, atype.getKeyType())
+				&& getValueType().canCastImplicit(accessScope, atype.getValueType());
 	}
 }

@@ -1,8 +1,8 @@
 package minetweaker.api.client;
 
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  * Interface for client interaction. Only available on clients.

@@ -12,10 +12,10 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.method.AbstractMethod;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.method.AbstractMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodHeader;
 
 /**
  * An expanding method is a static method that acts as a virtual method for an

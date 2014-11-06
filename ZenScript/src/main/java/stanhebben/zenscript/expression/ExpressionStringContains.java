@@ -6,10 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ public class ExpressionStringContains extends Expression {
 	private final Expression haystack;
 	private final Expression needle;
 	
-	public ExpressionStringContains(ZenPosition position, IScopeMethod environment, Expression haystack, Expression needle) {
+	public ExpressionStringContains(CodePosition position, IScopeMethod environment, Expression haystack, Expression needle) {
 		super(position, environment);
 		
 		this.haystack = haystack;
@@ -28,7 +28,7 @@ public class ExpressionStringContains extends Expression {
 	
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().BOOL;
+		return getScope().getTypes().BOOL;
 	}
 
 	@Override

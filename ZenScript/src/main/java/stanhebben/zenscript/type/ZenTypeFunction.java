@@ -10,21 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.method.MethodHeader;
-import zenscript.symbolic.type.casting.CastingRuleMatchedFunction;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleMatchedFunction;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ZenTypeFunction extends ZenType {
 	private String className = null;
 	
 	public ZenTypeFunction(MethodHeader header) {
-		super(header.getReturnType().getEnvironment());
+		super(header.getReturnType().getScope());
 		
 		this.header = header;
 		this.className = getScope().makeClassName();
@@ -69,13 +69,13 @@ public class ZenTypeFunction extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		environment.error(position, "Functions have no members");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		environment.error(position, "Functions have no static members");
 		return new ExpressionInvalid(position, environment);
 	}
@@ -165,25 +165,25 @@ public class ZenTypeFunction extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "cannot apply operators on a function");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		environment.error(position, "cannot apply operators on a function");
 		return new ExpressionInvalid(position, environment);
 	}
@@ -196,7 +196,7 @@ public class ZenTypeFunction extends ZenType {
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		return null; // TODO: complete
 	}
 	
@@ -217,7 +217,7 @@ public class ZenTypeFunction extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 

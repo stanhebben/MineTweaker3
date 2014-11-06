@@ -2,119 +2,144 @@ package stanhebben.zenscript.expression;
 
 import java.util.List;
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.parser.expression.ParsedExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.parser.expression.ParsedExpression;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.util.ZenPosition;
-import zenscript.lexer.ZenTokener;
-import zenscript.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.util.CodePosition;
+import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import stanhebben.zenscript.statements.Statement;
+import stanhebben.zenscript.statements.StatementExpression;
+import stanhebben.zenscript.statements.StatementReturn;
 
-public abstract class Expression implements IPartialExpression {	
-	public static final Expression parse(ZenTokener parser, IScopeMethod environment, ZenType predictedType) {
+public abstract class Expression implements IPartialExpression
+{
+	public static final Expression parse(ZenLexer parser, IScopeMethod environment, ZenType predictedType)
+	{
 		return ParsedExpression.parse(parser, environment)
 				.compilePartial(environment, predictedType)
 				.eval();
 	}
-	
-	private final ZenPosition position;
-	private final IScopeMethod environment;
-	
-	public Expression(ZenPosition position, IScopeMethod environment) {
+
+	private final CodePosition position;
+	private final IScopeMethod scope;
+
+	public Expression(CodePosition position, IScopeMethod scope)
+	{
 		this.position = position;
-		this.environment = environment;
+		this.scope = scope;
 	}
-	
-	public ZenPosition getPosition() {
+
+	public CodePosition getPosition()
+	{
 		return position;
 	}
-	
-	public IScopeMethod getEnvironment() {
-		return environment;
+
+	public IScopeMethod getScope()
+	{
+		return scope;
 	}
-	
-	public Expression cast(ZenPosition position, ZenType type) {
-		if (getType().equals(type)) {
+
+	public Expression cast(CodePosition position, ZenType type)
+	{
+		if (getType().equals(type))
 			return this;
-		} else {
-			ICastingRule castingRule = getType().getCastingRule(type);
+		else {
+			ICastingRule castingRule = getType().getCastingRule(getScope().getAccessScope(), type);
 			if (castingRule == null) {
-				getEnvironment().error(position, "Cannot cast " + this.getType() + " to " + type);
-				return new ExpressionInvalid(position, getEnvironment(), type);
-			} else {
-				return new ExpressionAs(position, getEnvironment(), this, castingRule);
-			}
+				getScope().error(position, "Cannot cast " + this.getType() + " to " + type);
+				return new ExpressionInvalid(position, getScope(), type);
+			} else
+				return new ExpressionAs(position, getScope(), this, castingRule);
 		}
 	}
-	
+
 	public abstract void compile(boolean result, MethodOutput output);
-	
-	public void compileIf(Label onIf, MethodOutput output) {
-		if (getType() == getEnvironment().getTypes().BOOL) {
+
+	public void compileIf(Label onIf, MethodOutput output)
+	{
+		if (getType() == getScope().getTypes().BOOL) {
 			compile(true, output);
 			output.ifNE(onIf);
 		} else if (getType().isNullable()) {
 			compile(true, output);
 			output.ifNonNull(onIf);
-		} else {
+		} else
 			throw new RuntimeException("cannot compile non-pointer non-boolean value to if condition");
-		}
 	}
-	
-	public void compileElse(Label onElse, MethodOutput output) {
-		if (getType() == getEnvironment().getTypes().BOOL) {
+
+	public void compileElse(Label onElse, MethodOutput output)
+	{
+		if (getType() == getScope().getTypes().BOOL) {
 			compile(true, output);
 			output.ifEQ(onElse);
 		} else if (getType().isNullable()) {
 			compile(true, output);
 			output.ifNull(onElse);
-		} else {
+		} else
 			throw new RuntimeException("cannot compile non-pointer non-boolean value to if condition");
-		}
+	}
+
+	public Statement asStatement()
+	{
+		return new StatementExpression(position, scope, this);
 	}
 	
+	public Statement asReturnStatement()
+	{
+		return new StatementReturn(position, scope, this);
+	}
+
 	// #########################################
 	// ### IPartialExpression implementation ###
 	// #########################################
 	
 	@Override
-	public Expression eval() {
+	public Expression eval()
+	{
 		return this;
 	}
-	
+
 	@Override
-	public Expression assign(ZenPosition position, Expression other) {
-		environment.error(position, "not a valid lvalue");
-		return new ExpressionInvalid(position, getEnvironment(), getType());
+	public Expression assign(CodePosition position, Expression other)
+	{
+		scope.error(position, "not a valid lvalue");
+		return new ExpressionInvalid(position, getScope(), getType());
 	}
-	
+
 	@Override
-	public IPartialExpression getMember(ZenPosition position, String name) {
-		return getType().getMember(position, getEnvironment(), this, name);
+	public IPartialExpression getMember(CodePosition position, String name)
+	{
+		return getType().getMember(position, getScope(), this, name);
 	}
-	
+
 	@Override
-	public IZenSymbol toSymbol() {
+	public IZenSymbol toSymbol()
+	{
 		return null;
 	}
-	
+
 	@Override
-	public ZenType toType(List<ZenType> genericTypes) {
-		environment.error(position, "not a valid type");
-		return environment.getTypes().ANY;
+	public ZenType toType(List<ZenType> genericTypes)
+	{
+		scope.error(position, "not a valid type");
+		return scope.getTypes().ANY;
 	}
-	
+
 	@Override
-	public List<IMethod> getMethods() {
+	public List<IMethod> getMethods()
+	{
 		return getType().getMethods();
 	}
-	
+
 	@Override
-	public IPartialExpression via(SymbolicFunction function) {
+	public IPartialExpression via(SymbolicFunction function)
+	{
 		return this;
 	}
 }

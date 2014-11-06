@@ -53,11 +53,7 @@ import net.minecraftforge.common.MinecraftForge;
  * 
  * @author Stan Hebben
  */
-<<<<<<< HEAD
-@Mod(modid = MineTweakerMod.MODID, version = "3.0.9")
-=======
-@Mod(modid = MineTweakerMod.MODID, version = "3.0.9B")
->>>>>>> master
+@Mod(modid = MineTweakerMod.MODID, version = "@MOD_VERSION@")
 public class MineTweakerMod {
 	public static final String MODID = "MineTweaker3";
 	public static final String MCVERSION = "1.7.10";
@@ -106,7 +102,7 @@ public class MineTweakerMod {
 		MineTweakerImplementationAPI.platform = MCPlatformFunctions.INSTANCE;
 		
 		File globalDir = new File("scripts");
-		if (!globalDir.exists()) {
+		if (!globalDir.exists())
 			globalDir.mkdirs();
 		
 		scriptsIMC = new ScriptProviderCustom("intermod");
@@ -152,7 +148,6 @@ public class MineTweakerMod {
 	@EventHandler
 	public void onServerAboutToStart(FMLServerAboutToStartEvent ev) {
 		// starts before loading worlds
-		// perfect place to start MineTweaker!
 		
 		if (MineTweakerPlatformUtils.isClient()) {
 			MineTweakerAPI.client = new MCClient();

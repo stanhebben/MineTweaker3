@@ -8,7 +8,7 @@ package minetweaker.expand;
 
 import minetweaker.api.data.DataIntArray;
 import minetweaker.api.data.IData;
-import zenscript.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenExpansion;
 
 /**
  *

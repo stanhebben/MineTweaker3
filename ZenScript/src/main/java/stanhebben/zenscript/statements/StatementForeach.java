@@ -2,13 +2,13 @@ package stanhebben.zenscript.statements;
 
 import java.util.List;
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class StatementForeach extends Statement {
 	private final List<SymbolLocal> variables;
@@ -16,7 +16,7 @@ public class StatementForeach extends Statement {
 	private final IZenIterator iterator;
 	private Statement body;
 	
-	public StatementForeach(ZenPosition position, IScopeMethod environment, List<SymbolLocal> variables, Expression list, IZenIterator iterator) {
+	public StatementForeach(CodePosition position, IScopeMethod environment, List<SymbolLocal> variables, Expression list, IZenIterator iterator) {
 		super(position, environment);
 		
 		this.variables = variables;

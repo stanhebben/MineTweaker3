@@ -10,10 +10,10 @@ import java.util.List;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.method.AbstractMethod;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.MethodArgument;
-import zenscript.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.method.AbstractMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodHeader;
 
 /**
  * This method, when called, will add an expression as first argument to

@@ -1,17 +1,17 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionConditional extends Expression {
 	private final Expression condition;
 	private final Expression onIf;
 	private final Expression onElse;
 	
-	public ExpressionConditional(ZenPosition position, IScopeMethod environment, Expression condition, Expression onIf, Expression onElse) {
+	public ExpressionConditional(CodePosition position, IScopeMethod environment, Expression condition, Expression onIf, Expression onElse) {
 		super(position, environment);
 		
 		this.condition = condition;

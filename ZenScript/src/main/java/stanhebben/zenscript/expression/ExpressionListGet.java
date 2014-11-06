@@ -1,11 +1,11 @@
 package stanhebben.zenscript.expression;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArrayList;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,7 +22,7 @@ public class ExpressionListGet extends Expression {
 	private final Expression index;
 	private final ZenTypeArrayList type;
 	
-	public ExpressionListGet(ZenPosition position, IScopeMethod environment, Expression list, Expression index) {
+	public ExpressionListGet(CodePosition position, IScopeMethod environment, Expression list, Expression index) {
 		super(position, environment);
 		
 		this.list = list;

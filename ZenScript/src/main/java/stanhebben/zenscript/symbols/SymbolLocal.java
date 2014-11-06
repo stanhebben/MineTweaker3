@@ -6,11 +6,12 @@
 
 package stanhebben.zenscript.symbols;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.expression.partial.PartialLocal;
+import org.openzen.zencode.symbolic.expression.partial.PartialLocal;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -34,7 +35,7 @@ public class SymbolLocal implements IZenSymbol {
 	}
 
 	@Override
-	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+	public IPartialExpression instance(CodePosition position, IScopeMethod environment) {
 		return new PartialLocal(position, environment, this);
 	}
 }

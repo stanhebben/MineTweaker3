@@ -1,12 +1,12 @@
 package minetweaker.api.item;
 
 import java.util.List;
-import zenscript.annotations.OperatorType;
+import org.openzen.zencode.annotations.OperatorType;
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenOperator;
 
 /**
  * Represents a recipe ingredient. An ingredient can be an item, an ore

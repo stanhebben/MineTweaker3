@@ -8,16 +8,16 @@ package stanhebben.zenscript.type.expand;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 import stanhebben.zenscript.type.natives.JavaMethodExpanding;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -36,11 +36,11 @@ public class ZenExpandMember {
 		this.name = name;
 	}
 	
-	public IPartialExpression instance(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+	public IPartialExpression instance(CodePosition position, IScopeMethod environment, IPartialExpression value) {
 		return new InstanceGetValue(position, environment, value);
 	}
 	
-	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+	public IPartialExpression instance(CodePosition position, IScopeMethod environment) {
 		return new StaticGetValue(position, environment);
 	}
 	
@@ -69,11 +69,11 @@ public class ZenExpandMember {
 	}
 	
 	private class InstanceGetValue implements IPartialExpression {
-		private final ZenPosition position;
+		private final CodePosition position;
 		private final IScopeMethod environment;
 		private final IPartialExpression value;
 		
-		public InstanceGetValue(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+		public InstanceGetValue(CodePosition position, IScopeMethod environment, IPartialExpression value) {
 			this.position = position;
 			this.environment = environment;
 			this.value = value;
@@ -85,12 +85,12 @@ public class ZenExpandMember {
 		}
 
 		@Override
-		public Expression assign(ZenPosition position, Expression other) {
+		public Expression assign(CodePosition position, Expression other) {
 			return new ExpressionCallVirtual(position, environment, setter, value.eval(), other);
 		}
 
 		@Override
-		public IPartialExpression getMember(ZenPosition position, String name) {
+		public IPartialExpression getMember(CodePosition position, String name) {
 			return getter.getReturnType().getMember(position, environment, this, name);
 		}
 		
@@ -117,10 +117,10 @@ public class ZenExpandMember {
 	}
 	
 	private class StaticGetValue implements IPartialExpression {
-		private final ZenPosition position;
+		private final CodePosition position;
 		private final IScopeMethod environment;
 		
-		public StaticGetValue(ZenPosition position, IScopeMethod environment) {
+		public StaticGetValue(CodePosition position, IScopeMethod environment) {
 			this.position = position;
 			this.environment = environment;
 		}
@@ -131,12 +131,12 @@ public class ZenExpandMember {
 		}
 
 		@Override
-		public Expression assign(ZenPosition position, Expression other) {
+		public Expression assign(CodePosition position, Expression other) {
 			return new ExpressionCallStatic(position, environment, setter, other);
 		}
 
 		@Override
-		public IPartialExpression getMember(ZenPosition position, String name) {
+		public IPartialExpression getMember(CodePosition position, String name) {
 			return getter.getReturnType().getMember(position, environment, this, name);
 		}
 		
@@ -164,7 +164,7 @@ public class ZenExpandMember {
 	
 	private class StaticSymbol implements IZenSymbol {
 		@Override
-		public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+		public IPartialExpression instance(CodePosition position, IScopeMethod environment) {
 			return new StaticGetValue(position, environment);
 		}
 	}

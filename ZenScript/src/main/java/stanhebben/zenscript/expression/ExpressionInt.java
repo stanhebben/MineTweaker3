@@ -6,12 +6,12 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -21,7 +21,7 @@ public class ExpressionInt extends Expression {
 	private final long value;
 	private final ZenType type;
 	
-	public ExpressionInt(ZenPosition position, IScopeMethod environment, long value, ZenType type) {
+	public ExpressionInt(CodePosition position, IScopeMethod environment, long value, ZenType type) {
 		super(position, environment);
 		
 		this.value = value;
@@ -29,7 +29,7 @@ public class ExpressionInt extends Expression {
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
+	public Expression cast(CodePosition position, ZenType type) {
 		if (type == this.type) return this;
 		
 		switch (type.getNumberType()) {
@@ -37,10 +37,10 @@ public class ExpressionInt extends Expression {
 			case IAny.NUM_SHORT:
 			case IAny.NUM_INT:
 			case IAny.NUM_LONG:
-				return new ExpressionInt(getPosition(), getEnvironment(), value, type);
+				return new ExpressionInt(getPosition(), getScope(), value, type);
 			case IAny.NUM_FLOAT:
 			case IAny.NUM_DOUBLE:
-				return new ExpressionFloat(getPosition(), getEnvironment(), value, type);
+				return new ExpressionFloat(getPosition(), getScope(), value, type);
 		}
 		
 		return super.cast(position, type);
@@ -55,7 +55,7 @@ public class ExpressionInt extends Expression {
 	public void compile(boolean result, MethodOutput output) {
 		if (!result) return;
 		
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		
 		if (type == types.BYTE) {
 			output.biPush((byte) value);

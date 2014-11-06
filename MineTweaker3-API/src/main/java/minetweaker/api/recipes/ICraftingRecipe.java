@@ -7,7 +7,7 @@
 package minetweaker.api.recipes;
 
 import minetweaker.api.item.IItemStack;
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenClass;
 import minetweaker.api.player.IPlayer;
 
 /**

@@ -7,8 +7,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.ExpressionCompareGeneric;
@@ -18,7 +18,7 @@ import stanhebben.zenscript.expression.ExpressionStringConcat;
 import stanhebben.zenscript.expression.ExpressionStringContains;
 import stanhebben.zenscript.expression.ExpressionStringIndex;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -26,15 +26,15 @@ import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
-import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.util.CommonMethods;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.util.CommonMethods;
+import org.openzen.zencode.util.CodePosition;
 
 public class ZenTypeString extends ZenType {
 	private static final String ANY_NAME = "any/AnyString";
@@ -94,7 +94,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public IPartialExpression getMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			IPartialExpression value,
 			String name) {
@@ -109,7 +109,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public IPartialExpression getStaticMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			String name) {
 		return null;
@@ -127,7 +127,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public Expression unary(
-			ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		Expression result = unaryExpansion(position, environment, value, operator);
 		if (result == null) {
 			environment.error(position, "operator not supported on a string");
@@ -139,7 +139,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public Expression binary(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		if (operator == OperatorType.CAT || operator == OperatorType.ADD) {
 			if (left instanceof ExpressionStringConcat) {
 				((ExpressionStringConcat) left).add(right.cast(position, this));
@@ -177,7 +177,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public Expression trinary(
-			ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		Expression result = trinaryExpansion(position, environment, first, second, third, operator);
 		if (result == null) {
 			environment.error(position, "operator not supported on strings");
@@ -189,7 +189,7 @@ public class ZenTypeString extends ZenType {
 
 	@Override
 	public Expression compare(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		if (right.getType().canCastImplicit(this)) {
 			return new ExpressionCompareGeneric(position, environment, new ExpressionCallVirtual(
 					position,
@@ -211,7 +211,7 @@ public class ZenTypeString extends ZenType {
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "Cannot call a string value");
 		return new ExpressionInvalid(position, INSTANCE);
 	}*/
@@ -239,7 +239,7 @@ public class ZenTypeString extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 	

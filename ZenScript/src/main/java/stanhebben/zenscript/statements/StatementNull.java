@@ -6,16 +6,16 @@
 
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
 public class StatementNull extends Statement {
-	public StatementNull(ZenPosition position, IScopeMethod environment) {
+	public StatementNull(CodePosition position, IScopeMethod environment) {
 		super(position, environment);
 	}
 

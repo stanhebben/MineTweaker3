@@ -10,9 +10,9 @@ import minetweaker.api.block.IBlock;
 import minetweaker.api.player.IPlayer;
 import minetweaker.api.world.IBlockGroup;
 import minetweaker.api.world.IDimension;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

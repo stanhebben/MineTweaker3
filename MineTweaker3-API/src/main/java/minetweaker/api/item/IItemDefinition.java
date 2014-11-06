@@ -1,17 +1,11 @@
 package minetweaker.api.item;
 
-import zenscript.annotations.Optional;
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
 import java.util.List;
 import minetweaker.api.oredict.IOreDictEntry;
-import java.util.List;
-import minetweaker.api.oredict.IOreDictEntry;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Contains an item definition. Item definitions provide general information

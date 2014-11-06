@@ -7,10 +7,10 @@
 package stanhebben.zenscript.statements;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -20,7 +20,7 @@ public class StatementDoWhile extends Statement {
 	private final Expression condition;
 	private Statement contents;
 	
-	public StatementDoWhile(ZenPosition position, IScopeMethod environment, Expression condition) {
+	public StatementDoWhile(CodePosition position, IScopeMethod environment, Expression condition) {
 		super(position, environment);
 		
 		this.condition = condition;

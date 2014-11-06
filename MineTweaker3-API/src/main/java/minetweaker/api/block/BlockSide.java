@@ -9,7 +9,8 @@ package minetweaker.api.block;
  *
  * @author Stan
  */
-public enum BlockSide {
+public enum BlockSide
+{
 	POSX,
 	NEGX,
 	POSY,

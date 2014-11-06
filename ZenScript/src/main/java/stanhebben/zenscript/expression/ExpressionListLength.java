@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ import zenscript.util.ZenPosition;
 public class ExpressionListLength extends Expression {
 	private final Expression value;
 
-	public ExpressionListLength(ZenPosition position, IScopeMethod environment, Expression value) {
+	public ExpressionListLength(CodePosition position, IScopeMethod environment, Expression value) {
 		super(position, environment);
 
 		this.value = value;
@@ -27,7 +27,7 @@ public class ExpressionListLength extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().INT;
+		return getScope().getTypes().INT;
 	}
 
 	@Override

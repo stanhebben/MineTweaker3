@@ -6,12 +6,12 @@
 
 package stanhebben.zenscript.expression;
 
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -23,7 +23,7 @@ public class ExpressionArithmeticBinary extends Expression {
 	private final Expression b;
 	
 	public ExpressionArithmeticBinary(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			OperatorType operator,
 			Expression a,
@@ -43,7 +43,7 @@ public class ExpressionArithmeticBinary extends Expression {
 	@Override
 	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			TypeRegistry types = getEnvironment().getTypes();
+			TypeRegistry types = getScope().getTypes();
 			
 			a.compile(result, output);
 			b.compile(result, output);

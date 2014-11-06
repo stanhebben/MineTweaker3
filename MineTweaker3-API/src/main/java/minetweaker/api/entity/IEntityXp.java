@@ -1,7 +1,7 @@
 package minetweaker.api.entity;
 
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  * Represents an xp orb.

@@ -8,7 +8,7 @@ package minetweaker.api.event;
 
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  *

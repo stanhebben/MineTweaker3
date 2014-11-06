@@ -1,18 +1,18 @@
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.annotations.OperatorType;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionArithmeticUnary extends Expression {
 	private final Expression base;
 	private final OperatorType operator;
 	
 	public ExpressionArithmeticUnary(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			OperatorType operator,
 			Expression base) {
@@ -32,7 +32,7 @@ public class ExpressionArithmeticUnary extends Expression {
 		base.compile(result, output);
 		
 		if (result) {
-			TypeRegistry types = getEnvironment().getTypes();
+			TypeRegistry types = getScope().getTypes();
 			
 			ZenType type = base.getType();
 			if (type == types.BOOL) {
@@ -69,6 +69,6 @@ public class ExpressionArithmeticUnary extends Expression {
 			}
 		}
 		
-		getEnvironment().error(getPosition(), "Invalid operation");
+		getScope().error(getPosition(), "Invalid operation");
 	}
 }

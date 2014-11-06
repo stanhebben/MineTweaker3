@@ -13,9 +13,9 @@ import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.item.IItemDefinition;
 import minetweaker.api.liquid.ILiquidDefinition;
 import minetweaker.api.world.IBiome;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Game interface. Used to obtain general game information.

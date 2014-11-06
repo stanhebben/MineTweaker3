@@ -5,10 +5,10 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArithmeticBinary;
 import stanhebben.zenscript.expression.ExpressionArithmeticCompare;
@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -24,20 +24,20 @@ import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.runtime.IAny;
-import static zenscript.runtime.IAny.NUM_LONG;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleI2B;
-import zenscript.symbolic.type.casting.CastingRuleI2D;
-import zenscript.symbolic.type.casting.CastingRuleI2F;
-import zenscript.symbolic.type.casting.CastingRuleI2L;
-import zenscript.symbolic.type.casting.CastingRuleI2S;
-import zenscript.symbolic.type.casting.CastingRuleL2F;
-import zenscript.symbolic.type.casting.CastingRuleL2I;
-import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.util.CommonMethods;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.runtime.IAny;
+import static org.openzen.zencode.runtime.IAny.NUM_LONG;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleI2B;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleI2D;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleI2F;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleI2L;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleI2S;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleL2F;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleL2I;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.util.CommonMethods;
+import org.openzen.zencode.util.CodePosition;
 
 public class ZenTypeLong extends ZenType {
 	private static final String ANY_NAME = "any/AnyLong";
@@ -88,7 +88,7 @@ public class ZenTypeLong extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
 		if (result == null) {
 			environment.error(position, "bool value has no members");
@@ -99,7 +99,7 @@ public class ZenTypeLong extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		return null;
 	}
 
@@ -114,12 +114,12 @@ public class ZenTypeLong extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		return new ExpressionArithmeticUnary(position, environment, operator, value);
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		if (operator == OperatorType.CAT) {
 			ZenType STRING = environment.getTypes().STRING;
 			
@@ -135,19 +135,19 @@ public class ZenTypeLong extends ZenType {
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "long doesn't support this operation");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		return new ExpressionArithmeticCompare(position, environment, type, left, right.cast(position, this));
 	}
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call a long value");
 		return new ExpressionInvalid(position, environment);
 	*/
@@ -180,7 +180,7 @@ public class ZenTypeLong extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionInt(position, environment, 0, environment.getTypes().LONG);
 	}
 	

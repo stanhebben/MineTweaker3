@@ -1,7 +1,8 @@
 package stanhebben.zenscript;
 
-import zenscript.lexer.ZenTokener;
-import zenscript.parser.ParsedFile;
+import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.parser.ParsedFile;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,14 +20,14 @@ import java.util.zip.ZipFile;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import stanhebben.zenscript.compiler.ClassNameGenerator;
-import stanhebben.zenscript.compiler.EnvironmentClass;
-import stanhebben.zenscript.compiler.EnvironmentGlobal;
-import stanhebben.zenscript.compiler.ScopeMethod;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
-import zenscript.parser.elements.ParsedFunction;
-import zenscript.parser.elements.ParsedFunctionArgument;
+import org.openzen.zencode.util.ClassNameGenerator;
+import org.openzen.zencode.symbolic.scope.ScopeClass;
+import org.openzen.zencode.symbolic.scope.ScopeGlobal;
+import org.openzen.zencode.symbolic.scope.ScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.parser.elements.ParsedFunction;
+import org.openzen.zencode.parser.elements.ParsedFunctionArgument;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.statements.StatementReturn;
 import stanhebben.zenscript.symbols.SymbolArgument;
@@ -77,7 +78,7 @@ public class ZenModule {
 		for (ParsedFile script : scripts) {
 			ClassWriter clsScript = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 			clsScript.visitSource(script.getFileName(), null);
-			EnvironmentClass environmentScript = new EnvironmentClass(clsScript, script.getEnvironment());
+			ScopeClass environmentScript = new ScopeClass(clsScript, script.getEnvironment());
 			
 			clsScript.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, script.getClassName().replace('.', '/'), null, internal(Object.class), new String[] {internal(Runnable.class)});
 			
@@ -156,9 +157,8 @@ public class ZenModule {
 				for (String className : environmentGlobal.getClassNames()) {
 					File outputFile = new File(outputDir, className.replace('.', '/') + ".class");
 					
-					if (!outputFile.getParentFile().exists()) {
+					if (!outputFile.getParentFile().exists())
 						outputFile.getParentFile().mkdirs();
-					}
 					
 					FileOutputStream output = new FileOutputStream(outputFile);
 					output.write(environmentGlobal.getClass(className));
@@ -184,7 +184,7 @@ public class ZenModule {
 	public static ZenModule compileScriptFile(File single, IZenCompileEnvironment environment, ClassLoader baseClassLoader) throws IOException {
 		Map<String, byte[]> classes = new HashMap<String, byte[]>();
 		ClassNameGenerator nameGen = new ClassNameGenerator();
-		EnvironmentGlobal environmentGlobal = new EnvironmentGlobal(
+		ScopeGlobal environmentGlobal = new ScopeGlobal(
 				environment,
 				classes,
 				nameGen
@@ -195,7 +195,7 @@ public class ZenModule {
 		
 		FileInputStream input = new FileInputStream(single);
 		Reader reader = new InputStreamReader(new BufferedInputStream(input));
-		ZenTokener parser = new ZenTokener(reader, environment);
+		ZenLexer parser = new ZenLexer(reader, environment);
 		ParsedFile file = new ParsedFile(filename, className, parser, environmentGlobal);
 		reader.close();
 		
@@ -238,7 +238,7 @@ public class ZenModule {
 			ClassLoader baseClassLoader) throws IOException {
 		Map<String, byte[]> classes = new HashMap<String, byte[]>();
 		ClassNameGenerator nameGen = new ClassNameGenerator();
-		EnvironmentGlobal environmentGlobal = new EnvironmentGlobal(
+		ScopeGlobal environmentGlobal = new ScopeGlobal(
 				environment,
 				classes,
 				nameGen
@@ -256,7 +256,7 @@ public class ZenModule {
 				String className = extractClassName(filename);
 				
 				Reader reader = new InputStreamReader(new BufferedInputStream(zipFile.getInputStream(entry)));
-				ZenTokener parser = new ZenTokener(reader, environment);
+				ZenLexer parser = new ZenLexer(reader, environment);
 				ParsedFile pfile = new ParsedFile(filename, className, parser, environmentGlobal);
 				files.add(pfile);
 				reader.close();

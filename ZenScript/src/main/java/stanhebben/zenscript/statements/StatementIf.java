@@ -1,18 +1,18 @@
 package stanhebben.zenscript.statements;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class StatementIf extends Statement {
 	private final Expression condition;
 	private final Statement onThen;
 	private final Statement onElse;
 	
-	public StatementIf(ZenPosition position, IScopeMethod environment, Expression condition, Statement onThen, Statement onElse) {
+	public StatementIf(CodePosition position, IScopeMethod environment, Expression condition, Statement onThen, Statement onElse) {
 		super(position, environment);
 		
 		this.condition = condition;

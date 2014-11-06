@@ -6,10 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ public class ExpressionStringIndex extends Expression {
 	private final Expression source;
 	private final Expression index;
 	
-	public ExpressionStringIndex(ZenPosition position, IScopeMethod environment, Expression source, Expression index) {
+	public ExpressionStringIndex(CodePosition position, IScopeMethod environment, Expression source, Expression index) {
 		super(position, environment);
 		
 		this.source = source;
@@ -28,7 +28,7 @@ public class ExpressionStringIndex extends Expression {
 	
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().STRING;
+		return getScope().getTypes().STRING;
 	}
 
 	@Override

@@ -6,8 +6,8 @@
 
 package stanhebben.zenscript.type.natives;
 
-import zenscript.symbolic.method.IMethod;
-import zenscript.annotations.OperatorType;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.annotations.OperatorType;
 
 /**
  *

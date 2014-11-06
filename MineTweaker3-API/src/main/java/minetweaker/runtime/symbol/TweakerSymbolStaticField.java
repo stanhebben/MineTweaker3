@@ -6,30 +6,36 @@
 package minetweaker.runtime.symbol;
 
 import java.lang.reflect.Field;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import zenscript.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.field.JavaField;
+import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
 
 /**
  *
  * @author Stan
  */
-public class TweakerSymbolStaticField implements ITweakerSymbol {
+public class TweakerSymbolStaticField implements ITweakerSymbol
+{
 	private final Field field;
 	private final IAny value;
-	
-	public TweakerSymbolStaticField(Field field, IAny value) {
+
+	public TweakerSymbolStaticField(Field field, IAny value)
+	{
 		this.field = field;
 		this.value = value;
 	}
 
 	@Override
-	public IZenSymbol convert(IScopeGlobal scope) {
-		
+	public IZenSymbol convert(IScopeGlobal scope)
+	{
+		return new SymbolStaticField(new JavaField(field, scope.getTypes()));
 	}
 
 	@Override
-	public IAny eval() {
+	public IAny eval()
+	{
 		return value;
 	}
 }

@@ -1,6 +1,6 @@
 package minetweaker.api.mods;
 
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  * 

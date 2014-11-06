@@ -1,21 +1,23 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Part of MineTweaker3 API - MIT license applies.
  */
-
 package minetweaker.runtime;
 
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 
 /**
+ * Globally available functions. Made available through global variables.
  *
- * @author Stan
+ * API Status: existing methods will not be modified.
+ *
+ * @author Stan Hebben
  */
-public class GlobalFunctions {
+public class GlobalFunctions
+{
 	private GlobalFunctions() {}
-	
-	public static void print(String message) {
+
+	public static void print(String message)
+	{
 		MineTweakerAPI.logInfo(message);
 	}
 }

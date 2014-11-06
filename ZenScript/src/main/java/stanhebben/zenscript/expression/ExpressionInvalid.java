@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,13 +19,13 @@ import zenscript.util.ZenPosition;
 public class ExpressionInvalid extends Expression {
 	private final ZenType type;
 	
-	public ExpressionInvalid(ZenPosition position, IScopeMethod environment) {
+	public ExpressionInvalid(CodePosition position, IScopeMethod environment) {
 		super(position, environment);
 		
 		type = environment.getTypes().ANY;
 	}
 	
-	public ExpressionInvalid(ZenPosition position, IScopeMethod environment, ZenType type) {
+	public ExpressionInvalid(CodePosition position, IScopeMethod environment, ZenType type) {
 		super(position, environment);
 		
 		this.type = type;
@@ -35,8 +35,8 @@ public class ExpressionInvalid extends Expression {
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
-		return new ExpressionInvalid(position, getEnvironment(), type);
+	public Expression cast(CodePosition position, ZenType type) {
+		return new ExpressionInvalid(position, getScope(), type);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ExpressionInvalid extends Expression {
 	@Override
 	public void compile(boolean result, MethodOutput output) {
 		if (result) {
-			type.defaultValue(getPosition(), getEnvironment()).compile(result, output);
+			type.defaultValue(getPosition(), getScope()).compile(result, output);
 		}
 	}
 

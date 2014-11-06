@@ -1,15 +1,15 @@
 package stanhebben.zenscript.statements;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class StatementReturn extends Statement {
 	private final Expression expression;
 	
-	public StatementReturn(ZenPosition position, IScopeMethod environment, Expression expression) {
+	public StatementReturn(CodePosition position, IScopeMethod environment, Expression expression) {
 		super(position, environment);
 		
 		this.expression = expression;

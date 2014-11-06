@@ -9,8 +9,8 @@ package minetweaker.api.event;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.player.IPlayer;
 import minetweaker.api.recipes.ICraftingInventory;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  *

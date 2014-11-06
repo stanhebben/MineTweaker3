@@ -9,7 +9,7 @@ package stanhebben.zenscript.type.iterator;
 import java.util.Iterator;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;

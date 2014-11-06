@@ -7,9 +7,9 @@
 package minetweaker.api.oredict;
 
 import java.util.List;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMemberGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMemberGetter;
 
 /**
  *

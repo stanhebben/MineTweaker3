@@ -6,11 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -21,7 +21,7 @@ public class ExpressionNew extends Expression {
 	private final IMethod constructor;
 	private final Expression[] arguments;
 	
-	public ExpressionNew(ZenPosition position, IScopeMethod environment, ZenType type, IMethod constructor, Expression[] arguments) {
+	public ExpressionNew(CodePosition position, IScopeMethod environment, ZenType type, IMethod constructor, Expression[] arguments) {
 		super(position, environment);
 		
 		this.type = type;

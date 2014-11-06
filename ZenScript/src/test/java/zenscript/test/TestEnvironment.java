@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Queue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import stanhebben.zenscript.IZenCompileEnvironment;
-import stanhebben.zenscript.compiler.ClassNameGenerator;
-import stanhebben.zenscript.compiler.EnvironmentGlobal;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import zenscript.IZenErrorLogger;
-import zenscript.lexer.Token;
-import zenscript.runtime.IAny;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.util.ClassNameGenerator;
+import org.openzen.zencode.symbolic.scope.ScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.lexer.Token;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -28,11 +28,11 @@ import zenscript.util.ZenPosition;
 public class TestEnvironment implements IZenCompileEnvironment
 {
 	public static IScopeGlobal createScope() {
-		return new EnvironmentGlobal(new TestEnvironment(), new HashMap<String, byte[]>(), new ClassNameGenerator());
+		return new ScopeGlobal(new TestEnvironment(), new HashMap<String, byte[]>(), new ClassNameGenerator());
 	}
 	
 	private final Queue<LogMessage> logs = new LinkedList<LogMessage>();
-	private final IZenErrorLogger errorLogger = new MyErrorLogger();
+	private final ICodeErrorLogger errorLogger = new MyErrorLogger();
 	
 	public void consumeError(String message)
 	{
@@ -53,7 +53,7 @@ public class TestEnvironment implements IZenCompileEnvironment
 	}
 	
 	@Override
-	public IZenErrorLogger getErrorLogger()
+	public ICodeErrorLogger getErrorLogger()
 	{
 		return errorLogger;
 	}
@@ -94,16 +94,16 @@ public class TestEnvironment implements IZenCompileEnvironment
 		return null;
 	}
 	
-	private class MyErrorLogger implements IZenErrorLogger
+	private class MyErrorLogger implements ICodeErrorLogger
 	{
 		@Override
-		public void error(ZenPosition position, String message)
+		public void error(CodePosition position, String message)
 		{
 			logs.add(new LogMessage(LogMessageType.ERROR, message));
 		}
 
 		@Override
-		public void warning(ZenPosition position, String message)
+		public void warning(CodePosition position, String message)
 		{
 			logs.add(new LogMessage(LogMessageType.WARNING, message));
 		}

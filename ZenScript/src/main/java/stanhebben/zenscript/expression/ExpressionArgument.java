@@ -6,10 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ public class ExpressionArgument extends Expression {
 	private final int id;
 	private final ZenType type;
 	
-	public ExpressionArgument(ZenPosition position, IScopeMethod environment, int id, ZenType type) {
+	public ExpressionArgument(CodePosition position, IScopeMethod environment, int id, ZenType type) {
 		super(position, environment);
 		
 		this.id = id;

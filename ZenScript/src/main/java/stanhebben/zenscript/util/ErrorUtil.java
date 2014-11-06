@@ -8,7 +8,7 @@ package stanhebben.zenscript.util;
 
 import java.util.List;
 import stanhebben.zenscript.expression.Expression;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 
 /**
  *

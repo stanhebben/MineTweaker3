@@ -7,11 +7,11 @@
 package stanhebben.zenscript.expression;
 
 import java.util.Map;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeAssociative;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 /**
@@ -24,7 +24,7 @@ public class ExpressionMapIndexGet extends Expression {
 	
 	private final ZenType type;
 	
-	public ExpressionMapIndexGet(ZenPosition position, IScopeMethod environment, Expression map, Expression index) {
+	public ExpressionMapIndexGet(CodePosition position, IScopeMethod environment, Expression map, Expression index) {
 		super(position, environment);
 		
 		this.map = map;

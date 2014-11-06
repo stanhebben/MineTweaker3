@@ -5,11 +5,11 @@
  */
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.field.IField;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.field.IField;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -20,7 +20,7 @@ public class ExpressionGetInstanceField extends Expression
 	private final Expression value;
 	private final IField field;
 	
-	public ExpressionGetInstanceField(ZenPosition position, IScopeMethod scope, Expression value, IField field)
+	public ExpressionGetInstanceField(CodePosition position, IScopeMethod scope, Expression value, IField field)
 	{
 		super(position, scope);
 		

@@ -6,16 +6,16 @@
 
 package stanhebben.zenscript.type.expand;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.type.casting.CastingRuleDelegateStaticMethod;
-import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -39,7 +39,7 @@ public class ZenExpandCaster {
 		type.constructCastingRules(new CastingRuleDelegateStaticMethod(rules, method), false);
 	}
 	
-	public Expression cast(ZenPosition position, IScopeMethod environment, Expression expression) {
+	public Expression cast(CodePosition position, IScopeMethod environment, Expression expression) {
 		return new ExpressionCallStatic(position, environment, method, expression);
 	}
 	

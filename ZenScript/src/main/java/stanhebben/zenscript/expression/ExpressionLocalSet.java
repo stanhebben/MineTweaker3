@@ -6,11 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -20,7 +20,7 @@ public class ExpressionLocalSet extends Expression {
 	private final SymbolLocal variable;
 	private final Expression value;
 	
-	public ExpressionLocalSet(ZenPosition position, IScopeMethod environment, SymbolLocal variable, Expression value) {
+	public ExpressionLocalSet(CodePosition position, IScopeMethod environment, SymbolLocal variable, Expression value) {
 		super(position, environment);
 		
 		this.variable = variable;

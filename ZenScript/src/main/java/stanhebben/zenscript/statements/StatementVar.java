@@ -6,11 +6,11 @@
 
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -20,7 +20,7 @@ public class StatementVar extends Statement {
 	private final SymbolLocal symbol;
 	private final Expression initializer;
 	
-	public StatementVar(ZenPosition position, IScopeMethod method, SymbolLocal symbol, Expression initializer) {
+	public StatementVar(CodePosition position, IScopeMethod method, SymbolLocal symbol, Expression initializer) {
 		super(position, method);
 		
 		this.symbol = symbol;

@@ -6,11 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -21,11 +21,11 @@ public class ExpressionCallStatic extends Expression {
 	private final Expression[] arguments;
 	
 	public ExpressionCallStatic(
-			ZenPosition position,
-			IScopeMethod environment,
+			CodePosition position,
+			IScopeMethod scope,
 			IMethod method,
 			Expression... arguments) {
-		super(position, environment);
+		super(position, scope);
 		
 		this.method = method;
 		this.arguments = arguments;
@@ -40,7 +40,7 @@ public class ExpressionCallStatic extends Expression {
 	public void compile(boolean result, MethodOutput output) {
 		method.invokeStatic(output, arguments);
 		
-		if (method.getMethodHeader().getReturnType() != getEnvironment().getTypes().VOID && !result) {
+		if (method.getMethodHeader().getReturnType() != getScope().getTypes().VOID && !result) {
 			output.pop(method.getMethodHeader().getReturnType().isLarge());
 		}
 	}

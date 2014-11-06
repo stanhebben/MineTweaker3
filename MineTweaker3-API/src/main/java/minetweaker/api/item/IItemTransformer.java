@@ -1,8 +1,8 @@
 package minetweaker.api.item;
 
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenClass;
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * An item transformer modifies an item stack after crafting. Used to apply damage,

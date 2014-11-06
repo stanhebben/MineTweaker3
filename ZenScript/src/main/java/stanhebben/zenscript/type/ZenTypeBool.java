@@ -5,10 +5,10 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArithmeticBinary;
 import stanhebben.zenscript.expression.ExpressionArithmeticCompare;
@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionBool;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -24,12 +24,18 @@ import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.util.CommonMethods;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.MemberVirtual;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.any.AnyClass;
+import org.openzen.zencode.symbolic.member.MethodMember;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.unit.SymbolicClass;
+import org.openzen.zencode.symbolic.util.CommonMethods;
+import org.openzen.zencode.util.CodePosition;
+import org.openzen.zencode.symbolic.scope.ScopeMethod;
 
 public class ZenTypeBool extends ZenType {
 	private static final String ANY_NAME = "any/AnyBool";
@@ -46,7 +52,7 @@ public class ZenTypeBool extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters) {
 		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
@@ -57,7 +63,7 @@ public class ZenTypeBool extends ZenType {
 		)));
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(accessScope, rules);
 		}
 	}
 	
@@ -77,7 +83,7 @@ public class ZenTypeBool extends ZenType {
 	}
 	
 	@Override
-	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
+	public Expression operator(CodePosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
 		TypeRegistry types = getScope().getTypes();
 		
 		switch (operator) {
@@ -103,7 +109,7 @@ public class ZenTypeBool extends ZenType {
 	
 	@Override
 	public Expression compare(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		if (type == CompareType.EQ || type == CompareType.NE) {
 			return new ExpressionArithmeticCompare(position, environment, type, left, right);
 		} else {
@@ -113,9 +119,10 @@ public class ZenTypeBool extends ZenType {
 	}
 	
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
-		IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
-		if (result == null) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
+		MemberVirtual result = new MemberVirtual(position, environment, value.eval(), name);
+		memberExpansion(result);
+		if (result.isEmpty()) {
 			environment.error(position, "bool value has no members");
 			return new ExpressionInvalid(position, environment);
 		} else {
@@ -124,7 +131,7 @@ public class ZenTypeBool extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		environment.error(position, "bool type has no static members");
 		return new ExpressionInvalid(position, environment);
 	}
@@ -155,9 +162,15 @@ public class ZenTypeBool extends ZenType {
 		
 		return ANY_NAME;
 	}
+	
+	private SymbolicClass constructAnyClass()
+	{
+		AnyClassBool anyClass = new AnyClassBool();
+		return anyClass.generate();
+	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionBool(position, environment, false);
 	}
 	
@@ -169,6 +182,28 @@ public class ZenTypeBool extends ZenType {
 	@Override
 	public ZenType nonNull() {
 		return this;
+	}
+	
+	private class AnyClassBool extends AnyClass
+	{
+		public AnyClassBool()
+		{
+			super(ZenTypeBool.this);
+		}
+		
+		@Override
+		protected void implementAnyNot(AnyClassMembers members, MethodMember method, ScopeMethod scope)
+		{
+			Expression value = members.makeValueExpression(scope);
+			Expression not = new ExpressionArithmeticUnary(members.position, scope, OperatorType.NOT, value);
+			method.addStatement(not.asReturnStatement());
+		}
+
+		@Override
+		protected void implementAnyAdd(AnyClassMembers members, MethodMember method, ScopeMethod scope)
+		{
+			implementAnyAddExpansions(members, method, scope);
+		}
 	}
 	
 	private class AnyDefinitionBool implements IAnyDefinition {
@@ -233,7 +268,7 @@ public class ZenTypeBool extends ZenType {
 			output.loadObject(0);
 			output.ifACmpEq(lblCan);
 			
-			TypeExpansion expansion = environment.getTypes().getExpansion(getName());
+			TypeExpansion expansion = environment.getTypes().getExpansion(ACCESS_GLOBAL, getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(types.BOOL, output, environment, 0);
 			}

@@ -6,11 +6,11 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -21,7 +21,7 @@ public class ExpressionMethodCurled extends Expression {
 	private final Expression receiver;
 	
 	public ExpressionMethodCurled(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod scope,
 			IMethod method,
 			Expression receiver) {

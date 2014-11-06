@@ -1,19 +1,19 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.annotations.CompareType;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionArithmeticCompare extends Expression {
 	private final Expression a;
 	private final Expression b;
 	private final CompareType type;
 	
-	public ExpressionArithmeticCompare(ZenPosition position, IScopeMethod method, CompareType type, Expression a, Expression b) {
+	public ExpressionArithmeticCompare(CodePosition position, IScopeMethod method, CompareType type, Expression a, Expression b) {
 		super(position, method);
 		
 		this.a = a;
@@ -23,7 +23,7 @@ public class ExpressionArithmeticCompare extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().BOOL;
+		return getScope().getTypes().BOOL;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ExpressionArithmeticCompare extends Expression {
 		b.compile(result, output);
 		
 		if (result) {
-			if (a.getType() == getEnvironment().getTypes().BOOL) {
+			if (a.getType() == getScope().getTypes().BOOL) {
 				if (type == CompareType.EQ) {
 					Label onThen = new Label();
 					Label onEnd = new Label();
@@ -54,13 +54,13 @@ public class ExpressionArithmeticCompare extends Expression {
 					output.iConst1();
 					output.label(onEnd);
 				} else {
-					getEnvironment().error(getPosition(), "this kind of comparison is not supported on bool values");
+					getScope().error(getPosition(), "this kind of comparison is not supported on bool values");
 				}
 			} else {
 				Label onThen = new Label();
 				Label onEnd = new Label();
 				
-				TypeRegistry types = getEnvironment().getTypes();
+				TypeRegistry types = getScope().getTypes();
 				if (a.getType() == types.LONG) {
 					output.lCmp();
 				} else if (a.getType() == types.FLOAT) {
@@ -83,7 +83,7 @@ public class ExpressionArithmeticCompare extends Expression {
 					case LT: output.ifICmpLT(onThen); break;
 					case GT: output.ifICmpGT(onThen); break;
 					default:
-						getEnvironment().error(getPosition(), "this kind of comparison is not supported on int values");
+						getScope().error(getPosition(), "this kind of comparison is not supported on int values");
 						return;
 				}
 				

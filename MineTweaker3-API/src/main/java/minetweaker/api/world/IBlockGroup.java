@@ -6,9 +6,9 @@
 package minetweaker.api.world;
 
 import minetweaker.api.block.IBlock;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Represents a block group. A block group can be the world, a moving chunk or

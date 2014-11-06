@@ -7,15 +7,15 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -28,7 +28,7 @@ public class ZenTypeVoid extends ZenType {
 	
 	@Override
 	public IPartialExpression getMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			IPartialExpression value,
 			String name) {
@@ -38,7 +38,7 @@ public class ZenTypeVoid extends ZenType {
 
 	@Override
 	public IPartialExpression getStaticMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			String name) {
 		environment.error(position, "void doesn't have static members");
@@ -77,35 +77,35 @@ public class ZenTypeVoid extends ZenType {
 	
 	@Override
 	public Expression unary(
-			ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public Expression binary(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
 	public Expression trinary(
-			ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+			CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
 	public Expression compare(
-			ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call a void");
 		return new ExpressionInvalid(position, this);
 	}*/
@@ -126,7 +126,7 @@ public class ZenTypeVoid extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		throw new RuntimeException("void has no default value");
 	}
 

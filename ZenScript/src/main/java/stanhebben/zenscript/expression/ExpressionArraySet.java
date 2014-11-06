@@ -6,10 +6,10 @@
 
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -20,7 +20,7 @@ public class ExpressionArraySet extends Expression {
 	private final Expression index;
 	private final Expression value;
 	
-	public ExpressionArraySet(ZenPosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
+	public ExpressionArraySet(CodePosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
 		super(position, environment);
 		
 		this.array = array;

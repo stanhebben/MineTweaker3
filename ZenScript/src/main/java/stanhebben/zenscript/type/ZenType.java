@@ -6,193 +6,210 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Type;
-import zenscript.symbolic.type.TypeExpansion;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.type.TypeExpansion;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.type.casting.CastingRuleDelegateMap;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.type.expand.ZenExpandCaster;
-import zenscript.symbolic.MemberVirtual;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateMap;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.MemberStatic;
+import org.openzen.zencode.symbolic.MemberVirtual;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.util.CodePosition;
 
-public abstract class ZenType {
-	private final IScopeGlobal scope;
-	private Map<ZenType, ICastingRule> castingRules = null;
-	private final List<TypeExpansion> expansions = new ArrayList<TypeExpansion>();
+public abstract class ZenType
+{
+	public static final AccessScope ACCESS_GLOBAL = AccessScope.createModuleScope();
 	
-	public ZenType(IScopeGlobal environment) {
+	private final IScopeGlobal scope;
+	private final Map<AccessScope, Map<ZenType, ICastingRule>> castingRules = new HashMap<AccessScope, Map<ZenType, ICastingRule>>();
+	private final List<TypeExpansion> expansions = new ArrayList<TypeExpansion>();
+
+	public ZenType(IScopeGlobal environment)
+	{
 		this.scope = environment;
 	}
-	
-	public IScopeGlobal getScope() {
+
+	public IScopeGlobal getScope()
+	{
 		return scope;
 	}
 	
+	public TypeRegistry getTypeRegistry()
+	{
+		return scope.getTypes();
+	}
+
 	public void addExpansion(TypeExpansion expansion)
 	{
 		expansions.add(expansion);
 	}
 	
+	public List<TypeExpansion> getExpansions()
+	{
+		return expansions;
+	}
+
 	public abstract Expression operator(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			OperatorType operator,
 			Expression... values);
-	
+
 	public abstract Expression compare(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			Expression left,
 			Expression right,
 			CompareType type);
-	
+
 	public abstract IPartialExpression getMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			IPartialExpression value,
 			String name);
-	
+
 	public abstract IPartialExpression getStaticMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			String name);
-	
-	public abstract void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters);
-	
+
+	public abstract void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters);
+
 	public abstract IZenIterator makeIterator(int numValues);
-	
-	public ICastingRule getCastingRule(ZenType type) {
-		if (castingRules == null) {
-			castingRules = new HashMap<ZenType, ICastingRule>();
-			constructCastingRules(new CastingRuleDelegateMap(this, castingRules), true);
+
+	public ICastingRule getCastingRule(AccessScope scope, ZenType type)
+	{
+		if (!castingRules.containsKey(scope)) {
+			castingRules.put(scope, new HashMap<ZenType, ICastingRule>());
+			constructCastingRules(scope, new CastingRuleDelegateMap(this, castingRules.get(scope)), true);
 		}
-		
-		return castingRules.get(type);
-	}
-	
-	public final boolean canCastImplicit(ZenType type) {
-		if (equals(type))
-			return true;
-		
-		return getCastingRule(type) != null;
+
+		return castingRules.get(scope).get(type);
 	}
 
-	public boolean canCastExplicit(ZenType type) {
-		return canCastImplicit(type);
+	public final boolean canCastImplicit(AccessScope scope, ZenType type)
+	{
+		if (equals(type))
+			return true;
+
+		return getCastingRule(scope, type) != null;
 	}
-	
+
+	public boolean canCastExplicit(AccessScope scope, ZenType type)
+	{
+		return canCastImplicit(scope, type);
+	}
+
 	public abstract Class toJavaClass();
-	
+
 	public abstract Type toASMType();
-	
+
 	public abstract int getNumberType();
-	
+
 	public abstract String getSignature();
-	
+
 	public abstract boolean isNullable();
-	
+
 	public abstract String getAnyClassName();
-	
+
 	public abstract String getName();
-	
-	public abstract Expression defaultValue(ZenPosition position, IScopeMethod environment);
-	
-	public boolean isLarge() {
+
+	public abstract Expression defaultValue(CodePosition position, IScopeMethod environment);
+
+	public boolean isLarge()
+	{
 		return false;
 	}
-	
+
 	public abstract ZenType nullable();
-	
+
 	public abstract ZenType nonNull();
-	
-	public List<IMethod> getMethods() {
+
+	public List<IMethod> getMethods()
+	{
 		return Collections.EMPTY_LIST;
 	}
-	
-	public List<IMethod> getConstructors() {
+
+	public List<IMethod> getConstructors()
+	{
 		return Collections.EMPTY_LIST;
 	}
-	
-	public IMethod getFunction() {
+
+	public IMethod getFunction()
+	{
 		return null;
 	}
-	
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return getName();
 	}
-	
+
 	protected Expression expandOperator(
-			ZenPosition position,
+			CodePosition position,
 			IScopeMethod environment,
 			OperatorType operator,
-			Expression... values) {
+			Expression... values)
+	{
 		for (TypeExpansion expansion : expansions) {
 			Expression expansionOperator = expansion.operatorExact(position, environment, operator, values);
 			if (expansionOperator != null)
 				return expansionOperator;
 		}
-		
+
 		for (TypeExpansion expansion : expansions) {
 			Expression expansionOperator = expansion.operator(position, environment, operator, values);
 			if (expansionOperator != null)
 				return expansionOperator;
 		}
-		
+
 		return null;
 	}
-	
-	protected void memberExpansion(MemberVirtual member) {
+
+	protected void memberExpansion(MemberVirtual member)
+	{
 		for (TypeExpansion expansion : expansions) {
-			if (expansion.getScope().isVisible(member.getScope()))
+			if (expansion.isVisibleTo(member.getScope().getAccessScope()))
 				expansion.expandMember(member);
 		}
 	}
-	
-	protected void staticMemberExpansion(MemberStatic member) {
+
+	protected void staticMemberExpansion(MemberStatic member)
+	{
 		for (TypeExpansion expansion : expansions) {
-			if (expansion.getScope().isVisible(member.getScope()))
+			if (expansion.isVisibleTo(member.getScope().getAccessScope()))
 				expansion.expandStaticMember(member);
 		}
 	}
-	
-	protected void constructExpansionCastingRules(ICastingRuleDelegate rules) {
-		TypeExpansion expansion = scope.getExpansion(getName());
-		if (expansion != null) {
-			expansion.constructCastingRules(scope, rules);
-		}
-	}
-	
-	protected boolean canCastExpansion(ZenType toType) {
-		String name = getName();
-		TypeExpansion expansion = scope.getExpansion(name);
-		if (expansion != null) {
-			ZenExpandCaster caster = expansion.getCaster(toType, scope);
-			if (caster != null) {
-				return true;
-			}
-		}
 
-		return false;
+	protected void constructExpansionCastingRules(AccessScope accessScope, ICastingRuleDelegate rules)
+	{
+		for (TypeExpansion expansion : expansions) {
+			if (expansion.isVisibleTo(accessScope))
+				expansion.expandCastingRules(rules);
+		}
 	}
-	
+
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		return getName().hashCode();
 	}
-	
+
 	@Override
-	public boolean equals(Object other) {
-		if (other instanceof ZenType) {
+	public boolean equals(Object other)
+	{
+		if (other instanceof ZenType)
 			return getName().equals(((ZenType) other).getName());
-		} else {
+		else
 			return false;
-		}
 	}
 }

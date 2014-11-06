@@ -8,8 +8,8 @@ package minetweaker.api.recipes;
 
 import minetweaker.api.player.IPlayer;
 import minetweaker.api.world.IDimension;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  * 

@@ -14,7 +14,7 @@ import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.lexer.Token;
+import net.stanhebben.zenscript.lexer.Token;
 import stanhebben.zenscript.symbols.IZenSymbol;
 import zenscript.runtime.IAny;
 import zenscript.symbolic.method.IMethod;

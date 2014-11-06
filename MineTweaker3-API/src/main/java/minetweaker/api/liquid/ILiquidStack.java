@@ -7,11 +7,11 @@
 package minetweaker.api.liquid;
 
 import minetweaker.api.data.IData;
-import zenscript.annotations.OperatorType;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenOperator;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenOperator;
 
 /**
  *

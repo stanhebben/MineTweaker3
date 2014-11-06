@@ -10,8 +10,8 @@ import java.util.List;
 import minetweaker.api.damage.IDamageSource;
 import minetweaker.api.entity.IEntityItem;
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  *

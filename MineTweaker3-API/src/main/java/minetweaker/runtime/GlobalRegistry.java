@@ -11,25 +11,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import minetweaker.IBracketHandler;
-import minetweaker.IRecipeRemover;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.IBracketHandler;
+import minetweaker.api.IRecipeRemover;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.symbol.ITweakerSymbol;
 import minetweaker.runtime.symbol.SymbolUtil;
-import stanhebben.zenscript.IZenCompileEnvironment;
+import org.openzen.zencode.IZenCompileEnvironment;
 import stanhebben.zenscript.TypeExpansion;
-import stanhebben.zenscript.compiler.ClassNameGenerator;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.util.ClassNameGenerator;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolPackage;
-import zenscript.IZenErrorLogger;
-import zenscript.lexer.Token;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.lexer.Token;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -90,9 +90,9 @@ public class GlobalRegistry {
 		return new TweakerGlobalScope(classes);
 	}
 	
-	private static class MyErrorLogger implements IZenErrorLogger {
+	private static class MyErrorLogger implements ICodeErrorLogger {
 		@Override
-		public void error(ZenPosition position, String message) {
+		public void error(CodePosition position, String message) {
 			if (position == null) {
 				MineTweakerAPI.logError("system: " + message);
 			} else {
@@ -101,7 +101,7 @@ public class GlobalRegistry {
 		}
 
 		@Override
-		public void warning(ZenPosition position, String message) {
+		public void warning(CodePosition position, String message) {
 			if (position == null) {
 				MineTweakerAPI.logWarning("system: " + message);
 			} else {
@@ -112,15 +112,15 @@ public class GlobalRegistry {
 	
 	private static class MyCompileEnvironment implements IZenCompileEnvironment {
 		private final IScopeGlobal scope;
-		private final IZenErrorLogger errors;
+		private final ICodeErrorLogger errors;
 		
-		private MyCompileEnvironment(IScopeGlobal scope, IZenErrorLogger errors) {
+		private MyCompileEnvironment(IScopeGlobal scope, ICodeErrorLogger errors) {
 			this.scope = scope;
 			this.errors = errors;
 		}
 		
 		@Override
-		public IZenErrorLogger getErrorLogger() {
+		public ICodeErrorLogger getErrorLogger() {
 			return errors;
 		}
 
@@ -171,7 +171,7 @@ public class GlobalRegistry {
 		
 		private final IZenCompileEnvironment environment;
 		private final SymbolPackage root = new SymbolPackage("<root>");
-		private final IZenErrorLogger errors = new MyErrorLogger();
+		private final ICodeErrorLogger errors = new MyErrorLogger();
 		private final Map<String, TypeExpansion> expansions = new HashMap<String, TypeExpansion>();
 		
 		public TweakerGlobalScope(Map<String, byte[]> classes) {
@@ -218,7 +218,7 @@ public class GlobalRegistry {
 		}
 
 		@Override
-		public IPartialExpression getValue(String name, ZenPosition position, IScopeMethod scope) {
+		public IPartialExpression getValue(String name, CodePosition position, IScopeMethod scope) {
 			if (symbols.containsKey(name)) {
 				return symbols.get(name).instance(position, scope);
 			} else {
@@ -232,7 +232,7 @@ public class GlobalRegistry {
 		}
 
 		@Override
-		public void putValue(String name, IZenSymbol value, ZenPosition position) {
+		public void putValue(String name, IZenSymbol value, CodePosition position) {
 			if (symbols.containsKey(name)) {
 				error(position, "Value already defined in this scope: " + name);
 			} else {
@@ -241,12 +241,12 @@ public class GlobalRegistry {
 		}
 
 		@Override
-		public void error(ZenPosition position, String message) {
+		public void error(CodePosition position, String message) {
 			MineTweakerAPI.logError(position.toString() + " > " + message);
 		}
 
 		@Override
-		public void warning(ZenPosition position, String message) {
+		public void warning(CodePosition position, String message) {
 			MineTweakerAPI.logWarning(position.toString() + " > " + message);
 		}
 

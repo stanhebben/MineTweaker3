@@ -8,26 +8,26 @@ package stanhebben.zenscript.expression.partial;
 
 import java.util.Collections;
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolPackage;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.unit.SymbolicFunction;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
 public class PartialPackage implements IPartialExpression {
-	private final ZenPosition position;
+	private final CodePosition position;
 	private final IScopeMethod environment;
 	private final SymbolPackage contents;
 	
-	public PartialPackage(ZenPosition position, IScopeMethod environment, SymbolPackage contents) {
+	public PartialPackage(CodePosition position, IScopeMethod environment, SymbolPackage contents) {
 		this.position = position;
 		this.environment = environment;
 		this.contents = contents;
@@ -40,13 +40,13 @@ public class PartialPackage implements IPartialExpression {
 	}
 
 	@Override
-	public Expression assign(ZenPosition position, Expression other) {
+	public Expression assign(CodePosition position, Expression other) {
 		environment.error(position, "Cannot assign to a package");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, String name) {
+	public IPartialExpression getMember(CodePosition position, String name) {
 		IZenSymbol member = contents.get(name);
 		if (member == null) {
 			environment.error(position, "No such member: " + name);
@@ -57,7 +57,7 @@ public class PartialPackage implements IPartialExpression {
 	}
 
 	/*@Override
-	public Expression call(ZenPosition position, Expression... values) {
+	public Expression call(CodePosition position, Expression... values) {
 		environment.error(position, "cannot call a package");
 		return new ExpressionInvalid(position, environment);
 	}

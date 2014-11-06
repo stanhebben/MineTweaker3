@@ -6,15 +6,16 @@
 
 package stanhebben.zenscript.symbols;
 
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import stanhebben.zenscript.compiler.IScopeMethod;
-import zenscript.IZenErrorLogger;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.ICodeErrorLogger;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialPackage;
-import zenscript.util.StringUtil;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.Strings;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -42,8 +43,8 @@ public class SymbolPackage implements IZenSymbol {
 		return members.get(name);
 	}
 	
-	public void put(String name, IZenSymbol symbol, IZenErrorLogger errors) {
-		String[] parts = StringUtil.split(name, '.');
+	public void put(String name, IZenSymbol symbol, ICodeErrorLogger errors) {
+		String[] parts = Strings.split(name, '.');
 		String[] pkgParts = Arrays.copyOf(parts, parts.length - 1);
 		SymbolPackage pkgCurrent = this;
 		String pkgName = null;
@@ -78,7 +79,7 @@ public class SymbolPackage implements IZenSymbol {
 	}
 	
 	@Override
-	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+	public IPartialExpression instance(CodePosition position, IScopeMethod environment) {
 		return new PartialPackage(position, environment, this);
 	}
 }

@@ -3,13 +3,10 @@ package minetweaker.api.recipes;
 import java.util.List;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
-import zenscript.annotations.Optional;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  * The RecipeManager adds and removes crafting recipes. The IRecipeManager
@@ -119,4 +116,37 @@ public interface IRecipeManager {
 	 */
 	@ZenMethod
 	public IItemStack craft(IItemStack[][] contents);
+	
+	/**
+	 * Checks if the given recipe list exists and is non-empty.
+	 * 
+	 * @param recipeListName recipe list name
+	 * @return true if there is a non-empty recipe list with the given name
+	 */
+	@ZenMethod
+	public boolean hasRecipeList(String recipeListName);
+	
+	/**
+	 * Retrieves the recipe list with the given name. Will return null if there
+	 * is no such recipe list available.
+	 * 
+	 * @param <T>
+	 * @param recipeListName recipe list name
+	 * @param recipeClass
+	 * @return recipe list
+	 */
+	@ZenMethod
+	public <T> IRecipeList<T> getRecipeList(String recipeListName, Class<T> recipeClass);
+	
+	/**
+	 * Registers a new recipe list. Returns the created recipe list. Throws
+	 * an IllegalArgumentException if such recipe list already exists.
+	 * 
+	 * @param <T>
+	 * @param recipeListName
+	 * @param typeDefinition
+	 * @return newly created recipe list
+	 */
+	@ZenMethod
+	public <T> IRecipeList<T> registerRecipeList(String recipeListName, RecipeTypeDefinition<T> typeDefinition);
 }

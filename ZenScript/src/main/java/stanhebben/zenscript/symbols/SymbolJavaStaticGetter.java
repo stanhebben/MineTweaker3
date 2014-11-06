@@ -6,11 +6,12 @@
 
 package stanhebben.zenscript.symbols;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialStaticGetter;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -24,7 +25,7 @@ public class SymbolJavaStaticGetter implements IZenSymbol {
 	}
 
 	@Override
-	public IPartialExpression instance(ZenPosition position, IScopeMethod environment) {
+	public IPartialExpression instance(CodePosition position, IScopeMethod environment) {
 		return new PartialStaticGetter(position, environment, method);
 	}
 }

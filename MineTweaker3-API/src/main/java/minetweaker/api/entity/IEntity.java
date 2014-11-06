@@ -2,9 +2,9 @@ package minetweaker.api.entity;
 
 import minetweaker.api.math.Vector3d;
 import minetweaker.api.world.IDimension;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenSetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenSetter;
 
 /**
  * Entity interface. Used to obtain information about entities, and modify

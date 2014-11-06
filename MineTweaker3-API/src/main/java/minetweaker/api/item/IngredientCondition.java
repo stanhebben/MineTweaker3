@@ -1,8 +1,8 @@
 package minetweaker.api.item;
 
 import minetweaker.api.data.IData;
-import zenscript.annotations.ZenExpansion;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Conditions can be used to set requirements for matching items. They can be

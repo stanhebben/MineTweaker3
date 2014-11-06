@@ -6,13 +6,14 @@
 
 package minetweaker.runtime;
 
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
  * @author Stan
  */
-public interface ILogger {
+public interface ILogger
+{
 	@ZenMethod
 	public void logCommand(String message);
 	

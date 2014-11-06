@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ import zenscript.util.ZenPosition;
 public class ExpressionStringConcat extends Expression {
 	private final List<Expression> values;
 	
-	public ExpressionStringConcat(ZenPosition position, IScopeMethod environment, List<Expression> values) {
+	public ExpressionStringConcat(CodePosition position, IScopeMethod environment, List<Expression> values) {
 		super(position, environment);
 		
 		this.values = values;
@@ -31,7 +31,7 @@ public class ExpressionStringConcat extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().STRING;
+		return getScope().getTypes().STRING;
 	}
 
 	@Override

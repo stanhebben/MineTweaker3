@@ -7,18 +7,18 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.type.casting.CastingRuleNone;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNone;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -46,44 +46,44 @@ public class ZenTypeNull extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		environment.error(position, "null has no operators");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		environment.error(position, "null has no operators");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		environment.error(position, "null has no operators");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		environment.error(position, "null has no operators");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		environment.error(position, "null doesn't have members");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		environment.error(position, "null doesn't have static members");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
 		environment.error(position, "cannot call null values");
 		return new ExpressionInvalid(position);
 	}*/
@@ -134,7 +134,7 @@ public class ZenTypeNull extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 

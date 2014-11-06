@@ -8,22 +8,23 @@ package stanhebben.zenscript.expression.partial;
 
 import java.util.List;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.unit.SymbolicFunction;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stanneke
+ * @author Stan Hebben
  */
-public interface IPartialExpression {
+public interface IPartialExpression
+{
 	public Expression eval();
 	
-	public Expression assign(ZenPosition position, Expression other);
+	public Expression assign(CodePosition position, Expression other);
 	
-	public IPartialExpression getMember(ZenPosition position, String name);
+	public IPartialExpression getMember(CodePosition position, String name);
 	
 	public List<IMethod> getMethods();
 	

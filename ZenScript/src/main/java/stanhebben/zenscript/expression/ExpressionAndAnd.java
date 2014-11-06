@@ -1,16 +1,16 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionAndAnd extends Expression {
 	private final Expression a;
 	private final Expression b;
 	
-	public ExpressionAndAnd(ZenPosition position, IScopeMethod environment, Expression a, Expression b) {
+	public ExpressionAndAnd(CodePosition position, IScopeMethod environment, Expression a, Expression b) {
 		super(position, environment);
 		
 		this.a = a;

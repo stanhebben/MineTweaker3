@@ -6,15 +6,15 @@
 
 package minetweaker.api.math;
 
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
 
 /**
  *
  * @author Stan Hebben
  */
 @ZenClass("minetweaker.util.Vector3f")
-public class Vector3d {
+public final class Vector3d {
 	private final double x;
 	private final double y;
 	private final double z;

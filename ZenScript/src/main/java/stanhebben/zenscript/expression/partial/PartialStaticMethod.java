@@ -8,26 +8,26 @@ package stanhebben.zenscript.expression.partial;
 
 import java.util.Collections;
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolJavaStaticMethod;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.unit.SymbolicFunction;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
 public class PartialStaticMethod implements IPartialExpression {
-	private final ZenPosition position;
+	private final CodePosition position;
 	private final IScopeMethod environment;
 	private final IMethod method;
 	
-	public PartialStaticMethod(ZenPosition position, IScopeMethod environment, IMethod method) {
+	public PartialStaticMethod(CodePosition position, IScopeMethod environment, IMethod method) {
 		this.position = position;
 		this.environment = environment;
 		this.method = method;
@@ -40,19 +40,19 @@ public class PartialStaticMethod implements IPartialExpression {
 	}
 
 	@Override
-	public Expression assign(ZenPosition position, Expression other) {
+	public Expression assign(CodePosition position, Expression other) {
 		environment.error(position, "cannot alter this final");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, String name) {
+	public IPartialExpression getMember(CodePosition position, String name) {
 		environment.error(position, "methods have no members");
 		return new ExpressionInvalid(position, environment);
 	}
 
 	/*@Override
-	public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
 		if (method.accepts(environment, values)) {
 			return new ExpressionCallStatic(position, environment, method, values);
 		} else {

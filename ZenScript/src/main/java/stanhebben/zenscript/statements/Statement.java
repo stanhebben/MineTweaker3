@@ -1,19 +1,19 @@
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public abstract class Statement {
-	private final ZenPosition position;
+	private final CodePosition position;
 	private final IScopeMethod scope;
 	
-	public Statement(ZenPosition position, IScopeMethod environment) {
+	public Statement(CodePosition position, IScopeMethod environment) {
 		this.position = position;
 		this.scope = environment;
 	}
 	
-	public ZenPosition getPosition() {
+	public CodePosition getPosition() {
 		return position;
 	}
 	

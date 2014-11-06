@@ -6,9 +6,9 @@
 
 package stanhebben.zenscript.type.natives;
 
-import zenscript.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 

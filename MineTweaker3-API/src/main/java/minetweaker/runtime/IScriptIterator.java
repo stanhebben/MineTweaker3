@@ -8,16 +8,17 @@ package minetweaker.runtime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import zenscript.parser.IFileLoader;
+import org.openzen.zencode.parser.IFileLoader;
 
 /**
  *
  * @author Stan
  */
-public interface IScriptIterator {
+public interface IScriptIterator
+{
 	public String getGroupName();
 	
-	public IFileLoader getGroupFileLoader();
+	public IFileLoader getGroupScriptLoader();
 	
 	public boolean next();
 	

@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,7 +19,7 @@ import zenscript.util.ZenPosition;
 public class ExpressionBool extends Expression {
 	private final boolean value;
 	
-	public ExpressionBool(ZenPosition position, IScopeMethod environment, boolean value) {
+	public ExpressionBool(CodePosition position, IScopeMethod environment, boolean value) {
 		super(position, environment);
 		
 		this.value = value;
@@ -27,7 +27,7 @@ public class ExpressionBool extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().BOOL;
+		return getScope().getTypes().BOOL;
 	}
 
 	@Override

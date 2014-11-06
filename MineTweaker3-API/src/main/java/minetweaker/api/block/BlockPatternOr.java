@@ -12,90 +12,92 @@ import minetweaker.util.ArrayUtil;
 
 /**
  * Implements an or (|) operation on two or more blocks.
- * 
+ *
  * @author Stan Hebben
  */
-public final class BlockPatternOr implements IBlockPattern {
+public final class BlockPatternOr implements IBlockPattern
+{
 	private final IBlockPattern[] elements;
-	
+
 	/**
 	 * Constructs a block pattern consisting of the given elements.
-	 * 
-	 * @param elements 
+	 *
+	 * @param elements
 	 */
-	public BlockPatternOr(IBlockPattern... elements) {
+	public BlockPatternOr(IBlockPattern... elements)
+	{
 		this.elements = elements;
 	}
-	
+
 	// ####################################
 	// ### IBlockPattern implementation ###
 	// ####################################
-	
 	@Override
-	public List<IBlock> getBlocks() {
+	public List<IBlock> getPossibleBlocks()
+	{
 		List<IBlock> blocks = new ArrayList<IBlock>();
 		for (IBlockPattern pattern : elements) {
-			blocks.addAll(pattern.getBlocks());
+			blocks.addAll(pattern.getPossibleBlocks());
 		}
 		return blocks;
 	}
 
 	@Override
-	public boolean matches(IBlock block) {
+	public boolean matches(IBlock block)
+	{
 		for (IBlockPattern pattern : elements) {
 			if (pattern.matches(block))
 				return true;
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public String getDisplayName() {
+	public String getDisplayName()
+	{
 		StringBuilder result = new StringBuilder();
 		boolean first = true;
 		for (IBlockPattern pattern : elements) {
-			if (first) {
+			if (first)
 				first = false;
-			} else {
+			else
 				result.append(" | ");
-			}
-			
+
 			result.append(pattern.getDisplayName());
 		}
-		
+
 		return result.toString();
 	}
 
 	@Override
-	public IBlockPattern or(IBlockPattern pattern) {
+	public IBlockPattern or(IBlockPattern pattern)
+	{
 		return new BlockPatternOr(ArrayUtil.append(elements, pattern));
 	}
-	
+
 	// #############################
 	// ### Object implementation ###
 	// #############################
-	
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		int hash = 5;
 		hash = 29 * hash + Arrays.deepHashCode(this.elements);
 		return hash;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		final BlockPatternOr other = (BlockPatternOr) obj;
-		
-		if (!Arrays.deepEquals(this.elements, other.elements)) {
+
+		if (!Arrays.deepEquals(this.elements, other.elements))
 			return false;
-		}
 		return true;
 	}
 }

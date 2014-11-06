@@ -9,27 +9,27 @@ import java.util.List;
 import java.util.Map;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import zenscript.annotations.OperatorType;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenMethodStatic;
-import zenscript.annotations.ZenOperator;
-import zenscript.annotations.ZenSetter;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenMethodStatic;
+import org.openzen.zencode.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenSetter;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.expand.ZenExpandCaster;
 import stanhebben.zenscript.type.expand.ZenExpandMember;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  * Type expansions provide additional members for existing types. They can
@@ -222,7 +222,7 @@ public class TypeExpansion {
 	 * @return the resulting expression, or null if no operator was available
 	 */
 	public Expression unary(
-			ZenPosition position,
+			CodePosition position,
 			IScopeGlobal environment,
 			Expression value,
 			OperatorType operator) {
@@ -247,7 +247,7 @@ public class TypeExpansion {
 	 * @return the resulting expression, or null if no operator was available
 	 */
 	public Expression binary(
-			ZenPosition position,
+			CodePosition position,
 			IScopeGlobal environment,
 			Expression left,
 			Expression right,
@@ -274,7 +274,7 @@ public class TypeExpansion {
 	 * @return the resulting expression, or null if no operator was available
 	 */
 	public Expression ternary(
-			ZenPosition position,
+			CodePosition position,
 			IScopeGlobal environment,
 			Expression first,
 			Expression second,
@@ -300,7 +300,7 @@ public class TypeExpansion {
 	 * @return resulting member expression, or null if no such member was available
 	 */
 	public IPartialExpression instanceMember(
-			ZenPosition position,
+			CodePosition position,
 			IScopeGlobal environment,
 			Expression value,
 			String member) {
@@ -320,7 +320,7 @@ public class TypeExpansion {
 	 * @param member member name
 	 * @return resulting static member expression, or null if no such member was available
 	 */
-	public IPartialExpression staticMember(ZenPosition position, IScopeGlobal environment, String member) {
+	public IPartialExpression staticMember(CodePosition position, IScopeGlobal environment, String member) {
 		if (staticMembers.containsKey(member)) {
 			return staticMembers.get(member).instance(position, environment);
 		}

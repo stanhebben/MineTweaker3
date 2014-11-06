@@ -7,15 +7,15 @@
 package minetweaker.api.tooltip;
 
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.IUndoableAction;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.formatting.IFormattedText;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.util.IngredientMap;
 import minetweaker.api.util.IngredientMap.IngredientMapEntry;
-import zenscript.annotations.ZenExpansion;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -91,8 +91,9 @@ public class IngredientTooltips {
 		}
 
 		@Override
-		public Object getOverrideKey() {
-			return null;
+		public boolean isSilent()
+		{
+			return false;
 		}
 	}
 }

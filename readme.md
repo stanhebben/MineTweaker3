@@ -4,7 +4,11 @@ Welcome to the MineTweaker 3 source! MineTweaker 3 is the new version of MineTwe
 
 ## License and contributions
 
-The source code is freely available in here, at GitHub. The mod itself may be redistributed in modpacks as long as these modpacks are distributed for free. No money can be made from the distribution of the mod.
+In short: You can pack MineTweaker with any pack you like. You're not allowed to make profit from it.
+
+The long story: MineTweaker consists of several modules. The MineTweaker API (MineTweaker-API) and ZenScript are MIT, meaning you're pretty much free to do with it whatever you like. You can use it, modify it, redistribute it all you like, tear it apart and turn it into soup if you really wish to, you're fine.
+
+MineTweaker3 itself (MineTweaker-XXX-YYY with XXX minecraft version and YYY module name) is not entirely MIT, though. You can use it freely BUT if you redistribute a modified version you MUST mark it as **customized** or **modified** in both the filename and version.
 
 Want to contribute? That's great! Contact me if you want to propose or discuss new features. Adding new mods is definitely welcome and doesn't need prior permission (just follow the existing structure, add it & make a pull request). Credit will be granted appropriately.
 

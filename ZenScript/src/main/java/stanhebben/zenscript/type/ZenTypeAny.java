@@ -3,10 +3,10 @@ package stanhebben.zenscript.type;
 import java.util.Collections;
 import java.util.List;
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
 import stanhebben.zenscript.expression.ExpressionCompareGeneric;
@@ -14,20 +14,21 @@ import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethodPrefixed;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleAnyAs;
-import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.unit.SymbolicFunction;
-import zenscript.symbolic.util.CommonMethods;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleAnyAs;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.util.CommonMethods;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -41,12 +42,12 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		return new AnyMember(position, environment, value.eval(), name);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		environment.error(position, "any values don't have static members");
 		return new ExpressionInvalid(position, environment);
 	}
@@ -58,8 +59,8 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type) {
-		ICastingRule base = super.getCastingRule(type);
+	public ICastingRule getCastingRule(AccessScope accessScope, ZenType type) {
+		ICastingRule base = super.getCastingRule(accessScope, type);
 		if (base == null) {
 			return new CastingRuleAnyAs(type, getScope().getTypes());
 		} else {
@@ -68,7 +69,7 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters) {
 		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
@@ -89,12 +90,12 @@ public class ZenTypeAny extends ZenType {
 		rules.registerCastingRule(types.STRING, methods.CAST_ANY_STRING);
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(accessScope, rules);
 		}
 	}
 	
 	@Override
-	public boolean canCastExplicit(ZenType type) {
+	public boolean canCastExplicit(AccessScope accessScope, ZenType type) {
 		return true;
 	}
 	
@@ -124,7 +125,7 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public Expression operator(ZenPosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
+	public Expression operator(CodePosition position, IScopeMethod environment, OperatorType operator, Expression... values) {
 		CommonMethods methods = environment.getTypes().getCommonMethods();
 		ZenType any = environment.getTypes().ANY;
 		
@@ -261,7 +262,7 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		Expression comparator = new ExpressionCallVirtual(
 				position,
 				environment,
@@ -287,7 +288,7 @@ public class ZenTypeAny extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 	
@@ -310,13 +311,13 @@ public class ZenTypeAny extends ZenType {
 	}
 	
 	private class AnyMember implements IPartialExpression {
-		private final ZenPosition position;
+		private final CodePosition position;
 		private final IScopeMethod environment;
 		private final Expression value;
 		private final String name;
 		private final List<IMethod> methods;
 		
-		public AnyMember(ZenPosition position, IScopeMethod environment, Expression value, String name) {
+		public AnyMember(CodePosition position, IScopeMethod environment, Expression value, String name) {
 			this.position = position;
 			this.environment = environment;
 			this.value = value;
@@ -332,12 +333,12 @@ public class ZenTypeAny extends ZenType {
 		}
 
 		@Override
-		public Expression assign(ZenPosition position, Expression other) {
+		public Expression assign(CodePosition position, Expression other) {
 			return new ExpressionCallVirtual(position, environment, environment.getTypes().getCommonMethods().METHOD_MEMBERSET, value, new ExpressionString(position, environment, name), other);
 		}
 
 		@Override
-		public IPartialExpression getMember(ZenPosition position, String name) {
+		public IPartialExpression getMember(CodePosition position, String name) {
 			return new AnyMember(position, environment, this.eval(), name);
 		}
 

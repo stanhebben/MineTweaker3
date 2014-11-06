@@ -1,16 +1,16 @@
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionAs extends Expression {
 	private final Expression value;
 	private final ICastingRule castingRule;
 	
-	public ExpressionAs(ZenPosition position, IScopeMethod environment, Expression value, ICastingRule castingRule) {
+	public ExpressionAs(CodePosition position, IScopeMethod environment, Expression value, ICastingRule castingRule) {
 		super(position, environment);
 		
 		this.value = value;

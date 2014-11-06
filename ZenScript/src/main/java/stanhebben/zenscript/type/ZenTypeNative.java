@@ -21,8 +21,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.TypeExpansion;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
@@ -35,8 +35,8 @@ import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeCaster;
 import stanhebben.zenscript.type.natives.ZenNativeMember;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
@@ -46,28 +46,28 @@ import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.IterableList;
-import zenscript.annotations.IterableMap;
-import zenscript.annotations.IterableSimple;
-import zenscript.annotations.OperatorType;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMemberGetter;
-import zenscript.annotations.ZenMemberSetter;
-import zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenOperator;
-import zenscript.annotations.ZenSetter;
-import zenscript.parser.type.TypeParser;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingNotNull;
-import zenscript.symbolic.type.casting.CastingRuleNone;
-import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.type.generic.TypeCapture;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.IterableList;
+import org.openzen.zencode.annotations.IterableMap;
+import org.openzen.zencode.annotations.IterableSimple;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMemberGetter;
+import org.openzen.zencode.annotations.ZenMemberSetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenSetter;
+import org.openzen.zencode.parser.type.TypeParser;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingNotNull;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNone;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -311,7 +311,7 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		ZenNativeMember member = members.get(name);
 		if (member == null) {
 			for (ZenTypeNative type : implementing) {
@@ -352,7 +352,7 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		ZenNativeMember member = staticMembers.get(name);
 		if (member == null) {
 			for (ZenTypeNative type : implementing) {
@@ -484,7 +484,7 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		for (ZenNativeOperator unaryOperator : unaryOperators) {
 			if (unaryOperator.getOperator() == operator) {
 				return new ExpressionCallVirtual(position, environment, unaryOperator.getMethod(), value);
@@ -496,7 +496,7 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		for (ZenNativeOperator binaryOperator : binaryOperators) {
 			if (binaryOperator.getOperator() == operator) {
 				return new ExpressionCallVirtual(position, environment, binaryOperator.getMethod(), left, right);
@@ -508,7 +508,7 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		for (ZenNativeOperator trinaryOperator : trinaryOperators) {
 			if (trinaryOperator.getOperator() == operator) {
 				return new ExpressionCallVirtual(position, environment, trinaryOperator.getMethod(), first, second, third);
@@ -520,7 +520,7 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		if (type == CompareType.EQ || type == CompareType.NE) {
 			for (ZenNativeOperator binaryOperator : binaryOperators) {
 				if (binaryOperator.getOperator() == OperatorType.EQUALS) {
@@ -555,7 +555,7 @@ public class ZenTypeNative extends ZenType {
 
 	/*@Override
 	public Expression call(
-			ZenPosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
+			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
 		// TODO: support functional interfaces
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -582,7 +582,7 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 	

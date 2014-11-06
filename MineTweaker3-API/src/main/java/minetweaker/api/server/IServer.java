@@ -11,9 +11,9 @@ import minetweaker.api.event.PlayerLoggedInEvent;
 import minetweaker.api.event.PlayerLoggedOutEvent;
 import minetweaker.api.player.IPlayer;
 import minetweaker.util.IEventHandler;
-import zenscript.annotations.Optional;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

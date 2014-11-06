@@ -6,10 +6,10 @@
 
 package stanhebben.zenscript.statements;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.util.MethodOutput;
 import stanhebben.zenscript.util.MethodOutput.ControlLabels;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -18,7 +18,7 @@ import zenscript.util.ZenPosition;
 public class StatementBreak extends Statement {
 	private final Statement target;
 	
-	public StatementBreak(ZenPosition position, IScopeMethod scope, Statement target) {
+	public StatementBreak(CodePosition position, IScopeMethod scope, Statement target) {
 		super(position, scope);
 		
 		this.target = target;

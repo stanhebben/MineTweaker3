@@ -5,9 +5,9 @@
  */
 package minetweaker.runtime.symbol;
 
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import zenscript.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.runtime.IAny;
 
 /**
  *

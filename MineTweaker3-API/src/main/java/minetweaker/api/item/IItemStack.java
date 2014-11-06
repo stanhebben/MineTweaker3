@@ -4,22 +4,14 @@ import java.util.List;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.data.IData;
 import minetweaker.api.liquid.ILiquidStack;
-import zenscript.annotations.OperatorType;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
-import zenscript.annotations.ZenOperator;
-import zenscript.annotations.ZenSetter;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenSetter;
 import minetweaker.api.oredict.IOreDictEntry;
-import minetweaker.api.oredict.IOreDictEntry;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenOperator;
-import stanhebben.zenscript.annotations.ZenSetter;
 
 /**
  * Contains an item stack. An item stack consists of an item definition, 

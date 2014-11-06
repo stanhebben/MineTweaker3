@@ -2,19 +2,20 @@ package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArrayGet;
 import stanhebben.zenscript.expression.ExpressionArrayLength;
 import stanhebben.zenscript.expression.ExpressionArraySet;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.type.casting.CastingRuleArrayArray;
-import zenscript.symbolic.type.casting.CastingRuleArrayList;
-import zenscript.symbolic.type.casting.CastingRuleDelegateArray;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleArrayArray;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleArrayList;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateArray;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class ZenTypeArrayBasic extends ZenTypeArray {
 	private final Type asmType;
@@ -43,16 +44,16 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type) {
+	public ICastingRule getCastingRule(AccessScope accessScope, ZenType type) {
 		ZenType any = getScope().getTypes().ANY;
 		
-		ICastingRule base = super.getCastingRule(type);
+		ICastingRule base = super.getCastingRule(accessScope, type);
 		if (base == null && getBaseType() == any && type instanceof ZenTypeArray) {
 			ZenType toBaseType = ((ZenTypeArray)type).getBaseType();
 			if (type instanceof ZenTypeArrayBasic) {
-				return new CastingRuleArrayArray(any.getCastingRule(toBaseType), this, (ZenTypeArrayBasic) type);
+				return new CastingRuleArrayArray(any.getCastingRule(accessScope, toBaseType), this, (ZenTypeArrayBasic) type);
 			} else if (type instanceof ZenTypeArrayList) {
-				return new CastingRuleArrayList(any.getCastingRule(toBaseType), this, (ZenTypeArrayList) type);
+				return new CastingRuleArrayList(any.getCastingRule(accessScope, toBaseType), this, (ZenTypeArrayList) type);
 			} else {
 				throw new RuntimeException("Invalid array type: " + type);
 			}
@@ -62,12 +63,12 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters) {
 		ICastingRuleDelegate arrayRules = new CastingRuleDelegateArray(getScope(), rules, this);
-		getBaseType().constructCastingRules(arrayRules, followCasters);
+		getBaseType().constructCastingRules(accessScope, arrayRules, followCasters);
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(accessScope, rules);
 		}
 	}
 	
@@ -107,12 +108,12 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 	
 	@Override
-	public IPartialExpression getMemberLength(ZenPosition position, IScopeMethod environment, IPartialExpression value) {
+	public IPartialExpression getMemberLength(CodePosition position, IScopeMethod environment, IPartialExpression value) {
 		return new ExpressionArrayLength(position, environment, value.eval());
 	}
 
 	@Override
-	public Expression indexGet(ZenPosition position, IScopeMethod environment, Expression array, Expression index) {
+	public Expression indexGet(CodePosition position, IScopeMethod environment, Expression array, Expression index) {
 		return new ExpressionArrayGet(
 				position,
 				environment,
@@ -121,7 +122,7 @@ public class ZenTypeArrayBasic extends ZenTypeArray {
 	}
 
 	@Override
-	public Expression indexSet(ZenPosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
+	public Expression indexSet(CodePosition position, IScopeMethod environment, Expression array, Expression index, Expression value) {
 		return new ExpressionArraySet(
 				position,
 				environment,

@@ -3,8 +3,8 @@ package minetweaker.expand;
 import java.util.Arrays;
 import minetweaker.api.data.DataList;
 import minetweaker.api.data.IData;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenExpansion;
 
 /**
  * Makes arrays convertable to IData.

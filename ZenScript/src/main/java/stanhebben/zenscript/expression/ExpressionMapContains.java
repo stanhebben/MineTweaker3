@@ -7,10 +7,10 @@
 package stanhebben.zenscript.expression;
 
 import java.util.Map;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 /**
@@ -21,7 +21,7 @@ public class ExpressionMapContains extends Expression {
 	private final Expression map;
 	private final Expression key;
 	
-	public ExpressionMapContains(ZenPosition position, IScopeMethod environment, Expression map, Expression key) {
+	public ExpressionMapContains(CodePosition position, IScopeMethod environment, Expression map, Expression key) {
 		super(position, environment);
 		
 		this.map = map;
@@ -30,7 +30,7 @@ public class ExpressionMapContains extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().ANY;
+		return getScope().getTypes().ANY;
 	}
 
 	@Override

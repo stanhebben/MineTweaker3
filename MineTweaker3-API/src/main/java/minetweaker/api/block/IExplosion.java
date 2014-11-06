@@ -8,17 +8,18 @@ package minetweaker.api.block;
 import minetweaker.api.entity.IEntity;
 
 /**
- *
- * @author Stan
+ * Describes information about an explosion.
+ * 
+ * @author Stan Hebben
  */
 public interface IExplosion {
-	public IEntity getEntity();
+	public IEntity getSourceEntity();
 	
-	public double getX();
+	public double getSourceX();
 	
-	public double getY();
+	public double getSourceY();
 	
-	public double getZ();
+	public double getSourceZ();
 	
-	public double getPower();
+	public double getExplosionPower();
 }

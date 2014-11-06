@@ -7,7 +7,7 @@
 package minetweaker.api.server;
 
 import minetweaker.api.player.IPlayer;
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenClass;
 
 /**
  *

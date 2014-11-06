@@ -8,26 +8,26 @@ package stanhebben.zenscript.expression.partial;
 
 import java.util.Collections;
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolType;
 import stanhebben.zenscript.type.ZenType;
-import zenscript.symbolic.method.IMethod;
-import zenscript.symbolic.unit.SymbolicFunction;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
 public class PartialType implements IPartialExpression {
-	private final ZenPosition position;
+	private final CodePosition position;
 	private final IScopeMethod environment;
 	private final ZenType type;
 	
-	public PartialType(ZenPosition position, IScopeMethod environment, ZenType type) {
+	public PartialType(CodePosition position, IScopeMethod environment, ZenType type) {
 		this.position = position;
 		this.environment = environment;
 		this.type = type;
@@ -40,18 +40,18 @@ public class PartialType implements IPartialExpression {
 	}
 
 	@Override
-	public Expression assign(ZenPosition position, Expression other) {
+	public Expression assign(CodePosition position, Expression other) {
 		environment.error(position, "cannot assign to a type");
 		return new ExpressionInvalid(position, environment, type);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, String name) {
+	public IPartialExpression getMember(CodePosition position, String name) {
 		return type.getStaticMember(position, environment, name);
 	}
 
 	/*@Override
-	public Expression call(ZenPosition position, IEnvironmentMethod environment, Expression... values) {
+	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
 		environment.error(position, "cannot call a type");
 		return new ExpressionInvalid(position, type);
 	}*/

@@ -2,12 +2,12 @@ package stanhebben.zenscript.expression;
 
 import java.util.HashMap;
 import java.util.Map;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeAssociative;
-import zenscript.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 
 public class ExpressionMap extends Expression {
@@ -15,7 +15,7 @@ public class ExpressionMap extends Expression {
 	private final Expression[] values;
 	private final ZenTypeAssociative type;
 	
-	public ExpressionMap(ZenPosition position, IScopeMethod environment, Expression[] keys, Expression[] values, ZenTypeAssociative type) {
+	public ExpressionMap(CodePosition position, IScopeMethod environment, Expression[] keys, Expression[] values, ZenTypeAssociative type) {
 		super(position, environment);
 		
 		this.keys = keys;
@@ -57,7 +57,7 @@ public class ExpressionMap extends Expression {
 	}
 	
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
+	public Expression cast(CodePosition position, ZenType type) {
 		if (this.type.equals(type)) {
 			return this;
 		}
@@ -72,14 +72,14 @@ public class ExpressionMap extends Expression {
 				newValues[i] = values[i].cast(position, associativeType.getValueType());
 			}
 			
-			return new ExpressionMap(getPosition(), getEnvironment(), newKeys, newValues, associativeType);
+			return new ExpressionMap(getPosition(), getScope(), newKeys, newValues, associativeType);
 		} else {
-			ICastingRule castingRule = this.type.getCastingRule(type);
+			ICastingRule castingRule = this.type.getCastingRule(getScope().getAccessScope(), type);
 			if (castingRule == null) {
-				getEnvironment().error(position, "cannot cast " + this.type + " to " + type);
-				return new ExpressionInvalid(position, getEnvironment(), type);
+				getScope().error(position, "cannot cast " + this.type + " to " + type);
+				return new ExpressionInvalid(position, getScope(), type);
 			} else {
-				return new ExpressionAs(position, getEnvironment(), this, castingRule);
+				return new ExpressionAs(position, getScope(), this, castingRule);
 			}
 		}
 	}

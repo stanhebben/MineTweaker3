@@ -7,14 +7,14 @@
 package stanhebben.zenscript.expression;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.symbolic.method.MethodHeader;
-import zenscript.symbolic.type.casting.ICastingRule;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -24,7 +24,7 @@ public class ExpressionFunction extends Expression {
 	private final ZenTypeFunction functionType;
 	private final List<Statement> statements;
 	
-	public ExpressionFunction(ZenPosition position, IScopeMethod environment, MethodHeader header, List<Statement> statements) {
+	public ExpressionFunction(CodePosition position, IScopeMethod environment, MethodHeader header, List<Statement> statements) {
 		super(position, environment);
 		
 		this.statements = statements;
@@ -33,14 +33,14 @@ public class ExpressionFunction extends Expression {
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
+	public Expression cast(CodePosition position, ZenType type) {
 		ICastingRule castingRule = functionType.getCastingRule(type);
 		if (castingRule != null) {
 			// TODO: finish, but how?
 			throw new UnsupportedOperationException("not yet implemented");
 		} else {
-			getEnvironment().error(position, "Cannot cast a function literal to " + type.toString());
-			return new ExpressionInvalid(position, getEnvironment(), type);
+			getScope().error(position, "Cannot cast a function literal to " + type.toString());
+			return new ExpressionInvalid(position, getScope(), type);
 		}
 	}
 

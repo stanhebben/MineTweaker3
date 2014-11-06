@@ -8,23 +8,18 @@ package minetweaker.expand;
 
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.data.DataString;
 import minetweaker.api.data.IData;
-import zenscript.annotations.Optional;
+import org.openzen.zencode.annotations.Optional;
 import minetweaker.api.formatting.IFormattedText;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenExpansion;
-import zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.OperatorType;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenCaster;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
-import stanhebben.zenscript.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenOperator;
 
 /**
  *

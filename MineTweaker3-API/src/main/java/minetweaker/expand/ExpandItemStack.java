@@ -8,8 +8,8 @@ package minetweaker.expand;
 
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
-import zenscript.annotations.ZenCaster;
-import zenscript.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenExpansion;
 
 /**
  *

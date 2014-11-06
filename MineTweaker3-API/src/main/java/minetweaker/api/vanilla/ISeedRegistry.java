@@ -9,9 +9,9 @@ package minetweaker.api.vanilla;
 import java.util.List;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.WeightedItemStack;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenGetter;
-import zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

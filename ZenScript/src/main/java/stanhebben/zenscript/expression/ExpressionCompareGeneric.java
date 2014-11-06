@@ -7,11 +7,11 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Label;
-import zenscript.annotations.CompareType;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -21,7 +21,7 @@ public class ExpressionCompareGeneric extends Expression {
 	private final Expression value; // should return a compareTo value (<=>0)
 	private final CompareType type;
 	
-	public ExpressionCompareGeneric(ZenPosition position, IScopeMethod environment, Expression value, CompareType type) {
+	public ExpressionCompareGeneric(CodePosition position, IScopeMethod environment, Expression value, CompareType type) {
 		super(position, environment);
 		
 		this.value = value;
@@ -30,7 +30,7 @@ public class ExpressionCompareGeneric extends Expression {
 
 	@Override
 	public ZenType getType() {
-		return getEnvironment().getTypes().BOOL;
+		return getScope().getTypes().BOOL;
 	}
 
 	@Override

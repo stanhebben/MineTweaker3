@@ -1,8 +1,8 @@
 package minetweaker.api.chat;
 
-import zenscript.annotations.OperatorType;
-import zenscript.annotations.ZenClass;
-import zenscript.annotations.ZenOperator;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenOperator;
 
 /**
  * Represents a chat message. Strings can be converted into chat messages,

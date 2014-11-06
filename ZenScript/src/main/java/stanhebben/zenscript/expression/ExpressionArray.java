@@ -1,19 +1,19 @@
 package stanhebben.zenscript.expression;
 
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
-import zenscript.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class ExpressionArray extends Expression {
 	private final Expression[] contents;
 	private final ZenTypeArrayBasic type;
 	
-	public ExpressionArray(ZenPosition position, IScopeMethod environment, ZenTypeArrayBasic type, Expression... contents) {
+	public ExpressionArray(CodePosition position, IScopeMethod environment, ZenTypeArrayBasic type, Expression... contents) {
 		super(position, environment);
 		
 		this.contents = contents;
@@ -21,7 +21,7 @@ public class ExpressionArray extends Expression {
 	}
 
 	@Override
-	public Expression cast(ZenPosition position, ZenType type) {
+	public Expression cast(CodePosition position, ZenType type) {
 		if (this.type.equals(type)) {
 			return this;
 		}
@@ -33,14 +33,14 @@ public class ExpressionArray extends Expression {
 				newContents[i] = contents[i].cast(position, arrayType.getBaseType());
 			}
 			
-			return new ExpressionArray(getPosition(), getEnvironment(), arrayType, newContents);
+			return new ExpressionArray(getPosition(), getScope(), arrayType, newContents);
 		} else {
-			ICastingRule castingRule = this.type.getCastingRule(type);
+			ICastingRule castingRule = this.type.getCastingRule(getScope().getAccessScope(), type);
 			if (castingRule == null) {
-				getEnvironment().error(position, "cannot cast " + this.type + " to " + type);
-				return new ExpressionInvalid(position, getEnvironment(), type);
+				getScope().error(position, "cannot cast " + this.type + " to " + type);
+				return new ExpressionInvalid(position, getScope(), type);
 			} else {
-				return new ExpressionAs(position, getEnvironment(), this, castingRule);
+				return new ExpressionAs(position, getScope(), this, castingRule);
 			}
 		}
 	}

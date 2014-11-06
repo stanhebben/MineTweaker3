@@ -8,7 +8,7 @@ package minetweaker.api.recipes;
 
 import java.util.Map;
 import minetweaker.api.item.IItemStack;
-import zenscript.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenClass;
 
 /**
  *

@@ -1,14 +1,14 @@
 package stanhebben.zenscript.statements;
 
 import java.util.List;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 public class StatementBlock extends Statement {
 	private final List<Statement> statements;
 	
-	public StatementBlock(ZenPosition position, IScopeMethod environment, List<Statement> statements) {
+	public StatementBlock(CodePosition position, IScopeMethod environment, List<Statement> statements) {
 		super(position, environment);
 		
 		this.statements = statements;

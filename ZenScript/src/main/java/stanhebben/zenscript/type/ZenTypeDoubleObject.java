@@ -7,23 +7,23 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Type;
-import zenscript.annotations.CompareType;
-import zenscript.annotations.OperatorType;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import zenscript.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.method.JavaMethod;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import static zenscript.runtime.IAny.NUM_DOUBLE;
-import zenscript.symbolic.TypeRegistry;
-import zenscript.symbolic.type.casting.CastingRuleNullableStaticMethod;
-import zenscript.symbolic.type.casting.CastingRuleNullableVirtualMethod;
-import zenscript.symbolic.type.casting.CastingRuleVirtualMethod;
-import zenscript.symbolic.type.casting.ICastingRuleDelegate;
-import zenscript.symbolic.util.CommonMethods;
-import zenscript.util.ZenPosition;
+import static org.openzen.zencode.runtime.IAny.NUM_DOUBLE;
+import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableVirtualMethod;
+import org.openzen.zencode.symbolic.type.casting.CastingRuleVirtualMethod;
+import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
+import org.openzen.zencode.symbolic.util.CommonMethods;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -39,37 +39,37 @@ public class ZenTypeDoubleObject extends ZenType {
 	}
 
 	@Override
-	public Expression unary(ZenPosition position, IScopeMethod environment, Expression value, OperatorType operator) {
+	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
 		return DOUBLE.unary(position, environment, value.cast(position, DOUBLE), operator);
 	}
 
 	@Override
-	public Expression binary(ZenPosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
 		return DOUBLE.binary(position, environment, left.cast(position, DOUBLE), right, operator);
 	}
 
 	@Override
-	public Expression trinary(ZenPosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
 		return DOUBLE.trinary(position, environment, first.cast(position, DOUBLE), second, third, operator);
 	}
 
 	@Override
-	public Expression compare(ZenPosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		return DOUBLE.compare(position, environment, left.cast(position, DOUBLE), right, type);
 	}
 
 	@Override
-	public IPartialExpression getMember(ZenPosition position, IScopeMethod environment, IPartialExpression value, String name) {
+	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
 		return DOUBLE.getMember(position, environment, value.eval().cast(position, DOUBLE), name);
 	}
 
 	@Override
-	public IPartialExpression getStaticMember(ZenPosition position, IScopeMethod environment, String name) {
+	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		return DOUBLE.getStaticMember(position, environment, name);
 	}
 
 	/*@Override
-	public Expression call(ZenPosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
+	public Expression call(CodePosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
 		return DOUBLE.call(position, environment, receiver.cast(position, DOUBLE), arguments);
 	}*/
 
@@ -154,7 +154,7 @@ public class ZenTypeDoubleObject extends ZenType {
 	}
 
 	@Override
-	public Expression defaultValue(ZenPosition position, IScopeMethod environment) {
+	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
 		return new ExpressionNull(position, environment);
 	}
 

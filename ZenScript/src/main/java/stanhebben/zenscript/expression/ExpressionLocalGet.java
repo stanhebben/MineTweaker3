@@ -3,35 +3,38 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package stanhebben.zenscript.expression;
 
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
-public class ExpressionLocalGet extends Expression {
+public class ExpressionLocalGet extends Expression
+{
 	private final SymbolLocal variable;
-	
-	public ExpressionLocalGet(ZenPosition position, IScopeMethod environment, SymbolLocal variable) {
+
+	public ExpressionLocalGet(CodePosition position, IScopeMethod environment, SymbolLocal variable)
+	{
 		super(position, environment);
-		
+
 		this.variable = variable;
 	}
-	
+
 	@Override
-	public ZenType getType() {
+	public ZenType getType()
+	{
 		return variable.getType();
 	}
 
 	@Override
-	public void compile(boolean result, MethodOutput output) {
+	public void compile(boolean result, MethodOutput output)
+	{
 		int local = output.getLocal(variable);
 		output.load(variable.getType().toASMType(), local);
 	}
