@@ -18,7 +18,7 @@ import org.openzen.zencode.annotations.ZenOperator;
  * @author Stanneke
  */
 @ZenClass("minetweaker.liquid.ILiquidStack")
-public interface ILiquidStack {
+public interface ILiquidStack extends IIngredient {
 	@ZenGetter("definition")
 	public ILiquidDefinition getDefinition();
 	
