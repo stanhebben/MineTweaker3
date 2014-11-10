@@ -4,8 +4,8 @@ import minetweaker.api.recipes.ShapedRecipe;
 import minetweaker.api.recipes.ShapelessRecipe;
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.mc1710.util.MineTweakerHacks;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
@@ -17,7 +17,9 @@ import minetweaker.api.player.IPlayer;
 import minetweaker.api.recipes.ICraftingInventory;
 import minetweaker.api.recipes.ICraftingRecipe;
 import minetweaker.api.recipes.IRecipeFunction;
+import minetweaker.api.recipes.IRecipeList;
 import minetweaker.api.recipes.IRecipeManager;
+import minetweaker.api.recipes.RecipeTypeDefinition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
@@ -294,6 +296,24 @@ public class MCRecipeManager implements IRecipeManager {
 			return getIItemStack(result);
 		}
 	}
+
+	@Override
+	public boolean hasRecipeList(String recipeListName)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public <T> IRecipeList<T> getRecipeList(String recipeListName, Class<T> recipeClass)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public <T> IRecipeList<T> registerRecipeList(String recipeListName, RecipeTypeDefinition<T> typeDefinition)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 	private class ContainerVirtual extends Container {
 		@Override
@@ -302,7 +322,7 @@ public class MCRecipeManager implements IRecipeManager {
 		}
 	}
 	
-	private class ActionRemoveRecipes implements IUndoableAction {
+	private class ActionRemoveRecipes extends UndoableAction {
 		private final List<Integer> removingIndices;
 		private final List<IRecipe> removingRecipes;
 		
@@ -316,11 +336,6 @@ public class MCRecipeManager implements IRecipeManager {
 			for (int i = removingIndices.size() - 1; i >= 0; i--) {
 				recipes.remove((int) removingIndices.get(i));
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -340,14 +355,9 @@ public class MCRecipeManager implements IRecipeManager {
 		public String describeUndo() {
 			return "Restoring " + removingIndices.size() + " recipes";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private class ActionAddRecipe implements IUndoableAction {
+	private class ActionAddRecipe extends UndoableAction {
 		private final IRecipe recipe;
 		private final ICraftingRecipe craftingRecipe;
 		
@@ -362,11 +372,6 @@ public class MCRecipeManager implements IRecipeManager {
 			if (craftingRecipe.hasTransformers()) {
 				transformerRecipes.add(craftingRecipe);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -385,11 +390,6 @@ public class MCRecipeManager implements IRecipeManager {
 		@Override
 		public String describeUndo() {
 			return "Removing recipe for " + recipe.getRecipeOutput().getDisplayName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 

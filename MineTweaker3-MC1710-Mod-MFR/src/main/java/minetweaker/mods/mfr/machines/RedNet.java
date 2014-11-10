@@ -8,14 +8,14 @@ package minetweaker.mods.mfr.machines;
 
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import net.minecraft.nbt.NBTTagCompound;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetLogicCircuit;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -107,7 +107,7 @@ public class RedNet {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddCircuitAction implements IUndoableAction {
+	private static class AddCircuitAction extends UndoableAction {
 		private final TweakerRedNetLogicCircuit circuit;
 		
 		public AddCircuitAction(TweakerRedNetLogicCircuit circuit) {
@@ -117,11 +117,6 @@ public class RedNet {
 		@Override
 		public void apply() {
 			MFRRegistry.registerRedNetLogicCircuit(circuit);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -138,14 +133,9 @@ public class RedNet {
 		public String describeUndo() {
 			return "Removing rednet circuit " + circuit.name;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveCircuitAction implements IUndoableAction {
+	private static class RemoveCircuitAction extends UndoableAction {
 		private final IRedNetLogicCircuit circuit;
 		
 		public RemoveCircuitAction(IRedNetLogicCircuit circuit) {
@@ -155,11 +145,6 @@ public class RedNet {
 		@Override
 		public void apply() {
 			MFRRegistry.getRedNetLogicCircuits().remove(circuit);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -175,11 +160,6 @@ public class RedNet {
 		@Override
 		public String describeUndo() {
 			return "Restoring RedNet circuit " + circuit.getUnlocalizedName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

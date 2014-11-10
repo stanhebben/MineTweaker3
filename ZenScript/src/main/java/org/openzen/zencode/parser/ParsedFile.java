@@ -12,6 +12,9 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.elements.ParsedFunction;
 import org.openzen.zencode.parser.statement.ParsedStatement;
+import org.openzen.zencode.symbolic.SymbolicModule;
+import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -101,10 +104,49 @@ public class ParsedFile
 	{
 		return functions;
 	}
+	
+	public void compileUnits(SymbolicModule result)
+	{
+		
+	}
+	
+	public void compileFunctions(SymbolicModule result)
+	{
+		// TODO: add functions to symbol table
+		
+		for (ParsedFunction function : functions.values()) {
+			result.addUnit(function.compileHeader(result.getScope()));
+		}
+	}
+	
+	public void compileContents(SymbolicModule result)
+	{
+		for (ParsedFunction function : functions.values()) {
+			function.compileContents();
+		}
+		
+		if (!statements.isEmpty())
+			compileScriptContents(result);
+	}
+	
+	private void compileScriptContents(SymbolicModule result)
+	{
+		SymbolicFunction scriptFunction = new SymbolicFunction(
+				new CodePosition(this, 1, 1),
+				MethodHeader.noArguments(result.getScope().getTypes().VOID),
+				result.getScope());
+		
+		for (ParsedStatement statement : statements) {
+			scriptFunction.addStatement(statement.compile(scriptFunction.getScope()));
+		}
+		
+		result.addScript(scriptFunction);
+	}
 
 	// #############################
 	// ### Object implementation ###
 	// #############################
+	
 	@Override
 	public String toString()
 	{
@@ -114,6 +156,7 @@ public class ParsedFile
 	// #######################
 	// ### Private methods ###
 	// #######################
+	
 	private void tryLoadFileContents(CodePosition position, String filename)
 	{
 		try {

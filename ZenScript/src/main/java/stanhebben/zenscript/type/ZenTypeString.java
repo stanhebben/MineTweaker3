@@ -6,7 +6,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.TypeExpansion;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -17,7 +16,6 @@ import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionStringConcat;
 import stanhebben.zenscript.expression.ExpressionStringContains;
 import stanhebben.zenscript.expression.ExpressionStringIndex;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
 import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
@@ -29,6 +27,7 @@ import static stanhebben.zenscript.util.ZenTypeUtil.signature;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
@@ -36,7 +35,7 @@ import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.symbolic.util.CommonMethods;
 import org.openzen.zencode.util.CodePosition;
 
-public class ZenTypeString extends ZenType {
+public class ZenTypeString extends ZenTypePrimitive {
 	private static final String ANY_NAME = "any/AnyString";
 	private static final String ANY_NAME_2 = "any.AnyString";
 	
@@ -52,8 +51,8 @@ public class ZenTypeString extends ZenType {
 	}
 
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
 		rules.registerCastingRule(types.BOOL, new CastingRuleStaticMethod(methods.PARSE_BOOL));
@@ -78,7 +77,7 @@ public class ZenTypeString extends ZenType {
 		)));
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(access, rules);
 		}
 	}
 
@@ -93,29 +92,6 @@ public class ZenTypeString extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(
-			CodePosition position,
-			IScopeMethod environment,
-			IPartialExpression value,
-			String name) {
-		IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
-		if (result == null) {
-			environment.error(position, "bool value has no members");
-			return new ExpressionInvalid(position, environment);
-		} else {
-			return result;
-		}
-	}
-
-	@Override
-	public IPartialExpression getStaticMember(
-			CodePosition position,
-			IScopeMethod environment,
-			String name) {
-		return null;
-	}
-
-	@Override
 	public String getSignature() {
 		return "Ljava/lang/String;";
 	}
@@ -124,51 +100,52 @@ public class ZenTypeString extends ZenType {
 	public boolean isNullable() {
 		return true;
 	}
-
+	
 	@Override
-	public Expression unary(
-			CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		Expression result = unaryExpansion(position, environment, value, operator);
-		if (result == null) {
-			environment.error(position, "operator not supported on a string");
-			return new ExpressionInvalid(position, environment);
-		} else {
-			return result;
-		}
-	}
-
-	@Override
-	public Expression binary(
-			CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
+	public Expression operator(
+			CodePosition position,
+			IScopeMethod scope,
+			OperatorType operator,
+			Expression... arguments)
+	{
 		if (operator == OperatorType.CAT || operator == OperatorType.ADD) {
+			Expression left = arguments[0];
+			Expression right = arguments[1];
+			
 			if (left instanceof ExpressionStringConcat) {
 				((ExpressionStringConcat) left).add(right.cast(position, this));
 				return left;
 			} else {
-				if (right.getType().canCastImplicit(STRING, environment)) {
+				if (right.getType().canCastImplicit(ACCESS_GLOBAL, this)) {
 					List<Expression> values = new ArrayList<Expression>();
 					values.add(left);
-					values.add(right.cast(position, environment, this));
-					return new ExpressionStringConcat(position, values);
+					values.add(right.cast(position, this));
+					return new ExpressionStringConcat(position, scope, values);
 				} else {
-					Expression expanded = this.binaryExpansion(position, environment, left, right, operator);
+					Expression expanded = expandOperator(position, scope, operator, left, right);
 					if (expanded == null) {
-						environment.error(position, "cannot add " + right.getType().getName() + " to a string");
-						return new ExpressionInvalid(position, this);
+						scope.error(position, "cannot add " + right.getType().getName() + " to a string");
+						return new ExpressionInvalid(position, scope, this);
 					} else {
 						return expanded;
 					}
 				}
 			}
 		} else if (operator == OperatorType.INDEXGET) {
-			return new ExpressionStringIndex(position, environment, left, right.cast(position, getEnvironment().getTypes().INT));
+			Expression left = arguments[0];
+			Expression right = arguments[1];
+			
+			return new ExpressionStringIndex(position, scope, left, right.cast(position, getScope().getTypes().INT));
 		} else if (operator == OperatorType.CONTAINS) {
-			return new ExpressionStringContains(position, environment, left, right.cast(position, getEnvironment().getTypes().STRING));
+			Expression left = arguments[0];
+			Expression right = arguments[1];
+			
+			return new ExpressionStringContains(position, scope, left, right.cast(position, getScope().getTypes().STRING));
 		} else {
-			Expression result = binaryExpansion(position, environment, left, right, operator);
+			Expression result = expandOperator(position, scope, operator, arguments);
 			if (result == null) {
-				environment.error(position, "operator not supported on strings");
-				return new ExpressionInvalid(position, environment);
+				scope.error(position, "operator not supported on strings");
+				return new ExpressionInvalid(position, scope);
 			} else {
 				return result;
 			}
@@ -176,45 +153,26 @@ public class ZenTypeString extends ZenType {
 	}
 
 	@Override
-	public Expression trinary(
-			CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		Expression result = trinaryExpansion(position, environment, first, second, third, operator);
-		if (result == null) {
-			environment.error(position, "operator not supported on strings");
-			return new ExpressionInvalid(position, environment);
-		} else {
-			return result;
-		}
-	}
-
-	@Override
 	public Expression compare(
 			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
-		if (right.getType().canCastImplicit(this)) {
+		if (right.getType().canCastImplicit(null, this)) {
 			return new ExpressionCompareGeneric(position, environment, new ExpressionCallVirtual(
 					position,
 					environment,
-					getEnvironment().getTypes().getCommonMethods().METHOD_STRING_COMPARETO,
+					getScope().getTypes().getCommonMethods().METHOD_STRING_COMPARETO,
 					left,
 					right.cast(position, this)),
 					type);
 		}
 		
-		Expression result = binaryExpansion(position, environment, left, right, OperatorType.COMPARE);
+		Expression result = expandOperator(position, environment, OperatorType.COMPARE, left, right);
 		if (result == null) {
 			environment.error(position, "cannot compare strings");
-			return new ExpressionInvalid(position, environment, getEnvironment().getTypes().BOOL);
+			return new ExpressionInvalid(position, environment, getScope().getTypes().BOOL);
 		} else {
 			return new ExpressionCompareGeneric(position, environment, result, type);
 		}
 	}
-
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "Cannot call a string value");
-		return new ExpressionInvalid(position, INSTANCE);
-	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -228,7 +186,7 @@ public class ZenTypeString extends ZenType {
 	
 	@Override
 	public String getAnyClassName() {
-		IScopeGlobal environment = getEnvironment();
+		IScopeGlobal environment = getScope();
 		
 		if (!environment.containsClass(ANY_NAME_2)) {
 			environment.putClass(ANY_NAME_2, new byte[0]);
@@ -297,10 +255,10 @@ public class ZenTypeString extends ZenType {
 			output.returnInt();
 			
 			output.label(lblOthers);
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(types.STRING, output, environment, 0);
-			}
+			}*/
 			
 			output.iConst0();
 			output.returnInt();
@@ -308,10 +266,10 @@ public class ZenTypeString extends ZenType {
 
 		@Override
 		public void defineStaticAs(MethodOutput output) {
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.STRING, output, environment, 0, 1);
-			}
+			}*/
 			
 			throwCastException(output, "string", 1);
 		}
@@ -516,10 +474,10 @@ public class ZenTypeString extends ZenType {
 			
 			getValue(output);
 			output.store(type, localValue);
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.STRING, output, environment, localValue, 1);
-			}
+			}*/
 			
 			throwCastException(output, "string", 1);
 		}

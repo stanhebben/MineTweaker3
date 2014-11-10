@@ -31,12 +31,11 @@ public class ScopeGlobal implements IScopeGlobal
 
 	public ScopeGlobal(
 			IZenCompileEnvironment environment,
-			Map<String, byte[]> classes,
 			ClassNameGenerator nameGen)
 	{
 		this.environment = environment;
 		this.errors = environment.getErrorLogger();
-		this.classes = classes;
+		this.classes = new HashMap<String, byte[]>();
 		this.nameGen = nameGen;
 		this.types = new TypeRegistry(this);
 		this.local = new HashMap<String, IZenSymbol>();
@@ -63,6 +62,12 @@ public class ScopeGlobal implements IScopeGlobal
 	public void putClass(String name, byte[] data)
 	{
 		classes.put(name, data);
+	}
+	
+	@Override
+	public Map<String, byte[]> getClasses()
+	{
+		return classes;
 	}
 
 	@Override

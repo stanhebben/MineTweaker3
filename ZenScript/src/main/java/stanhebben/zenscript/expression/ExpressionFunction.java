@@ -34,7 +34,7 @@ public class ExpressionFunction extends Expression {
 
 	@Override
 	public Expression cast(CodePosition position, ZenType type) {
-		ICastingRule castingRule = functionType.getCastingRule(type);
+		ICastingRule castingRule = functionType.getCastingRule(ZenType.ACCESS_GLOBAL, type);
 		if (castingRule != null) {
 			// TODO: finish, but how?
 			throw new UnsupportedOperationException("not yet implemented");

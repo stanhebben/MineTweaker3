@@ -10,24 +10,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockPattern;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
+import minetweaker.api.minecraft.MCBlock;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.IFactoryPlantable;
 import powercrystals.minefactoryreloaded.api.ReplacementBlock;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -123,7 +124,7 @@ public class Planter {
 			IItemStack iSeed = MineTweakerMC.getIItemStack(seed);
 			for (TweakerPlantable plantable : plantables) {
 				if (plantable.seed.matches(iSeed))
-					return new ReplacementBlock(MineTweakerMC.getBlock(plantable.block)).setMeta(plantable.block.getMeta());
+					return new ReplacementBlock(MCBlock.getBlock(plantable.block)).setMeta(plantable.block.getMeta());
 			}
 			
 			return null;
@@ -162,7 +163,7 @@ public class Planter {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddPlantableAction implements IUndoableAction {
+	private static class AddPlantableAction extends UndoableAction {
 		private final TweakerPlantable plantable;
 		
 		private AddPlantableAction(TweakerPlantable plantable) {
@@ -187,11 +188,6 @@ public class Planter {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			for (IItemStack iItem : plantable.seed.getItems()) {
 				Item item = MineTweakerMC.getItemStack(iItem).getItem();
@@ -211,14 +207,9 @@ public class Planter {
 		public String describeUndo() {
 			return "Removing MFR Plantable for seed " + plantable.seed;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemovePlantableAction implements IUndoableAction {
+	private static class RemovePlantableAction extends UndoableAction {
 		private final IIngredient seed;
 		private final Map<Item, IFactoryPlantable> removed;
 		
@@ -244,11 +235,6 @@ public class Planter {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			for (Map.Entry<Item, IFactoryPlantable> removedEntry : removed.entrySet()) {
 				MFRRegistry.getPlantables().put(removedEntry.getKey(), removedEntry.getValue());
@@ -263,11 +249,6 @@ public class Planter {
 		@Override
 		public String describeUndo() {
 			return "Restoring MFR Planter seed " + seed;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

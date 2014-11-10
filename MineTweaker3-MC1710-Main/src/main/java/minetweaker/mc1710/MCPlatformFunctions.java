@@ -6,7 +6,7 @@
 
 package minetweaker.mc1710;
 
-import minetweaker.IPlatformFunctions;
+import minetweaker.api.IPlatformFunctions;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.item.IItemDefinition;
 import static minetweaker.mc1710.MineTweakerMod.NETWORK;

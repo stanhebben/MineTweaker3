@@ -7,9 +7,7 @@
 package minetweaker.mods.mfr;
 
 import java.util.Map;
-import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
-import minetweaker.MineTweakerImplementationAPI.ReloadEvent;
 import minetweaker.annotations.OnRegister;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
@@ -21,6 +19,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandom;
 import cofh.lib.util.WeightedRandomItemStack;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.event.ReloadEvent;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.IFactoryFertilizer;
 import powercrystals.minefactoryreloaded.api.IFactoryFruit;
@@ -46,7 +46,7 @@ public class MFRCommands {
 	
 	@OnRegister
 	public static void onRegister() {
-		MineTweakerImplementationAPI.onReloadEvent(new IEventHandler<ReloadEvent>() {
+		MineTweakerImplementationAPI.onPreLoad(new IEventHandler<ReloadEvent>() {
 			@Override
 			public void handle(ReloadEvent event) {
 				MineTweakerImplementationAPI.addMineTweakerCommand("mfr", DESCRIPTION, new ICommandFunction() {

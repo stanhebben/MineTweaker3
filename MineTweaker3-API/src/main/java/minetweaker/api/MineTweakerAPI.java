@@ -1,5 +1,6 @@
 package minetweaker.api;
 
+import minetweaker.api.action.IUndoableAction;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -343,8 +344,12 @@ public class MineTweakerAPI
 		for (Annotation annotation : annotatedClass.getAnnotations()) {
 			if (annotation instanceof ModOnly) {
 				String[] value = ((ModOnly) annotation).value();
+				String version = ((ModOnly) annotation).version();
 				for (String mod : value) {
 					if (!loadedMods.contains(mod))
+						return false;
+					
+					if (!loadedMods.get(mod).getVersion().startsWith(version))
 						return false;
 				}
 			}

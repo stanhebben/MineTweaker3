@@ -8,8 +8,8 @@ package minetweaker.mc1710.server;
 
 import java.util.Arrays;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.minecraft.MineTweakerMC;
 import minetweaker.api.player.IPlayer;
 import minetweaker.api.server.AbstractServer;
@@ -36,9 +36,9 @@ public class MCServer extends AbstractServer {
 	}
 	
 	@Override
-	public void addCommand(String name, String usage, String[] aliases, ICommandFunction function, ICommandValidator validator, ICommandTabCompletion completion) {
+	public void addCommand(String name, String usage, String[] aliases, ICommandFunction function, ICommandValidator validator, ICommandTabCompletion completion, boolean silent) {
 		ICommand command = new MCCommand(name, usage, aliases, function, validator, completion);
-		MineTweakerAPI.apply(new AddCommandAction(command));
+		MineTweakerAPI.apply(new AddCommandAction(command, silent));
 	}
 	
 	@Override
@@ -153,22 +153,19 @@ public class MCServer extends AbstractServer {
 		}
 	}
 	
-	private class AddCommandAction implements IUndoableAction {
+	private class AddCommandAction extends UndoableAction {
 		private final ICommand command;
+		private final boolean silent;
 		
-		public AddCommandAction(ICommand command) {
+		public AddCommandAction(ICommand command, boolean silent) {
 			this.command = command;
+			this.silent = silent;
 		}
 
 		@Override
 		public void apply() {
 			CommandHandler ch = (CommandHandler) MinecraftServer.getServer().getCommandManager();
 			ch.registerCommand(command);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -187,12 +184,12 @@ public class MCServer extends AbstractServer {
 		}
 
 		@Override
-		public Object getOverrideKey() {
-			return null;
+		public boolean isSilent() {
+			return silent;
 		}
 	}
 	
-	private class RemoveCommandAction implements IUndoableAction {
+	private class RemoveCommandAction extends UndoableAction {
 		private final ICommand command;
 		
 		public RemoveCommandAction(ICommand command) {
@@ -205,11 +202,6 @@ public class MCServer extends AbstractServer {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			CommandHandler ch = (CommandHandler) MinecraftServer.getServer().getCommandManager();
 			ch.registerCommand(command);
@@ -223,11 +215,6 @@ public class MCServer extends AbstractServer {
 		@Override
 		public String describeUndo() {
 			return "Removing command " + command.getCommandName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

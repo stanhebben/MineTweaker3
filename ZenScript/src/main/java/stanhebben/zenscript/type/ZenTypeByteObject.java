@@ -6,81 +6,31 @@
 
 package stanhebben.zenscript.type;
 
-import org.objectweb.asm.Type;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionNull;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
 import org.openzen.zencode.symbolic.method.JavaMethod;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import org.openzen.zencode.annotations.CompareType;
-import org.openzen.zencode.annotations.OperatorType;
 import static org.openzen.zencode.runtime.IAny.NUM_BYTE;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableVirtualMethod;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleVirtualMethod;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.symbolic.util.CommonMethods;
-import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ZenTypeByteObject extends ZenType {
-	private final ZenType BYTE;
-	
+public class ZenTypeByteObject extends ZenTypeArithmeticNullable
+{
 	public ZenTypeByteObject(IScopeGlobal environment, ZenType BYTE) {
-		super(environment);
-		
-		this.BYTE = BYTE;
-	}
-	
-	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		return BYTE.unary(position, environment, value.cast(position, BYTE), operator);
+		super(environment, BYTE);
 	}
 
 	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		return BYTE.binary(position, environment, left.cast(position, BYTE), right, operator);
-	}
-
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		return BYTE.trinary(position, environment, first.cast(position, BYTE), second, third, operator);
-	}
-
-	@Override
-	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
-		return BYTE.compare(position, environment, left.cast(position, BYTE), right, type);
-	}
-
-	@Override
-	public IPartialExpression getMember(CodePosition position, IScopeMethod environment, IPartialExpression value, String name) {
-		return BYTE.getMember(position, environment, value.eval().cast(position, BYTE), name);
-	}
-
-	@Override
-	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
-		return BYTE.getStaticMember(position, environment, name);
-	}
-
-	/*@Override
-	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		return BYTE.call(position, environment, receiver.cast(position, environment, BYTE), arguments);
-	}*/
-
-	@Override
-	public IZenIterator makeIterator(int numValues) {
-		return BYTE.makeIterator(numValues);
-	}
-
-	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters)
+	{
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
 		rules.registerCastingRule(types.BYTE, new CastingRuleVirtualMethod(this, methods.BYTE_VALUE));
@@ -111,7 +61,7 @@ public class ZenTypeByteObject extends ZenType {
 				new CastingRuleVirtualMethod(this, methods.BYTE_VALUE)));
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(access, rules);
 		}
 	}
 
@@ -121,47 +71,12 @@ public class ZenTypeByteObject extends ZenType {
 	}
 
 	@Override
-	public Type toASMType() {
-		return Type.getType(Byte.class);
-	}
-
-	@Override
 	public int getNumberType() {
 		return NUM_BYTE;
 	}
 
 	@Override
-	public String getSignature() {
-		return signature(Byte.class);
-	}
-
-	@Override
-	public boolean isNullable() {
-		return true;
-	}
-
-	@Override
 	public String getName() {
 		return "byte?";
-	}
-	
-	@Override
-	public String getAnyClassName() {
-		return BYTE.getAnyClassName();
-	}
-
-	@Override
-	public Expression defaultValue(CodePosition position, IScopeMethod environment) {
-		return new ExpressionNull(position, environment);
-	}
-
-	@Override
-	public ZenType nullable() {
-		return this;
-	}
-
-	@Override
-	public ZenType nonNull() {
-		return BYTE;
 	}
 }

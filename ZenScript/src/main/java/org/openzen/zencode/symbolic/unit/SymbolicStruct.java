@@ -8,6 +8,7 @@ package org.openzen.zencode.symbolic.unit;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.member.IMember;
+import stanhebben.zenscript.type.ZenType;
 
 /**
  *
@@ -30,5 +31,17 @@ public class SymbolicStruct implements ISymbolicUnit
 	public List<IMember> getMembers()
 	{
 		return members;
+	}
+
+	@Override
+	public ZenType getType()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void compile()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

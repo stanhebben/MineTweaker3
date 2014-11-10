@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
  */
-package zenscript.symbolic.method;
+package org.openzen.zencode.symbolic.method;
 
 import org.openzen.zencode.symbolic.method.MethodArgument;
 import org.openzen.zencode.symbolic.method.MethodHeader;
@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.expression.ExpressionBool;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.type.ZenType;
@@ -241,11 +242,13 @@ public class MethodHeaderTest
 		Expression eInt = new ExpressionInt(null, staticScope, 0, typeInt);
 		Expression eLong = new ExpressionInt(null, staticScope, 1, typeLong);
 		Expression eString = new ExpressionString(null, staticScope, "Hello");
+		Expression eBool = new ExpressionBool(null, staticScope, false);
 		
 		assertTrue(instance.accepts(eInt, eLong, eString));
 		assertTrue(instance.accepts(eInt, eInt, eString));
-		assertFalse(instance.accepts(eInt, eString, eString));
-		assertFalse(instance.accepts(eInt, eLong));
+		assertTrue(instance.accepts(eInt, eString, eString));
+		assertTrue(instance.accepts(eInt, eLong));
+		assertFalse(instance.accepts(eInt, eBool));
 		
 		MethodHeader instance2 = construct_ILSV_S();
 		
@@ -254,7 +257,8 @@ public class MethodHeaderTest
 		assertTrue(instance2.accepts(eInt, eLong));
 		assertTrue(instance2.accepts(eInt));
 		assertTrue(instance2.accepts(eLong));
-		assertFalse(instance2.accepts(eInt, eString, eLong));
+		assertTrue(instance2.accepts(eInt, eString, eLong));
+		assertFalse(instance2.accepts(eInt, eBool));
 	}
 
 	/**

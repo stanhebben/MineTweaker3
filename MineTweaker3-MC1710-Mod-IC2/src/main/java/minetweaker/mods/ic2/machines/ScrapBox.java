@@ -7,13 +7,13 @@
 package minetweaker.mods.ic2.machines;
 
 import ic2.api.recipe.Recipes;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
 import minetweaker.api.item.WeightedItemStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -58,11 +58,6 @@ public class ScrapBox {
 		@Override
 		public String describe() {
 			return "Adding scrapbox drop " + stack.getStack();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override

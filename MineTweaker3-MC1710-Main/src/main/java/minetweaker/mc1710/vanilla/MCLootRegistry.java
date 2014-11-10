@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
@@ -86,7 +86,7 @@ public class MCLootRegistry implements ILootRegistry {
 	 * 
 	 * @author JoshieJack
 	 */
-    private static class AddLootAction implements IUndoableAction {
+    private static class AddLootAction extends UndoableAction {
 		private final String chest;
         private final WeightedRandomChestContent content;
 
@@ -101,11 +101,6 @@ public class MCLootRegistry implements ILootRegistry {
 			List<WeightedRandomChestContent> contents = MineTweakerHacks.getPrivateObject(recipe, "contents");
 			
 			contents.add(content);
-        }
-
-        @Override
-        public boolean canUndo() {
-            return true;
         }
 
         @Override
@@ -129,11 +124,6 @@ public class MCLootRegistry implements ILootRegistry {
 		public String describeUndo() {
 			return "Removing chest loot " + content.theItemId.getDisplayName() + " from loot class " + chest;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
     }
 	
 	/**
@@ -141,7 +131,7 @@ public class MCLootRegistry implements ILootRegistry {
 	 * 
 	 * @author JoshieJack
 	 */
-    private static class RemoveLootAction implements IUndoableAction {
+    private static class RemoveLootAction extends UndoableAction {
 		private final String chest;
 		private final IIngredient pattern;
         private final List<WeightedRandomChestContent> removed;
@@ -171,11 +161,6 @@ public class MCLootRegistry implements ILootRegistry {
         }
 
         @Override
-        public boolean canUndo() {
-			return true;
-        }
-
-        @Override
         public void undo() {
             ChestGenHooks recipe = LOOT.get(chest);
 			List<WeightedRandomChestContent> contents = MineTweakerHacks.getPrivateObject(recipe, "contents");
@@ -193,11 +178,6 @@ public class MCLootRegistry implements ILootRegistry {
 		@Override
 		public String describeUndo() {
 			return "Restoring chest loot " + pattern + " for loot type " + chest + " (" + removed.size() + " entries)";
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
     }
 }

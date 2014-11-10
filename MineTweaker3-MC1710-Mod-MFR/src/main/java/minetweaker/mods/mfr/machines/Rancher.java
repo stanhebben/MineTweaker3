@@ -9,9 +9,10 @@ package minetweaker.mods.mfr.machines;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.liquid.ILiquidStack;
@@ -23,12 +24,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.IFactoryRanchable;
 import powercrystals.minefactoryreloaded.api.RanchedItem;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -108,7 +109,7 @@ public class Rancher {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddRanchableAction implements IUndoableAction {
+	private static class AddRanchableAction extends UndoableAction {
 		private final TweakerRanchable ranchable;
 		
 		public AddRanchableAction(TweakerRanchable ranchable) {
@@ -118,11 +119,6 @@ public class Rancher {
 		@Override
 		public void apply() {
 			MFRRegistry.registerRanchable(ranchable);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -139,14 +135,9 @@ public class Rancher {
 		public String describeUndo() {
 			return "Removing ranchable entity " + ranchable.entityClass.getName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveRanchableAction implements IUndoableAction {
+	private static class RemoveRanchableAction extends UndoableAction {
 		private final IFactoryRanchable ranchable;
 		
 		public RemoveRanchableAction(IFactoryRanchable ranchable) {
@@ -157,12 +148,7 @@ public class Rancher {
 		public void apply() {
 			MFRRegistry.getRanchables().remove(ranchable.getRanchableEntity());
 		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
+		
 		@Override
 		public void undo() {
 			MFRRegistry.getRanchables().put(ranchable.getRanchableEntity(), ranchable);
@@ -176,11 +162,6 @@ public class Rancher {
 		@Override
 		public String describeUndo() {
 			return "Restoring ranchable entity " + ranchable.getRanchableEntity().getName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

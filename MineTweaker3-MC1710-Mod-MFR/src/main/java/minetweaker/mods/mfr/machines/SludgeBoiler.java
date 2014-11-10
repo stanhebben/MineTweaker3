@@ -9,16 +9,17 @@ package minetweaker.mods.mfr.machines;
 import cofh.lib.util.WeightedRandomItemStack;
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.util.WeightedRandom;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -45,7 +46,7 @@ public class SludgeBoiler {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddDropAction implements IUndoableAction {
+	private static class AddDropAction extends UndoableAction {
 		private final WeightedRandomItemStack item;
 		
 		public AddDropAction(WeightedItemStack item) {
@@ -55,11 +56,6 @@ public class SludgeBoiler {
 		@Override
 		public void apply() {
 			MFRRegistry.getSludgeDrops().add(item);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -76,14 +72,9 @@ public class SludgeBoiler {
 		public String describeUndo() {
 			return "Removing sludge boiler drop " + item.getStack().getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveDropAction implements IUndoableAction {
+	private static class RemoveDropAction extends UndoableAction {
 		private final IIngredient item;
 		private final List<WeightedRandomItemStack> toRemove;
 		
@@ -109,11 +100,6 @@ public class SludgeBoiler {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			for (WeightedRandomItemStack item : toRemove) {
 				MFRRegistry.getSludgeDrops().add(item);
@@ -128,11 +114,6 @@ public class SludgeBoiler {
 		@Override
 		public String describeUndo() {
 			return "Restoring " + toRemove.size() + " sludge boiler drops for " + item;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

@@ -88,7 +88,7 @@ public class ScopeMethod implements IScopeMethod
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
 		else
-			return environment.getValue(name, position, environment);
+			return scope.getValue(name, position, environment);
 	}
 
 	@Override
@@ -110,6 +110,12 @@ public class ScopeMethod implements IScopeMethod
 	public byte[] getClass(String name)
 	{
 		return scope.getClass(name);
+	}
+	
+	@Override
+	public Map<String, byte[]> getClasses()
+	{
+		return scope.getClasses();
 	}
 
 	@Override

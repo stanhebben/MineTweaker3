@@ -8,7 +8,7 @@ package minetweaker.mc1710.actions;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
-import minetweaker.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.mc1710.util.MineTweakerHacks;
 import net.minecraft.util.StringTranslate;
 
@@ -16,7 +16,7 @@ import net.minecraft.util.StringTranslate;
  *
  * @author Stan
  */
-public class SetTranslationAction implements IUndoableAction {
+public class SetTranslationAction extends UndoableAction {
 	private static final StringTranslate INSTANCE = MineTweakerHacks.getStringTranslateInstance();
 	private static final Charset UTF8 = Charset.forName("utf-8");
 	
@@ -36,11 +36,6 @@ public class SetTranslationAction implements IUndoableAction {
 	}
 
 	@Override
-	public boolean canUndo() {
-		return true;
-	}
-
-	@Override
 	public void undo() {
 		set(key, oldValue);
 	}
@@ -57,10 +52,5 @@ public class SetTranslationAction implements IUndoableAction {
 	
 	private static void set(String key, String value) {
 		StringTranslate.inject(new ByteArrayInputStream((key + "=" + value).getBytes(UTF8)));
-	}
-
-	@Override
-	public Object getOverrideKey() {
-		return null;
 	}
 }

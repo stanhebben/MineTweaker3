@@ -9,8 +9,8 @@ package minetweaker.mc1710.network;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import minetweaker.MineTweakerAPI;
 import minetweaker.MineTweakerImplementationAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.mc1710.client.MCClient;
 import minetweaker.runtime.providers.ScriptProviderMemory;
 

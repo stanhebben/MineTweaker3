@@ -2,13 +2,13 @@ package minetweaker.mods.gregtech.machines;
 
 import gregtech.api.GregTech_API;
 import static gregtech.api.GregTech_API.MOD_ID;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Access point for Lathe recipes.
@@ -85,11 +85,6 @@ public class Lathe {
 		@Override
 		public String describe() {
 			return "Adding lathe recipe for " + output1;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override

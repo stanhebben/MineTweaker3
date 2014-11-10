@@ -12,8 +12,8 @@ import minetweaker.api.item.IItemCondition;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.IItemTransformer;
 import minetweaker.api.player.IPlayer;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

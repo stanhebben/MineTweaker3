@@ -2,8 +2,8 @@ package minetweaker.mods.ic2;
 
 import ic2.api.recipe.IMachineRecipeManager;
 import java.util.Arrays;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -53,11 +53,6 @@ public class MachineAddRecipeAction extends OneWayAction {
 			result.append("]");
 			return result.toString();
 		}
-	}
-
-	@Override
-	public Object getOverrideKey() {
-		return null;
 	}
 
 	@Override

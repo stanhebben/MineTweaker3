@@ -1,4 +1,4 @@
-package minetweaker.api;
+package minetweaker.api.action;
 
 /**
  * Base implementation for a non-undoable action.
@@ -22,5 +22,11 @@ public abstract class OneWayAction implements IUndoableAction
 	public String describeUndo()
 	{
 		return "impossibru!";
+	}
+	
+	@Override
+	public boolean isSilent()
+	{
+		return false;
 	}
 }

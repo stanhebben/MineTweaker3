@@ -61,6 +61,12 @@ public class ScopeModule implements IScopeModule
 	{
 		parent.putClass(name, data);
 	}
+	
+	@Override
+	public Map<String, byte[]> getClasses()
+	{
+		return parent.getClasses();
+	}
 
 	@Override
 	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)

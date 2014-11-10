@@ -1,13 +1,13 @@
 package minetweaker.mods.mfr.machines;
 
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import static minetweaker.mc1710.util.MineTweakerPlatformUtils.getLivingEntityClass;
 import net.minecraft.entity.EntityLivingBase;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -30,7 +30,7 @@ public class AutoSpawner {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AutoSpawnerAddBlacklistAction implements IUndoableAction {
+	private static class AutoSpawnerAddBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		private final boolean existed;
 
@@ -43,11 +43,6 @@ public class AutoSpawner {
 		public void apply() {
 			if (!existed)
 				MFRRegistry.registerAutoSpawnerBlacklistClass(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -65,14 +60,9 @@ public class AutoSpawner {
 		public String describeUndo() {
 			return "Removing auto-spawner blacklist " + entityClass.getCanonicalName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AutoSpawnerRemoveBlacklistAction implements IUndoableAction {
+	private static class AutoSpawnerRemoveBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		private final boolean existed;
 
@@ -85,11 +75,6 @@ public class AutoSpawner {
 		public void apply() {
 			if (existed)
 				MFRRegistry.getAutoSpawnerClassBlacklist().remove(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -106,11 +91,6 @@ public class AutoSpawner {
 		@Override
 		public String describeUndo() {
 			return "Restoring auto-spawner blacklist " + entityClass.getCanonicalName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

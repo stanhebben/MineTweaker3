@@ -6,12 +6,13 @@
 
 package minetweaker.mods.mfr.machines;
 
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -67,12 +68,13 @@ public class RubberTree {
 		}
 
 		@Override
-		public Object getOverrideKey() {
-			return null;
+		public boolean isSilent()
+		{
+			return false;
 		}
 	}
 	
-	private static class RemoveBiomeAction implements IUndoableAction {
+	private static class RemoveBiomeAction extends UndoableAction {
 		private final String biome;
 		
 		private RemoveBiomeAction(String biome) {
@@ -82,11 +84,6 @@ public class RubberTree {
 		@Override
 		public void apply() {
 			MFRRegistry.getRubberTreeBiomes().remove(biome);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -102,11 +99,6 @@ public class RubberTree {
 		@Override
 		public String describeUndo() {
 			return "Adding rubber tree biome " + biome;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

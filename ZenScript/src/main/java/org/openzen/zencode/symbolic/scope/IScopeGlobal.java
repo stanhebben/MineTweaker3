@@ -6,6 +6,7 @@
 
 package org.openzen.zencode.symbolic.scope;
 
+import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -32,6 +33,8 @@ public interface IScopeGlobal extends ICodeErrorLogger {
 	public byte[] getClass(String name);
 	
 	public void putClass(String name, byte[] data);
+	
+	public Map<String, byte[]> getClasses();
 	
 	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment);
 	

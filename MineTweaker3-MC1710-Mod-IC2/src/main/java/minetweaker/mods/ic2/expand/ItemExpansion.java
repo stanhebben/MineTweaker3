@@ -8,10 +8,10 @@ import static minetweaker.api.minecraft.MineTweakerMC.getIItemStack;
 import minetweaker.api.item.IItemStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenExpansion;
-import stanhebben.zenscript.annotations.ZenGetter;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenExpansion;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

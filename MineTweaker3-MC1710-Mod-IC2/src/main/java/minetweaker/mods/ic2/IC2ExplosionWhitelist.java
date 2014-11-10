@@ -1,15 +1,16 @@
 package minetweaker.mods.ic2;
 
 import ic2.api.tile.ExplosionWhitelist;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * Manages the explosion whitelist in IC2. Blocks on this whitelist will not resist
@@ -83,7 +84,7 @@ public class IC2ExplosionWhitelist {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddAction implements IUndoableAction {
+	private static class AddAction extends UndoableAction {
 		private final Block block;
 		
 		public AddAction(Block block) {
@@ -96,11 +97,6 @@ public class IC2ExplosionWhitelist {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			ExplosionWhitelist.removeWhitelistedBlock(block);
 		}
@@ -114,14 +110,9 @@ public class IC2ExplosionWhitelist {
 		public String describeUndo() {
 			return "Removing block from IC2 explosion whitelist: " + block.getLocalizedName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveAction implements IUndoableAction {
+	private static class RemoveAction extends UndoableAction {
 		private final Block block;
 		
 		public RemoveAction(Block block) {
@@ -131,11 +122,6 @@ public class IC2ExplosionWhitelist {
 		@Override
 		public void apply() {
 			ExplosionWhitelist.removeWhitelistedBlock(block);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -151,11 +137,6 @@ public class IC2ExplosionWhitelist {
 		@Override
 		public String describeUndo() {
 			return "Adding block to IC2 explosion whitelist: " + block.getLocalizedName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

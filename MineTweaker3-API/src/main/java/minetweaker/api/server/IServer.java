@@ -28,7 +28,8 @@ public interface IServer {
 			String[] aliases,
 			ICommandFunction function,
 			@Optional ICommandValidator validator,
-			@Optional ICommandTabCompletion completion);
+			@Optional ICommandTabCompletion completion,
+			@Optional boolean silent);
 	
 	@ZenMethod
 	public void removeCommand(String name);

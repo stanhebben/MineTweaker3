@@ -7,7 +7,7 @@
 package minetweaker.api.tooltip;
 
 import java.util.List;
-import minetweaker.api.IUndoableAction;
+import minetweaker.api.action.IUndoableAction;
 import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.formatting.IFormattedText;
 import minetweaker.api.item.IIngredient;

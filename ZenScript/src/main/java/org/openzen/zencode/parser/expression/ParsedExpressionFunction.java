@@ -90,7 +90,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 			}
 		}
 		
-		SymbolicFunction functionUnit = new SymbolicFunction(compiledHeader);
+		SymbolicFunction functionUnit = new SymbolicFunction(getPosition(), compiledHeader, scope);
 		EnvironmentFunctionLiteral functionScope = new EnvironmentFunctionLiteral(scope, functionUnit);
 		
 		for (int i = 0; i < compiledHeader.getArguments().size(); i++) {
@@ -162,6 +162,12 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		@Override
 		public byte[] getClass(String name) {
 			return outer.getClass(name);
+		}
+		
+		@Override
+		public Map<String, byte[]> getClasses()
+		{
+			return outer.getClasses();
 		}
 
 		@Override

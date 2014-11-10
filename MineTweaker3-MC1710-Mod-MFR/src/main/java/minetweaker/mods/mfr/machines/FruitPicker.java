@@ -13,22 +13,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockPattern;
 import minetweaker.api.item.WeightedItemStack;
+import minetweaker.api.minecraft.MCBlock;
 import minetweaker.api.minecraft.MineTweakerMC;
 import minetweaker.mc1710.block.MCBlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.IFactoryFruit;
 import powercrystals.minefactoryreloaded.api.ReplacementBlock;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -113,7 +114,7 @@ public class FruitPicker {
 			IBlock iBlock = MineTweakerMC.getBlock(world, x, y, z);
 			for (TweakerFruit fruit : fruits) {
 				if (fruit.block.matches(iBlock))
-					return new ReplacementBlock(MineTweakerMC.getBlock(fruit.replacement)).setMeta(iBlock.getMeta());
+					return new ReplacementBlock(MCBlock.getBlock(fruit.replacement)).setMeta(iBlock.getMeta());
 			}
 			return null;
 		}
@@ -140,7 +141,7 @@ public class FruitPicker {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddFruitAction implements IUndoableAction {
+	private static class AddFruitAction extends UndoableAction {
 		private final TweakerFruit fruit;
 		
 		public AddFruitAction(TweakerFruit fruit) {
@@ -150,7 +151,7 @@ public class FruitPicker {
 		@Override
 		public void apply() {
 			Map<Block, IFactoryFruit> fruits = MFRRegistry.getFruits();
-			for (IBlock partial : fruit.block.getBlocks()) {
+			for (IBlock partial : fruit.block.getPossibleBlocks()) {
 				Block block = ((MCBlockDefinition) partial.getDefinition()).getInternalBlock();
 				if (fruits != null && fruits.containsKey(block)) {
 					IFactoryFruit existingFruit = fruits.get(block);
@@ -170,15 +171,10 @@ public class FruitPicker {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			Map<Block, IFactoryFruit> fruits = MFRRegistry.getFruits();
-			for (IBlock partial : fruit.block.getBlocks()) {
-				Block block = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : fruit.block.getPossibleBlocks()) {
+				Block block = MCBlock.getBlock(partial);
 				IFactoryFruit factoryFruit = fruits.get(block);
 				if (factoryFruit != null && factoryFruit instanceof TweakerFruitPartial) {
 					((TweakerFruitPartial) factoryFruit).fruits.remove(fruit);
@@ -195,14 +191,9 @@ public class FruitPicker {
 		public String describeUndo() {
 			return "Removing Fruit Picker fruit block " + fruit.block.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveFruitAction implements IUndoableAction {
+	private static class RemoveFruitAction extends UndoableAction {
 		private final IBlockPattern block;
 		private final Map<Block, IFactoryFruit> removed;
 		
@@ -211,8 +202,8 @@ public class FruitPicker {
 			
 			Map<Block, IFactoryFruit> fruits = MFRRegistry.getFruits();
 			removed = new HashMap<Block, IFactoryFruit>();
-			for (IBlock partial : block.getBlocks()) {
-				Block mcBlock = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : block.getPossibleBlocks()) {
+				Block mcBlock = MCBlock.getBlock(partial);
 				if (fruits.containsKey(mcBlock)) {
 					removed.put(mcBlock, fruits.get(mcBlock));
 				}
@@ -225,11 +216,6 @@ public class FruitPicker {
 			for (Block key : removed.keySet()) {
 				fruits.remove(key);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -249,22 +235,17 @@ public class FruitPicker {
 		public String describeUndo() {
 			return "Restoring fruit picker fruit block " + block.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddLogAction implements IUndoableAction {
+	private static class AddLogAction extends UndoableAction {
 		private final IBlockPattern block;
 		private final List<Block> addedLogs = new ArrayList<Block>();
 		
 		public AddLogAction(IBlockPattern block) {
 			this.block = block;
 			
-			for (IBlock partial : block.getBlocks()) {
-				Block mcBlock = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : block.getPossibleBlocks()) {
+				Block mcBlock = MCBlock.getBlock(partial);
 				if (!MFRRegistry.getFruitLogBlocks().contains(mcBlock)) {
 					if (!addedLogs.contains(mcBlock))
 						addedLogs.add(mcBlock);
@@ -277,11 +258,6 @@ public class FruitPicker {
 			for (Block log : addedLogs) {
 				MFRRegistry.registerFruitLogBlock(log);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -300,22 +276,17 @@ public class FruitPicker {
 		public String describeUndo() {
 			return "Removing MFR Fruit Picker log block " + block.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveLogAction implements IUndoableAction {
+	private static class RemoveLogAction extends UndoableAction {
 		private final IBlockPattern block;
 		private final List<Block> removedLogs = new ArrayList<Block>();
 		
 		public RemoveLogAction(IBlockPattern block) {
 			this.block = block;
 			
-			for (IBlock partial : block.getBlocks()) {
-				Block mcBlock = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : block.getPossibleBlocks()) {
+				Block mcBlock = MCBlock.getBlock(partial);
 				if (MFRRegistry.getFruitLogBlocks().contains(mcBlock)) {
 					if (!removedLogs.contains(mcBlock))
 						removedLogs.add(mcBlock);
@@ -328,11 +299,6 @@ public class FruitPicker {
 			for (Block log : removedLogs) {
 				MFRRegistry.getFruitLogBlocks().remove(log);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -350,11 +316,6 @@ public class FruitPicker {
 		@Override
 		public String describeUndo() {
 			return "Restoring MFR Fruit Picker log block " + block.getDisplayName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

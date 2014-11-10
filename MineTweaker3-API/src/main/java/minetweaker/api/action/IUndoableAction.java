@@ -1,4 +1,4 @@
-package minetweaker.api;
+package minetweaker.api.action;
 
 /**
  * Defines a (possibly) undoable action.

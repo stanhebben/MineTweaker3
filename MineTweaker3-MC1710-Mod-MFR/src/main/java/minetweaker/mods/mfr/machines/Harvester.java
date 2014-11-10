@@ -13,24 +13,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockPattern;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
+import minetweaker.api.minecraft.MCBlock;
 import minetweaker.api.minecraft.MineTweakerMC;
 import minetweaker.mc1710.block.MCBlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.HarvestType;
 import powercrystals.minefactoryreloaded.api.IFactoryHarvestable;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -182,7 +184,7 @@ public class Harvester {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddHarvestableAction implements IUndoableAction {
+	private static class AddHarvestableAction extends UndoableAction {
 		private final TweakerHarvestable harvestable;
 		
 		public AddHarvestableAction(TweakerHarvestable harvestable) {
@@ -192,8 +194,8 @@ public class Harvester {
 		@Override
 		public void apply() {
 			Map<Block, IFactoryHarvestable> harvestables = MFRRegistry.getHarvestables();
-			for (IBlock partial : harvestable.block.getBlocks()) {
-				Block block = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : harvestable.block.getPossibleBlocks()) {
+				Block block = MCBlock.getBlock(partial);
 				if (harvestable != null && harvestables.containsKey(block)) {
 					IFactoryHarvestable existingHarvestable = harvestables.get(block);
 					if (existingHarvestable instanceof TweakerHarvestablePartial) {
@@ -213,15 +215,10 @@ public class Harvester {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			Map<Block, IFactoryHarvestable> harvestables = MFRRegistry.getHarvestables();
-			for (IBlock partial : harvestable.block.getBlocks()) {
-				Block block = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : harvestable.block.getPossibleBlocks()) {
+				Block block = MCBlock.getBlock(partial);
 				IFactoryHarvestable factoryHarvestable = harvestables.get(block);
 				if (factoryHarvestable != null && factoryHarvestable instanceof TweakerHarvestablePartial) {
 					((TweakerHarvestablePartial) factoryHarvestable).harvestables.remove(harvestable);
@@ -238,14 +235,9 @@ public class Harvester {
 		public String describeUndo() {
 			return "Removing Harvester harvestable block " + harvestable.block.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveHarvestableAction implements IUndoableAction {
+	private static class RemoveHarvestableAction extends UndoableAction {
 		private final IBlockPattern block;
 		private final Map<Block, IFactoryHarvestable> removed;
 		
@@ -254,8 +246,8 @@ public class Harvester {
 			
 			Map<Block, IFactoryHarvestable> harvestables = MFRRegistry.getHarvestables();
 			removed = new HashMap<Block, IFactoryHarvestable>();
-			for (IBlock partial : block.getBlocks()) {
-				Block iBlock = MineTweakerMC.getBlock(partial);
+			for (IBlock partial : block.getPossibleBlocks()) {
+				Block iBlock = MCBlock.getBlock(partial);
 				if (harvestables.containsKey(iBlock)) {
 					removed.put(iBlock, harvestables.get(iBlock));
 				}
@@ -268,11 +260,6 @@ public class Harvester {
 			for (Block key : removed.keySet()) {
 				harvestables.remove(key);
 			}
-		}
-		
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -291,11 +278,6 @@ public class Harvester {
 		@Override
 		public String describeUndo() {
 			return "Restoring Harvester harvestable block " + block.getDisplayName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

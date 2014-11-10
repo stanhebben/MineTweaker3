@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import minetweaker.api.IUndoableAction;
+import minetweaker.api.action.IUndoableAction;
 import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.providers.ScriptProviderMemory;
@@ -95,18 +95,17 @@ public final class Tweaker
 		IScopeGlobal global = GlobalRegistry.makeGlobalEnvironment(classes);
 
 		// Step 1: parse all files
-		ParserEnvironment parserEnvironment = new ParserEnvironment(global.getEnvironment());
+		ParserEnvironment parserEnvironment = new ParserEnvironment(global, classes);
 		Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
 		while (scripts.hasNext()) {
 			IScriptIterator script = scripts.next();
 
 			if (!executed.contains(script.getGroupName())) {
 				executed.add(script.getGroupName());
-
-				ParsedModule module = parserEnvironment.makeModule(script.getGroupName(), script.getGroupScriptLoader());
-
-				List<ParsedFile> files = new ArrayList<ParsedFile>();
-
+				
+				ParsedModule module = new ParsedModule(parserEnvironment, script.getGroupScriptLoader(), script.getGroupName());
+				parserEnvironment.addModule(module);
+				
 				while (script.next()) {
 					Reader reader = null;
 					try {
@@ -116,7 +115,7 @@ public final class Tweaker
 
 						ZenLexer parser = new ZenLexer(reader);
 						ParsedFile pfile = new ParsedFile(module, filename, parser);
-						files.add(pfile);
+						module.addScript(pfile);
 					} catch (IOException ex) {
 						MineTweakerAPI.logError("Could not load script " + script.getName() + ": " + ex.getMessage());
 					} catch (ParseException ex) {
@@ -126,34 +125,22 @@ public final class Tweaker
 						MineTweakerAPI.logError("Error loading " + script.getName() + ": " + ex.toString(), ex);
 					}
 
-					if (reader != null)
+					if (reader != null) {
 						try {
 							reader.close();
 						} catch (IOException ex) {
 						}
+					}
 				}
-
-				/*				try {
-				 String filename = script.getGroupName();
-				 System.out.println("MineTweaker: Loading " + filename);
-				 compileScripts(filename, files, environmentGlobal, DEBUG);
-
-				 // execute scripts
-				 ZenModule cmodule = new ZenModule(classes, MineTweakerAPI.class.getClassLoader());
-				 cmodule.getMain().run();
-				 } catch (Throwable ex) {
-				 MineTweakerAPI.logError("Error executing " + script.getGroupName() + ": " + ex.getMessage());
-				 ex.printStackTrace();
-				 ZenModule module = new ZenModule(classes, MineTweakerAPI.class.getClassLoader());
-				 module.getMain().run();
-				 } catch (Throwable ex) {
-				 MineTweakerAPI.logError("Error executing " + script.getGroupName() + ": " + ex.getMessage(), ex);
-				 }*/
 			}
 		}
 
 		// Step 2: compile all files
+		Runnable compiled = parserEnvironment.compile();
+		
 		// Step 3: execute
+		compiled.run();
+		
 		if (wereStuck.size() > 0) {
 			MineTweakerAPI.logWarning(Integer.toString(wereStuck.size()) + " modifications were stuck");
 			for (IUndoableAction action : wereStuck) {

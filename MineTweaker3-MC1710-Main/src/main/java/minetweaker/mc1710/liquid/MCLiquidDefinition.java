@@ -8,8 +8,9 @@ package minetweaker.mc1710.liquid;
 
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.liquid.ILiquidDefinition;
 import minetweaker.api.liquid.ILiquidStack;
@@ -145,7 +146,7 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 	// ### Action classes ###
 	// ######################
 	
-	private class AddContainerAction implements IUndoableAction {
+	private class AddContainerAction extends OneWayAction {
 		private final IItemStack filled;
 		private final IItemStack empty;
 		private final int amount;
@@ -180,11 +181,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public String describeUndo() {
 			return "Removing liquid container " + filled;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 	
@@ -232,7 +228,7 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		}
 	}*/
 	
-	private class ActionSetLuminosity implements IUndoableAction {
+	private class ActionSetLuminosity extends UndoableAction {
 		private final int oldValue;
 		private final int newValue;
 		
@@ -244,11 +240,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public void apply() {
 			fluid.setLuminosity(newValue);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -265,14 +256,9 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		public String describeUndo() {
 			return "Restoring " + fluid.getName() + " luminosity to " + oldValue;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private class ActionSetDensity implements IUndoableAction {
+	private class ActionSetDensity extends UndoableAction {
 		private final int oldValue;
 		private final int newValue;
 		
@@ -284,11 +270,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public void apply() {
 			fluid.setDensity(newValue);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -305,14 +286,9 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		public String describeUndo() {
 			return "Restoring " + fluid.getName() + " density to " + oldValue;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private class ActionSetTemperature implements IUndoableAction {
+	private class ActionSetTemperature extends UndoableAction {
 		private final int oldValue;
 		private final int newValue;
 		
@@ -324,11 +300,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public void apply() {
 			fluid.setTemperature(newValue);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -345,14 +316,9 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		public String describeUndo() {
 			return "Restoring " + fluid.getName() + " temperature to " + oldValue;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private class ActionSetViscosity implements IUndoableAction {
+	private class ActionSetViscosity extends UndoableAction {
 		private final int oldValue;
 		private final int newValue;
 		
@@ -364,11 +330,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public void apply() {
 			fluid.setViscosity(newValue);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -385,14 +346,9 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		public String describeUndo() {
 			return "Restoring " + fluid.getName() + " viscosity to " + oldValue;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private class ActionSetGaseous implements IUndoableAction {
+	private class ActionSetGaseous extends UndoableAction {
 		private final boolean oldValue;
 		private final boolean newValue;
 		
@@ -404,11 +360,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public void apply() {
 			fluid.setGaseous(newValue);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -424,11 +375,6 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		@Override
 		public String describeUndo() {
 			return "Restoring " + fluid.getName() + " gaseous to " + oldValue;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

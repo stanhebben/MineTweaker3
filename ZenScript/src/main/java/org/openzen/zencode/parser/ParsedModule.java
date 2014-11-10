@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.symbolic.SymbolicModule;
 
 /**
  *
@@ -71,9 +72,35 @@ public class ParsedModule
 					"Could not load " + file.getName() + ": " + ex.getMessage());
 		}
 	}
+	
+	public void addScript(ParsedFile file)
+	{
+		files.add(file);
+	}
 
 	public InputStream loadFile(String name) throws IOException
 	{
 		return fileLoader == null ? null : fileLoader.load(name);
+	}
+	
+	public void compileUnits(SymbolicModule module)
+	{
+		for (ParsedFile file : files) {
+			file.compileUnits(module);
+		}
+	}
+	
+	public void compileFunctions(SymbolicModule module)
+	{
+		for (ParsedFile file : files) {
+			file.compileFunctions(module);
+		}
+	}
+	
+	public void compileContents(SymbolicModule module)
+	{
+		for (ParsedFile file : files) {
+			file.compileContents(module);
+		}
 	}
 }

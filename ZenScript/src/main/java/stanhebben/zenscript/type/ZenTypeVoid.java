@@ -9,6 +9,7 @@ package stanhebben.zenscript.type;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -51,7 +52,7 @@ public class ZenTypeVoid extends ZenType {
 	}
 
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
 		
 	}
 
@@ -76,39 +77,20 @@ public class ZenTypeVoid extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(
-			CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, environment);
-	}
-
-	@Override
-	public Expression binary(
-			CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		environment.error(position, "void does not have operators");
-		return new ExpressionInvalid(position, environment);
-	}
-
-	@Override
-	public Expression trinary(
-			CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
+	public Expression operator(
+			CodePosition position, IScopeMethod environment, OperatorType operator, Expression... values)
+	{
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
 	
 	@Override
 	public Expression compare(
-			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
+			CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type)
+	{
 		environment.error(position, "void does not have operators");
 		return new ExpressionInvalid(position, environment);
 	}
-
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "cannot call a void");
-		return new ExpressionInvalid(position, this);
-	}*/
 
 	@Override
 	public Class toJavaClass() {

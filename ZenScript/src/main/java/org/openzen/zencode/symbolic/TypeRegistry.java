@@ -139,7 +139,7 @@ public final class TypeRegistry
 		nativeTypes.put(String.class, STRING);
 		nativeTypes.put(List.class, ANYARRAYLIST);
 
-		this.commonMethods = new CommonMethods(scope);
+		this.commonMethods = new CommonMethods(this);
 		staticGlobalEnvironment = new StaticGlobalEnvironment();
 
 		RANGE = getNativeType(null, Range.class, null);
@@ -147,27 +147,43 @@ public final class TypeRegistry
 
 	public ZenType getNativeType(CodePosition position, Type type, TypeCapture capture)
 	{
-		if (type instanceof ParameterizedType) {
-			ParameterizedType pType = (ParameterizedType) type;
-			Type raw = pType.getRawType();
-			if (raw instanceof Class) {
-				Class rawClass = (Class) raw;
-				TypeVariable[] typeVariables = rawClass.getTypeParameters();
-				if (typeVariables.length != 0)
-					environment.error(position, "Missing type parameters");
-
-				if (List.class == rawClass)
-					return getListType(pType);
-				else if (Map.class == rawClass)
-					return getMapType(pType);
-				else
-					return getNativeClassType(position, rawClass, capture);
-			} else
-				return getNativeType(position, raw, capture);
-		} else if (type instanceof Class)
+		if (type instanceof ParameterizedType)
+			return getParameterizedType(position, (ParameterizedType) type, capture);
+		else if (type instanceof Class)
 			return getNativeClassType(position, (Class) type, capture);
+		else if (type instanceof TypeVariable)
+			return getTypeVariableType(position, (TypeVariable) type, capture);
 		else
 			throw new RuntimeException("Could not convert native type: " + type);
+	}
+	
+	private ZenType getParameterizedType(CodePosition position, ParameterizedType type, TypeCapture capture)
+	{
+		Type raw = type.getRawType();
+		if (raw instanceof Class) {
+			Class rawClass = (Class) raw;
+			// TODO
+			//TypeVariable[] typeVariables = rawClass.getTypeParameters();
+			//if (typeVariables.length != 0)
+			//	environment.error(position, "Missing type parameters");
+
+			if (List.class == rawClass)
+				return getListType(type);
+			else if (Map.class == rawClass)
+				return getMapType(type);
+			else
+				return getNativeClassType(position, rawClass, capture);
+		} else
+			return getNativeType(position, raw, capture);
+	}
+	
+	private ZenType getTypeVariableType(CodePosition position, TypeVariable type, TypeCapture capture)
+	{
+		for (Type t : type.getBounds()) {
+			return getNativeType(position, t, capture);
+		}
+		
+		return getNativeType(position, Object.class, capture);
 	}
 
 	public ZenType getInstancedNativeType(CodePosition position, Type type, List<ZenType> genericTypes, TypeCapture capture)
@@ -235,6 +251,7 @@ public final class TypeRegistry
 	// #######################
 	// ### Private methods ###
 	// #######################
+	
 	private ZenType getNativeClassType(CodePosition position, Class cls, TypeCapture capture)
 	{
 		if (nativeTypes.containsKey(cls))
@@ -313,6 +330,12 @@ public final class TypeRegistry
 		public byte[] getClass(String name)
 		{
 			return environment.getClass(name);
+		}
+		
+		@Override
+		public Map<String, byte[]> getClasses()
+		{
+			return environment.getClasses();
 		}
 
 		@Override

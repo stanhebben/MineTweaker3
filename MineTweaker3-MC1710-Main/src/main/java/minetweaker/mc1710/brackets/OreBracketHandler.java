@@ -7,21 +7,21 @@
 package minetweaker.mc1710.brackets;
 
 import java.util.List;
-import minetweaker.IBracketHandler;
 import minetweaker.annotations.BracketHandler;
+import minetweaker.api.IBracketHandler;
 import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.mc1710.oredict.MCOreDictEntry;
 import minetweaker.runtime.symbol.SymbolUtil;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import net.stanhebben.zenscript.lexer.Token;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.lexer.Token;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -73,7 +73,7 @@ public class OreBracketHandler implements IBracketHandler {
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position, IScopeMethod scope) {
+		public IPartialExpression instance(CodePosition position, IScopeMethod scope) {
 			return new ExpressionCallStatic(
 					position,
 					scope,

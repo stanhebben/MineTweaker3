@@ -8,8 +8,8 @@ package minetweaker.mc1710.vanilla;
 
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
@@ -54,7 +54,7 @@ public class MCSeedRegistry implements ISeedRegistry {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddSeedAction implements IUndoableAction {
+	private static class AddSeedAction extends UndoableAction {
 		private final IItemStack item;
 		private final WeightedRandom.Item entry;
 		
@@ -66,11 +66,6 @@ public class MCSeedRegistry implements ISeedRegistry {
 		@Override
 		public void apply() {
 			SEEDS.add(entry);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -87,14 +82,9 @@ public class MCSeedRegistry implements ISeedRegistry {
 		public String describeUndo() {
 			return "Removing seed entry " + item;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveSeedAction implements IUndoableAction {
+	private static class RemoveSeedAction extends UndoableAction {
 		private final IIngredient pattern;
 		private final List<Object> removed;
 		
@@ -120,11 +110,6 @@ public class MCSeedRegistry implements ISeedRegistry {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			for (Object entry : removed) {
 				SEEDS.add(entry);
@@ -139,11 +124,6 @@ public class MCSeedRegistry implements ISeedRegistry {
 		@Override
 		public String describeUndo() {
 			return "Restoring seeds " + pattern + " (" + removed.size() + " entries)";
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

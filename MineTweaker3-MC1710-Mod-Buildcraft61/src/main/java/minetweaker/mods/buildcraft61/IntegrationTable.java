@@ -10,16 +10,16 @@ import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.CraftingResult;
 import buildcraft.api.recipes.IFlexibleCrafter;
 import buildcraft.api.recipes.IIntegrationRecipe;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -61,7 +61,7 @@ public class IntegrationTable {
 	// ### Action Classes ###
 	// ######################
 	
-	private static class AddRecipeAction implements IUndoableAction {
+	private static class AddRecipeAction extends UndoableAction {
 		private final MTIntegrationRecipe recipe;
 		
 		public AddRecipeAction(IItemStack output, double energy, IIngredient inputA, IIngredient inputB, IIntegrationRecipeFunction function) {
@@ -71,11 +71,6 @@ public class IntegrationTable {
 		@Override
 		public void apply() {
 			BuildcraftRecipeRegistry.integrationTable.addRecipe(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -91,11 +86,6 @@ public class IntegrationTable {
 		@Override
 		public String describeUndo() {
 			return "Removing integration table recipe for " + recipe.output;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 	/*

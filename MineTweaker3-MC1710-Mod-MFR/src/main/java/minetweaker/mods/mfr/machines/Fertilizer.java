@@ -7,24 +7,25 @@
 package minetweaker.mods.mfr.machines;
 
 import java.util.Random;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
+import minetweaker.api.minecraft.MCBlock;
 import minetweaker.api.minecraft.MineTweakerMC;
+import minetweaker.mods.mfr.FertilizableType;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.FertilizerType;
 import powercrystals.minefactoryreloaded.api.IFactoryFertilizable;
 import powercrystals.minefactoryreloaded.api.IFactoryFertilizer;
-import stanhebben.minetweaker.mods.mfr.FertilizableType;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -93,7 +94,7 @@ public class Fertilizer {
 	// ### Action Classes ###
 	// ######################
 	
-	public class FertilizerAddFertilizableAction implements IUndoableAction {
+	public class FertilizerAddFertilizableAction extends UndoableAction {
 		private final IItemStack block;
 		private final IItemStack plant;
 		private final FertilizerType type;
@@ -107,7 +108,7 @@ public class Fertilizer {
 			this.type = type;
 			this.method = method;
 			
-			old = MFRRegistry.getFertilizables().get(MineTweakerMC.getBlock(block));
+			old = MFRRegistry.getFertilizables().get(MCBlock.getBlock(block));
 		}
 
 		@Override
@@ -116,14 +117,9 @@ public class Fertilizer {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			if (old == null) {
-				MFRRegistry.getFertilizables().remove(MineTweakerMC.getBlock(block));
+				MFRRegistry.getFertilizables().remove(MCBlock.getBlock(block));
 			} else {
 				MFRRegistry.registerFertilizable(old);
 			}
@@ -142,14 +138,9 @@ public class Fertilizer {
 				return "Restoring fertilizable " + block.getDisplayName();
 			}
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class FertilizerAddFertilizerAction implements IUndoableAction {
+	private static class FertilizerAddFertilizerAction extends UndoableAction {
 		private final IItemStack item;
 		private final FertilizerType type;
 
@@ -165,11 +156,6 @@ public class Fertilizer {
 		@Override
 		public void apply() {
 			MFRRegistry.registerFertilizer(new SimpleFertilizer(MineTweakerMC.getItemStack(item), type));
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -194,30 +180,20 @@ public class Fertilizer {
 				return "Restoring fertilizer " + item.getDisplayName();
 			}
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	public class FertilizerRemoveFertilizableAction implements IUndoableAction {
+	public class FertilizerRemoveFertilizableAction extends UndoableAction {
 		private final IItemStack item;
 		private final IFactoryFertilizable old;
 
 		public FertilizerRemoveFertilizableAction(IItemStack item) {
 			this.item = item;
-			old = MFRRegistry.getFertilizables().get(MineTweakerMC.getBlock(item));
+			old = MFRRegistry.getFertilizables().get(MCBlock.getBlock(item));
 		}
 
 		@Override
 		public void apply() {
-			MFRRegistry.getFertilizables().remove(MineTweakerMC.getBlock(item));
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
+			MFRRegistry.getFertilizables().remove(MCBlock.getBlock(item));
 		}
 
 		@Override
@@ -234,14 +210,9 @@ public class Fertilizer {
 		public String describeUndo() {
 			return "Restoring fertilizable " + item.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	public class FertilizerRemoveFertilizerAction implements IUndoableAction {
+	public class FertilizerRemoveFertilizerAction extends UndoableAction {
 		private final IItemStack item;
 		private final IFactoryFertilizer old;
 
@@ -253,11 +224,6 @@ public class Fertilizer {
 		@Override
 		public void apply() {
 			MFRRegistry.getFertilizers().remove(MineTweakerMC.getItemStack(item).getItem());
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -274,11 +240,6 @@ public class Fertilizer {
 		public String describeUndo() {
 			return "Restoring fertilizer " + item.getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 
 	private static class SimpleFertilizable implements IFactoryFertilizable {
@@ -294,7 +255,7 @@ public class Fertilizer {
 
 		@Override
 		public Block getPlant() {
-			return MineTweakerMC.getBlock(block);
+			return MCBlock.getBlock(block);
 		}
 
 		@Override

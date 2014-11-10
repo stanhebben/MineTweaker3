@@ -12,6 +12,7 @@ import java.util.Map;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
@@ -86,19 +87,19 @@ public class ZenTypeFunction extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(access, rules);
 		}
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type) {
+	public ICastingRule getCastingRule(AccessScope access, ZenType type) {
 		if (implementedInterfaces.containsKey(type)) {
 			return implementedInterfaces.get(type);
 		}
 		
-		TypeRegistry types = getEnvironment().getTypes();
+		TypeRegistry types = getScope().getTypes();
 		List<IMethod> methods = type.getMethods();
 		
 		if (methods.isEmpty()) {
@@ -109,7 +110,7 @@ public class ZenTypeFunction extends ZenType {
 			ZenType methodReturnType = method.getMethodHeader().getReturnType();
 			ICastingRule returnCastingRule = null;
 			if (!header.getReturnType().equals(methodReturnType)) {
-				returnCastingRule = header.getReturnType().getCastingRule(methodReturnType);
+				returnCastingRule = header.getReturnType().getCastingRule(access, methodReturnType);
 				if (returnCastingRule == null) {
 					System.out.println("Return types don't match");
 					continue;
@@ -126,7 +127,7 @@ public class ZenTypeFunction extends ZenType {
 			for (int i = 0; i < argumentCastingRules.length; i++) {
 				ZenType argumentType = methodArguments.get(i).getType();
 				if (!argumentType.equals(header.getArguments().get(i).getType())) {
-					argumentCastingRules[i] = argumentType.getCastingRule(header.getArguments().get(i).getType());
+					argumentCastingRules[i] = argumentType.getCastingRule(access, header.getArguments().get(i).getType());
 					if (argumentCastingRules[i] == null) {
 						System.out.println("Argument " + i + " doesn't match");
 						System.out.println("Cannot cast " + argumentType.getName() + " to " + header.getArguments().get(i).getType().getName());
@@ -165,21 +166,10 @@ public class ZenTypeFunction extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, environment);
-	}
-
-	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, environment);
-	}
-	
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "cannot apply operators on a function");
-		return new ExpressionInvalid(position, environment);
+	public Expression operator(CodePosition position, IScopeMethod scope, OperatorType operator, Expression... values)
+	{
+		scope.error(position, "cannot apply operators on a function");
+		return new ExpressionInvalid(position, scope);
 	}
 	
 	@Override
@@ -193,17 +183,6 @@ public class ZenTypeFunction extends ZenType {
 		// TODO: implement the method
 		return null;
 	}
-
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		return null; // TODO: complete
-	}
-	
-	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		return Arrays.copyOf(arguments, numArguments);
-	}*/
 
 	@Override
 	public Class toJavaClass() {

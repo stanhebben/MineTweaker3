@@ -13,17 +13,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.liquid.ILiquidStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -104,7 +105,7 @@ public class Fuels {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddFuelAction implements IUndoableAction {
+	private static class AddFuelAction extends UndoableAction {
 		private final String fuelName;
 		private final IronEngineFuel.Fuel fuel;
 		
@@ -135,11 +136,6 @@ public class Fuels {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			IronEngineFuel.fuels.remove(fuelName);
 		}
@@ -153,14 +149,9 @@ public class Fuels {
 		public String describeUndo() {
 			return "Removing iron engine fuel " + fuelName;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveFuelAction implements IUndoableAction {
+	private static class RemoveFuelAction extends UndoableAction {
 		private final String fuelName;
 		private final IronEngineFuel.Fuel fuel;
 		
@@ -172,11 +163,6 @@ public class Fuels {
 		@Override
 		public void apply() {
 			IronEngineFuel.fuels.remove(fuelName);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -193,14 +179,9 @@ public class Fuels {
 		public String describeUndo() {
 			return "Restoring iron engine fuel " + fuelName;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddLiquidCoolantAction implements IUndoableAction {
+	private static class AddLiquidCoolantAction extends UndoableAction {
 		private final String liquid;
 		private final IronEngineCoolant.Coolant coolant;
 		
@@ -212,11 +193,6 @@ public class Fuels {
 		@Override
 		public void apply() {
 			IronEngineCoolant.liquidCoolants.put(liquid, coolant);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return false;
 		}
 
 		@Override
@@ -233,14 +209,9 @@ public class Fuels {
 		public String describeUndo() {
 			return "Removing iron engine coolant " + liquid;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddCoolantItemAction implements IUndoableAction {
+	private static class AddCoolantItemAction extends UndoableAction {
 		private final StackKey item;
 		private final FluidStack liquid;
 		
@@ -252,11 +223,6 @@ public class Fuels {
 		@Override
 		public void apply() {
 			IronEngineCoolant.solidCoolants.put(item, liquid);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -273,14 +239,9 @@ public class Fuels {
 		public String describeUndo() {
 			return "Removing iron engine coolant item " + MineTweakerMC.getIItemStack(item.stack);
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveLiquidCoolantAction implements IUndoableAction {
+	private static class RemoveLiquidCoolantAction extends UndoableAction {
 		private final String liquid;
 		private final IronEngineCoolant.Coolant coolant;
 		
@@ -292,11 +253,6 @@ public class Fuels {
 		@Override
 		public void apply() {
 			IronEngineCoolant.liquidCoolants.remove(liquid);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -313,14 +269,9 @@ public class Fuels {
 		public String describeUndo() {
 			return "Restoring iron engine coolant " + liquid;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveCoolantItemAction implements IUndoableAction {
+	private static class RemoveCoolantItemAction extends UndoableAction {
 		private final StackKey item;
 		private final FluidStack liquid;
 		
@@ -332,11 +283,6 @@ public class Fuels {
 		@Override
 		public void apply() {
 			IronEngineCoolant.solidCoolants.remove(item);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -352,11 +298,6 @@ public class Fuels {
 		@Override
 		public String describeUndo() {
 			return "Restoring iron engine coolant item " + item.stack.getDisplayName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 	

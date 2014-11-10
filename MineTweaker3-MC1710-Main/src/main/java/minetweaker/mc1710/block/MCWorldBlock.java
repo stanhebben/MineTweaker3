@@ -91,7 +91,7 @@ public class MCWorldBlock implements IBlock {
 	}
 
 	@Override
-	public List<IBlock> getBlocks() {
+	public List<IBlock> getPossibleBlocks() {
 		return Collections.<IBlock>singletonList(this);
 	}
 
@@ -125,12 +125,12 @@ public class MCWorldBlock implements IBlock {
 	@Override
 	public float getBlastResistance(IBlockGroup blocks, int x, int y, int z, IExplosion explosion) {
 		IDimension dimension = blocks.getDimension();
-		Entity mcEntity = MCEntity.getEntity(explosion.getEntity());
+		Entity mcEntity = MCEntity.getEntity(explosion.getSourceEntity());
 		
 		if (dimension == blocks) {
 			World mcWorld = MCWorld.getWorld(dimension);
 			
-			return block.getExplosionResistance(mcEntity, mcWorld, x, y, z, explosion.getX(), explosion.getY(), explosion.getZ());
+			return block.getExplosionResistance(mcEntity, mcWorld, x, y, z, explosion.getSourceX(), explosion.getSourceY(), explosion.getSourceZ());
 		} else {
 			return block.getExplosionResistance(mcEntity);
 		}
@@ -148,13 +148,15 @@ public class MCWorldBlock implements IBlock {
 	}
 
 	@Override
-	public void renderWorld(IBlockGroup blocks, int x, int y, int z, IRenderer renderer) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public void renderWorld(IBlockGroup blocks, int x, int y, int z, IRenderer renderer)
+	{
+		
 	}
 
 	@Override
-	public void renderInventory(IRenderer renderer) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public void renderInventory(IRenderer renderer)
+	{
+		
 	}
 
 	@Override
@@ -188,4 +190,10 @@ public class MCWorldBlock implements IBlock {
 		BlockSide.NORTH,
 		BlockSide.SOUTH
 	};
+
+	@Override
+	public int getBlockOpacity()
+	{
+		return block.getLightOpacity(blocks, x, y, z);
+	}
 }

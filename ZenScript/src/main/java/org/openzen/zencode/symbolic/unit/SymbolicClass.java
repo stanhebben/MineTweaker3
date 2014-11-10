@@ -14,7 +14,6 @@ import org.openzen.zencode.symbolic.scope.ScopeClass;
 import org.openzen.zencode.util.Strings;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeCompiledClass;
 
 /**
  *
@@ -37,7 +36,8 @@ public class SymbolicClass implements ISymbolicUnit
 		this.superclass = superclass;
 		members = new ArrayList<IMember>();
 		scope = new ScopeClass(moduleScope);
-		type = new ZenTypeCompiledClass(scope, this);
+		type = null; // TODO: complete
+		//type = new ZenTypeCompiledClass(scope, this);
 		localThis = new SymbolLocal(type, true);
 	}
 	
@@ -65,5 +65,11 @@ public class SymbolicClass implements ISymbolicUnit
 	public ZenType getType()
 	{
 		return type;
+	}
+
+	@Override
+	public void compile()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

@@ -9,18 +9,19 @@ package minetweaker.mods.mfr.machines;
 import cofh.lib.util.WeightedRandomItemStack;
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandom;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -53,7 +54,7 @@ public class MiningLaser {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddOreAction implements IUndoableAction {
+	private static class AddOreAction extends UndoableAction {
 		private final WeightedRandomItemStack item;
 		
 		public AddOreAction(WeightedItemStack item) {
@@ -63,11 +64,6 @@ public class MiningLaser {
 		@Override
 		public void apply() {
 			MFRRegistry.getLaserOres().add(item);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -84,14 +80,9 @@ public class MiningLaser {
 		public String describeUndo() {
 			return "Removing laser ore " + item.getStack().getDisplayName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveOreAction implements IUndoableAction {
+	private static class RemoveOreAction extends UndoableAction {
 		private final IIngredient ingredient;
 		private final List<WeightedRandomItemStack> removed;
 		
@@ -115,11 +106,6 @@ public class MiningLaser {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			MFRRegistry.getLaserOres().addAll(removed);
 		}
@@ -133,14 +119,9 @@ public class MiningLaser {
 		public String describeUndo() {
 			return "Restoring laser ore " + ingredient.toString();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddPreferredOreAction implements IUndoableAction {
+	private static class AddPreferredOreAction extends UndoableAction {
 		private final int color;
 		private final IIngredient ore;
 		
@@ -154,11 +135,6 @@ public class MiningLaser {
 			for (IItemStack item : ore.getItems()) {
 				MFRRegistry.addLaserPreferredOre(color, MineTweakerMC.getItemStack(item));
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -178,14 +154,9 @@ public class MiningLaser {
 		public String describeUndo() {
 			return "Removing laser preferred ore " + ore + " from color " + color;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemovePreferredOreAction implements IUndoableAction {
+	private static class RemovePreferredOreAction extends UndoableAction {
 		private final int color;
 		private final IIngredient ore;
 		private final List<ItemStack> toRemove;
@@ -208,11 +179,6 @@ public class MiningLaser {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			MFRRegistry.getLaserPreferredOres(color).addAll(toRemove);
 		}
@@ -225,11 +191,6 @@ public class MiningLaser {
 		@Override
 		public String describeUndo() {
 			return "Adding preferred ore " + ore + " for color " + color;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

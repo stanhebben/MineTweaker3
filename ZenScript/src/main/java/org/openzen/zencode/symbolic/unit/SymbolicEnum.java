@@ -5,11 +5,25 @@
  */
 package org.openzen.zencode.symbolic.unit;
 
+import stanhebben.zenscript.type.ZenType;
+
 /**
  *
  * @author Stan
  */
 public class SymbolicEnum implements ISymbolicUnit
 {
+
+	@Override
+	public ZenType getType()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void compile()
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 }

@@ -9,9 +9,9 @@ package minetweaker.mods.mfr.machines;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
@@ -19,10 +19,10 @@ import static minetweaker.mc1710.util.MineTweakerPlatformUtils.getLivingEntityCl
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import org.openzen.zencode.annotations.ZenClass;
 import powercrystals.minefactoryreloaded.MFRRegistry;
 import powercrystals.minefactoryreloaded.api.IFactoryGrindable;
 import powercrystals.minefactoryreloaded.api.MobDrop;
-import stanhebben.zenscript.annotations.ZenClass;
 
 /**
  *
@@ -105,7 +105,7 @@ public class Grinder {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddBlacklistAction implements IUndoableAction {
+	private static class AddBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		
 		public AddBlacklistAction(Class<? extends EntityLivingBase> entityClass) {
@@ -115,11 +115,6 @@ public class Grinder {
 		@Override
 		public void apply() {
 			MFRRegistry.registerGrinderBlacklist(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -136,14 +131,9 @@ public class Grinder {
 		public String describeUndo() {
 			return "Removing " + entityClass.getName() + " from the MFR Grinder blacklist";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveBlacklistAction implements IUndoableAction {
+	private static class RemoveBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		
 		public RemoveBlacklistAction(Class<? extends EntityLivingBase> entityClass) {
@@ -153,11 +143,6 @@ public class Grinder {
 		@Override
 		public void apply() {
 			MFRRegistry.getGrinderBlacklist().remove(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -174,14 +159,9 @@ public class Grinder {
 		public String describeUndo() {
 			return "Restoring " + entityClass + " to the MFR Grinder blacklist";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddGrindableAction implements IUndoableAction {
+	private static class AddGrindableAction extends UndoableAction {
 		private final SimpleGrindable grindable;
 		
 		public AddGrindableAction(Class<? extends EntityLivingBase> entityClass, WeightedItemStack[] possibleDrops) {
@@ -191,11 +171,6 @@ public class Grinder {
 		@Override
 		public void apply() {
 			MFRRegistry.registerGrindable(grindable);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -212,14 +187,9 @@ public class Grinder {
 		public String describeUndo() {
 			return "Removing MFR Grindable " + grindable.entityClass.getName();
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveGrindableAction implements IUndoableAction {
+	private static class RemoveGrindableAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		private final IFactoryGrindable grindable;
 		
@@ -231,11 +201,6 @@ public class Grinder {
 		@Override
 		public void apply() {
 			MFRRegistry.getGrindables().remove(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -251,11 +216,6 @@ public class Grinder {
 		@Override
 		public String describeUndo() {
 			return "Restoring grindable " + entityClass.getName();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

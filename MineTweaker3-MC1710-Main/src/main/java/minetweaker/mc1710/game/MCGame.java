@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockDefinition;
+import minetweaker.api.block.IBlockFactory;
 import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.game.IGame;
 import minetweaker.api.item.IItemDefinition;
@@ -111,6 +113,24 @@ public class MCGame implements IGame {
 	public String localize(String key, String lang) {
 		return LanguageRegistry.instance().getStringLocalization(key, lang);
 	}
+
+	@Override
+	public IBlockDefinition makeDefinition(String id)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void registerBlock(int meta, IBlock block)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void registerAdvancedBlock(IBlockFactory factory)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 	
 	// ######################
 	// ### Action classes ###
@@ -171,9 +191,10 @@ public class MCGame implements IGame {
             return "Setting localization for the key: " + key + " to " + original;
         }
 
-        @Override
-        public Object getOverrideKey() {
-            return null;
-        }
+		@Override
+		public boolean isSilent()
+		{
+			return false;
+		}
     }
 }

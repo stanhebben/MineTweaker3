@@ -24,7 +24,6 @@ import stanhebben.zenscript.expression.ExpressionLocalGet;
 import stanhebben.zenscript.expression.ExpressionSetInstanceField;
 import stanhebben.zenscript.statements.StatementExpression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeCompiledClass;
 
 /**
  *
@@ -168,7 +167,6 @@ public abstract class AnyClass
 						members.makeThisExpression(scope),
 						method.getHeader().makeArgumentGetExpression(0, members.position, scope));
 				
-				Expression ifTypeEqual = 
 				// TODO: finish
 			}
 		}
@@ -188,7 +186,8 @@ public abstract class AnyClass
 		{
 			this.position = AnyClass.this.position;
 			this.forClass = forClass;
-			anyType = new ZenTypeCompiledClass(forType.getScope(), forClass);
+			anyType = null;
+			//anyType = new ZenTypeCompiledClass(forType.getScope(), forClass);
 		}
 		
 		public Expression makeThisExpression(IScopeMethod scope)

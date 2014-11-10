@@ -7,15 +7,15 @@
 package minetweaker.mods.ic2.machines;
 
 import ic2.api.recipe.Recipes;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.mods.ic2.IC2RecipeInput;
 import minetweaker.mods.ic2.MachineAddRecipeAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *

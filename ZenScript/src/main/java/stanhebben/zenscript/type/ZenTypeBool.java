@@ -4,7 +4,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.TypeExpansion;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
@@ -268,10 +267,10 @@ public class ZenTypeBool extends ZenType {
 			output.loadObject(0);
 			output.ifACmpEq(lblCan);
 			
-			TypeExpansion expansion = environment.getTypes().getExpansion(ACCESS_GLOBAL, getName());
+			/*TypeExpansion expansion = environment.getTypes().getExpansion(ACCESS_GLOBAL, getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(types.BOOL, output, environment, 0);
-			}
+			}*/
 			
 			output.iConst0();
 			output.returnInt();
@@ -283,10 +282,10 @@ public class ZenTypeBool extends ZenType {
 
 		@Override
 		public void defineStaticAs(MethodOutput output) {
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.BOOL, output, environment, 0, 1);
-			}
+			}*/
 			
 			throwCastException(output, "bool", 1);
 		}
@@ -486,10 +485,10 @@ public class ZenTypeBool extends ZenType {
 			
 			getValue(output);
 			output.store(Type.BYTE_TYPE, localValue);
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.BYTE, output, environment, localValue, 1);
-			}
+			}*/
 			
 			throwCastException(output, "bool", 1);
 		}

@@ -11,16 +11,16 @@ import buildcraft.api.recipes.BuildcraftRecipeRegistry;
 import buildcraft.api.recipes.IFlexibleRecipe;
 import buildcraft.core.recipes.FlexibleRecipe;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -56,7 +56,7 @@ public class AssemblyTable {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddRecipeAction implements IUndoableAction {
+	private static class AddRecipeAction extends UndoableAction {
 		private final IItemStack output;
 		private final IFlexibleRecipe<ItemStack> recipe;
 		
@@ -68,11 +68,6 @@ public class AssemblyTable {
 		@Override
 		public void apply() {
 			BuildcraftRecipeRegistry.assemblyTable.addRecipe(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -89,14 +84,9 @@ public class AssemblyTable {
 		public String describeUndo() {
 			return "Removing assembly table recipe for " + output;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveRecipeAction implements IUndoableAction {
+	private static class RemoveRecipeAction extends UndoableAction {
 		private final IFlexibleRecipe<ItemStack> recipe;
 		private final ItemStack output;
 		
@@ -108,11 +98,6 @@ public class AssemblyTable {
 		@Override
 		public void apply() {
 			BuildcraftRecipeRegistry.assemblyTable.removeRecipe(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -128,11 +113,6 @@ public class AssemblyTable {
 		@Override
 		public String describeUndo() {
 			return "Restoring assembly table recipe for " + MineTweakerMC.getIItemStack(output);
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

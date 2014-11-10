@@ -7,13 +7,13 @@
 package minetweaker.mods.ic2.machines;
 
 import ic2.api.recipe.Recipes;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
 import minetweaker.api.liquid.ILiquidStack;
 import net.minecraftforge.fluids.FluidRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -51,11 +51,6 @@ public class SemiFluidGenerator {
 		@Override
 		public String describe() {
 			return "Adding liquid " + name + " as semifluid fuel";
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override

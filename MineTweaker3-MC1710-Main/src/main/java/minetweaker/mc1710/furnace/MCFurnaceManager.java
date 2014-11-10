@@ -10,8 +10,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
@@ -79,7 +79,7 @@ public class MCFurnaceManager implements IFurnaceManager {
 	// ### Action classes ###
 	// ######################
 	
-	private static class RemoveAction implements IUndoableAction {
+	private static class RemoveAction extends UndoableAction {
 		private final List<ItemStack> items;
 		private final List<ItemStack> values;
 		
@@ -93,11 +93,6 @@ public class MCFurnaceManager implements IFurnaceManager {
 			for (ItemStack item : items) {
 				FurnaceRecipes.smelting().getSmeltingList().remove(item);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -116,14 +111,9 @@ public class MCFurnaceManager implements IFurnaceManager {
 		public String describeUndo() {
 			return "Restoring " + items.size() + " furnace recipes";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class AddRecipeAction implements IUndoableAction {
+	private static class AddRecipeAction extends UndoableAction {
 		private final IIngredient ingredient;
 		private final ItemStack[] input;
 		private final ItemStack output;
@@ -144,11 +134,6 @@ public class MCFurnaceManager implements IFurnaceManager {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			for (ItemStack inputStack : input) {
 				FurnaceRecipes.smelting().getSmeltingList().remove(inputStack);
@@ -164,14 +149,9 @@ public class MCFurnaceManager implements IFurnaceManager {
 		public String describeUndo() {
 			return "Removing furnace recipe for " + ingredient;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class SetFuelAction implements IUndoableAction {
+	private static class SetFuelAction extends UndoableAction {
 		private final SetFuelPattern pattern;
 		
 		public SetFuelAction(SetFuelPattern pattern) {
@@ -181,11 +161,6 @@ public class MCFurnaceManager implements IFurnaceManager {
 		@Override
 		public void apply() {
 			FuelTweaker.INSTANCE.addFuelPattern(pattern);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -201,11 +176,6 @@ public class MCFurnaceManager implements IFurnaceManager {
 		@Override
 		public String describeUndo() {
 			return "Removing fuel for " + pattern.getPattern();
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

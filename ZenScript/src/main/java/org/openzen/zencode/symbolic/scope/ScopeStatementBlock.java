@@ -95,6 +95,12 @@ public class ScopeStatementBlock implements IScopeMethod
 	{
 		outer.putClass(name, data);
 	}
+	
+	@Override
+	public Map<String, byte[]> getClasses()
+	{
+		return outer.getClasses();
+	}
 
 	@Override
 	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)

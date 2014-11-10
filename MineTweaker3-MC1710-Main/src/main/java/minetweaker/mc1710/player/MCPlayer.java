@@ -6,7 +6,7 @@
 
 package minetweaker.mc1710.player;
 
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.chat.IChatMessage;
 import minetweaker.api.data.IData;
 import minetweaker.api.item.IItemStack;

@@ -8,17 +8,17 @@ package minetweaker.mods.ic2.machines;
 
 import ic2.api.recipe.RecipeInputFluidContainer;
 import ic2.api.recipe.Recipes;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.liquid.ILiquidStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
 import minetweaker.mods.ic2.IC2RecipeInput;
 import net.minecraftforge.fluids.FluidStack;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -69,11 +69,6 @@ public class Canner {
 		@Override
 		public String describe() {
 			return "Adding canner bottle recipe " + container + " + " + fill + " => " + output;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override
@@ -132,11 +127,6 @@ public class Canner {
 		public String describe() {
 			return "Adding cannor bottle recipe " + container + " + " + fill + " => " + output;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
 	private static class AddEnrichIngredientAction extends OneWayAction {
@@ -158,11 +148,6 @@ public class Canner {
 		@Override
 		public String describe() {
 			return "Adding canner enrich recipe " + input + " + " + additive + " => " + output;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override
@@ -219,11 +204,6 @@ public class Canner {
 		@Override
 		public String describe() {
 			return "Adding canner enrich recipe " + input + " + " + additive + " => " + output;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 
 		@Override

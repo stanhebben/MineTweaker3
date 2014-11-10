@@ -1,6 +1,6 @@
 package minetweaker;
 
-import minetweaker.api.IUndoableAction;
+import minetweaker.api.action.IUndoableAction;
 import minetweaker.api.IPlatformFunctions;
 import minetweaker.api.MineTweakerAPI;
 import java.util.Arrays;
@@ -210,7 +210,7 @@ public class MineTweakerImplementationAPI
 			{
 				return server.isOp(player);
 			}
-		}, null);
+		}, null, true);
 	}
 
 	/**

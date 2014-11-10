@@ -17,16 +17,16 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.liquid.ILiquidStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -101,7 +101,7 @@ public class Refinery {
 	// ### Action Classes ###
 	// ######################
 	
-	private static class AddRecipeAction implements IUndoableAction {
+	private static class AddRecipeAction extends UndoableAction {
 		private final ILiquidStack output;
 		private final RefineryRecipe recipe;
 		
@@ -135,11 +135,6 @@ public class Refinery {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			getRecipes().add(recipe);
 		}
@@ -153,14 +148,9 @@ public class Refinery {
 		public String describeUndo() {
 			return "Removing refinery recipe for " + output;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveRecipeAction implements IUndoableAction {
+	private static class RemoveRecipeAction extends UndoableAction {
 		private final RefineryRecipe recipe;
 		
 		public RemoveRecipeAction(RefineryRecipe recipe) {
@@ -170,11 +160,6 @@ public class Refinery {
 		@Override
 		public void apply() {
 			getRecipes().remove(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -192,11 +177,6 @@ public class Refinery {
 		public String describeUndo() {
 			return "Restoring refinery recipe for "
 					+ recipe.getResult().getFluid().getLocalizedName(recipe.getResult());
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

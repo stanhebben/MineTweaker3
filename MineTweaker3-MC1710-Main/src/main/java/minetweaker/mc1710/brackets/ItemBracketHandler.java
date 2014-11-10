@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import minetweaker.IBracketHandler;
+import minetweaker.api.IBracketHandler;
 import minetweaker.annotations.BracketHandler;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.IngredientAny;
@@ -18,18 +18,18 @@ import static minetweaker.api.minecraft.MineTweakerMC.getIItemStackWildcardSize;
 import minetweaker.runtime.symbol.SymbolUtil;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.lexer.Token;
+import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionInt;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import net.stanhebben.zenscript.lexer.Token;
-import net.stanhebben.zenscript.lexer.ZenTokener;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -87,7 +87,7 @@ public class ItemBracketHandler implements IBracketHandler {
 			if (tokens.get(0).getValue().equals("item") && tokens.get(1).getValue().equals(":")) {
 				fromIndex = 2;
 			}
-			if (tokens.get(tokens.size() - 1).getType() == ZenTokener.TOKEN_INTVALUE
+			if (tokens.get(tokens.size() - 1).getType() == ZenLexer.TOKEN_INTVALUE
 					&& tokens.get(tokens.size() - 2).getValue().equals(":")) {
 				toIndex = tokens.size() - 2;
 				meta = Integer.parseInt(tokens.get(tokens.size() - 1).getValue());
@@ -127,7 +127,7 @@ public class ItemBracketHandler implements IBracketHandler {
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position, IScopeMethod scope) {
+		public IPartialExpression instance(CodePosition position, IScopeMethod scope) {
 			return new ExpressionCallStatic(
 					position,
 					scope,

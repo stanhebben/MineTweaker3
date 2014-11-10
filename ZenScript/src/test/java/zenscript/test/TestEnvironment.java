@@ -5,12 +5,10 @@
  */
 package zenscript.test;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.util.ClassNameGenerator;
 import org.openzen.zencode.symbolic.scope.ScopeGlobal;
@@ -19,6 +17,8 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -27,12 +27,23 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class TestEnvironment implements IZenCompileEnvironment
 {
+	public static final TestEnvironment INSTANCE = new TestEnvironment();
+	
+	public static void print(String message)
+	{
+		INSTANCE.logs.add(new LogMessage(LogMessageType.PRINT, message));
+	}
+	
 	public static IScopeGlobal createScope() {
-		return new ScopeGlobal(new TestEnvironment(), new HashMap<String, byte[]>(), new ClassNameGenerator());
+		IScopeGlobal result = new ScopeGlobal(INSTANCE, new ClassNameGenerator());
+		result.putValue("print", new SymbolStaticMethod(JavaMethod.get(result.getTypes(), TestEnvironment.class, "print", String.class)), null);
+		return result;
 	}
 	
 	private final Queue<LogMessage> logs = new LinkedList<LogMessage>();
 	private final ICodeErrorLogger errorLogger = new MyErrorLogger();
+	
+	private TestEnvironment() {}
 	
 	public void consumeError(String message)
 	{
@@ -44,12 +55,34 @@ public class TestEnvironment implements IZenCompileEnvironment
 		consume(LogMessageType.WARNING, message);
 	}
 	
+	public void consumePrint(String message)
+	{
+		consume(LogMessageType.PRINT, message);
+	}
+	
+	public void noMoreMessages()
+	{
+		if (!logs.isEmpty()) {
+			System.out.println("Remaining log messages:");
+			for (LogMessage logMessage : logs) {
+				System.out.println(logMessage.type + ": " + logMessage.message);
+			}
+		}
+		
+		assertTrue("unexpected log messages", logs.isEmpty());
+	}
+	
 	private void consume(LogMessageType type, String message)
 	{
 		assertFalse("missing log message", logs.isEmpty());
 		LogMessage firstLogMessage = logs.poll();
+		
+		if (type != firstLogMessage.type) {
+			System.out.println(firstLogMessage.type + ": " + firstLogMessage.message);
+		}
+		
 		assertEquals("wrong message type", type, firstLogMessage.type);
-		assertEquals("wrong message value", message);
+		assertEquals("wrong message value", message, firstLogMessage.message);
 	}
 	
 	@Override
@@ -112,7 +145,8 @@ public class TestEnvironment implements IZenCompileEnvironment
 	private static enum LogMessageType
 	{
 		ERROR,
-		WARNING
+		WARNING,
+		PRINT
 	}
 	
 	private static class LogMessage

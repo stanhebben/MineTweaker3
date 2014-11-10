@@ -9,7 +9,7 @@ package org.openzen.zencode.symbolic;
  *
  * @author Stan
  */
-public class AccessScope
+public final class AccessScope
 {
 	public static AccessScope createModuleScope()
 	{

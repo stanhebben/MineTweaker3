@@ -14,4 +14,6 @@ import stanhebben.zenscript.type.ZenType;
 public interface ISymbolicUnit
 {
 	public ZenType getType();
+	
+	public void compile();
 }

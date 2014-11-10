@@ -3,7 +3,7 @@ package minetweaker.api.minecraft;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockDefinition;
 import minetweaker.api.data.IData;

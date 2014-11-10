@@ -19,7 +19,7 @@ import stanhebben.zenscript.type.ZenTypeArray;
 
 /**
  *
- * @author Stan
+ * @author Stan Hebben
  */
 public class MethodHeader
 {
@@ -54,7 +54,7 @@ public class MethodHeader
 		if (isVarargs && (arguments.isEmpty()))
 			throw new IllegalArgumentException("Varargs method must have arguments");
 
-		if (isVarargs && !(arguments.get(0).getType() instanceof ZenTypeArray))
+		if (isVarargs && !(arguments.get(arguments.size() - 1).getType() instanceof ZenTypeArray))
 			throw new IllegalArgumentException("Last varargs parameter must be an array");
 
 		this.returnType = returnType;
@@ -115,7 +115,8 @@ public class MethodHeader
 		if (numArguments == arguments.size())
 			return true;
 		else {
-			for (int i = numArguments; i < arguments.size(); i++) {
+			int checkUntil = isVarargs ? arguments.size() - 1 : arguments.size();
+			for (int i = numArguments; i < checkUntil; i++) {
 				if (arguments.get(i).getDefaultValue() == null)
 					return false;
 			}
@@ -137,6 +138,9 @@ public class MethodHeader
 			return false;
 
 		for (int i = 0; i < arguments.length; i++) {
+			if (isVarargs() && i >= this.arguments.size() - 1 && getVarArgBaseType().equals(arguments[i].getType()))
+				continue;
+			
 			if (!getArgumentType(i).equals(arguments[i].getType()))
 				return false;
 		}
@@ -150,6 +154,11 @@ public class MethodHeader
 			return false;
 
 		for (int i = 0; i < arguments.length; i++) {
+			if (isVarargs() && i >= this.arguments.size() - 1 && arguments[i].getType().canCastImplicit(
+					arguments[i].getScope().getAccessScope(),
+					getVarArgBaseType()))
+				continue;
+			
 			if (!arguments[i].getType().canCastImplicit(
 					arguments[i].getScope().getAccessScope(),
 					getArgumentType(i)))
@@ -162,5 +171,17 @@ public class MethodHeader
 	public ZenType getArgumentType(int index)
 	{
 		return arguments.get(index).getType();
+	}
+	
+	public String getSignature()
+	{
+		StringBuilder signature = new StringBuilder();
+		signature.append('(');
+		for (MethodArgument argument : arguments) {
+			signature.append(argument.getType().getSignature());
+		}
+		signature.append(')');
+		signature.append(returnType.getSignature());
+		return signature.toString();
 	}
 }

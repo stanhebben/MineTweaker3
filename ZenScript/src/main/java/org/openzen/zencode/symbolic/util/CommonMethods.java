@@ -6,7 +6,6 @@
 
 package org.openzen.zencode.symbolic.util;
 
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.JavaMethod;
 import org.openzen.zencode.runtime.IAny;
@@ -120,9 +119,7 @@ public class CommonMethods {
 	
 	public final IMethod METHOD_STRING_COMPARETO;
 	
-	public CommonMethods(IScopeGlobal environment) {
-		TypeRegistry types = environment.getTypes();
-		
+	public CommonMethods(TypeRegistry types) {
 		BOOL_VALUEOF = JavaMethod.get(types, Boolean.class, "valueOf", boolean.class);
 		BYTE_VALUEOF = JavaMethod.get(types, Byte.class, "valueOf", byte.class);
 		SHORT_VALUEOF = JavaMethod.get(types, Short.class, "valueOf", short.class);
@@ -206,7 +203,7 @@ public class CommonMethods {
 		METHOD_ITERATORSINGLE = JavaMethod.get(types, IAny.class, "iteratorSingle");
 		METHOD_ITERATORMULTI = JavaMethod.get(types, IAny.class, "iteratorMulti", int.class);
 		
-		METHOD_STRING_COMPARETO = JavaMethod.get(types, String.class, "compareTo", int.class, String.class);
+		METHOD_STRING_COMPARETO = JavaMethod.get(types, String.class, "compareTo", String.class);
 		
 		CAST_ANY_BOOL = new CastingAnyBool(types);
 		CAST_ANY_BYTE = new CastingAnyByte(types);

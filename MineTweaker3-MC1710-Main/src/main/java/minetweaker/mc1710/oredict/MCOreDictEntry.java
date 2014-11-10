@@ -9,8 +9,9 @@ package minetweaker.mc1710.oredict;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.IUndoableAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.mc1710.util.MineTweakerHacks;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemCondition;
@@ -220,7 +221,7 @@ public class MCOreDictEntry implements IOreDictEntry {
 	// ### Action classes ###
 	// ######################
 	
-	private static class ActionAddItem implements IUndoableAction {
+	private static class ActionAddItem extends UndoableAction {
 		private final Integer id;
 		private final ItemStack item;
 		
@@ -232,11 +233,6 @@ public class MCOreDictEntry implements IOreDictEntry {
 		@Override
 		public void apply() {
 			OreDictionary.registerOre(id, item);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -253,14 +249,9 @@ public class MCOreDictEntry implements IOreDictEntry {
 		public String describeUndo() {
 			return "Removing " + item.getDisplayName() + " from ore dictionary entry " + OreDictionary.getOreName(id);
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class ActionMirror implements IUndoableAction {
+	private static class ActionMirror extends UndoableAction {
 		private final Integer idTarget;
 		private final Integer idSource;
 		
@@ -282,11 +273,6 @@ public class MCOreDictEntry implements IOreDictEntry {
 		}
 
 		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
-		@Override
 		public void undo() {
 			OREDICT_CONTENTS.set(idTarget, targetCopy);
 			OREDICT_CONTENTS_UN.set(idTarget, targetCopyUn);
@@ -301,14 +287,9 @@ public class MCOreDictEntry implements IOreDictEntry {
 		public String describeUndo() {
 			return "Undoing mirror of " + OreDictionary.getOreName(idSource) + " to " + OreDictionary.getOreName(idTarget);
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class ActionRemoveItem implements IUndoableAction {
+	private static class ActionRemoveItem extends UndoableAction {
 		private final Integer id;
 		private final ItemStack item;
 		
@@ -320,11 +301,6 @@ public class MCOreDictEntry implements IOreDictEntry {
 		@Override
 		public void apply() {
 			OREDICT_CONTENTS.get(id).remove(item);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -341,14 +317,9 @@ public class MCOreDictEntry implements IOreDictEntry {
 		public String describeUndo() {
 			return "Restoring " + item.getDisplayName() + " to ore dictionary entry " + OreDictionary.getOreName(id);
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class ActionAddAll implements IUndoableAction {
+	private static class ActionAddAll extends UndoableAction {
 		private final Integer idTarget;
 		private final Integer idSource;
 		
@@ -362,11 +333,6 @@ public class MCOreDictEntry implements IOreDictEntry {
 			for (ItemStack stack : OreDictionary.getOres(idSource)) {
 				OreDictionary.registerOre(idTarget, stack);
 			}
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -384,11 +350,6 @@ public class MCOreDictEntry implements IOreDictEntry {
 		@Override
 		public String describeUndo() {
 			return "Removing contents of ore dictionary entry " + OreDictionary.getOreName(idSource) + " from " + OreDictionary.getOreName(idTarget);
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

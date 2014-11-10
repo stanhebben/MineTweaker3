@@ -1,7 +1,7 @@
 package minetweaker.mc1710.brackets;
 
 import java.util.List;
-import minetweaker.IBracketHandler;
+import minetweaker.api.IBracketHandler;
 import minetweaker.annotations.BracketHandler;
 import minetweaker.mc1710.liquid.MCLiquidStack;
 import minetweaker.api.liquid.ILiquidStack;
@@ -9,16 +9,16 @@ import minetweaker.runtime.symbol.SymbolUtil;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import stanhebben.zenscript.compiler.IScopeGlobal;
-import stanhebben.zenscript.compiler.IScopeMethod;
+import org.openzen.zencode.lexer.Token;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.util.CodePosition;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import net.stanhebben.zenscript.lexer.Token;
-import stanhebben.zenscript.symbols.IZenSymbol;
-import zenscript.runtime.IAny;
-import zenscript.symbolic.method.IMethod;
-import zenscript.util.ZenPosition;
 
 /**
  *
@@ -80,7 +80,7 @@ public class LiquidBracketHandler implements IBracketHandler {
 		}
 		
 		@Override
-		public IPartialExpression instance(ZenPosition position, IScopeMethod scope) {
+		public IPartialExpression instance(CodePosition position, IScopeMethod scope) {
 			return new ExpressionCallStatic(
 					position,
 					scope,

@@ -8,7 +8,7 @@ package minetweaker.mc1710.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IItemDefinition;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;

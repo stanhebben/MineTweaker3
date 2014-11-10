@@ -9,6 +9,7 @@ package stanhebben.zenscript.type;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -32,7 +33,7 @@ public class ZenTypeNull extends ZenType {
 	}
 	
 	@Override
-	public ICastingRule getCastingRule(ZenType type) {
+	public ICastingRule getCastingRule(AccessScope access, ZenType type) {
 		if (type.isNullable()) {
 			return new CastingRuleNone(this, type);
 		} else {
@@ -41,26 +42,15 @@ public class ZenTypeNull extends ZenType {
 	}
 
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
 		
 	}
 	
 	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		environment.error(position, "null has no operators");
-		return new ExpressionInvalid(position, environment);
-	}
-	
-	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		environment.error(position, "null has no operators");
-		return new ExpressionInvalid(position, environment);
-	}
-	
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "null has no operators");
-		return new ExpressionInvalid(position, environment);
+	public Expression operator(CodePosition position, IScopeMethod scope, OperatorType operator, Expression... values)
+	{
+		scope.error(position, "null has no operators");
+		return new ExpressionInvalid(position, scope);
 	}
 	
 	@Override
@@ -81,20 +71,13 @@ public class ZenTypeNull extends ZenType {
 		return new ExpressionInvalid(position, environment);
 	}
 
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentGlobal environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "cannot call null values");
-		return new ExpressionInvalid(position);
-	}*/
-
 	@Override
 	public IZenIterator makeIterator(int numValues) {
 		return null;
 	}
 
 	@Override
-	public boolean canCastExplicit(ZenType type) {
+	public boolean canCastExplicit(AccessScope access, ZenType type) {
 		return type.isNullable();
 	}
 

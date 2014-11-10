@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,7 +21,6 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.TypeExpansion;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -61,6 +61,9 @@ import org.openzen.zencode.annotations.ZenOperator;
 import org.openzen.zencode.annotations.ZenSetter;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.MemberStatic;
+import org.openzen.zencode.symbolic.MemberVirtual;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingNotNull;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNone;
@@ -88,9 +91,7 @@ public class ZenTypeNative extends ZenType {
 	private final Map<String, ZenNativeMember> members;
 	private final Map<String, ZenNativeMember> staticMembers;
 	private final List<ZenNativeCaster> casters;
-	private final List<ZenNativeOperator> trinaryOperators;
-	private final List<ZenNativeOperator> binaryOperators;
-	private final List<ZenNativeOperator> unaryOperators;
+	private final List<ZenNativeOperator> operators;
 	
 	private int iteratorType;
 	private String classPkg;
@@ -109,9 +110,7 @@ public class ZenTypeNative extends ZenType {
 		members = new HashMap<String, ZenNativeMember>();
 		staticMembers = new HashMap<String, ZenNativeMember>();
 		casters = new ArrayList<ZenNativeCaster>();
-		trinaryOperators = new ArrayList<ZenNativeOperator>();
-		binaryOperators = new ArrayList<ZenNativeOperator>();
-		unaryOperators = new ArrayList<ZenNativeOperator>();
+		operators = new ArrayList<ZenNativeOperator>();
 		implementing = new ArrayList<ZenTypeNative>();
 		
 		anyName2 = cls.getName() + "Any";
@@ -192,9 +191,9 @@ public class ZenTypeNative extends ZenType {
 					members.get(name).setSetter(new JavaMethod(method, types, capture));
 					isMethod = false;
 				} else if (annotation instanceof ZenMemberGetter) {
-					binaryOperators.add(new ZenNativeOperator(OperatorType.MEMBERGETTER, new JavaMethod(method, types, capture)));
+					operators.add(new ZenNativeOperator(OperatorType.MEMBERGETTER, new JavaMethod(method, types, capture)));
 				} else if (annotation instanceof ZenMemberSetter) {
-					trinaryOperators.add(new ZenNativeOperator(OperatorType.MEMBERSETTER, new JavaMethod(method, types, capture)));
+					operators.add(new ZenNativeOperator(OperatorType.MEMBERSETTER, new JavaMethod(method, types, capture)));
 				} else if (annotation instanceof ZenOperator) {
 					ZenOperator operatorAnnotation = (ZenOperator) annotation;
 					switch (operatorAnnotation.value()) {
@@ -203,7 +202,7 @@ public class ZenTypeNative extends ZenType {
 							if (method.getParameterTypes().length != 0) {
 								// TODO: error
 							} else {
-								unaryOperators.add(new ZenNativeOperator(
+								operators.add(new ZenNativeOperator(
 										operatorAnnotation.value(),
 										new JavaMethod(method, types, capture)));
 							}
@@ -224,7 +223,7 @@ public class ZenTypeNative extends ZenType {
 							if (method.getParameterTypes().length != 1) {
 								// TODO: error
 							} else {
-								binaryOperators.add(new ZenNativeOperator(
+								operators.add(new ZenNativeOperator(
 										operatorAnnotation.value(),
 										new JavaMethod(method, types, capture)));
 							}
@@ -233,7 +232,7 @@ public class ZenTypeNative extends ZenType {
 							if (method.getParameterTypes().length != 2) {
 								// TODO: error
 							} else {
-								trinaryOperators.add(new ZenNativeOperator(
+								operators.add(new ZenNativeOperator(
 										operatorAnnotation.value(),
 										new JavaMethod(method, types, capture)));
 							}
@@ -284,23 +283,23 @@ public class ZenTypeNative extends ZenType {
 	public void complete() {
 		if (iteratorAnnotation instanceof IterableSimple) {
 			IterableSimple annotation = (IterableSimple) iteratorAnnotation;
-			iteratorValueType = TypeParser.parseDirect(annotation.value(), getEnvironment());
+			iteratorValueType = TypeParser.parseDirect(annotation.value(), getScope());
 		}
 		if (iteratorAnnotation instanceof IterableList) {
 			IterableList annotation = (IterableList) iteratorAnnotation;
-			iteratorKeyType = getEnvironment().getTypes().INT;
-			iteratorValueType = TypeParser.parseDirect(annotation.value(), getEnvironment());
+			iteratorKeyType = getScope().getTypes().INT;
+			iteratorValueType = TypeParser.parseDirect(annotation.value(), getScope());
 		}
 		if (iteratorAnnotation instanceof IterableMap) {
 			IterableMap annotation = (IterableMap) iteratorAnnotation;
-			iteratorKeyType = TypeParser.parseDirect(annotation.key(), getEnvironment());
-			iteratorValueType = TypeParser.parseDirect(annotation.value(), getEnvironment());
+			iteratorKeyType = TypeParser.parseDirect(annotation.key(), getScope());
+			iteratorValueType = TypeParser.parseDirect(annotation.value(), getScope());
 		}
 	}
 	
 	@Override
 	public String getAnyClassName() {
-		IScopeGlobal environment = getEnvironment();
+		IScopeGlobal environment = getScope();
 		
 		if (!environment.containsClass(anyName2)) {
 			environment.putClass(anyName2, new byte[0]);
@@ -323,28 +322,22 @@ public class ZenTypeNative extends ZenType {
 		}
 		
 		if (member == null) {
-			Expression evalue = value.eval();
-			IPartialExpression member2 = memberExpansion(position, environment, evalue, name);
-			if (member2 == null) {
-				for (ZenTypeNative type : implementing) {
-					member2 = type.memberExpansion(position, environment, evalue, name);
-					if (member2 != null) break;
-				}
-			}
-			if (member2 == null) {
-				if (hasBinary(getEnvironment().getTypes().STRING, OperatorType.MEMBERGETTER)) {
-					return binary(
+			MemberVirtual result = new MemberVirtual(position, environment, value.eval(), name);
+			memberExpansion(result);
+			if (result.isEmpty()) {
+				if (hasBinary(getScope().getTypes().STRING, OperatorType.MEMBERGETTER)) {
+					return operator(
 							position,
 							environment,
+							OperatorType.MEMBERGETTER,
 							value.eval(),
-							new ExpressionString(position, environment, name),
-							OperatorType.MEMBERGETTER);
+							new ExpressionString(position, environment, name));
 				} else {
 					environment.error(position, "No such member in " + getName() + ": " + name);
 					return new ExpressionInvalid(position, environment);
 				}
 			} else {
-				return member2;
+				return result;
 			}
 		} else {
 			return member.instance(position, environment, value);
@@ -362,19 +355,15 @@ public class ZenTypeNative extends ZenType {
 				}
 			}
 		}
+		
 		if (member == null) {
-			IPartialExpression member2 = staticMemberExpansion(position, environment, name);
-			if (member2 == null) {
-				for (ZenTypeNative type : implementing) {
-					member2 = type.staticMemberExpansion(position, environment, name);
-					if (member2 != null) break;
-				}
-			}
-			if (member2 == null) {
-				environment.error(position, "No such static member in " + getName() + ": " + name);
+			MemberStatic result = new MemberStatic(position, environment, this, name);
+			staticMemberExpansion(result);
+			if (result.isEmpty()) {
+				environment.error(position, getName() + " value has no static member named " + name);
 				return new ExpressionInvalid(position, environment);
 			} else {
-				return member2;
+				return result;
 			}
 		} else {
 			return member.instance(position, environment);
@@ -390,14 +379,14 @@ public class ZenTypeNative extends ZenType {
 				if (numValues == 1) {
 					return new IteratorIterable(iteratorValueType);
 				} else if (numValues == 2) {
-					return new IteratorList(getEnvironment(), iteratorValueType);
+					return new IteratorList(getScope(), iteratorValueType);
 				}
 				break;
 			case ITERATOR_MAP:
 				if (numValues == 1) {
-					return new IteratorMapKeys(new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
+					return new IteratorMapKeys(new ZenTypeAssociative(iteratorValueType, iteratorKeyType));
 				} else if (numValues == 2) {
-					return new IteratorMap(new ZenTypeAssociative(getEnvironment(), iteratorValueType, iteratorKeyType));
+					return new IteratorMap(new ZenTypeAssociative(iteratorValueType, iteratorKeyType));
 				}
 				break;
 			case ITERATOR_LIST:
@@ -405,7 +394,7 @@ public class ZenTypeNative extends ZenType {
 					// list is also iterable
 					return new IteratorIterable(iteratorValueType);
 				} else if (numValues == 2) {
-					return new IteratorList(getEnvironment(), iteratorValueType);
+					return new IteratorList(getScope(), iteratorValueType);
 				}
 				break;
 		}
@@ -413,15 +402,15 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
+		TypeRegistry types = getScope().getTypes();
 		
 		if (cls.getSuperclass() != null) {
 			ZenType superType = types.getNativeType(null, cls.getGenericSuperclass(), capture);
 			
 			rules.registerCastingRule(superType, new CastingRuleNone(this, superType));
 			
-			superType.constructCastingRules(rules, followCasters);
+			superType.constructCastingRules(access, rules, followCasters);
 		}
 		
 		for (java.lang.reflect.Type iface : cls.getGenericInterfaces()) {
@@ -429,7 +418,7 @@ public class ZenTypeNative extends ZenType {
 			
 			rules.registerCastingRule(ifaceType, new CastingRuleNone(this, ifaceType));
 			
-			ifaceType.constructCastingRules(rules, followCasters);
+			ifaceType.constructCastingRules(access, rules, followCasters);
 		}
 		
 		if (followCasters) {
@@ -437,10 +426,7 @@ public class ZenTypeNative extends ZenType {
 				// TODO: implement
 			}
 			
-			TypeExpansion expansion = getEnvironment().getExpansion(getName());
-			if (expansion != null) {
-				expansion.constructCastingRules(getEnvironment(), rules);
-			}
+			constructExpansionCastingRules(access, rules);
 		}
 		
 		rules.registerCastingRule(types.BOOL, new CastingNotNull(this, types.BOOL));
@@ -452,10 +438,10 @@ public class ZenTypeNative extends ZenType {
 	}
 
 	@Override
-	public boolean canCastExplicit(ZenType type) {
+	public boolean canCastExplicit(AccessScope access, ZenType type) {
 		return type == this
-				|| canCastImplicit(type)
-				|| type.canCastExplicit(this);
+				|| canCastImplicit(access, type)
+				|| type.canCastExplicit(access, this);
 	}
 	
 	@Override
@@ -484,45 +470,22 @@ public class ZenTypeNative extends ZenType {
 	}
 	
 	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		for (ZenNativeOperator unaryOperator : unaryOperators) {
-			if (unaryOperator.getOperator() == operator) {
-				return new ExpressionCallVirtual(position, environment, unaryOperator.getMethod(), value);
+	public Expression operator(CodePosition position, IScopeMethod scope, OperatorType operator, Expression... values)
+	{
+		for (ZenNativeOperator nativeOperator : operators) {
+			if (nativeOperator.getOperator() == operator) {
+				return new ExpressionCallVirtual(position, scope, nativeOperator.getMethod(), values[0], Arrays.copyOfRange(values, 1, values.length));
 			}
 		}
 		
-		environment.error(position, "operator not supported");
-		return new ExpressionInvalid(position, environment);
-	}
-
-	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		for (ZenNativeOperator binaryOperator : binaryOperators) {
-			if (binaryOperator.getOperator() == operator) {
-				return new ExpressionCallVirtual(position, environment, binaryOperator.getMethod(), left, right);
-			}
-		}
-		
-		environment.error(position, "operator not supported");
-		return new ExpressionInvalid(position, environment);
-	}
-	
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		for (ZenNativeOperator trinaryOperator : trinaryOperators) {
-			if (trinaryOperator.getOperator() == operator) {
-				return new ExpressionCallVirtual(position, environment, trinaryOperator.getMethod(), first, second, third);
-			}
-		}
-		
-		environment.error(position, "operator not supported");
-		return new ExpressionInvalid(position, environment);
+		scope.error(position, "operator not supported");
+		return new ExpressionInvalid(position, scope);
 	}
 	
 	@Override
 	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
 		if (type == CompareType.EQ || type == CompareType.NE) {
-			for (ZenNativeOperator binaryOperator : binaryOperators) {
+			for (ZenNativeOperator binaryOperator : operators) {
 				if (binaryOperator.getOperator() == OperatorType.EQUALS) {
 					Expression result = new ExpressionCallVirtual(position, environment, binaryOperator.getMethod(), left, right);
 					if (type == CompareType.EQ) {
@@ -534,7 +497,7 @@ public class ZenTypeNative extends ZenType {
 			}
 		}
 		
-		return new ExpressionCompareGeneric(position, environment, binary(position, environment, left, right, OperatorType.COMPARE), type);
+		return new ExpressionCompareGeneric(position, environment, operator(position, environment, OperatorType.COMPARE, left, right), type);
 	}
 	
 	@Override
@@ -552,22 +515,9 @@ public class ZenTypeNative extends ZenType {
 	public IMethod getFunction() {
 		return functionalInterface;
 	}
-
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		// TODO: support functional interfaces
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	
-	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		// TODO: support functional interface
-		return new ZenType[numArguments];
-	}*/
 	
 	private boolean hasBinary(ZenType type, OperatorType operator) {
-		for (ZenNativeOperator binaryOperator : binaryOperators) {
+		for (ZenNativeOperator binaryOperator : operators) {
 			if (binaryOperator.getOperator() == operator) {
 				return true;
 			}
@@ -599,7 +549,7 @@ public class ZenTypeNative extends ZenType {
 	private void addSubtypes(Queue<ZenTypeNative> todo, TypeRegistry types) {
 		while (!todo.isEmpty()) {
 			ZenTypeNative current = todo.poll();
-			if (current.cls.getGenericSuperclass() != Object.class) {
+			if (current.cls.getGenericSuperclass() != null) {
 				ZenType type = types.getNativeType(null, current.cls.getGenericSuperclass(), capture);
 				if (type instanceof ZenTypeNative) {
 					todo.offer((ZenTypeNative) type);
@@ -667,10 +617,10 @@ public class ZenTypeNative extends ZenType {
 				caster.compileAnyCanCastImplicit(ZenTypeNative.this, output, environment, 0);
 			}
 			
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(ZenTypeNative.this, output, environment, 0);
-			}
+			}*/
 			
 			output.iConst0();
 			output.returnInt();
@@ -694,10 +644,10 @@ public class ZenTypeNative extends ZenType {
 				caster.compileAnyCast(ZenTypeNative.this, output, environment, 0, 1);
 			}
 			
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(ZenTypeNative.this, output, environment, 0, 1);
-			}
+			}*/
 			
 			throwCastException(output, "float", 1);
 		}

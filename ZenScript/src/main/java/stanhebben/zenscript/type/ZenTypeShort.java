@@ -4,16 +4,10 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import stanhebben.zenscript.TypeExpansion;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionArithmeticBinary;
-import stanhebben.zenscript.expression.ExpressionArithmeticCompare;
-import stanhebben.zenscript.expression.ExpressionArithmeticUnary;
 import stanhebben.zenscript.expression.ExpressionInt;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
 import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
@@ -22,10 +16,9 @@ import stanhebben.zenscript.util.IAnyDefinition;
 import stanhebben.zenscript.util.MethodOutput;
 import static stanhebben.zenscript.util.ZenTypeUtil.internal;
 import static stanhebben.zenscript.util.ZenTypeUtil.signature;
-import org.openzen.zencode.annotations.CompareType;
-import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.runtime.IAny;
 import static org.openzen.zencode.runtime.IAny.NUM_SHORT;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleI2B;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleI2D;
@@ -37,7 +30,7 @@ import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.symbolic.util.CommonMethods;
 import org.openzen.zencode.util.CodePosition;
 
-public class ZenTypeShort extends ZenType {
+public class ZenTypeShort extends ZenTypeArithmetic {
 	private static final String ANY_NAME = "any/AnyShort";
 	private static final String ANY_NAME_2 = "any.AnyShort";
 	
@@ -51,8 +44,8 @@ public class ZenTypeShort extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public void constructCastingRules(AccessScope access, ICastingRuleDelegate rules, boolean followCasters) {
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
 		rules.registerCastingRule(types.BYTE, new CastingRuleI2B(null, types));
@@ -69,7 +62,7 @@ public class ZenTypeShort extends ZenType {
 		rules.registerCastingRule(types.ANY, new CastingRuleStaticMethod(JavaMethod.getStatic(getAnyClassName(), "valueOf", types.ANY, types.BYTE)));
 		
 		if (followCasters) {
-			constructExpansionCastingRules(rules);
+			constructExpansionCastingRules(access, rules);
 		}
 	}
 
@@ -84,75 +77,9 @@ public class ZenTypeShort extends ZenType {
 	}
 
 	@Override
-	public IPartialExpression getMember(
-			CodePosition position,
-			IScopeMethod environment,
-			IPartialExpression value,
-			String name) {
-		IPartialExpression result = memberExpansion(position, environment, value.eval(), name);
-		if (result == null) {
-			environment.error(position, "bool value has no members");
-			return new ExpressionInvalid(position, environment);
-		} else {
-			return result;
-		}
-	}
-
-	@Override
-	public IPartialExpression getStaticMember(
-			CodePosition position,
-			IScopeMethod environment,
-			String name) {
-		return null;
-	}
-
-	@Override
 	public String getSignature() {
 		return "S";
 	}
-
-	@Override
-	public boolean isNullable() {
-		return false;
-	}
-	
-	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		return new ExpressionArithmeticUnary(position, environment, operator, value);
-	}
-
-	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		if (operator == OperatorType.CAT) {
-			ZenType STRING = environment.getTypes().STRING;
-			
-			return STRING.binary(
-					position,
-					environment,
-					left.cast(position, STRING),
-					right.cast(position, STRING), OperatorType.CAT);
-		}
-		
-		return new ExpressionArithmeticBinary(position, environment, operator, left, right.cast(position, this));
-	}
-	
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		environment.error(position, "short doesn't support this operation");
-		return new ExpressionInvalid(position, environment);
-	}
-	
-	@Override
-	public Expression compare(CodePosition position, IScopeMethod environment, Expression left, Expression right, CompareType type) {
-		return new ExpressionArithmeticCompare(position, environment, type, left, right.cast(position, this));
-	}
-
-	/*@Override
-	public Expression call(
-			CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		environment.error(position, "cannot call short values");
-		return new ExpressionInvalid(position);
-	}*/
 
 	@Override
 	public Class toJavaClass() {
@@ -166,7 +93,7 @@ public class ZenTypeShort extends ZenType {
 	
 	@Override
 	public String getAnyClassName() {
-		IScopeGlobal environment = getEnvironment();
+		IScopeGlobal environment = getScope();
 		
 		if (!environment.containsClass(ANY_NAME_2)) {
 			environment.putClass(ANY_NAME_2, new byte[0]);
@@ -183,12 +110,7 @@ public class ZenTypeShort extends ZenType {
 	
 	@Override
 	public ZenType nullable() {
-		return getEnvironment().getTypes().SHORTOBJECT;
-	}
-	
-	@Override
-	public ZenType nonNull() {
-		return this;
+		return getScope().getTypes().SHORTOBJECT;
 	}
 	
 	private class AnyDefinitionShort implements IAnyDefinition {
@@ -252,10 +174,10 @@ public class ZenTypeShort extends ZenType {
 			output.loadObject(0);
 			output.ifACmpEq(lblCan);
 			
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCanCastImplicit(types.SHORT, output, environment, 0);
-			}
+			}*/
 			
 			output.iConst0();
 			output.returnInt();
@@ -267,10 +189,10 @@ public class ZenTypeShort extends ZenType {
 
 		@Override
 		public void defineStaticAs(MethodOutput output) {
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.SHORT, output, environment, 0, 1);
-			}
+			}*/
 			
 			throwCastException(output, "short", 1);
 		}
@@ -524,10 +446,10 @@ public class ZenTypeShort extends ZenType {
 			
 			getValue(output);
 			output.store(Type.SHORT_TYPE, localValue);
-			TypeExpansion expansion = environment.getExpansion(getName());
+			/*TypeExpansion expansion = environment.getExpansion(getName());
 			if (expansion != null) {
 				expansion.compileAnyCast(types.SHORT, output, environment, localValue, 1);
-			}
+			}*/
 			
 			throwCastException(output, "short", 1);
 		}

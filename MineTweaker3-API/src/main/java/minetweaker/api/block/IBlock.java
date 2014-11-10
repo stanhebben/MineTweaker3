@@ -77,6 +77,9 @@ public interface IBlock extends IBlockPattern
 	 */
 	@ZenGetter("blockLight")
 	public int getBlockLight();
+	
+	@ZenGetter("blockOpacity")
+	public int getBlockOpacity();
 
 	/**
 	 * Gets the blast resistance of the block at the given position.

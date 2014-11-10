@@ -67,6 +67,12 @@ public class ScopeClass implements IScopeClass
 	{
 		module.putClass(name, data);
 	}
+	
+	@Override
+	public Map<String, byte[]> getClasses()
+	{
+		return module.getClasses();
+	}
 
 	@Override
 	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)

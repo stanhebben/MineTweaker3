@@ -18,7 +18,6 @@ import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.symbol.ITweakerSymbol;
 import minetweaker.runtime.symbol.SymbolUtil;
 import org.openzen.zencode.IZenCompileEnvironment;
-import stanhebben.zenscript.TypeExpansion;
 import org.openzen.zencode.util.ClassNameGenerator;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
@@ -172,7 +171,6 @@ public class GlobalRegistry {
 		private final IZenCompileEnvironment environment;
 		private final SymbolPackage root = new SymbolPackage("<root>");
 		private final ICodeErrorLogger errors = new MyErrorLogger();
-		private final Map<String, TypeExpansion> expansions = new HashMap<String, TypeExpansion>();
 		
 		public TweakerGlobalScope(Map<String, byte[]> classes) {
 			this.classes = classes;
@@ -215,6 +213,12 @@ public class GlobalRegistry {
 		@Override
 		public void putClass(String name, byte[] data) {
 			classes.put(name, data);
+		}
+		
+		@Override
+		public Map<String, byte[]> getClasses()
+		{
+			return classes;
 		}
 
 		@Override

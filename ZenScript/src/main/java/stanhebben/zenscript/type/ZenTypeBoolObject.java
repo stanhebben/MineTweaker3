@@ -9,6 +9,7 @@ package stanhebben.zenscript.type;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -36,20 +37,12 @@ public class ZenTypeBoolObject extends ZenType {
 		
 		this.BOOL = BOOL;
 	}
-
+	
 	@Override
-	public Expression unary(CodePosition position, IScopeMethod environment, Expression value, OperatorType operator) {
-		return BOOL.unary(position, environment, value.cast(position, BOOL), operator);
-	}
-
-	@Override
-	public Expression binary(CodePosition position, IScopeMethod environment, Expression left, Expression right, OperatorType operator) {
-		return BOOL.binary(position, environment, left.cast(position, BOOL), right, operator);
-	}
-
-	@Override
-	public Expression trinary(CodePosition position, IScopeMethod environment, Expression first, Expression second, Expression third, OperatorType operator) {
-		return BOOL.trinary(position, environment, first.cast(position, BOOL), second, third, operator);
+	public Expression operator(CodePosition position, IScopeMethod scope, OperatorType operation, Expression... values)
+	{
+		values[0] = values[0].cast(position, BOOL);
+		return BOOL.operator(position, scope, operation, values);
 	}
 
 	@Override
@@ -66,11 +59,6 @@ public class ZenTypeBoolObject extends ZenType {
 	public IPartialExpression getStaticMember(CodePosition position, IScopeMethod environment, String name) {
 		return BOOL.getStaticMember(position, environment, name);
 	}
-
-	/*@Override
-	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression receiver, Expression... arguments) {
-		return BOOL.call(position, environment, receiver.cast(position, environment, BOOL), arguments);
-	}*/
 	
 	@Override
 	public IZenIterator makeIterator(int numValues) {
@@ -78,8 +66,9 @@ public class ZenTypeBoolObject extends ZenType {
 	}
 	
 	@Override
-	public void constructCastingRules(ICastingRuleDelegate rules, boolean followCasters) {
-		TypeRegistry types = getEnvironment().getTypes();
+	public void constructCastingRules(AccessScope accessScope, ICastingRuleDelegate rules, boolean followCasters)
+	{
+		TypeRegistry types = getScope().getTypes();
 		CommonMethods methods = types.getCommonMethods();
 		
 		rules.registerCastingRule(types.BOOL, new CastingRuleVirtualMethod(this, methods.BOOL_VALUE));
@@ -93,8 +82,8 @@ public class ZenTypeBoolObject extends ZenType {
 	}
 
 	@Override
-	public boolean canCastExplicit(ZenType type) {
-		return canCastImplicit(type);
+	public boolean canCastExplicit(AccessScope accessScope, ZenType type) {
+		return canCastImplicit(accessScope, type);
 	}
 
 	@Override

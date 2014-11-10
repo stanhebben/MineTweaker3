@@ -1,16 +1,16 @@
 package minetweaker.mods.nei;
 
 import codechicken.nei.api.API;
-import stanhebben.zenscript.annotations.NotNull;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
-import minetweaker.OneWayAction;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.OneWayAction;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IItemStack;
 import static minetweaker.api.minecraft.MineTweakerMC.getItemStack;
 import net.minecraft.item.ItemStack;
+import org.openzen.zencode.annotations.NotNull;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  * MineTweaker NEI support.
@@ -62,7 +62,7 @@ public class NEI {
 	// ### Private inner classes ###
 	// #############################
 	
-	private static class NEIAddEntryAction implements IUndoableAction {
+	private static class NEIAddEntryAction extends UndoableAction {
 		private final ItemStack item;
 
 		public NEIAddEntryAction(ItemStack item) {
@@ -73,12 +73,7 @@ public class NEI {
 		public void apply() {
 			API.addItemListEntry(item);
 		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
-		}
-
+		
 		@Override
 		public void undo() {
 			API.hideItem(item);
@@ -93,14 +88,9 @@ public class NEI {
 		public String describeUndo() {
 			return "Removing " + item.getDisplayName() + " as NEI entry";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class NEIHideItemAction implements IUndoableAction {
+	private static class NEIHideItemAction extends UndoableAction {
 		private final ItemStack stack;
 
 		public NEIHideItemAction(ItemStack stack) {
@@ -110,11 +100,6 @@ public class NEI {
 		@Override
 		public void apply() {
 			API.hideItem(stack);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -130,11 +115,6 @@ public class NEI {
 		@Override
 		public String describeUndo() {
 			return "Displaying " + stack.getUnlocalizedName() + " in NEI";
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 	
@@ -155,11 +135,6 @@ public class NEI {
 		@Override
 		public String describe() {
 			return "Overriding NEI item name of " + item.getUnlocalizedName() + " to " + name;
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return item;
 		}
 	}
 }

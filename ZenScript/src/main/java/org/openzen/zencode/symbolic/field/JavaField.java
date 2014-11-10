@@ -10,7 +10,14 @@ import java.lang.reflect.Modifier;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.util.MethodOutput;
 import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
+import org.openzen.zencode.util.CodePosition;
+import stanhebben.zenscript.expression.Expression;
+import stanhebben.zenscript.expression.ExpressionGetInstanceField;
+import stanhebben.zenscript.expression.ExpressionGetStaticField;
+import stanhebben.zenscript.expression.ExpressionSetInstanceField;
+import stanhebben.zenscript.expression.ExpressionSetStaticField;
 
 /**
  *
@@ -82,5 +89,29 @@ public class JavaField implements IField
 			throw new UnsupportedOperationException("Cannot compile a static field as instance field");
 		
 		output.putInstanceField(field);
+	}
+
+	@Override
+	public Expression makeStaticGetExpression(CodePosition position, IScopeMethod scope)
+	{
+		return new ExpressionGetStaticField(position, scope, this);
+	}
+
+	@Override
+	public Expression makeStaticSetExpression(CodePosition position, IScopeMethod scope, Expression value)
+	{
+		return new ExpressionSetStaticField(position, scope, this, value);
+	}
+
+	@Override
+	public Expression makeInstanceGetExpression(CodePosition position, IScopeMethod scope, Expression target)
+	{
+		return new ExpressionGetInstanceField(position, scope, target, this);
+	}
+
+	@Override
+	public Expression makeInstanceSetExpression(CodePosition position, IScopeMethod scope, Expression target, Expression value)
+	{
+		return new ExpressionSetInstanceField(position, scope, target, this, value);
 	}
 }

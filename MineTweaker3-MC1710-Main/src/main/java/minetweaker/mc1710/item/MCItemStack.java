@@ -9,7 +9,7 @@ package minetweaker.mc1710.item;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.data.DataMap;
 import minetweaker.mc1710.data.NBTConverter;

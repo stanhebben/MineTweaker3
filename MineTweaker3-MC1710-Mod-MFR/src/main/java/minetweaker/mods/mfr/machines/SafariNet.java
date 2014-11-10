@@ -6,14 +6,14 @@
 
 package minetweaker.mods.mfr.machines;
 
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import static minetweaker.mc1710.util.MineTweakerPlatformUtils.getLivingEntityClass;
 import net.minecraft.entity.EntityLivingBase;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 import powercrystals.minefactoryreloaded.MFRRegistry;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
 
 /**
  *
@@ -42,7 +42,7 @@ public class SafariNet {
 	// ### Action classes ###
 	// ######################
 	
-	private static class AddBlacklistAction implements IUndoableAction {
+	private static class AddBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		
 		public AddBlacklistAction(Class<? extends EntityLivingBase> entityClass) {
@@ -52,11 +52,6 @@ public class SafariNet {
 		@Override
 		public void apply() {
 			MFRRegistry.registerSafariNetBlacklist(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -73,14 +68,9 @@ public class SafariNet {
 		public String describeUndo() {
 			return "Removing " + entityClass.getName() + " from the safari net blacklist";
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveBlacklistAction implements IUndoableAction {
+	private static class RemoveBlacklistAction extends UndoableAction {
 		private final Class<? extends EntityLivingBase> entityClass;
 		
 		public RemoveBlacklistAction(Class<? extends EntityLivingBase> entityClass) {
@@ -90,11 +80,6 @@ public class SafariNet {
 		@Override
 		public void apply() {
 			MFRRegistry.getSafariNetBlacklist().remove(entityClass);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -110,11 +95,6 @@ public class SafariNet {
 		@Override
 		public String describeUndo() {
 			return "Restoring " + entityClass.getName() + " to the safari net blacklist";
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 }

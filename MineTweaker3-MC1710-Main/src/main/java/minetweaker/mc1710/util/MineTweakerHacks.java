@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import minetweaker.MineTweakerAPI;
+import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.WeightedItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.entity.Entity;

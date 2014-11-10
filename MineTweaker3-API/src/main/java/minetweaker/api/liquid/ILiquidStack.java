@@ -7,6 +7,7 @@
 package minetweaker.api.liquid;
 
 import minetweaker.api.data.IData;
+import minetweaker.api.item.IIngredient;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.annotations.ZenClass;
 import org.openzen.zencode.annotations.ZenGetter;

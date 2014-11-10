@@ -10,16 +10,16 @@ import buildcraft.api.recipes.BuildcraftRecipes;
 import buildcraft.api.recipes.IIntegrationRecipeManager.IIntegrationRecipe;
 import java.util.ArrayList;
 import java.util.List;
-import minetweaker.IUndoableAction;
-import minetweaker.MineTweakerAPI;
 import minetweaker.annotations.ModOnly;
+import minetweaker.api.MineTweakerAPI;
+import minetweaker.api.action.UndoableAction;
 import minetweaker.api.item.IIngredient;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.minecraft.MineTweakerMC;
 import net.minecraft.item.ItemStack;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenClass;
-import stanhebben.zenscript.annotations.ZenMethod;
+import org.openzen.zencode.annotations.Optional;
+import org.openzen.zencode.annotations.ZenClass;
+import org.openzen.zencode.annotations.ZenMethod;
 
 /**
  *
@@ -76,7 +76,7 @@ public class IntegrationTable {
 	// ### Action Classes ###
 	// ######################
 	
-	private static class AddRecipeAction implements IUndoableAction {
+	private static class AddRecipeAction extends UndoableAction {
 		private final MTIntegrationRecipe recipe;
 		
 		public AddRecipeAction(IItemStack output, double energy, IIngredient inputA, IIngredient inputB, IIntegrationRecipeFunction function) {
@@ -86,11 +86,6 @@ public class IntegrationTable {
 		@Override
 		public void apply() {
 			BuildcraftRecipes.integrationTable.addRecipe(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -107,14 +102,9 @@ public class IntegrationTable {
 		public String describeUndo() {
 			return "Removing integration table recipe for " + recipe.output;
 		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
-		}
 	}
 	
-	private static class RemoveRecipeAction implements IUndoableAction {
+	private static class RemoveRecipeAction extends UndoableAction {
 		private final IIntegrationRecipe recipe;
 		
 		public RemoveRecipeAction(IIntegrationRecipe recipe) {
@@ -124,11 +114,6 @@ public class IntegrationTable {
 		@Override
 		public void apply() {
 			BuildcraftRecipes.integrationTable.getRecipes().remove(recipe);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return true;
 		}
 
 		@Override
@@ -144,11 +129,6 @@ public class IntegrationTable {
 		@Override
 		public String describeUndo() {
 			return "Restoring integration table recipe for " + MineTweakerMC.getIItemStack(recipe.getComponents()[0]);
-		}
-
-		@Override
-		public Object getOverrideKey() {
-			return null;
 		}
 	}
 	
