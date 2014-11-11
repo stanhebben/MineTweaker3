@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.type.casting;
 
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.IMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

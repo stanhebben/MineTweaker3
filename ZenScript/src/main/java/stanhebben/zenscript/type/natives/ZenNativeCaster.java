@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.method.IMethod;
 import org.objectweb.asm.Label;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

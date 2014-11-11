@@ -9,7 +9,7 @@ package stanhebben.zenscript.type.natives;
 import java.util.List;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenTypeFunction;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.AbstractMethod;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodArgument;

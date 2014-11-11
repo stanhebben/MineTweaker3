@@ -43,7 +43,7 @@ public class Strings
 			if (first)
 				first = false;
 			else
-				result.append('.');
+				result.append(separator);
 			result.append(value);
 		}
 		return result.toString();
@@ -122,14 +122,19 @@ public class Strings
 		ArrayList<String> output = new ArrayList<String>();
 		StringBuilder current = new StringBuilder();
 		for (String line : lines) {
-			if (line.length() == 0) {
+			if (line.isEmpty()) {
 				if (current.length() > 0) {
 					output.add(current.toString());
 					current = new StringBuilder();
 				}
-			} else
-				current.append(' ').append(line);
+			} else {
+				if (current.length() > 0)
+					current.append(' ');
+				
+				current.append(line);
+			}
 		}
+		
 		if (current.length() > 0)
 			output.add(current.toString());
 
@@ -139,6 +144,79 @@ public class Strings
 	// ########################
 	// ### String utilities ###
 	// ########################
+	
+	public static String unescape(String escapedString)
+	{
+		if (escapedString.length() < 2)
+			throw new IllegalArgumentException("String is not quoted");
+		
+		boolean isLiteral = escapedString.charAt(0) == '@';
+		if (isLiteral)
+			escapedString = escapedString.substring(1);
+		
+		if (escapedString.charAt(0) != '"' && escapedString.charAt(0) != '\'')
+			throw new IllegalArgumentException("String is not quoted");
+		
+		char quoteCharacter = escapedString.charAt(0);
+		if (escapedString.charAt(escapedString.length() - 1) != quoteCharacter)
+			throw new IllegalArgumentException("Unbalanced quotes");
+		
+		if (isLiteral)
+			return escapedString.substring(1, escapedString.length() - 1);
+		
+		StringBuilder result = new StringBuilder(escapedString.length() - 2);
+		
+		for (int i = 1; i < escapedString.length() - 1; i++) {
+			if (escapedString.charAt(i) == '\\')
+			{
+				if (i >= escapedString.length() - 1)
+					throw new IllegalArgumentException("Unfinished escape sequence");
+				
+				switch (escapedString.charAt(i + 1)) {
+					case '\\': i++; result.append('\\'); break;
+					case '&': i++; result.append('&'); break;
+					case 't': i++; result.append('\t'); break;
+					case 'r': i++; result.append('\r'); break;
+					case 'n': i++; result.append('\n'); break;
+					case 'b': i++; result.append('\b'); break;
+					case 'f': i++; result.append('\f'); break;
+					case '"': i++; result.append('\"'); break;
+					case '\'': i++; result.append('\''); break;
+					case 'u':
+						if (i >= escapedString.length() - 5)
+							throw new IllegalArgumentException("Unfinished escape sequence");
+						int hex0 = readHex(escapedString.charAt(i + 2));
+						int hex1 = readHex(escapedString.charAt(i + 3));
+						int hex2 = readHex(escapedString.charAt(i + 4));
+						int hex3 = readHex(escapedString.charAt(i + 5));
+						i += 5;
+						result.append((hex0 << 12) | (hex1 << 8) | (hex2 << 4) | hex3);
+					default:
+						throw new IllegalArgumentException("Illegal escape sequence");
+				}
+			}
+			else
+				result.append(escapedString.charAt(i));
+		}
+		
+		return result.toString();
+	}
+	
+	private static int readHex(char hex)
+	{
+		if (hex >= '0' && hex <= '9')
+			return hex - '0';
+		
+		if (hex >= 'A' && hex <= 'F')
+			return hex - 'A' + 10;
+		
+		if (hex >= 'a' && hex <= 'f')
+			return hex - 'a' + 10;
+		
+		throw new IllegalArgumentException("Illegal hex character: " + hex);
+	}
+	
+	
 	/**
 	 *
 	 * unescape_perl_string()

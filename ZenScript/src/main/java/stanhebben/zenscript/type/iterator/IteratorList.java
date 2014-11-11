@@ -12,7 +12,7 @@ import org.objectweb.asm.Type;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

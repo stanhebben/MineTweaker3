@@ -7,7 +7,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.IZenIterator;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.symbols.SymbolLocal;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 
 public class StatementForeach extends Statement {

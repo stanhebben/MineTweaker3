@@ -9,9 +9,9 @@ package stanhebben.zenscript.expression;
 import java.util.Map;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
 
 /**
  *

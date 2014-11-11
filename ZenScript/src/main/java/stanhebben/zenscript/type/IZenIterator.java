@@ -7,7 +7,7 @@
 package stanhebben.zenscript.type;
 
 import org.objectweb.asm.Label;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

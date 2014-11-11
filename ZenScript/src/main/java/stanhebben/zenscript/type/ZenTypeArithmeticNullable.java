@@ -14,7 +14,7 @@ import org.openzen.zencode.util.CodePosition;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 
 /**
  *

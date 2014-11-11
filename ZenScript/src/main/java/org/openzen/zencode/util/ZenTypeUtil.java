@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package stanhebben.zenscript.util;
+package org.openzen.zencode.util;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

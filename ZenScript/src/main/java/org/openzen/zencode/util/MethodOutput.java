@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package stanhebben.zenscript.util;
+package org.openzen.zencode.util;
 
 import org.openzen.zencode.util.CodePosition;
 import java.lang.reflect.Field;
@@ -18,8 +18,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.symbols.SymbolLocal;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 
 /**
  *

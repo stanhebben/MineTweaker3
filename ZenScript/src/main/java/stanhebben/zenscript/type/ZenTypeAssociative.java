@@ -24,7 +24,7 @@ import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleMap;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;

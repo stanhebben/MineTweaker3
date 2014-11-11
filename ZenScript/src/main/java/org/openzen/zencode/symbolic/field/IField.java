@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.util.CodePosition;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

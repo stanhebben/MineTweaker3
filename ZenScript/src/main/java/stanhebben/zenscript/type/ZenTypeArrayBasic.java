@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.type.casting.CastingRuleArrayList;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateArray;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 
 public class ZenTypeArrayBasic extends ZenTypeArray {

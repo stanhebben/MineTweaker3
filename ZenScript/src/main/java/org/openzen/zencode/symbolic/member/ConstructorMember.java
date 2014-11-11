@@ -17,7 +17,7 @@ import stanhebben.zenscript.expression.ExpressionNew;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

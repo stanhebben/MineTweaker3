@@ -6,9 +6,9 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeAssociative;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
 
 public class ExpressionMap extends Expression {
 	private final Expression[] keys;

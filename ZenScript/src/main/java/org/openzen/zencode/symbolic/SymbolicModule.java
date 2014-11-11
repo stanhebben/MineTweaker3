@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IScopeModule;
 import org.openzen.zencode.symbolic.scope.ScopeModule;
 import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

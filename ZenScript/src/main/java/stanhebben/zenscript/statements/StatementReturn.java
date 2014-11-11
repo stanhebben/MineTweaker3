@@ -3,7 +3,7 @@ package stanhebben.zenscript.statements;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 
 public class StatementReturn extends Statement {

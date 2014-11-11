@@ -2,7 +2,7 @@ package stanhebben.zenscript.statements;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 
 public class StatementBlock extends Statement {

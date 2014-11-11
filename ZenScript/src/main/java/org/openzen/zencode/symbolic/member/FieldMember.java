@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionGetStaticField;
 import stanhebben.zenscript.expression.ExpressionSetInstanceField;
 import stanhebben.zenscript.expression.ExpressionSetStaticField;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

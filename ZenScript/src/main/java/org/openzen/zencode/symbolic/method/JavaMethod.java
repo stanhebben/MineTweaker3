@@ -20,7 +20,7 @@ import stanhebben.zenscript.expression.ExpressionString;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import stanhebben.zenscript.type.natives.JavaMethodGenerated;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.annotations.Named;
 import org.openzen.zencode.annotations.NotNull;
 import org.openzen.zencode.annotations.Optional;

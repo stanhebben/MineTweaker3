@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.JavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethodPrefixed;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;

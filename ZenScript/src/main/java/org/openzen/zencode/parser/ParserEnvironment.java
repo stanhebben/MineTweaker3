@@ -15,8 +15,8 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenClassLoader;
 import org.openzen.zencode.symbolic.SymbolicModule;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.util.MethodOutput;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
+import org.openzen.zencode.util.MethodOutput;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
 
 /**
  *

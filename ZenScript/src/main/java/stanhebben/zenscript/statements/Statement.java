@@ -1,7 +1,7 @@
 package stanhebben.zenscript.statements;
 
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 
 public abstract class Statement {

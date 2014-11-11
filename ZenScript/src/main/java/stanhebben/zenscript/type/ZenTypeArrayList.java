@@ -17,7 +17,7 @@ import stanhebben.zenscript.expression.ExpressionListSet;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateList;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.util.CodePosition;

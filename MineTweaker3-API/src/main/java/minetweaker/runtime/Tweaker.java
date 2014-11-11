@@ -90,12 +90,11 @@ public final class Tweaker
 
 		scriptData = ScriptProviderMemory.collect(scriptProvider);
 		Set<String> executed = new HashSet<String>();
-
-		Map<String, byte[]> classes = new HashMap<String, byte[]>();
-		IScopeGlobal global = GlobalRegistry.makeGlobalEnvironment(classes);
+		
+		IScopeGlobal global = GlobalRegistry.makeGlobalEnvironment();
 
 		// Step 1: parse all files
-		ParserEnvironment parserEnvironment = new ParserEnvironment(global, classes);
+		ParserEnvironment parserEnvironment = new ParserEnvironment(global);
 		Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
 		while (scripts.hasNext()) {
 			IScriptIterator script = scripts.next();

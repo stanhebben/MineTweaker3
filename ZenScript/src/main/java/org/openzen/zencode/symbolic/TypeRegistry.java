@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
@@ -143,6 +144,11 @@ public final class TypeRegistry
 		staticGlobalEnvironment = new StaticGlobalEnvironment();
 
 		RANGE = getNativeType(null, Range.class, null);
+	}
+	
+	public ZenType getType(String type) 
+	{
+		return TypeParser.parseDirect(type, environment);
 	}
 
 	public ZenType getNativeType(CodePosition position, Type type, TypeCapture capture)

@@ -18,11 +18,11 @@ import org.openzen.zencode.symbolic.method.MethodArgument;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.util.CodePosition;
 import stanhebben.zenscript.symbols.SymbolLocal;
-import static stanhebben.zenscript.util.ZenTypeUtil.descriptor;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
+import static org.openzen.zencode.util.ZenTypeUtil.descriptor;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
 
 /**
  *

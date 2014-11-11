@@ -11,7 +11,7 @@ import java.util.List;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.AbstractMethod;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodArgument;

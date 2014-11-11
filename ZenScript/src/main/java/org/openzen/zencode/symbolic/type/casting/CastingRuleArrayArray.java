@@ -10,7 +10,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 
 /**
  *

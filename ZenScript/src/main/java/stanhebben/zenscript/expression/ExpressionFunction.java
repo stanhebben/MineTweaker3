@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;

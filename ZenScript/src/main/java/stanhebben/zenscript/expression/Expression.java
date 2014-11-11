@@ -8,7 +8,7 @@ import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.IMethod;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.lexer.ZenLexer;

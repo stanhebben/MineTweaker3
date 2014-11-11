@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.partial.IPartialExpression;
 import org.openzen.zencode.symbolic.method.JavaMethod;
-import static stanhebben.zenscript.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.util.ZenTypeUtil.signature;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNullableVirtualMethod;

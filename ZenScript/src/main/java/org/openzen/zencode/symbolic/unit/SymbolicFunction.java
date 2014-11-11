@@ -26,8 +26,8 @@ import org.openzen.zencode.symbolic.scope.ScopeMethod;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Modifiers;
 import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.util.MethodOutput;
-import static stanhebben.zenscript.util.ZenTypeUtil.internal;
+import org.openzen.zencode.util.MethodOutput;
+import static org.openzen.zencode.util.ZenTypeUtil.internal;
 
 /**
  *

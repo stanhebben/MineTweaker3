@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.field;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.util.MethodOutput;
+import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
