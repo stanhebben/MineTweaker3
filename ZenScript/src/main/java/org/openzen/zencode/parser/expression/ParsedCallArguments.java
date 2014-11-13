@@ -15,7 +15,7 @@ import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
@@ -175,7 +175,7 @@ public class ParsedCallArguments
 		// then only needs to check for unused keyed argument positions
 		boolean[] isUsed = getUsedKeyedArgumentPositions(method);
 
-		List<MethodArgument> methodArguments = method.getArguments();
+		List<MethodParameter> methodArguments = method.getArguments();
 		for (int i = 0; i < isUsed.length; i++) {
 			if (!isUsed[i] && methodArguments.get(numUnkeyedValues + i).getDefaultValue() == null)
 				return false;
@@ -186,7 +186,7 @@ public class ParsedCallArguments
 
 	private void predictArgumentTypesForMethod(MethodHeader method, ZenType[] predictedTypes, boolean[] ambiguous)
 	{
-		List<MethodArgument> methodArguments = method.getArguments();
+		List<MethodParameter> methodArguments = method.getArguments();
 
 		for (int i = 0; i < numUnkeyedValues; i++) {
 			if (ambiguous[i])
@@ -243,7 +243,7 @@ public class ParsedCallArguments
 	{
 		int numUnkeyed = numUnkeyedValues;
 
-		List<MethodArgument> methodArguments = method.getArguments();
+		List<MethodParameter> methodArguments = method.getArguments();
 
 		// little optimization
 		if (!method.accepts(numUnkeyed))
@@ -271,7 +271,7 @@ public class ParsedCallArguments
 				return null;
 		}
 
-		// is this a vararg call with an empty array?
+		// is this a vararg callStatic with an empty array?
 		if (method.isVarargs() && numUnkeyed == compiled.length && numUnkeyed == methodArguments.size() - 1)
 			isVarargCall = true;
 
@@ -348,7 +348,7 @@ public class ParsedCallArguments
 	 * @param fromIndex index in the expressions array to assemble from
 	 * @return array expression with vararg values
 	 */
-	private Expression assembleVararg(MethodArgument argument, IScopeMethod environment, Expression[] compiled, int fromIndex)
+	private Expression assembleVararg(MethodParameter argument, IScopeMethod environment, Expression[] compiled, int fromIndex)
 	{
 		ZenType varargBaseType = ((ZenTypeArray) argument.getType()).getBaseType();
 

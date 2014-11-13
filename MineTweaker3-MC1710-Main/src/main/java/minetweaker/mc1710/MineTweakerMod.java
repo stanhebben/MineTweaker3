@@ -19,6 +19,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import java.io.File;
+import minetweaker.MineTweakerImplementation;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.logger.FileLogger;
@@ -89,6 +90,7 @@ public class MineTweakerMod {
 	private final ScriptProviderCustom scriptsIMC;
 	
 	public MineTweakerMod() {
+		MineTweakerImplementation.init();
 		MineTweakerImplementationAPI.init(
 				new MCOreDict(),
 				recipes = new MCRecipeManager(),

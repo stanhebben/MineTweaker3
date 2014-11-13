@@ -12,7 +12,7 @@ import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ParseException;
@@ -285,6 +285,7 @@ public abstract class ParsedExpression
 		while (parser.hasNext()) {
 			switch (parser.peek().getType()) {
 				case T_DOT:
+					parser.next();
 					Token indexString = parser.optional(TOKEN_ID);
 					if (indexString != null)
 						base = new ParsedExpressionMember(position, base, indexString.getValue());
@@ -300,11 +301,13 @@ public abstract class ParsedExpression
 					break;
 
 				case T_DOT2:
+					parser.next();
 					ParsedExpression to = readAssignExpression(parser, errorLogger);
 					base = new ParsedExpressionRange(base, to);
 					break;
 
 				case T_SQBROPEN:
+					parser.next();
 					ParsedExpression index = readAssignExpression(parser, errorLogger);
 					base = new ParsedExpressionIndex(position, base, index);
 					parser.required(T_SQBRCLOSE, "] expected");
@@ -316,6 +319,7 @@ public abstract class ParsedExpression
 					break;
 
 				case T_AS:
+					parser.next();
 					IParsedType type = TypeParser.parse(parser, errorLogger);
 					base = new ParsedExpressionCast(position, base, type);
 					break;

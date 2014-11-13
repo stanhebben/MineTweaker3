@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openzen.zencode.symbolic.method;
+package org.openzen.zencode.java.method;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -30,6 +30,10 @@ import org.openzen.zencode.annotations.OptionalInt;
 import org.openzen.zencode.annotations.OptionalLong;
 import org.openzen.zencode.annotations.OptionalString;
 import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.method.AbstractMethod;
+import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 
 /**
@@ -57,16 +61,16 @@ public class JavaMethod extends AbstractMethod
 		}
 	}
 
-	public static IMethod getStatic(String owner, String name, ZenType returnType, MethodArgument... arguments)
+	public static IMethod getStatic(String owner, String name, ZenType returnType, MethodParameter... arguments)
 	{
 		return new JavaMethodGenerated(true, false, owner, name, new MethodHeader(returnType, Arrays.asList(arguments), false));
 	}
 
 	public static IMethod getStatic(String owner, String name, ZenType returnType, ZenType... arguments)
 	{
-		MethodArgument[] convertedArguments = new MethodArgument[arguments.length];
+		MethodParameter[] convertedArguments = new MethodParameter[arguments.length];
 		for (int i = 0; i < convertedArguments.length; i++) {
-			convertedArguments[i] = new MethodArgument(null, arguments[i], null);
+			convertedArguments[i] = new MethodParameter(null, arguments[i], null);
 		}
 		return getStatic(owner, name, returnType, convertedArguments);
 	}
@@ -97,7 +101,7 @@ public class JavaMethod extends AbstractMethod
 		ZenType returnType = types.getNativeType(null, method.getGenericReturnType(), capture);
 
 		Type[] genericParameters = method.getGenericParameterTypes();
-		List<MethodArgument> arguments = new ArrayList<MethodArgument>();
+		List<MethodParameter> arguments = new ArrayList<MethodParameter>();
 		for (int i = 0; i < genericParameters.length; i++) {
 			ZenType type = types.getNativeType(null, genericParameters[i], capture);
 			String name = argumentNames == null || i >= argumentNames.length ? null : argumentNames[i];
@@ -138,7 +142,7 @@ public class JavaMethod extends AbstractMethod
 					name = ((Named) annotation).value();
 			}
 
-			arguments.add(new MethodArgument(name, type, defaultValue));
+			arguments.add(new MethodParameter(name, type, defaultValue));
 		}
 
 		functionType = new ZenTypeFunction(new MethodHeader(returnType, arguments, method.isVarArgs()));

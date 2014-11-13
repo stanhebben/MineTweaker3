@@ -16,7 +16,7 @@ import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionStringConcat;
 import stanhebben.zenscript.expression.ExpressionStringContains;
 import stanhebben.zenscript.expression.ExpressionStringIndex;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import stanhebben.zenscript.util.AnyClassWriter;
 import static stanhebben.zenscript.util.AnyClassWriter.throwCastException;
 import static stanhebben.zenscript.util.AnyClassWriter.throwUnsupportedException;
@@ -186,11 +186,11 @@ public class ZenTypeString extends ZenTypePrimitive {
 	
 	@Override
 	public String getAnyClassName() {
-		IScopeGlobal environment = getScope();
+		IScopeGlobal scope = getScope();
 		
-		if (!environment.containsClass(ANY_NAME_2)) {
-			environment.putClass(ANY_NAME_2, new byte[0]);
-			environment.putClass(ANY_NAME_2, AnyClassWriter.construct(new AnyDefinitionString(environment), ANY_NAME, type));
+		if (!scope.containsClass(ANY_NAME_2)) {
+			scope.putClass(ANY_NAME_2, new byte[0]);
+			scope.putClass(ANY_NAME_2, AnyClassWriter.construct(new AnyDefinitionString(scope), ANY_NAME, type));
 		}
 		
 		return ANY_NAME;

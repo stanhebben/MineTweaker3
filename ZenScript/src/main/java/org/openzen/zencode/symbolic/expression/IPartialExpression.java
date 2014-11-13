@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package stanhebben.zenscript.expression.partial;
+package org.openzen.zencode.symbolic.expression;
 
 import java.util.List;
 import stanhebben.zenscript.expression.Expression;
@@ -27,6 +27,18 @@ public interface IPartialExpression
 	public IPartialExpression getMember(CodePosition position, String name);
 	
 	public List<IMethod> getMethods();
+	
+	/**
+	 * Calls the given method from this expression. Method must be one of the
+	 * methods offered by this expression, and arguments must match method parameters
+	 * exactly.
+	 * 
+	 * @param position
+	 * @param method
+	 * @param arguments
+	 * @return 
+	 */
+	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments);
 	
 	public IZenSymbol toSymbol();
 	

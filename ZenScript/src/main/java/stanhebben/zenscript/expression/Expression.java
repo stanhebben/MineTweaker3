@@ -3,7 +3,7 @@ package stanhebben.zenscript.expression;
 import java.util.List;
 import org.objectweb.asm.Label;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
@@ -135,6 +135,12 @@ public abstract class Expression implements IPartialExpression
 	public List<IMethod> getMethods()
 	{
 		return getType().getMethods();
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression... arguments)
+	{
+		return method.callVirtual(position, scope, this, arguments);
 	}
 
 	@Override

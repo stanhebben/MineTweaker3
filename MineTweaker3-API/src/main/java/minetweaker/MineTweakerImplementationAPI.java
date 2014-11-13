@@ -49,7 +49,6 @@ public class MineTweakerImplementationAPI
 
 	static {
 		minetweakerCommands = new HashMap<String, MineTweakerCommand>();
-		MineTweakerImplementation.init();
 	}
 
 	public static Tweaker getTweaker()

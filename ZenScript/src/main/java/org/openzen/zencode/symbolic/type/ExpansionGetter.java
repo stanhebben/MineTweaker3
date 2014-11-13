@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.type;
 
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.MemberVirtual;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -37,6 +37,6 @@ public class ExpansionGetter implements IGetter
 	@Override
 	public IPartialExpression compileGet(CodePosition position, IScopeMethod scope)
 	{
-		return method.call(position, scope, member.getTarget());
+		return method.callStatic(position, scope, member.getTarget());
 	}
 }

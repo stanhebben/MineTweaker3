@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.expression.partial;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
@@ -24,41 +25,35 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class PartialStaticGetter implements IPartialExpression {
 	private final CodePosition position;
-	private final IScopeMethod environment;
+	private final IScopeMethod scope;
 	private final IMethod method;
 	
-	public PartialStaticGetter(CodePosition position, IScopeMethod environment, IMethod method) {
+	public PartialStaticGetter(CodePosition position, IScopeMethod scope, IMethod method) {
 		this.position = position;
-		this.environment = environment;
+		this.scope = scope;
 		this.method = method;
 	}
 
 	@Override
 	public Expression eval() {
-		return new ExpressionCallStatic(position, environment, method);
+		return new ExpressionCallStatic(position, scope, method);
 	}
 
 	@Override
 	public Expression assign(CodePosition position, Expression other) {
-		environment.error(position, "cannot alter this final");
-		return new ExpressionInvalid(position, environment);
+		scope.error(position, "cannot alter this final");
+		return new ExpressionInvalid(position, scope);
 	}
 
 	@Override
 	public IPartialExpression getMember(CodePosition position, String name) {
-		return method.getReturnType().getMember(position, environment, this, name);
-	}
-
-	/*@Override
-	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
-		environment.error(position, "value cannot be called");
-		return new ExpressionInvalid(position);
+		return method.getReturnType().getMember(position, scope, this, name);
 	}
 
 	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		return new ZenType[numArguments];
-	}*/
+	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments) {
+		return method.callVirtual(position, scope, this.method.callStatic(position, scope), arguments);
+	}
 
 	@Override
 	public IZenSymbol toSymbol() {
@@ -72,8 +67,8 @@ public class PartialStaticGetter implements IPartialExpression {
 
 	@Override
 	public ZenType toType(List<ZenType> genericTypes) {
-		environment.error(position, "not a valid type");
-		return environment.getTypes().ANY;
+		scope.error(position, "not a valid type");
+		return scope.getTypes().ANY;
 	}
 
 	@Override

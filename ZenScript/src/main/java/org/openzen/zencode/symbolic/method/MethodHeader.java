@@ -35,7 +35,7 @@ public class MethodHeader
 
 	public static MethodHeader singleArgument(ZenType returnType, String argumentName, ZenType argumentType)
 	{
-		MethodArgument argument = new MethodArgument(argumentName, argumentType, null);
+		MethodParameter argument = new MethodParameter(argumentName, argumentType, null);
 		return new MethodHeader(
 				returnType,
 				Collections.singletonList(argument),
@@ -43,13 +43,13 @@ public class MethodHeader
 	}
 
 	private final ZenType returnType;
-	private final List<MethodArgument> arguments;
+	private final List<MethodParameter> arguments;
 	private final boolean isVarargs;
 
 	// optimization
 	private final Map<String, Integer> argumentIndicesByName;
 
-	public MethodHeader(ZenType returnType, List<MethodArgument> arguments, boolean isVarargs)
+	public MethodHeader(ZenType returnType, List<MethodParameter> arguments, boolean isVarargs)
 	{
 		if (isVarargs && (arguments.isEmpty()))
 			throw new IllegalArgumentException("Varargs method must have arguments");
@@ -78,17 +78,17 @@ public class MethodHeader
 		return returnType;
 	}
 
-	public List<MethodArgument> getArguments()
+	public List<MethodParameter> getArguments()
 	{
 		return arguments;
 	}
 
-	public MethodArgument getArgumentByIndex(int index)
+	public MethodParameter getArgumentByIndex(int index)
 	{
 		return arguments.get(index);
 	}
 
-	public MethodArgument getArgumentByName(String name)
+	public MethodParameter getArgumentByName(String name)
 	{
 		return arguments.get(argumentIndicesByName.get(name));
 	}
@@ -177,7 +177,7 @@ public class MethodHeader
 	{
 		StringBuilder signature = new StringBuilder();
 		signature.append('(');
-		for (MethodArgument argument : arguments) {
+		for (MethodParameter argument : arguments) {
 			signature.append(argument.getType().getSignature());
 		}
 		signature.append(')');

@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleNone;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;

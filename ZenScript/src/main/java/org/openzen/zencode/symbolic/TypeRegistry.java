@@ -8,6 +8,8 @@ package org.openzen.zencode.symbolic;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.statements.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
@@ -46,6 +48,7 @@ import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.runtime.Range;
 import org.openzen.zencode.symbolic.scope.IScopeModule;
 import org.openzen.zencode.symbolic.scope.ScopeModule;
+import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.type.generic.TypeVariableNative;
 import org.openzen.zencode.symbolic.util.CommonMethods;
@@ -87,10 +90,12 @@ public final class TypeRegistry
 	private final Map<Class, ZenType> nativeTypes;
 	private final CommonMethods commonMethods;
 	private final IScopeMethod staticGlobalEnvironment;
+	private final Map<String, List<TypeExpansion>> expansions;
 
 	public TypeRegistry(IScopeGlobal scope)
 	{
 		this.environment = scope;
+		this.expansions = new HashMap<String, List<TypeExpansion>>();
 		scopeForAny = new ScopeModule(scope);
 
 		VOID = new ZenTypeVoid(scope);
@@ -149,6 +154,19 @@ public final class TypeRegistry
 	public ZenType getType(String type) 
 	{
 		return TypeParser.parseDirect(type, environment);
+	}
+	
+	public void addExpansion(String name, TypeExpansion expansion)
+	{
+		if (!expansions.containsKey(name))
+			expansions.put(name, new ArrayList<TypeExpansion>());
+		
+		expansions.get(name).add(expansion);
+	}
+	
+	public List<TypeExpansion> getExpansions(String name)
+	{
+		return expansions.containsKey(name) ? expansions.get(name) : Collections.<TypeExpansion>emptyList();
 	}
 
 	public ZenType getNativeType(CodePosition position, Type type, TypeCapture capture)
@@ -360,6 +378,12 @@ public final class TypeRegistry
 		public void putValue(String name, IZenSymbol value, CodePosition position)
 		{
 			throw new UnsupportedOperationException("Not possible!");
+		}
+		
+		@Override
+		public boolean hasErrors()
+		{
+			return environment.hasErrors();
 		}
 
 		@Override

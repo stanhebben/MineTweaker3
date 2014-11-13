@@ -8,7 +8,7 @@ package org.openzen.zencode.parser.type;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.Token;

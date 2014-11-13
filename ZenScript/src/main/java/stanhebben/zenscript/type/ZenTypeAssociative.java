@@ -21,7 +21,7 @@ import stanhebben.zenscript.expression.ExpressionMapIndexGet;
 import stanhebben.zenscript.expression.ExpressionMapSize;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
 import static org.openzen.zencode.util.ZenTypeUtil.signature;

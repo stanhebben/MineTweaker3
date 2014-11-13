@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.expression.partial;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
@@ -51,20 +52,11 @@ public class PartialStaticMethod implements IPartialExpression {
 		return new ExpressionInvalid(position, environment);
 	}
 
-	/*@Override
-	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
-		if (method.accepts(environment, values)) {
-			return new ExpressionCallStatic(position, environment, method, values);
-		} else {
-			environment.error(position, "parameter count mismatch: got " + values.length + " arguments");
-			return new ExpressionInvalid(position, method.getReturnType());
-		}
-	}
-
 	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		return Arrays.copyOf(method.getParameterTypes(), numArguments);
-	}*/
+	public Expression call(CodePosition position, IMethod method, Expression[] arguments)
+	{
+		return method.callStatic(position, environment, arguments);
+	}
 
 	@Override
 	public IZenSymbol toSymbol() {

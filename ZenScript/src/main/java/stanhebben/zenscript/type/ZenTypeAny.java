@@ -13,10 +13,10 @@ import stanhebben.zenscript.expression.ExpressionCompareGeneric;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import stanhebben.zenscript.type.natives.JavaMethodPrefixed;
 import static org.openzen.zencode.util.ZenTypeUtil.signature;
 import org.openzen.zencode.runtime.IAny;
@@ -305,7 +305,7 @@ public class ZenTypeAny extends ZenType {
 	@Override
 	public List<IMethod> getMethods() {
 		if (methods == null)
-			methods = Collections.singletonList(JavaMethod.get(getScope().getTypes(), IAny.class, "call", IAny.class, IAny[].class));
+			methods = Collections.singletonList(JavaMethod.get(getScope().getTypes(), IAny.class, "call", IAny[].class));
 		
 		return methods;
 	}
@@ -345,6 +345,12 @@ public class ZenTypeAny extends ZenType {
 		@Override
 		public List<IMethod> getMethods() {
 			return methods;
+		}
+		
+		@Override
+		public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+		{
+			return method.callVirtual(position, environment, value, arguments);
 		}
 
 		@Override

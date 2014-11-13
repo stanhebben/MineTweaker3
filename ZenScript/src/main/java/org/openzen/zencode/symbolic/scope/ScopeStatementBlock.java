@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.AccessScope;
 import stanhebben.zenscript.statements.Statement;
@@ -118,6 +118,12 @@ public class ScopeStatementBlock implements IScopeMethod
 			error(position, "Value already defined in this scope: " + name);
 		else
 			local.put(name, value);
+	}
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return outer.hasErrors();
 	}
 
 	@Override

@@ -7,7 +7,7 @@
 package stanhebben.zenscript.type;
 
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import static org.openzen.zencode.runtime.IAny.NUM_FLOAT;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;

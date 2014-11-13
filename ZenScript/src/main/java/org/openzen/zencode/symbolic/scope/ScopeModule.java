@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.AccessScope;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.util.CodePosition;
@@ -96,6 +96,12 @@ public class ScopeModule implements IScopeModule
 	public TypeRegistry getTypes()
 	{
 		return parent.getTypes();
+	}
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return parent.hasErrors();
 	}
 
 	@Override

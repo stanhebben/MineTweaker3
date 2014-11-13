@@ -5,13 +5,12 @@
  */
 package org.openzen.zencode.symbolic.expression.partial;
 
-import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionGetStaticField;
 import stanhebben.zenscript.expression.ExpressionSetStaticField;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.field.IField;
@@ -58,7 +57,13 @@ public class PartialStaticField implements IPartialExpression
 	@Override
 	public List<IMethod> getMethods()
 	{
-		return Collections.EMPTY_LIST;
+		return field.getType().getMethods();
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression... arguments)
+	{
+		return method.callVirtual(position, scope, eval(), arguments);
 	}
 
 	@Override

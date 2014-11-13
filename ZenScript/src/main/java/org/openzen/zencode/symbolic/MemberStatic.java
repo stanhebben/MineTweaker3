@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -122,6 +122,12 @@ public class MemberStatic implements IPartialExpression
 			throw new UnsupportedOperationException("This member is not a property or not readable");
 		
 		return getter.compileGet(this.position, scope).getMember(position, name);
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+	{
+		return method.callStatic(position, scope, arguments);
 	}
 
 	@Override

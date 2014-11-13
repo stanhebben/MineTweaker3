@@ -7,6 +7,7 @@ package org.openzen.zencode.symbolic.member;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openzen.zencode.symbolic.expression.Expressions;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
@@ -57,9 +58,27 @@ public class ConstructorMember implements IMember, IMethod
 	// #################################
 	
 	@Override
-	public Expression call(CodePosition position, IScopeMethod scope, Expression... arguments)
+	public Expression callStatic(CodePosition position, IScopeMethod scope, Expression... arguments)
 	{
 		return new ExpressionNew(position, scope, unit.getType(), this, arguments);
+	}
+	
+	@Override
+	public Expression callStatic(CodePosition position, IScopeMethod scope, Object... constantArguments)
+	{
+		return callStatic(position, scope, Expressions.convert(position, scope, constantArguments));
+	}
+	
+	@Override
+	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Expression... arguments)
+	{
+		throw new UnsupportedOperationException("Cannot call a constructor as virtual method");
+	}
+	
+	@Override
+	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Object... constantArguments)
+	{
+		throw new UnsupportedOperationException("Cannot call a constructor as virtual method");
 	}
 
 	@Override

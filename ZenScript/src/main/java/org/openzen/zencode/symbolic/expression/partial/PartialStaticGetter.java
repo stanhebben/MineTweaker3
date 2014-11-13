@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -58,6 +58,12 @@ public class PartialStaticGetter implements IPartialExpression
 	public List<IMethod> getMethods()
 	{
 		return getType().getMethods();
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+	{
+		return method.callVirtual(position, scope, eval(), arguments);
 	}
 
 	@Override

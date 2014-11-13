@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -128,6 +128,12 @@ public class MemberVirtual implements IPartialExpression
 	public List<IMethod> getMethods()
 	{
 		return methods;
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+	{
+		return method.callVirtual(position, scope, target, arguments);
 	}
 
 	@Override

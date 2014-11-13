@@ -13,16 +13,16 @@ import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.ParsedTypeBasic;
 import org.openzen.zencode.parser.type.TypeParser;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
-public class ParsedFunctionArgument
+public class ParsedFunctionParameter
 {
-	public static ParsedFunctionArgument parse(ZenLexer tokener, ICodeErrorLogger errorLogger)
+	public static ParsedFunctionParameter parse(ZenLexer tokener, ICodeErrorLogger errorLogger)
 	{
 		CodePosition position = tokener.getPosition();
 		String argName = tokener.requiredIdentifier();
@@ -43,7 +43,7 @@ public class ParsedFunctionArgument
 			tokener.required(T_BRCLOSE, ") expected");
 		}
 
-		return new ParsedFunctionArgument(position, argName, argType, defaultValue, isVararg);
+		return new ParsedFunctionParameter(position, argName, argType, defaultValue, isVararg);
 	}
 
 	private final CodePosition position;
@@ -52,7 +52,7 @@ public class ParsedFunctionArgument
 	private final ParsedExpression defaultValue;
 	private final boolean vararg;
 
-	public ParsedFunctionArgument(CodePosition position, String name, IParsedType type, ParsedExpression defaultValue, boolean vararg)
+	public ParsedFunctionParameter(CodePosition position, String name, IParsedType type, ParsedExpression defaultValue, boolean vararg)
 	{
 		this.position = position;
 		this.name = name;
@@ -86,10 +86,10 @@ public class ParsedFunctionArgument
 		return vararg;
 	}
 	
-	public MethodArgument compile(IScopeGlobal scope)
+	public MethodParameter compile(IScopeGlobal scope)
 	{
 		ZenType cType = type.compile(scope);
 		Expression compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getTypes().getStaticGlobalEnvironment(), cType);
-		return new MethodArgument(name, cType, compiledDefaultValue);
+		return new MethodParameter(name, cType, compiledDefaultValue);
 	}
 }

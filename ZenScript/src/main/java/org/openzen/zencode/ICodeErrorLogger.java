@@ -10,6 +10,13 @@ import org.openzen.zencode.util.CodePosition;
  */
 public interface ICodeErrorLogger {
 	/**
+	 * Checks if any errors have been logged through this logger.
+	 * 
+	 * @return 
+	 */
+	public boolean hasErrors();
+	
+	/**
 	 * Called when an error is detected during compilation.
 	 * 
 	 * @param position error position

@@ -7,7 +7,7 @@
 package org.openzen.zencode.symbolic.util;
 
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.type.casting.CastingAnyBool;

@@ -6,6 +6,7 @@
 package minetweaker.runtime;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -35,7 +36,7 @@ import org.openzen.zencode.parser.ParserEnvironment;
  */
 public final class Tweaker
 {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	private final List<IUndoableAction> actions = new ArrayList<IUndoableAction>();
 	private final Set<IUndoableAction> wereStuck = new LinkedHashSet<IUndoableAction>();
@@ -95,6 +96,10 @@ public final class Tweaker
 
 		// Step 1: parse all files
 		ParserEnvironment parserEnvironment = new ParserEnvironment(global);
+		
+		if (DEBUG)
+			parserEnvironment.setDebugOutputDirectory(new File("scripts-debug"));
+		
 		Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
 		while (scripts.hasNext()) {
 			IScriptIterator script = scripts.next();
@@ -134,17 +139,27 @@ public final class Tweaker
 			}
 		}
 
-		// Step 2: compile all files
-		Runnable compiled = parserEnvironment.compile();
-		
-		// Step 3: execute
-		compiled.run();
-		
-		if (wereStuck.size() > 0) {
-			MineTweakerAPI.logWarning(Integer.toString(wereStuck.size()) + " modifications were stuck");
-			for (IUndoableAction action : wereStuck) {
-				MineTweakerAPI.logInfo("Stuck: " + action.describe());
+		if (!global.hasErrors()) {
+			try {
+				// Step 2: compile all files
+				Runnable compiled = parserEnvironment.compile();
+				
+				
+				
+				// Step 3: execute
+				compiled.run();
+			} catch (Throwable t) {
+				t.printStackTrace();
 			}
+
+			if (wereStuck.size() > 0) {
+				MineTweakerAPI.logWarning(Integer.toString(wereStuck.size()) + " modifications were stuck");
+				for (IUndoableAction action : wereStuck) {
+					MineTweakerAPI.logInfo("Stuck: " + action.describe());
+				}
+			}
+		} else {
+			MineTweakerAPI.logInfo("Script has errors, execution halted");
 		}
 	}
 

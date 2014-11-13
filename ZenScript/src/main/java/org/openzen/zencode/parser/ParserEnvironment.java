@@ -6,6 +6,9 @@
 
 package org.openzen.zencode.parser;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +28,20 @@ import static org.openzen.zencode.util.ZenTypeUtil.internal;
 public class ParserEnvironment {
 	private final List<ParsedModule> modules;
 	private final IScopeGlobal global;
+	private File debugOutputDirectory;
 	
 	public ParserEnvironment(IScopeGlobal global)
 	{
 		modules = new ArrayList<ParsedModule>();
 		this.global = global;
+	}
+	
+	public void setDebugOutputDirectory(File file)
+	{
+		if (!file.exists())
+			file.mkdirs();
+		
+		debugOutputDirectory = file;
 	}
 	
 	public ParsedModule createAndAddModule(String name, IFileLoader fileLoader) {
@@ -88,7 +100,25 @@ public class ParserEnvironment {
 		clsMain.visitEnd();
 		global.putClass("__ZenMain__", clsMain.toByteArray());
 		
+		if (debugOutputDirectory != null)
+			writeDebugOutput();
+		
 		return getMain();
+	}
+	
+	private void writeDebugOutput()
+	{
+		for (Map.Entry<String, byte[]> classEntry : global.getClasses().entrySet()) {
+			File outputFile = new File(debugOutputDirectory, classEntry.getKey().replace('.', '/') + ".class");
+			if (!outputFile.getParentFile().exists())
+				outputFile.getParentFile().mkdirs();
+			
+			try {
+				Files.write(outputFile.toPath(), classEntry.getValue());
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 	
 	/**

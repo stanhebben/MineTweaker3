@@ -15,19 +15,19 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionFunction;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.statements.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.parser.elements.ParsedFunctionArgument;
+import org.openzen.zencode.parser.elements.ParsedFunctionParameter;
 import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
@@ -58,7 +58,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 				MethodHeader predictedHeader = function.getMethodHeader();
 
 				List<ZenType> argumentTypes = new ArrayList<ZenType>();
-				for (ParsedFunctionArgument argument : header.getArguments()) {
+				for (ParsedFunctionParameter argument : header.getArguments()) {
 					argumentTypes.add(argument.getType().compile(scope));
 				}
 
@@ -72,9 +72,9 @@ public class ParsedExpressionFunction extends ParsedExpression {
 					}
 				}
 
-				List<MethodArgument> newArguments = new ArrayList<MethodArgument>();
+				List<MethodParameter> newArguments = new ArrayList<MethodParameter>();
 				for (int i = 0; i < header.getArguments().size(); i++) {
-					ParsedFunctionArgument argument = header.getArguments().get(i);
+					ParsedFunctionParameter argument = header.getArguments().get(i);
 
 					String name = argument.getName();
 					ZenType type = argumentTypes.get(i);
@@ -83,7 +83,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 						defaultValue = argument.getDefaultValue().compile(scope, type);
 					}
 
-					newArguments.add(new MethodArgument(name, type, defaultValue));
+					newArguments.add(new MethodParameter(name, type, defaultValue));
 				}
 				
 				compiledHeader = new MethodHeader(newReturnType, newArguments, predictedHeader.isVarargs());
@@ -94,7 +94,7 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		EnvironmentFunctionLiteral functionScope = new EnvironmentFunctionLiteral(scope, functionUnit);
 		
 		for (int i = 0; i < compiledHeader.getArguments().size(); i++) {
-			MethodArgument argument = compiledHeader.getArguments().get(i);
+			MethodParameter argument = compiledHeader.getArguments().get(i);
 			SymbolLocal symbol = argument.getLocal();
 			
 			functionScope.putValue(
@@ -187,6 +187,11 @@ public class ParsedExpressionFunction extends ParsedExpression {
 		@Override
 		public void putValue(String name, IZenSymbol value, CodePosition position) {
 			locals.put(name, value);
+		}
+		
+		@Override
+		public boolean hasErrors() {
+			return outer.hasErrors();
 		}
 
 		@Override

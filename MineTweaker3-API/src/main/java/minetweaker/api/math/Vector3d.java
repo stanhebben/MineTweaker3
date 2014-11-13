@@ -13,7 +13,7 @@ import org.openzen.zencode.annotations.ZenGetter;
  *
  * @author Stan Hebben
  */
-@ZenClass("minetweaker.util.Vector3f")
+@ZenClass("minetweaker.util.Vector3d")
 public final class Vector3d {
 	private final double x;
 	private final double y;

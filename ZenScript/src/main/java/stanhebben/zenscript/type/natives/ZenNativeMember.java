@@ -6,7 +6,7 @@
 
 package stanhebben.zenscript.type.natives;
 
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import org.openzen.zencode.symbolic.method.IMethod;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +14,12 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionCallStatic;
 import stanhebben.zenscript.expression.ExpressionCallVirtual;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
+import stanhebben.zenscript.expression.ExpressionInvalid;
 
 /**
  *
@@ -67,46 +68,41 @@ public class ZenNativeMember {
 	
 	private class InstanceGetValue implements IPartialExpression {
 		private final CodePosition position;
-		private final IScopeMethod environment;
+		private final IScopeMethod scope;
 		private final IPartialExpression value;
 		
-		public InstanceGetValue(CodePosition position, IScopeMethod environment, IPartialExpression value) {
+		public InstanceGetValue(CodePosition position, IScopeMethod scope, IPartialExpression value) {
 			this.position = position;
-			this.environment = environment;
+			this.scope = scope;
 			this.value = value;
 		}
 		
 		@Override
 		public Expression eval() {
-			return new ExpressionCallVirtual(position, environment, getter, value.eval());
+			if (getter == null) {
+				scope.error(position, "This member doesn't have a getter");
+				return new ExpressionInvalid(position, scope);
+			}
+			
+			return new ExpressionCallVirtual(position, scope, getter, value.eval());
 		}
 
 		@Override
 		public Expression assign(CodePosition position, Expression other) {
-			return new ExpressionCallVirtual(position, environment, setter, value.eval(), other);
+			return new ExpressionCallVirtual(position, scope, setter, value.eval(), other);
 		}
 
 		@Override
 		public IPartialExpression getMember(CodePosition position, String name) {
-			return getter.getReturnType().getMember(position, environment, this, name);
-		}
-
-		/*@Override
-		public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
-			IMethod method = JavaMethod.select(false, methods, environment, values);
-			if (method == null) {
-				environment.error(position, methodMatchingError(methods, values));
-				return new ExpressionInvalid(position);
-			} else {
-				return new ExpressionCallVirtual(position, environment, method, value.eval(environment), values);
-			}
+			return getter.getReturnType().getMember(position, scope, this, name);
 		}
 		
 		@Override
-		public ZenType[] predictCallTypes(int numArguments) {
-			return JavaMethod.predict(methods, numArguments);
-		}*/
-		
+		public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+		{
+			return new ExpressionCallVirtual(position, scope, method, value.eval(), arguments);
+		}
+
 		@Override
 		public IZenSymbol toSymbol() {
 			return null;
@@ -119,12 +115,15 @@ public class ZenNativeMember {
 
 		@Override
 		public ZenType toType(List<ZenType> genericTypes) {
-			environment.error(position, "not a valid type");
-			return environment.getTypes().ANY;
+			scope.error(position, "not a valid type");
+			return scope.getTypes().ANY;
 		}
 		
 		@Override
 		public List<IMethod> getMethods() {
+			if (getter == null)
+				return methods;
+			
 			return getter.getReturnType().getMethods();
 		}
 
@@ -135,45 +134,36 @@ public class ZenNativeMember {
 		}
 	}
 	
-	private class StaticGetValue implements IPartialExpression {
+	private class StaticGetValue implements IPartialExpression
+	{
 		private final CodePosition position;
-		private final IScopeMethod environment;
+		private final IScopeMethod scope;
 		
-		public StaticGetValue(CodePosition position, IScopeMethod environment) {
+		public StaticGetValue(CodePosition position, IScopeMethod scope) {
 			this.position = position;
-			this.environment = environment;
+			this.scope = scope;
 		}
 		
 		@Override
 		public Expression eval() {
-			return new ExpressionCallStatic(position, environment, setter);
+			return new ExpressionCallStatic(position, scope, setter);
 		}
 
 		@Override
 		public Expression assign(CodePosition position, Expression other) {
-			return new ExpressionCallStatic(position, environment, setter);
+			return new ExpressionCallStatic(position, scope, setter);
 		}
 
 		@Override
 		public IPartialExpression getMember(CodePosition position, String name) {
-			return getter.getReturnType().getMember(position, environment, this, name);
-		}
-
-		/*@Override
-		public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
-			IMethod method = JavaMethod.select(true, methods, environment, values);
-			if (method == null) {
-				environment.error(position, methodMatchingError(methods, values));
-				return new ExpressionInvalid(position);
-			} else {
-				return new ExpressionCallStatic(position, environment, method, values);
-			}
+			return getter.getReturnType().getMember(position, scope, this, name);
 		}
 		
 		@Override
-		public ZenType[] predictCallTypes(int numArguments) {
-			return JavaMethod.predict(methods, numArguments);
-		}*/
+		public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+		{
+			return method.callStatic(position, scope, arguments);
+		}
 
 		@Override
 		public IZenSymbol toSymbol() {
@@ -187,8 +177,8 @@ public class ZenNativeMember {
 		
 		@Override
 		public ZenType toType(List<ZenType> genericTypes) {
-			environment.error(position, "not a valid type");
-			return environment.getTypes().ANY;
+			scope.error(position, "not a valid type");
+			return scope.getTypes().ANY;
 		}
 		
 		@Override

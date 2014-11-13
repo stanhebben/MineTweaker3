@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.expression.partial;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
@@ -24,37 +25,37 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class PartialType implements IPartialExpression {
 	private final CodePosition position;
-	private final IScopeMethod environment;
+	private final IScopeMethod scope;
 	private final ZenType type;
 	
-	public PartialType(CodePosition position, IScopeMethod environment, ZenType type) {
+	public PartialType(CodePosition position, IScopeMethod scope, ZenType type) {
 		this.position = position;
-		this.environment = environment;
+		this.scope = scope;
 		this.type = type;
 	}
 
 	@Override
 	public Expression eval() {
-		environment.error(position, "cannot use type as expression");
-		return new ExpressionInvalid(position, environment, type);
+		scope.error(position, "cannot use type as expression");
+		return new ExpressionInvalid(position, scope, type);
 	}
 
 	@Override
 	public Expression assign(CodePosition position, Expression other) {
-		environment.error(position, "cannot assign to a type");
-		return new ExpressionInvalid(position, environment, type);
+		scope.error(position, "cannot assign to a type");
+		return new ExpressionInvalid(position, scope, type);
 	}
 
 	@Override
 	public IPartialExpression getMember(CodePosition position, String name) {
-		return type.getStaticMember(position, environment, name);
+		return type.getStaticMember(position, scope, name);
 	}
 
-	/*@Override
-	public Expression call(CodePosition position, IEnvironmentMethod environment, Expression... values) {
-		environment.error(position, "cannot call a type");
-		return new ExpressionInvalid(position, type);
-	}*/
+	@Override
+	public Expression call(CodePosition position, IMethod method, Expression... arguments) {
+		scope.error(position, "cannot call a type");
+		return new ExpressionInvalid(position, scope, method.getReturnType());
+	}
 
 	@Override
 	public IZenSymbol toSymbol() {
@@ -65,11 +66,6 @@ public class PartialType implements IPartialExpression {
 	public ZenType getType() {
 		return null; // not an expression
 	}
-
-	/*@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		return new ZenType[numArguments];
-	}*/
 
 	@Override
 	public ZenType toType(List<ZenType> genericTypes) {

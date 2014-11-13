@@ -10,7 +10,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.AbstractMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 
 /**
@@ -39,7 +39,7 @@ public class JavaMethodGenerated extends AbstractMethod {
 		
 		StringBuilder descriptorString = new StringBuilder();
 		descriptorString.append('(');
-		for (MethodArgument argument : header.getArguments()) {
+		for (MethodParameter argument : header.getArguments()) {
 			descriptorString.append(argument.getType().getSignature());
 		}
 		descriptorString.append(')');

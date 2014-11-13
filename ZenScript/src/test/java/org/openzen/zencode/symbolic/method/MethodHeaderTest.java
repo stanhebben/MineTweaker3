@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.symbolic.method;
 
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +100,7 @@ public class MethodHeaderTest
 	{
 		System.out.println("getArguments");
 		MethodHeader instance = construct_ILS_S();
-		List<MethodArgument> arguments = instance.getArguments();
+		List<MethodParameter> arguments = instance.getArguments();
 		
 		assertEquals(typeInt, arguments.get(0).getType());
 		assertEquals(typeLong, arguments.get(1).getType());
@@ -119,7 +119,7 @@ public class MethodHeaderTest
 		System.out.println("getArgumentByIndex");
 		MethodHeader instance = construct_ILS_S();
 		
-		MethodArgument argument = instance.getArgumentByIndex(1);
+		MethodParameter argument = instance.getArgumentByIndex(1);
 		assertEquals(argument.getType(), typeLong);
 	}
 
@@ -132,7 +132,7 @@ public class MethodHeaderTest
 		System.out.println("getArgumentByName");
 		
 		MethodHeader instance = construct_ILS_S();
-		MethodArgument result = instance.getArgumentByName("S");
+		MethodParameter result = instance.getArgumentByName("S");
 		
 		assertEquals(typeString, result.getType());
 	}
@@ -277,24 +277,24 @@ public class MethodHeaderTest
 	
 	private MethodHeader construct_ILS_S()
 	{
-		List<MethodArgument> arguments = new ArrayList<MethodArgument>();
-		arguments.add(new MethodArgument("I", typeInt, null));
-		arguments.add(new MethodArgument("L", typeLong, null));
+		List<MethodParameter> arguments = new ArrayList<MethodParameter>();
+		arguments.add(new MethodParameter("I", typeInt, null));
+		arguments.add(new MethodParameter("L", typeLong, null));
 		
 		Expression defaultStringValue = new ExpressionString(null, scope.getTypes().getStaticGlobalEnvironment(), "Hello");
-		arguments.add(new MethodArgument("S", typeString, defaultStringValue));
+		arguments.add(new MethodParameter("S", typeString, defaultStringValue));
 		
 		return new MethodHeader(typeString, arguments, false);
 	}
 	
 	private MethodHeader construct_ILSV_S()
 	{
-		List<MethodArgument> arguments = new ArrayList<MethodArgument>();
-		arguments.add(new MethodArgument("I", typeInt, null));
+		List<MethodParameter> arguments = new ArrayList<MethodParameter>();
+		arguments.add(new MethodParameter("I", typeInt, null));
 		
 		Expression defaultLongValue = new ExpressionInt(null, scope.getTypes().getStaticGlobalEnvironment(), 1, typeLong);
-		arguments.add(new MethodArgument("L", typeLong, defaultLongValue));
-		arguments.add(new MethodArgument("S", typeStringArray, null));
+		arguments.add(new MethodParameter("L", typeLong, defaultLongValue));
+		arguments.add(new MethodParameter("S", typeStringArray, null));
 		
 		return new MethodHeader(typeString, arguments, true);
 	}

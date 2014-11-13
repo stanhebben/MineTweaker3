@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.scope;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.AccessScope;
 import stanhebben.zenscript.statements.Statement;
@@ -44,6 +44,12 @@ public class ScopeMethod implements IScopeMethod
 	public TypeRegistry getTypes()
 	{
 		return scope.getTypes();
+	}
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return scope.hasErrors();
 	}
 
 	@Override

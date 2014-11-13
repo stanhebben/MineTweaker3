@@ -12,7 +12,7 @@ import stanhebben.zenscript.type.ZenTypeFunction;
 import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.AbstractMethod;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 
 /**
@@ -31,7 +31,7 @@ public class JavaMethodPrefixed extends AbstractMethod {
 		this.baseMethod = baseMethod;
 		
 		MethodHeader baseHeader = baseMethod.getMethodHeader();
-		List<MethodArgument> newArguments = baseHeader.getArguments().subList(1, baseHeader.getArguments().size());
+		List<MethodParameter> newArguments = baseHeader.getArguments().subList(1, baseHeader.getArguments().size());
 		functionType = new ZenTypeFunction(new MethodHeader(baseHeader.getReturnType(), newArguments, baseHeader.isVarargs()));
 	}
 

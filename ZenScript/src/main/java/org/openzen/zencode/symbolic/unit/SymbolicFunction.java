@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.member.FieldMember;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.ExpressionGetInstanceField;
 import stanhebben.zenscript.expression.ExpressionLocalGet;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenTypeFunction;
 import org.openzen.zencode.symbolic.method.MethodHeader;

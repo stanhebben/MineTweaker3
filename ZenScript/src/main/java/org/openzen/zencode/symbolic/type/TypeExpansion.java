@@ -28,11 +28,13 @@ import org.openzen.zencode.symbolic.AccessType;
 import org.openzen.zencode.symbolic.MemberStatic;
 import org.openzen.zencode.symbolic.MemberVirtual;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.util.CodePosition;
+import stanhebben.zenscript.type.ZenType;
+import stanhebben.zenscript.type.natives.JavaMethodExpanding;
 
 /**
  *
@@ -185,7 +187,7 @@ public class TypeExpansion
 		return operators.get(operator);
 	}
 	
-	public void expandMember(MemberVirtual member)
+	public void expandMember(MemberVirtual member, ZenType type)
 	{
 		if (getters.containsKey(member.getName()))
 			member.setGetter(new ExpansionGetter(member, getters.get(member.getName())));
@@ -195,7 +197,7 @@ public class TypeExpansion
 		
 		if (methods.containsKey(member.getName())) {
 			for (IMethod method : methods.get(member.getName())) {
-				member.addMethod(method);
+				member.addMethod(new JavaMethodExpanding(method));
 			}
 		}
 	}

@@ -33,6 +33,12 @@ public class JavaField implements IField
 	}
 	
 	public JavaField(Field field, TypeRegistry types, TypeCapture capture) {
+		if (field == null)
+			throw new IllegalArgumentException("field cannot be null");
+		
+		if (types == null)
+			throw new IllegalArgumentException("types cannot be null");
+		
 		this.field = field;
 		this.type = types.getNativeType(null, field.getGenericType(), capture);
 	}

@@ -9,7 +9,7 @@ package org.openzen.zencode.symbolic.scope;
 import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.TypeRegistry;

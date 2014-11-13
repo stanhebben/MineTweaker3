@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionMethodStatic;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeFunction;
@@ -55,13 +55,19 @@ public class PartialStaticMethod implements IPartialExpression
 	@Override
 	public IPartialExpression getMember(CodePosition position, String name)
 	{
-		return eval().getMember(position, name);
+		return type.getMember(position, scope, this, name);
 	}
-
+	
 	@Override
 	public List<IMethod> getMethods()
 	{
 		return Collections.singletonList(method);
+	}
+	
+	@Override
+	public IPartialExpression call(CodePosition position, IMethod method, Expression... arguments)
+	{
+		return method.callStatic(position, scope, arguments);
 	}
 
 	@Override

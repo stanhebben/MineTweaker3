@@ -37,6 +37,6 @@ public class ExpansionSetter implements ISetter
 	@Override
 	public Expression compile(CodePosition position, IScopeMethod scope, Expression value)
 	{
-		return method.call(position, scope, member.getTarget(), value);
+		return method.callStatic(position, scope, member.getTarget(), value);
 	}
 }

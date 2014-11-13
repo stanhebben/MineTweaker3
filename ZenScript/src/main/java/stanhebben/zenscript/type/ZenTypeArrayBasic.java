@@ -8,7 +8,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArrayGet;
 import stanhebben.zenscript.expression.ExpressionArrayLength;
 import stanhebben.zenscript.expression.ExpressionArraySet;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleArrayArray;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleArrayList;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateArray;

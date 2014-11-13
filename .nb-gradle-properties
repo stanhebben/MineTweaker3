@@ -11,12 +11,10 @@
       <display-name>debug</display-name>
       <non-blocking>no</non-blocking>
       <task-names>
-        <name must-exist="no">runClient</name>
+        <name must-exist="no">debugClient</name>
       </task-names>
       <task-args/>
-      <task-jvm-args>
-        <arg>-Xdebug</arg>
-      </task-jvm-args>
+      <task-jvm-args/>
     </task>
     <task>
       <display-name>run</display-name>

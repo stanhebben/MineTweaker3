@@ -10,8 +10,12 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 
 /**
- *
- * @author Stan
+ * ZenCode symbols need a scope in order to exist. However, global symbols have
+ * to be registered outside a compilation scope. Tweaker symbols are there to
+ * fill that gap - they are converted into ZenCode symbols when compilation is
+ * being prepared.
+ * 
+ * @author Stan Hebben
  */
 public interface ITweakerSymbol {
 	public IZenSymbol convert(IScopeGlobal scope);

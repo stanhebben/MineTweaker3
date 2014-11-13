@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.scope.ScopeClass;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.scope.ScopeMethod;
 import org.openzen.zencode.symbolic.scope.IScopeClass;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import stanhebben.zenscript.statements.Statement;
 import stanhebben.zenscript.type.ZenType;
@@ -81,7 +81,7 @@ public class ExpressionJavaLambda extends Expression {
 		IScopeMethod environmentMethod = new ScopeMethod(environmentClass, methodHeader.getReturnType());
 		
 		for (int i = 0; i < methodHeader.getArguments().size(); i++) {
-			MethodArgument argument = methodHeader.getArguments().get(i);
+			MethodParameter argument = methodHeader.getArguments().get(i);
 			environmentMethod.putValue(
 					argument.getName(),
 					argument.getLocal(),

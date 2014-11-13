@@ -6,6 +6,7 @@
 
 package stanhebben.zenscript.expression.partial;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
@@ -56,16 +57,11 @@ public class PartialPackage implements IPartialExpression {
 		}
 	}
 
-	/*@Override
-	public Expression call(CodePosition position, Expression... values) {
+	@Override
+	public Expression call(CodePosition position, IMethod method, Expression[] arguments) {
 		environment.error(position, "cannot call a package");
 		return new ExpressionInvalid(position, environment);
 	}
-
-	@Override
-	public ZenType[] predictCallTypes(int numArguments) {
-		return new ZenType[numArguments];
-	}*/
 
 	@Override
 	public IZenSymbol toSymbol() {

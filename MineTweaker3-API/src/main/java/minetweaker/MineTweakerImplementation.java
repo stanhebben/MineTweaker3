@@ -22,6 +22,7 @@ import minetweaker.api.data.IData;
 import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.event.IEventHandle;
 import minetweaker.api.event.PlayerInteractEvent;
+import minetweaker.api.event.ReloadEvent;
 import minetweaker.api.item.IItemDefinition;
 import minetweaker.api.item.IItemStack;
 import minetweaker.api.item.WeightedItemStack;
@@ -52,6 +53,18 @@ public class MineTweakerImplementation
 	private static IEventHandle blockEventHandler = null;
 
 	public static void init()
+	{
+		MineTweakerAPI.onPreLoad(new IEventHandler<ReloadEvent>()
+		{
+			@Override
+			public void handle(ReloadEvent event)
+			{
+				initOnLoad();
+			}
+		});
+	}
+	
+	private static void initOnLoad()
 	{
 		MineTweakerImplementationAPI.addMineTweakerCommand(
 				"reload",

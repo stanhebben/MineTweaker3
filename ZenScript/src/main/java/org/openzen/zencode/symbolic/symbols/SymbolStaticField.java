@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.symbols;
 
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticField;
 import org.openzen.zencode.symbolic.field.IField;
 import org.openzen.zencode.util.CodePosition;

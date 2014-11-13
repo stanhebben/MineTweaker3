@@ -1,6 +1,5 @@
 package stanhebben.zenscript.type;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,7 @@ import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleDelegateMap;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
@@ -29,7 +28,6 @@ public abstract class ZenType
 	
 	private final IScopeGlobal scope;
 	private final Map<AccessScope, Map<ZenType, ICastingRule>> castingRules = new HashMap<AccessScope, Map<ZenType, ICastingRule>>();
-	private final List<TypeExpansion> expansions = new ArrayList<TypeExpansion>();
 
 	public ZenType(IScopeGlobal environment)
 	{
@@ -45,15 +43,10 @@ public abstract class ZenType
 	{
 		return scope.getTypes();
 	}
-
-	public void addExpansion(TypeExpansion expansion)
-	{
-		expansions.add(expansion);
-	}
 	
 	public List<TypeExpansion> getExpansions()
 	{
-		return expansions;
+		return scope.getTypes().getExpansions(getName());
 	}
 
 	public abstract Expression operator(
@@ -159,6 +152,8 @@ public abstract class ZenType
 			OperatorType operator,
 			Expression... values)
 	{
+		List<TypeExpansion> expansions = getExpansions();
+		
 		for (TypeExpansion expansion : expansions) {
 			Expression expansionOperator = expansion.operatorExact(position, environment, operator, values);
 			if (expansionOperator != null)
@@ -176,14 +171,18 @@ public abstract class ZenType
 
 	protected void memberExpansion(MemberVirtual member)
 	{
+		List<TypeExpansion> expansions = getExpansions();
+		
 		for (TypeExpansion expansion : expansions) {
 			if (expansion.isVisibleTo(member.getScope().getAccessScope()))
-				expansion.expandMember(member);
+				expansion.expandMember(member, this);
 		}
 	}
 
 	protected void staticMemberExpansion(MemberStatic member)
 	{
+		List<TypeExpansion> expansions = getExpansions();
+		
 		for (TypeExpansion expansion : expansions) {
 			if (expansion.isVisibleTo(member.getScope().getAccessScope()))
 				expansion.expandStaticMember(member);
@@ -192,6 +191,8 @@ public abstract class ZenType
 
 	protected void constructExpansionCastingRules(AccessScope accessScope, ICastingRuleDelegate rules)
 	{
+		List<TypeExpansion> expansions = getExpansions();
+		
 		for (TypeExpansion expansion : expansions) {
 			if (expansion.isVisibleTo(accessScope))
 				expansion.expandCastingRules(rules);

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.ICodeErrorLogger;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.expression.partial.PartialPackage;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;

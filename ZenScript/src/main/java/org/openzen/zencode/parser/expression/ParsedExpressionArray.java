@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionArray;
 import stanhebben.zenscript.expression.ExpressionAs;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.ZenType;
 import stanhebben.zenscript.type.ZenTypeArray;
 import stanhebben.zenscript.type.ZenTypeArrayBasic;

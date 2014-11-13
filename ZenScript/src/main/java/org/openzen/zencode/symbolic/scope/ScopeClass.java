@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.scope;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
@@ -90,6 +90,12 @@ public class ScopeClass implements IScopeClass
 			error(position, "Value already defined in this scope: " + name);
 		else
 			local.put(name, value);
+	}
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return module.hasErrors();
 	}
 
 	@Override

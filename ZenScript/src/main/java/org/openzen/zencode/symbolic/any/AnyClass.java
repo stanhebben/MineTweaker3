@@ -116,7 +116,7 @@ public abstract class AnyClass
 				0,
 				position,
 				valueOfScope);
-		Expression construct = members.constructor.call(position, valueOfScope, expressionValue);
+		Expression construct = members.constructor.callStatic(position, valueOfScope, expressionValue);
 		method.addStatement(construct.asStatement());
 	}
 	
@@ -161,7 +161,7 @@ public abstract class AnyClass
 	{
 		for (TypeExpansion expansion : forType.getExpansions()) {
 			for (IMethod operatorMethod : expansion.getOperators(operator)) {
-				Expression call = operatorMethod.call(
+				Expression call = operatorMethod.callStatic(
 						members.position,
 						scope,
 						members.makeThisExpression(scope),

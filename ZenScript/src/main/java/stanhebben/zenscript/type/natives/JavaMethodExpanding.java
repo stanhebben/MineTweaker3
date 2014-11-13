@@ -14,7 +14,7 @@ import stanhebben.zenscript.type.ZenTypeFunction;
 import org.openzen.zencode.util.MethodOutput;
 import org.openzen.zencode.symbolic.method.AbstractMethod;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 
 /**
@@ -25,19 +25,17 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
  * @author Stan Hebben
  */
 public class JavaMethodExpanding extends AbstractMethod {
-	private final ZenType addedType;
 	private final IMethod baseMethod;
 	private final ZenTypeFunction functionType;
 	
-	public JavaMethodExpanding(ZenType addedType, IMethod baseMethod) {
-		this.addedType = addedType;
+	public JavaMethodExpanding(IMethod baseMethod) {
 		this.baseMethod = baseMethod;
 		
 		MethodHeader originalHeader = baseMethod.getMethodHeader();
 		
-		List<MethodArgument> arguments = new ArrayList<MethodArgument>();
-		arguments.add(new MethodArgument(null, addedType, null));
-		arguments.addAll(baseMethod.getMethodHeader().getArguments());
+		List<MethodParameter> arguments = baseMethod.getMethodHeader().getArguments().subList(
+				1,
+				baseMethod.getMethodHeader().getArguments().size());
 		MethodHeader newHeader = new MethodHeader(originalHeader.getReturnType(), arguments, originalHeader.isVarargs());
 		
 		functionType = new ZenTypeFunction(newHeader);

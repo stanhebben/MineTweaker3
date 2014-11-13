@@ -6,6 +6,8 @@
 package minetweaker.runtime;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +18,12 @@ import minetweaker.api.IRecipeRemover;
 import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.symbol.ITweakerSymbol;
-import minetweaker.runtime.symbol.SymbolUtil;
+import minetweaker.runtime.symbol.TweakerSymbols;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.util.ClassNameGenerator;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolPackage;
 import org.openzen.zencode.ICodeErrorLogger;
@@ -45,13 +47,13 @@ public class GlobalRegistry
 {
 	private static final Map<String, ITweakerSymbol> globals = new HashMap<String, ITweakerSymbol>();
 	private static final List<IRecipeRemover> removers = new ArrayList<IRecipeRemover>();
-	private static final List<IBracketHandler> bracketHandlers = new ArrayList<IBracketHandler>();
+	private static final List<Class<? extends IBracketHandler>> bracketHandlers = new ArrayList<Class<? extends IBracketHandler>>();
 	private static final List<Class> annotatedClasses = new ArrayList<Class>();
 
 	static {
-		registerGlobal("print", SymbolUtil.getStaticMethod(GlobalFunctions.class, "print", String.class));
-		registerGlobal("max", SymbolUtil.getStaticMethod(Math.class, "max", int.class, int.class));
-		registerGlobal("min", SymbolUtil.getStaticMethod(Math.class, "min", int.class, int.class));
+		registerGlobal("print", TweakerSymbols.getStaticMethod(GlobalFunctions.class, "print", String.class));
+		registerGlobal("max", TweakerSymbols.getStaticMethod(Math.class, "max", int.class, int.class));
+		registerGlobal("min", TweakerSymbols.getStaticMethod(Math.class, "min", int.class, int.class));
 	}
 
 	private GlobalRegistry()
@@ -71,7 +73,7 @@ public class GlobalRegistry
 		removers.add(remover);
 	}
 
-	public static void registerBracketHandler(IBracketHandler handler)
+	public static void registerBracketHandler(Class<? extends IBracketHandler> handler)
 	{
 		bracketHandlers.add(handler);
 	}
@@ -88,17 +90,6 @@ public class GlobalRegistry
 		}
 	}
 
-	public static IZenSymbol resolveBracket(List<Token> tokens)
-	{
-		for (IBracketHandler handler : bracketHandlers) {
-			IZenSymbol symbol = handler.resolve(tokens);
-			if (symbol != null)
-				return symbol;
-		}
-
-		return null;
-	}
-
 	public static IScopeGlobal makeGlobalEnvironment()
 	{
 		return new TweakerGlobalScope();
@@ -106,9 +97,19 @@ public class GlobalRegistry
 
 	private static class MyErrorLogger implements ICodeErrorLogger
 	{
+		private boolean hasErrors = false;
+		
+		@Override
+		public boolean hasErrors()
+		{
+			return hasErrors;
+		}
+		
 		@Override
 		public void error(CodePosition position, String message)
 		{
+			hasErrors = true;
+			
 			if (position == null)
 				MineTweakerAPI.logError("system: " + message);
 			else
@@ -129,6 +130,7 @@ public class GlobalRegistry
 	{
 		private final IScopeGlobal scope;
 		private final ICodeErrorLogger errors;
+		private final List<IBracketHandler> bracketHandlerInstances = new ArrayList<IBracketHandler>();
 
 		private MyCompileEnvironment(IScopeGlobal scope, ICodeErrorLogger errors)
 		{
@@ -157,7 +159,13 @@ public class GlobalRegistry
 		@Override
 		public IZenSymbol getBracketed(IScopeGlobal environment, List<Token> tokens)
 		{
-			return resolveBracket(tokens);
+			for (IBracketHandler handler : bracketHandlerInstances) {
+				IZenSymbol symbol = handler.resolve(tokens);
+				if (symbol != null)
+					return symbol;
+			}
+			
+			return null;
 		}
 
 		@Override
@@ -176,7 +184,7 @@ public class GlobalRegistry
 		@Override
 		public IAny evalBracketed(List<Token> tokens)
 		{
-			for (IBracketHandler handler : bracketHandlers) {
+			for (IBracketHandler handler : bracketHandlerInstances) {
 				IAny symbol = handler.eval(tokens);
 				if (symbol != null)
 					return symbol;
@@ -193,36 +201,51 @@ public class GlobalRegistry
 		private final ClassNameGenerator generator;
 		private final TypeRegistry types;
 
-		private final IZenCompileEnvironment environment;
+		private final MyCompileEnvironment environment;
 		private final SymbolPackage root = new SymbolPackage("<root>");
 		private final ICodeErrorLogger errors = new MyErrorLogger();
 
 		public TweakerGlobalScope()
 		{
 			this.classes = new HashMap<String, byte[]>();
+			generator = new ClassNameGenerator();
+			types = new TypeRegistry(this);
+			
 			symbols = new HashMap<String, IZenSymbol>();
 			for (Map.Entry<String, ITweakerSymbol> entry : globals.entrySet()) {
 				symbols.put(entry.getKey(), entry.getValue().convert(this));
 			}
 
-			generator = new ClassNameGenerator();
-
-			types = new TypeRegistry(this);
 			environment = new MyCompileEnvironment(this, errors);
 
 			// add annotated classes
 			for (Class cls : annotatedClasses) {
 				for (Annotation annotation : cls.getAnnotations()) {
 					if (annotation instanceof ZenExpansion) {
-						ZenType type = types.getType(((ZenExpansion) annotation).value());
+						String type = ((ZenExpansion) annotation).value();
 						TypeExpansion expansion = new TypeExpansion(this, AccessType.EXPORT, ZenType.ACCESS_GLOBAL);
 						expansion.load(cls);
-						type.addExpansion(expansion);
+						types.addExpansion(type, expansion);
 					} else if (annotation instanceof ZenClass)
 						root.put(
 								((ZenClass) annotation).value(),
 								new SymbolType(types.getNativeType(null, cls, TypeCapture.EMPTY)),
 								errors);
+				}
+			}
+			
+			for (Class<? extends IBracketHandler> bracketHandler : bracketHandlers) {
+				try {
+					Constructor<? extends IBracketHandler> constructor = bracketHandler.getConstructor(IScopeGlobal.class);
+					environment.bracketHandlerInstances.add(constructor.newInstance(this));
+				} catch (NoSuchMethodException ex) {
+					ex.printStackTrace();
+				} catch (InstantiationException ex) {
+					ex.printStackTrace();
+				} catch (IllegalAccessException ex) {
+					ex.printStackTrace();
+				} catch (InvocationTargetException ex) {
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -285,17 +308,23 @@ public class GlobalRegistry
 			else
 				symbols.put(name, value);
 		}
+		
+		@Override
+		public boolean hasErrors()
+		{
+			return errors.hasErrors();
+		}
 
 		@Override
 		public void error(CodePosition position, String message)
 		{
-			MineTweakerAPI.logError(position.toString() + " > " + message);
+			errors.error(position, message);
 		}
 
 		@Override
 		public void warning(CodePosition position, String message)
 		{
-			MineTweakerAPI.logWarning(position.toString() + " > " + message);
+			errors.warning(position, message);
 		}
 
 		@Override

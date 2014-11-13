@@ -11,7 +11,7 @@ import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionLocalGet;
 import stanhebben.zenscript.expression.ExpressionLocalSet;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import stanhebben.zenscript.symbols.SymbolLocal;
 import stanhebben.zenscript.type.ZenType;
@@ -81,6 +81,12 @@ public class PartialLocal implements IPartialExpression
 	public List<IMethod> getMethods()
 	{
 		return variable.getType().getMethods();
+	}
+	
+	@Override
+	public Expression call(CodePosition position, IMethod method, Expression... arguments)
+	{
+		return method.callVirtual(position, scope, eval(), arguments);
 	}
 
 	@Override

@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import minetweaker.ClassRegistry;
 import minetweaker.MineTweakerImplementationAPI;
 import minetweaker.annotations.BracketHandler;
@@ -28,7 +26,7 @@ import minetweaker.api.server.IServer;
 import minetweaker.api.vanilla.IVanilla;
 import minetweaker.runtime.GlobalRegistry;
 import minetweaker.runtime.symbol.ITweakerSymbol;
-import minetweaker.runtime.symbol.SymbolUtil;
+import minetweaker.runtime.symbol.TweakerSymbols;
 import minetweaker.util.IEventHandler;
 import org.openzen.zencode.annotations.ZenClass;
 import org.openzen.zencode.annotations.ZenExpansion;
@@ -76,17 +74,17 @@ public class MineTweakerAPI
 			registerClass(cls);
 		}
 
-		registerGlobalSymbol("logger", SymbolUtil.getStaticGetter(MineTweakerAPI.class, "getLogger"));
-		registerGlobalSymbol("recipes", SymbolUtil.getStaticField(MineTweakerAPI.class, "recipes"));
-		registerGlobalSymbol("furnace", SymbolUtil.getStaticField(MineTweakerAPI.class, "furnace"));
-		registerGlobalSymbol("oreDict", SymbolUtil.getStaticField(MineTweakerAPI.class, "oreDict"));
-		registerGlobalSymbol("events", SymbolUtil.getStaticField(MineTweakerAPI.class, "events"));
-		registerGlobalSymbol("server", SymbolUtil.getStaticField(MineTweakerAPI.class, "server"));
-		registerGlobalSymbol("client", SymbolUtil.getStaticField(MineTweakerAPI.class, "client"));
-		registerGlobalSymbol("game", SymbolUtil.getStaticField(MineTweakerAPI.class, "game"));
-		registerGlobalSymbol("loadedMods", SymbolUtil.getStaticField(MineTweakerAPI.class, "loadedMods"));
-		registerGlobalSymbol("format", SymbolUtil.getStaticField(MineTweakerAPI.class, "format"));
-		registerGlobalSymbol("vanilla", SymbolUtil.getStaticField(MineTweakerAPI.class, "vanilla"));
+		registerGlobalSymbol("logger", TweakerSymbols.getStaticGetter(MineTweakerAPI.class, "getLogger"));
+		registerGlobalSymbol("recipes", TweakerSymbols.getStaticField(MineTweakerAPI.class, "recipes"));
+		registerGlobalSymbol("furnace", TweakerSymbols.getStaticField(MineTweakerAPI.class, "furnace"));
+		registerGlobalSymbol("oreDict", TweakerSymbols.getStaticField(MineTweakerAPI.class, "oreDict"));
+		registerGlobalSymbol("events", TweakerSymbols.getStaticField(MineTweakerAPI.class, "events"));
+		registerGlobalSymbol("server", TweakerSymbols.getStaticField(MineTweakerAPI.class, "server"));
+		registerGlobalSymbol("client", TweakerSymbols.getStaticField(MineTweakerAPI.class, "client"));
+		registerGlobalSymbol("game", TweakerSymbols.getStaticField(MineTweakerAPI.class, "game"));
+		registerGlobalSymbol("loadedMods", TweakerSymbols.getStaticField(MineTweakerAPI.class, "loadedMods"));
+		registerGlobalSymbol("format", TweakerSymbols.getStaticField(MineTweakerAPI.class, "format"));
+		registerGlobalSymbol("vanilla", TweakerSymbols.getStaticField(MineTweakerAPI.class, "vanilla"));
 	}
 
 	private MineTweakerAPI() {}
@@ -99,6 +97,9 @@ public class MineTweakerAPI
 	 */
 	public static final ILogger getLogger()
 	{
+		if (MineTweakerImplementationAPI.logger == null)
+			throw new IllegalStateException("Logger not yet initialized");
+		
 		return MineTweakerImplementationAPI.logger;
 	}
 
@@ -358,16 +359,9 @@ public class MineTweakerAPI
 		return true;
 	}
 
-	private static void registerBracketHandler(Class annotatedClass)
+	private static void registerBracketHandler(Class<? extends IBracketHandler> annotatedClass)
 	{
-		try {
-			IBracketHandler bracketHandler = (IBracketHandler) annotatedClass.newInstance();
-			registerBracketHandler(bracketHandler);
-		} catch (InstantiationException ex) {
-			Logger.getLogger(MineTweakerAPI.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			Logger.getLogger(MineTweakerAPI.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		GlobalRegistry.registerBracketHandler(annotatedClass);
 	}
 
 	/**
@@ -391,17 +385,5 @@ public class MineTweakerAPI
 	public static void registerRemover(IRecipeRemover remover)
 	{
 		GlobalRegistry.registerRemover(remover);
-	}
-
-	/**
-	 * Registers a bracket handler. Is capable of converting the bracket syntax
-	 * to an actual value. This new handler will be added last - it can thus not
-	 * intercept values that are already handled by the system.
-	 *
-	 * @param handler bracket handler to be added
-	 */
-	public static void registerBracketHandler(IBracketHandler handler)
-	{
-		GlobalRegistry.registerBracketHandler(handler);
 	}
 }

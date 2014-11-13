@@ -142,9 +142,9 @@ public class RegisterZenClassesTask extends DefaultTask {
 		
 		@Override
 		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-			if (desc.equals("Lstanhebben/zenscript/annotations/ZenExpansion;")) {
+			if (desc.equals("Lorg/openzen/zencode/annotations/ZenExpansion;")) {
 				isAnnotated = true;
-			} else if (desc.equals("Lstanhebben/zenscript/annotations/ZenClass;")) {
+			} else if (desc.equals("Lorg/openzen/zencode/annotations/ZenClass;")) {
 				isAnnotated = true;
 			} else if (desc.equals("Lminetweaker/annotations/BracketHandler;")) {
 				isAnnotated = true;

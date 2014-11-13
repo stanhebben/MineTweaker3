@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
 import org.openzen.zencode.util.CodePosition;
 
@@ -129,9 +129,18 @@ public class TestEnvironment implements IZenCompileEnvironment
 	
 	private class MyErrorLogger implements ICodeErrorLogger
 	{
+		private boolean hasErrors = false;
+		
+		@Override
+		public boolean hasErrors()
+		{
+			return hasErrors;
+		}
+		
 		@Override
 		public void error(CodePosition position, String message)
 		{
+			hasErrors = true;
 			logs.add(new LogMessage(LogMessageType.ERROR, message));
 		}
 

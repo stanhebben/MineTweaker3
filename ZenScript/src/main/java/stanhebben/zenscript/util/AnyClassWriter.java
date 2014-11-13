@@ -45,7 +45,7 @@ public class AnyClassWriter {
 
 			definition.defineMembers(writer);
 
-			MethodOutput outputStaticCanCastImplicit = new MethodOutput(
+			/*MethodOutput outputStaticCanCastImplicit = new MethodOutput(
 					writer,
 					Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC,
 					"rtCanCastImplicit",
@@ -356,7 +356,7 @@ public class AnyClassWriter {
 					null);
 			outputHashCode.start();
 			definition.defineHashCode(outputHashCode);
-			outputHashCode.end();
+			outputHashCode.end();*/
 
 			/*MethodOutput outputEquals = new MethodOutput(
 					writer,

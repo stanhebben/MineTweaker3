@@ -17,9 +17,9 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import stanhebben.zenscript.expression.Expression;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.MethodArgument;
+import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.TypeRegistry;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleMatchedFunction;
@@ -47,7 +47,7 @@ public class ZenTypeFunction extends ZenType {
 		StringBuilder nameBuilder = new StringBuilder();
 		nameBuilder.append("function(");
 		boolean first = true;
-		for (MethodArgument type : header.getArguments()) {
+		for (MethodParameter type : header.getArguments()) {
 			if (first) {
 				first = false;
 			} else {
@@ -117,7 +117,7 @@ public class ZenTypeFunction extends ZenType {
 				}
 			}
 			
-			List<MethodArgument> methodArguments = method.getMethodHeader().getArguments();
+			List<MethodParameter> methodArguments = method.getMethodHeader().getArguments();
 			if (methodArguments.size() < header.getArguments().size()) {
 				System.out.println("Argument count doesn't match");
 				return null;

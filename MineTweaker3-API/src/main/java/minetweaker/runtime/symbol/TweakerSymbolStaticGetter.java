@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticGetter;
 
 /**

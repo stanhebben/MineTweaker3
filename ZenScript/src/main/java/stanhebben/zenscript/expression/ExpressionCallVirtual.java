@@ -24,11 +24,14 @@ public class ExpressionCallVirtual extends Expression {
 	
 	public ExpressionCallVirtual(
 			CodePosition position,
-			IScopeMethod environment,
+			IScopeMethod scope,
 			IMethod method,
 			Expression receiver,
 			Expression... arguments) {
-		super(position, environment);
+		super(position, scope);
+		
+		if (method == null)
+			throw new IllegalArgumentException("method cannot be null");
 		
 		this.method = method;
 		

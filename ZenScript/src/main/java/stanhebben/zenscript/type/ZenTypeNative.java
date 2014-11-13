@@ -30,13 +30,13 @@ import stanhebben.zenscript.expression.ExpressionCompareGeneric;
 import stanhebben.zenscript.expression.ExpressionInvalid;
 import stanhebben.zenscript.expression.ExpressionNull;
 import stanhebben.zenscript.expression.ExpressionString;
-import stanhebben.zenscript.expression.partial.IPartialExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import stanhebben.zenscript.type.iterator.IteratorIterable;
 import stanhebben.zenscript.type.iterator.IteratorList;
 import stanhebben.zenscript.type.iterator.IteratorMap;
 import stanhebben.zenscript.type.iterator.IteratorMapKeys;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.method.JavaMethod;
+import org.openzen.zencode.java.method.JavaMethod;
 import stanhebben.zenscript.type.natives.ZenNativeCaster;
 import stanhebben.zenscript.type.natives.ZenNativeMember;
 import stanhebben.zenscript.type.natives.ZenNativeOperator;
@@ -324,6 +324,7 @@ public class ZenTypeNative extends ZenType {
 		if (member == null) {
 			MemberVirtual result = new MemberVirtual(position, environment, value.eval(), name);
 			memberExpansion(result);
+			
 			if (result.isEmpty()) {
 				if (hasBinary(getScope().getTypes().STRING, OperatorType.MEMBERGETTER)) {
 					return operator(
@@ -563,6 +564,16 @@ public class ZenTypeNative extends ZenType {
 					implementing.add((ZenTypeNative) type);
 				}
 			}
+		}
+	}
+	
+	@Override
+	protected void memberExpansion(MemberVirtual member)
+	{
+		super.memberExpansion(member);
+		
+		for (ZenTypeNative implementingType : implementing) {
+			implementingType.memberExpansion(member);
 		}
 	}
 	
