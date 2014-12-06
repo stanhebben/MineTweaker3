@@ -8,11 +8,10 @@ package org.openzen.zencode.parser.expression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.expression.ExpressionInvalid;
 
 /**
  *
@@ -32,24 +31,30 @@ public class ParsedExpressionCall extends ParsedExpression
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod scope, ZenType predictedType)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
 	{
-		IPartialExpression cReceiver = receiver.compilePartial(scope, null);
+		IPartialExpression<E, T> cReceiver = receiver.compilePartial(scope, null);
 
-		MatchedArguments matchedArguments = arguments.compile(cReceiver.getMethods(), scope);
+		MatchedArguments<E, T> matchedArguments = arguments.compile(cReceiver.getMethods(), scope);
 		if (matchedArguments == null) {
 			if (cReceiver.getMethods().isEmpty())
 				scope.error(getPosition(), "Trying to call a non-method");
 			else
 				scope.error(getPosition(), "No method matched the given arguments");
-			return new ExpressionInvalid(getPosition(), scope);
+			
+			return scope.getExpressionCompiler().invalid(getPosition(), scope);
 		}
 
-		return cReceiver.call(getPosition(), matchedArguments.method, matchedArguments.arguments);
+		IPartialExpression<E, T> result = cReceiver.call(getPosition(), matchedArguments.method, matchedArguments.arguments);
+		if (asType != null)
+			result = result.cast(getPosition(), asType);
+		
+		return result;
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment)
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
 	{
 		IAny receiverValue = receiver.eval(environment);
 		if (receiverValue == null)

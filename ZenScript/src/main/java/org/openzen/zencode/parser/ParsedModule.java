@@ -1,10 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
 package org.openzen.zencode.parser;
 
+import org.openzen.zencode.java.JavaCompiler;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,12 +28,12 @@ public class ParsedModule
 {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	private final ParserEnvironment global;
+	private final JavaCompiler global;
 	private final IFileLoader fileLoader;
 	private final String name;
 	private final List<ParsedFile> files;
 
-	public ParsedModule(ParserEnvironment global, IFileLoader fileLoader, String name)
+	public ParsedModule(JavaCompiler global, IFileLoader fileLoader, String name)
 	{
 		this.global = global;
 		this.fileLoader = fileLoader;
@@ -40,7 +41,7 @@ public class ParsedModule
 		this.files = new ArrayList<ParsedFile>();
 	}
 
-	public ParserEnvironment getParserEnvironment()
+	public JavaCompiler getParserEnvironment()
 	{
 		return global;
 	}
@@ -53,7 +54,7 @@ public class ParsedModule
 	public void addScript(String filename, String contents)
 	{
 		try {
-			files.add(new ParsedFile(this, filename, new ZenLexer(contents)));
+			files.add(new ParsedFile(this, filename, new ZenLexer(global.getCompileEnvironment().getErrorLogger(), contents)));
 		} catch (IOException ex) {
 			global.getCompileEnvironment().getErrorLogger().error(
 					null,
@@ -65,7 +66,7 @@ public class ParsedModule
 	{
 		try {
 			Reader reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(file)), UTF8);
-			files.add(new ParsedFile(this, file.getName(), new ZenLexer(reader)));
+			files.add(new ParsedFile(this, file.getName(), new ZenLexer(global.getCompileEnvironment().getErrorLogger(), reader)));
 		} catch (IOException ex) {
 			global.getCompileEnvironment().getErrorLogger().error(
 					null,

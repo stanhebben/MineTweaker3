@@ -3,39 +3,51 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.symbolic.type.generic;
 
 import java.util.HashMap;
 import java.util.Map;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class TypeCapture {
+public class TypeCapture<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+{
+	@SuppressWarnings("unchecked")
+	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 TypeCapture<E, T> empty()
+	{
+		return (TypeCapture<E, T>) EMPTY;
+	}
+	
 	public static final TypeCapture EMPTY = new TypeCapture(null);
-	
-	private final TypeCapture outer;
-	private final Map<ITypeVariable, ZenType> variables;
-	
-	public TypeCapture(TypeCapture outer) {
+
+	private final TypeCapture<E, T> outer;
+	private final Map<ITypeVariable, T> variables;
+
+	public TypeCapture(TypeCapture<E, T> outer)
+	{
 		this.outer = outer;
-		variables = new HashMap<ITypeVariable, ZenType>();
+		variables = new HashMap<ITypeVariable, T>();
 	}
-	
-	public ZenType get(ITypeVariable variable) {
-		if (variables.containsKey(variable)) {
+
+	public T get(ITypeVariable variable)
+	{
+		if (variables.containsKey(variable))
 			return variables.get(variable);
-		} else if (outer != null) {
+		else if (outer != null)
 			return outer.get(variable);
-		} else {
+		else
 			throw new RuntimeException("Could not resolve type variable");
-		}
 	}
-	
-	public void put(ITypeVariable variable, ZenType type) {
+
+	public void put(ITypeVariable variable, T type)
+	{
 		variables.put(variable, type);
 	}
 }

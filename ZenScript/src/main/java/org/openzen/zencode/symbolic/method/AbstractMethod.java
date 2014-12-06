@@ -5,61 +5,51 @@
  */
 package org.openzen.zencode.symbolic.method;
 
-import org.openzen.zencode.symbolic.expression.Expressions;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionCallStatic;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.expression.ExpressionCallVirtual;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public abstract class AbstractMethod implements IMethod
+public abstract class AbstractMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMethod<E, T>
 {
-	@Override
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Expression... values)
+	private static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+		 ES[] convert(CodePosition position, IScopeMethod<ES, TS> scope, Object... arguments)
 	{
-		if (isStatic())
-			return new ExpressionCallStatic(position, scope, this, values);
+		@SuppressWarnings("unchecked")
+		ES[] converted = (ES[]) new IPartialExpression[arguments.length];
+		for (int i = 0; i < arguments.length; i++) {
+			converted[i] = scope.getExpressionCompiler().constant(position, scope, arguments[i]);
+		}
 		
-		scope.error(position, "Cannot call this method statically");
-		return new ExpressionInvalid(position, scope, getReturnType());
+		return converted;
 	}
 	
 	@Override
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Object... constantArguments)
+	public E callStaticWithConstants(CodePosition position, IScopeMethod<E, T> scope, Object... constantArguments)
 	{
-		return callStatic(position, scope, Expressions.convert(position, scope, constantArguments));
+		return callStatic(position, scope, convert(position, scope, constantArguments));
 	}
 	
 	@Override
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Expression... values)
+	public E callVirtualWithConstants(CodePosition position, IScopeMethod<E, T> scope, E target, Object... constantArguments)
 	{
-		if (!isStatic())
-			return new ExpressionCallVirtual(position, scope, this, target, values);
-		
-		scope.error(position, "Cannot call this method virtually");
-		return new ExpressionInvalid(position, scope, getReturnType());
+		return callVirtual(position, scope, target, convert(position, scope, constantArguments));
 	}
 	
 	@Override
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Object... constantArguments)
+	public MethodHeader<E, T> getMethodHeader()
 	{
-		return callVirtual(position, scope, target, Expressions.convert(position, scope, constantArguments));
+		return getFunctionType().getFunctionHeader();
 	}
 	
 	@Override
-	public MethodHeader getMethodHeader()
-	{
-		return getFunctionType().getHeader();
-	}
-	
-	@Override
-	public ZenType getReturnType()
+	public T getReturnType()
 	{
 		return getMethodHeader().getReturnType();
 	}

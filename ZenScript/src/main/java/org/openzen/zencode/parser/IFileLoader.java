@@ -1,9 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
-
 package org.openzen.zencode.parser;
 
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.io.InputStream;
  *
  * @author Stan
  */
-public interface IFileLoader {
+public interface IFileLoader
+{
 	public InputStream load(String name) throws IOException;
 }

@@ -17,7 +17,7 @@ import org.openzen.zencode.runtime.IAny;
  */
 public class TweakerSymbols
 {
-	public static ITweakerSymbol getStaticMethod(Class cls, String name, Class... argumentTypes)
+	public static ITweakerSymbol getStaticMethod(Class<?> cls, String name, Class<?>... argumentTypes)
 	{
 		try {
 			Method result = cls.getMethod(name, argumentTypes);
@@ -30,12 +30,12 @@ public class TweakerSymbols
 		}
 	}
 
-	public static ITweakerSymbol getStaticField(Class cls, String name)
+	public static ITweakerSymbol getStaticField(Class<?> cls, String name)
 	{
 		return getStaticField(cls, name, null);
 	}
 
-	public static ITweakerSymbol getStaticField(Class cls, String name, IAny value)
+	public static ITweakerSymbol getStaticField(Class<?> cls, String name, IAny value)
 	{
 		try {
 			Field field = cls.getField(name);
@@ -48,12 +48,12 @@ public class TweakerSymbols
 		}
 	}
 
-	public static ITweakerSymbol getStaticGetter(Class cls, String name)
+	public static ITweakerSymbol getStaticGetter(Class<?> cls, String name)
 	{
 		return getStaticGetter(cls, name, null);
 	}
 
-	public static ITweakerSymbol getStaticGetter(Class cls, String name, IAny value)
+	public static ITweakerSymbol getStaticGetter(Class<?> cls, String name, IAny value)
 	{
 		try {
 			Method result = cls.getMethod(name);

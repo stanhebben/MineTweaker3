@@ -1,7 +1,7 @@
 /*
- * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
  * 
- * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
 package org.openzen.zencode;
 

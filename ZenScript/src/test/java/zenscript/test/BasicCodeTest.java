@@ -12,7 +12,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openzen.zencode.parser.ParsedModule;
-import org.openzen.zencode.parser.ParserEnvironment;
+import org.openzen.zencode.java.JavaCompiler;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 
 /**
@@ -56,7 +56,7 @@ public class BasicCodeTest
 	public void testPrint()
 	{
 		System.out.println("print");
-		ParserEnvironment environment = new ParserEnvironment(scope);
+		JavaCompiler environment = new JavaCompiler(scope);
 		
 		ParsedModule module = new ParsedModule(environment, null, "test");
 		module.addScript("test.zs", "print(\"Hello World!\");");

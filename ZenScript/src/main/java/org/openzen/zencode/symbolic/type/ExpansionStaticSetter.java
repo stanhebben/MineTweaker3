@@ -5,10 +5,9 @@
  */
 package org.openzen.zencode.symbolic.type;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.symbolic.MemberStatic;
+import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.util.CodePosition;
@@ -16,27 +15,31 @@ import org.openzen.zencode.util.CodePosition;
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class ExpansionStaticSetter implements ISetter
+public class ExpansionStaticSetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		implements ISetter<E, T>
 {
-	private final MemberStatic member;
-	private final IMethod method;
+	private final PartialStaticMember<E, T> member;
+	private final IMethod<E, T> method;
 	
-	public ExpansionStaticSetter(MemberStatic member, IMethod method)
+	public ExpansionStaticSetter(PartialStaticMember<E, T> member, IMethod<E, T> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
 		return method.getReturnType();
 	}
 
 	@Override
-	public Expression compile(CodePosition position, IScopeMethod scope, Expression expression)
+	@SuppressWarnings("unchecked")
+	public E compile(CodePosition position, IScopeMethod<E, T> scope, E value)
 	{
-		return method.callStatic(position, scope, expression);
+		return method.callStatic(position, scope, value);
 	}
 }

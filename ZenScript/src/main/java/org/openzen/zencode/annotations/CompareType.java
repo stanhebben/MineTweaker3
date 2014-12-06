@@ -1,3 +1,8 @@
+/*
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
+ */
 package org.openzen.zencode.annotations;
 
 /**

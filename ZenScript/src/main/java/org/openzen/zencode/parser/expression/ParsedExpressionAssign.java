@@ -3,43 +3,51 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
-public class ParsedExpressionAssign extends ParsedExpression {
+public class ParsedExpressionAssign extends ParsedExpression
+{
 	private final ParsedExpression left;
 	private final ParsedExpression right;
-	
-	public ParsedExpressionAssign(CodePosition position, ParsedExpression left, ParsedExpression right) {
+
+	public ParsedExpressionAssign(CodePosition position, ParsedExpression left, ParsedExpression right)
+	{
 		super(position);
-		
+
 		this.left = left;
 		this.right = right;
 	}
-	
+
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
-		IPartialExpression cLeft = left.compilePartial(environment, predictedType);
-		
-		return cLeft.assign(
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+	{
+		IPartialExpression<E, T> cLeft = left.compilePartial(scope, asType);
+
+		E result = cLeft.assign(
 				getPosition(),
-				right.compile(environment, cLeft.getType())
-		);
+				right.compile(scope, cLeft.getType()));
+		
+		if (asType != null)
+			result = result.cast(getPosition(), asType);
+		
+		return result;
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment) {
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	{
 		return null;
 	}
 }

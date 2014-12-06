@@ -8,15 +8,15 @@ import minetweaker.api.liquid.ILiquidStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import org.openzen.zencode.java.IJavaScopeGlobal;
 import org.openzen.zencode.java.JavaNative;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.method.IJavaMethod;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.util.CodePosition;
-import org.openzen.zencode.symbolic.expression.IPartialExpression;
 
 /**
  *
@@ -34,19 +34,18 @@ public class LiquidBracketHandler implements IBracketHandler
 			return null;
 	}
 
-	private final IMethod method;
+	private final IJavaMethod method;
 
-	public LiquidBracketHandler(IScopeGlobal scope)
+	public LiquidBracketHandler(IJavaScopeGlobal scope)
 	{
 		method = JavaNative.getStaticMethod(scope, LiquidBracketHandler.class, "getLiquid", String.class);
 	}
 
 	@Override
-	public IZenSymbol resolve(List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens)
 	{
-		if (tokens.size() > 2)
-			if (tokens.get(0).getValue().equals("liquid") && tokens.get(1).getValue().equals(":"))
-				return find(tokens, 2, tokens.size());
+		if (tokens.size() > 2 && tokens.get(0).getValue().equals("liquid") && tokens.get(1).getValue().equals(":"))
+				return find(position, scope, tokens, 2, tokens.size());
 
 		return null;
 	}
@@ -57,7 +56,12 @@ public class LiquidBracketHandler implements IBracketHandler
 		return null;
 	}
 
-	private IZenSymbol find(List<Token> tokens, int startIndex, int endIndex)
+	private IJavaExpression find(
+			CodePosition position,
+			IScopeMethod<IJavaExpression, IJavaType> scope,
+			List<Token> tokens,
+			int startIndex,
+			int endIndex)
 	{
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
@@ -66,25 +70,9 @@ public class LiquidBracketHandler implements IBracketHandler
 		}
 
 		Fluid fluid = FluidRegistry.getFluid(valueBuilder.toString());
-		if (fluid != null)
-			return new LiquidReferenceSymbol(valueBuilder.toString());
-
-		return null;
-	}
-
-	private class LiquidReferenceSymbol implements IZenSymbol
-	{
-		private final String name;
-
-		public LiquidReferenceSymbol(String name)
-		{
-			this.name = name;
-		}
-
-		@Override
-		public IPartialExpression instance(CodePosition position, IScopeMethod scope)
-		{
-			return method.callStatic(position, scope, name);
-		}
+		if (fluid == null)
+			return null;
+		
+		return method.callStaticWithConstants(position, scope, valueBuilder.toString());
 	}
 }

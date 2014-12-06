@@ -16,14 +16,15 @@ import minetweaker.api.item.IngredientAny;
 import static minetweaker.api.minecraft.MineTweakerMC.getIItemStackWildcardSize;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
+import org.openzen.zencode.java.IJavaScopeGlobal;
 import org.openzen.zencode.java.JavaNative;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.method.IJavaMethod;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.util.CodePosition;
 
@@ -32,6 +33,7 @@ import org.openzen.zencode.util.CodePosition;
  * @author Stan
  */
 @BracketHandler(priority = 100)
+@SuppressWarnings("unchecked")
 public class ItemBracketHandler implements IBracketHandler
 {
 	private static final Map<String, Item> itemNames;
@@ -53,10 +55,10 @@ public class ItemBracketHandler implements IBracketHandler
 			return null;
 	}
 
-	private final IZenSymbol symbolAny;
-	private final IMethod method;
+	private final IZenSymbol<IJavaExpression, IJavaType> symbolAny;
+	private final IJavaMethod method;
 
-	public ItemBracketHandler(IScopeGlobal scope)
+	public ItemBracketHandler(IJavaScopeGlobal scope)
 	{
 		symbolAny = JavaNative.getStaticFieldSymbol(scope, IngredientAny.class, "INSTANCE");
 		method = JavaNative.getStaticMethod(
@@ -67,11 +69,11 @@ public class ItemBracketHandler implements IBracketHandler
 	}
 
 	@Override
-	public IZenSymbol resolve(List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens)
 	{
 		// any symbol
 		if (tokens.size() == 1 && tokens.get(0).getValue().equals("*"))
-			return symbolAny;
+			return symbolAny.instance(position, scope).eval();
 
 		// detect special cases:
 		//   item: at the start means item-specific syntax
@@ -95,7 +97,7 @@ public class ItemBracketHandler implements IBracketHandler
 			}
 		}
 
-		return find(tokens, fromIndex, toIndex, meta);
+		return find(position, scope, tokens, fromIndex, toIndex, meta);
 	}
 
 	@Override
@@ -104,7 +106,13 @@ public class ItemBracketHandler implements IBracketHandler
 		return null;
 	}
 
-	private IZenSymbol find(List<Token> tokens, int startIndex, int endIndex, int meta)
+	private IJavaExpression find(
+			CodePosition position,
+			IScopeMethod<IJavaExpression, IJavaType> scope,
+			List<Token> tokens,
+			int startIndex, 
+			int endIndex,
+			int meta)
 	{
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {
@@ -113,24 +121,6 @@ public class ItemBracketHandler implements IBracketHandler
 		}
 
 		String itemName = valueBuilder.toString();
-		return new ItemReferenceSymbol(itemName, meta);
-	}
-
-	private class ItemReferenceSymbol implements IZenSymbol
-	{
-		private final String name;
-		private final int meta;
-
-		public ItemReferenceSymbol(String name, int meta)
-		{
-			this.name = name;
-			this.meta = meta;
-		}
-
-		@Override
-		public IPartialExpression instance(CodePosition position, IScopeMethod scope)
-		{
-			return method.callStatic(position, scope, name, meta);
-		}
+		return method.callStaticWithConstants(position, scope, itemName, meta);
 	}
 }

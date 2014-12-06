@@ -5,37 +5,29 @@
  */
 package org.openzen.zencode.symbolic.field;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.util.MethodOutput;
 
 /**
  *
  * @author Stan
+ * @param <E>
  */
-public interface IField
+public interface IField<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public ZenType getType();
+	public T getType();
 	
 	public boolean isFinal();
 	
 	public boolean isStatic();
 	
-	public void compileStaticGet(MethodOutput output);
+	public E makeStaticGetExpression(CodePosition position, IScopeMethod<E, T> scope);
 	
-	public void compileStaticSet(MethodOutput output);
+	public E makeStaticSetExpression(CodePosition position, IScopeMethod<E, T> scope, E value);
 	
-	public void compileInstanceGet(MethodOutput output);
+	public E makeInstanceGetExpression(CodePosition position, IScopeMethod<E, T> scope, E target);
 	
-	public void compileInstanceSet(MethodOutput output);
-	
-	public Expression makeStaticGetExpression(CodePosition position, IScopeMethod scope);
-	
-	public Expression makeStaticSetExpression(CodePosition position, IScopeMethod scope, Expression value);
-	
-	public Expression makeInstanceGetExpression(CodePosition position, IScopeMethod scope, Expression target);
-	
-	public Expression makeInstanceSetExpression(CodePosition position, IScopeMethod scope, Expression target, Expression value);
+	public E makeInstanceSetExpression(CodePosition position, IScopeMethod<E, T> scope, E target, E value);
 }

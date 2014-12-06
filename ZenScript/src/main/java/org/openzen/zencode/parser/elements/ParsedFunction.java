@@ -5,10 +5,10 @@
  */
 package org.openzen.zencode.parser.elements;
 
-import java.util.List;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.parser.statement.ParsedStatement;
+import org.openzen.zencode.parser.statement.ParsedStatementBlock;
 import org.openzen.zencode.symbolic.scope.IScopeModule;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
@@ -19,19 +19,17 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class ParsedFunction
 {
-	public static ParsedFunction parse(ZenLexer tokener, ICodeErrorLogger errorLogger)
+	public static ParsedFunction parse(ZenLexer tokener)
 	{
 		tokener.next();
 
-		List<ParsedGenericParameter> genericParameters
-				= ParsedGenericParameters.parse(tokener, errorLogger);
 		CodePosition position = tokener.getPosition();
 		String name = tokener.requiredIdentifier();
 
 		ParsedFunctionSignature header
-				= ParsedFunctionSignature.parse(tokener, errorLogger, genericParameters);
-		List<ParsedStatement> statements
-				= ParsedStatement.parseBlock(tokener, errorLogger);
+				= ParsedFunctionSignature.parse(tokener);
+		ParsedStatement statements
+				= ParsedStatementBlock.parse(tokener);
 
 		return new ParsedFunction(position, name, header, statements);
 	}
@@ -39,16 +37,16 @@ public class ParsedFunction
 	private final CodePosition position;
 	private final String name;
 	private final ParsedFunctionSignature header;
-	private final List<ParsedStatement> statements;
+	private final ParsedStatement contents;
 
 	private SymbolicFunction compiled;
 
-	private ParsedFunction(CodePosition position, String name, ParsedFunctionSignature header, List<ParsedStatement> statements)
+	private ParsedFunction(CodePosition position, String name, ParsedFunctionSignature header, ParsedStatement contents)
 	{
 		this.position = position;
 		this.name = name;
 		this.header = header;
-		this.statements = statements;
+		this.contents = contents;
 	}
 
 	public CodePosition getPosition()
@@ -66,9 +64,9 @@ public class ParsedFunction
 		return header;
 	}
 
-	public List<ParsedStatement> getStatements()
+	public ParsedStatement getContents()
 	{
-		return statements;
+		return contents;
 	}
 
 	public SymbolicFunction compileHeader(IScopeModule scope)
@@ -79,8 +77,6 @@ public class ParsedFunction
 
 	public void compileContents()
 	{
-		for (ParsedStatement statement : statements) {
-			compiled.addStatement(statement.compile(compiled.getScope()));
-		}
+		compiled.addStatement(contents.compile(compiled.getScope()));
 	}
 }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.util;
 
 import org.openzen.zencode.parser.ParsedFile;
@@ -12,33 +11,40 @@ import org.openzen.zencode.parser.ParsedFile;
  *
  * @author Stanneke
  */
-public class CodePosition {
+public class CodePosition
+{
 	private final ParsedFile file;
 	private final int line;
 	private final int offset;
-	
-	public CodePosition(ParsedFile file, int line, int offset) {
-		if (file != null && line <= 0) throw new IllegalArgumentException("Line must be positive");
-		
+
+	public CodePosition(ParsedFile file, int line, int offset)
+	{
+		if (file != null && line <= 0)
+			throw new IllegalArgumentException("Line must be positive");
+
 		this.file = file;
 		this.line = line;
 		this.offset = offset;
 	}
-	
-	public ParsedFile getFile() {
+
+	public ParsedFile getFile()
+	{
 		return file;
 	}
-	
-	public int getLine() {
+
+	public int getLine()
+	{
 		return line;
 	}
-	
-	public int getLineOffset() {
+
+	public int getLineOffset()
+	{
 		return offset;
 	}
-	
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return (file == null ? "?" : file.getFileName()) + ":" + Integer.toString(line);
 	}
 }

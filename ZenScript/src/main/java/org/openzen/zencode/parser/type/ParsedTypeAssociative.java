@@ -5,9 +5,9 @@
  */
 package org.openzen.zencode.parser.type;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeAssociative;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  * Parsed associative array (valuetype[keytype]). Same as a dictionary or
@@ -25,10 +25,10 @@ public class ParsedTypeAssociative implements IParsedType {
 	}
 
 	@Override
-	public ZenType compile(IScopeGlobal scope) {
-		return new ZenTypeAssociative(
-				valueType.compile(scope),
-				keyType.compile(scope));
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 T compile(IScopeGlobal<E, T> scope)
+	{
+		return scope.getTypes().getMap(keyType.compile(scope), valueType.compile(scope));
 	}
 	
 	@Override

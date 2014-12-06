@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
-import stanhebben.zenscript.statements.Statement;
+import org.openzen.zencode.symbolic.statement.Statement;
 
 /**
  *

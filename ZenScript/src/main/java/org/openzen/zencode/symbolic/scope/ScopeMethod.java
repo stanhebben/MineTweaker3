@@ -10,27 +10,30 @@ import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
-import stanhebben.zenscript.statements.Statement;
+import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
+ * @param <E>
+ * @param <T>
  */
-public class ScopeMethod implements IScopeMethod
+public class ScopeMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IScopeMethod<E, T>
 {
-	private final IScopeClass scope;
-	private final Map<String, IZenSymbol> local;
-	private final ZenType returnType;
+	private final IScopeClass<E, T> scope;
+	private final Map<String, IZenSymbol<E, T>> local;
+	private final T returnType;
 
-	public ScopeMethod(IScopeClass environment, ZenType returnType)
+	public ScopeMethod(IScopeClass<E, T> environment, T returnType)
 	{
 		this.scope = environment;
-		this.local = new HashMap<String, IZenSymbol>();
+		this.local = new HashMap<String, IZenSymbol<E, T>>();
 		this.returnType = returnType;
 	}
 
@@ -41,9 +44,15 @@ public class ScopeMethod implements IScopeMethod
 	}
 
 	@Override
-	public TypeRegistry getTypes()
+	public ITypeCompiler<E, T> getTypes()
 	{
 		return scope.getTypes();
+	}
+	
+	@Override
+	public IScopeMethod<E, T> getConstantEnvironment()
+	{
+		return scope.getConstantEnvironment();
 	}
 	
 	@Override
@@ -65,9 +74,15 @@ public class ScopeMethod implements IScopeMethod
 	}
 
 	@Override
-	public IZenCompileEnvironment getEnvironment()
+	public IZenCompileEnvironment<E, T> getEnvironment()
 	{
 		return scope.getEnvironment();
+	}
+	
+	@Override
+	public IExpressionCompiler<E, T> getExpressionCompiler()
+	{
+		return scope.getExpressionCompiler();
 	}
 
 	@Override
@@ -89,7 +104,7 @@ public class ScopeMethod implements IScopeMethod
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)
+	public IPartialExpression<E, T> getValue(String name, CodePosition position, IScopeMethod<E, T> environment)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
@@ -98,7 +113,7 @@ public class ScopeMethod implements IScopeMethod
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			error(position, "Value already defined in this scope: " + name);
@@ -125,13 +140,13 @@ public class ScopeMethod implements IScopeMethod
 	}
 
 	@Override
-	public Statement getControlStatement(String label)
+	public Statement<E, T> getControlStatement(String label)
 	{
 		return null;
 	}
 
 	@Override
-	public ZenType getReturnType()
+	public T getReturnType()
 	{
 		return returnType;
 	}

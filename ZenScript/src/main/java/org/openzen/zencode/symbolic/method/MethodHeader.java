@@ -9,98 +9,100 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionLocalGet;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeArray;
-
 /**
  *
  * @author Stan Hebben
+ * @param <E>
+ * @param <T>
  */
-public class MethodHeader
+public class MethodHeader<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public static MethodHeader noArguments(ZenType returnType)
+	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+		 MethodHeader<ES, TS> noParameters(TS returnType)
 	{
-		return new MethodHeader(returnType, Collections.EMPTY_LIST, false);
+		return new MethodHeader<ES, TS>(returnType, Collections.<MethodParameter<ES, TS>>emptyList(), false);
 	}
 	
-	public static MethodHeader singleArgumentVoid(String argumentName, ZenType argumentType)
+	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+		 MethodHeader<ES, TS> singleParameterVoid(String argumentName, TS argumentType)
 	{
-		return singleArgument(argumentType.getScope().getTypes().VOID, argumentName, argumentType);
+		return singleParameter(argumentType.getScope().getTypes().getVoid(), argumentName, argumentType);
 	}
 
-	public static MethodHeader singleArgument(ZenType returnType, String argumentName, ZenType argumentType)
+	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+		 MethodHeader<ES, TS> singleParameter(TS returnType, String argumentName, TS argumentType)
 	{
-		MethodParameter argument = new MethodParameter(argumentName, argumentType, null);
-		return new MethodHeader(
+		MethodParameter<ES, TS> argument = new MethodParameter<ES, TS>(argumentName, argumentType, null);
+		return new MethodHeader<ES, TS>(
 				returnType,
 				Collections.singletonList(argument),
 				false);
 	}
 
-	private final ZenType returnType;
-	private final List<MethodParameter> arguments;
+	private final T returnType;
+	private final List<MethodParameter<E, T>> parameters;
 	private final boolean isVarargs;
 
 	// optimization
-	private final Map<String, Integer> argumentIndicesByName;
+	private final Map<String, Integer> parameterIndicesByName;
 
-	public MethodHeader(ZenType returnType, List<MethodParameter> arguments, boolean isVarargs)
+	public MethodHeader(T returnType, List<MethodParameter<E, T>> parameters, boolean isVarargs)
 	{
-		if (isVarargs && (arguments.isEmpty()))
+		if (isVarargs && (parameters.isEmpty()))
 			throw new IllegalArgumentException("Varargs method must have arguments");
 
-		if (isVarargs && !(arguments.get(arguments.size() - 1).getType() instanceof ZenTypeArray))
+		if (isVarargs && (parameters.get(parameters.size() - 1).getType()).getArrayBaseType() == null)
 			throw new IllegalArgumentException("Last varargs parameter must be an array");
 
 		this.returnType = returnType;
-		this.arguments = arguments;
+		this.parameters = parameters;
 		this.isVarargs = isVarargs;
 
-		argumentIndicesByName = new HashMap<String, Integer>();
-		for (int i = 0; i < arguments.size(); i++) {
-			if (arguments.get(i).getName() != null)
-				argumentIndicesByName.put(arguments.get(i).getName(), i);
+		parameterIndicesByName = new HashMap<String, Integer>();
+		for (int i = 0; i < parameters.size(); i++) {
+			if (parameters.get(i).getName() != null)
+				parameterIndicesByName.put(parameters.get(i).getName(), i);
 		}
 	}
 
-	public IScopeGlobal getScope()
+	public IScopeGlobal<E, T> getScope()
 	{
 		return returnType.getScope();
 	}
 
-	public ZenType getReturnType()
+	public T getReturnType()
 	{
 		return returnType;
 	}
 
-	public List<MethodParameter> getArguments()
+	public List<MethodParameter<E, T>> getParameters()
 	{
-		return arguments;
+		return parameters;
 	}
 
-	public MethodParameter getArgumentByIndex(int index)
+	public MethodParameter<E, T> getParameterByIndex(int index)
 	{
-		return arguments.get(index);
+		return parameters.get(index);
 	}
 
-	public MethodParameter getArgumentByName(String name)
+	public MethodParameter<E, T> getParameterByName(String name)
 	{
-		return arguments.get(argumentIndicesByName.get(name));
+		return parameters.get(parameterIndicesByName.get(name));
 	}
 	
-	public Expression makeArgumentGetExpression(int index, CodePosition position, IScopeMethod scope)
+	public E makeArgumentGetExpression(int index, CodePosition position, IScopeMethod<E, T> scope)
 	{
-		return new ExpressionLocalGet(position, scope, arguments.get(index).getLocal());
+		return scope.getExpressionCompiler().localGet(position, scope, parameters.get(index).getLocal());
 	}
 
-	public int getArgumentIndex(String name)
+	public int getParameterIndex(String name)
 	{
-		return argumentIndicesByName.containsKey(name) ? argumentIndicesByName.get(name) : -1;
+		return parameterIndicesByName.containsKey(name) ? parameterIndicesByName.get(name) : -1;
 	}
 
 	public boolean isVarargs()
@@ -110,35 +112,35 @@ public class MethodHeader
 
 	public boolean accepts(int numArguments)
 	{
-		if (numArguments > arguments.size())
+		if (numArguments > parameters.size())
 			return isVarargs;
-		if (numArguments == arguments.size())
+		if (numArguments == parameters.size())
 			return true;
 		else {
-			int checkUntil = isVarargs ? arguments.size() - 1 : arguments.size();
+			int checkUntil = isVarargs ? parameters.size() - 1 : parameters.size();
 			for (int i = numArguments; i < checkUntil; i++) {
-				if (arguments.get(i).getDefaultValue() == null)
+				if (parameters.get(i).getDefaultValue() == null)
 					return false;
 			}
 			return true;
 		}
 	}
 
-	public ZenType getVarArgBaseType()
+	public T getVarArgBaseType()
 	{
 		if (!isVarargs())
 			return null;
 
-		return ((ZenTypeArray) arguments.get(arguments.size() - 1).getType()).getBaseType();
+		return parameters.get(parameters.size() - 1).getType().getArrayBaseType();
 	}
 
-	public boolean acceptsWithExactTypes(Expression... arguments)
+	public boolean acceptsWithExactTypes(E... arguments)
 	{
 		if (!accepts(arguments.length))
 			return false;
 
 		for (int i = 0; i < arguments.length; i++) {
-			if (isVarargs() && i >= this.arguments.size() - 1 && getVarArgBaseType().equals(arguments[i].getType()))
+			if (isVarargs() && i >= this.parameters.size() - 1 && getVarArgBaseType().equals(arguments[i].getType()))
 				continue;
 			
 			if (!getArgumentType(i).equals(arguments[i].getType()))
@@ -148,13 +150,13 @@ public class MethodHeader
 		return true;
 	}
 
-	public boolean accepts(Expression... arguments)
+	public boolean accepts(E... arguments)
 	{
 		if (!accepts(arguments.length))
 			return false;
 
 		for (int i = 0; i < arguments.length; i++) {
-			if (isVarargs() && i >= this.arguments.size() - 1 && arguments[i].getType().canCastImplicit(
+			if (isVarargs() && i >= this.parameters.size() - 1 && arguments[i].getType().canCastImplicit(
 					arguments[i].getScope().getAccessScope(),
 					getVarArgBaseType()))
 				continue;
@@ -168,20 +170,8 @@ public class MethodHeader
 		return true;
 	}
 
-	public ZenType getArgumentType(int index)
+	public T getArgumentType(int index)
 	{
-		return arguments.get(index).getType();
-	}
-	
-	public String getSignature()
-	{
-		StringBuilder signature = new StringBuilder();
-		signature.append('(');
-		for (MethodParameter argument : arguments) {
-			signature.append(argument.getType().getSignature());
-		}
-		signature.append(')');
-		signature.append(returnType.getSignature());
-		return signature.toString();
+		return parameters.get(index).getType();
 	}
 }

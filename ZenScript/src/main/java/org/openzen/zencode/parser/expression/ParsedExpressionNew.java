@@ -3,43 +3,47 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.ExpressionNew;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
+ * TODO: handle anonymous class construction
  *
  * @author Stan
  */
-public class ParsedExpressionNew extends ParsedExpression {
+public class ParsedExpressionNew extends ParsedExpression
+{
 	private final IParsedType type;
 	private final ParsedCallArguments callArguments;
-	
-	public ParsedExpressionNew(CodePosition position, IParsedType type, ParsedCallArguments callArguments) {
+
+	public ParsedExpressionNew(CodePosition position, IParsedType type, ParsedCallArguments callArguments)
+	{
 		super(position);
-		
+
 		this.type = type;
 		this.callArguments = callArguments;
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
-		ZenType cType = type.compile(environment);
-		MatchedArguments compiledArguments = callArguments.compile(cType.getConstructors(), environment);
-		return new ExpressionNew(getPosition(), environment, cType, compiledArguments.method, compiledArguments.arguments);
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T predictedType)
+	{
+		T cType = type.compile(scope);
+		MatchedArguments<E, T> compiledArguments = callArguments.compile(cType.getConstructors(), scope);
+		return scope.getExpressionCompiler().constructNew(getPosition(), scope, cType, compiledArguments.method, compiledArguments.arguments);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment) {
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	{
 		return null;
 	}
 }

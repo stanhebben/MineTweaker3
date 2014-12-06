@@ -5,32 +5,25 @@
  */
 package org.openzen.zencode.symbolic.member;
 
-import org.openzen.zencode.symbolic.field.IField;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
-import org.openzen.zencode.util.CodePosition;
-import org.openzen.zencode.util.Modifiers;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionGetInstanceField;
-import stanhebben.zenscript.expression.ExpressionGetStaticField;
-import stanhebben.zenscript.expression.ExpressionSetInstanceField;
-import stanhebben.zenscript.expression.ExpressionSetStaticField;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.util.MethodOutput;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class FieldMember implements IMember, IField
+public class FieldMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMember<E, T>
 {
-	private final ISymbolicUnit unit;
+	private final ISymbolicUnit<E, T> unit;
 	
 	private final int access;
 	private final String name;
-	private final ZenType type;
+	private final T type;
 	
-	public FieldMember(ISymbolicUnit unit, int access, String name, ZenType type)
+	public FieldMember(ISymbolicUnit<E, T> unit, int access, String name, T type)
 	{
 		this.unit = unit;
 		this.access = access;
@@ -39,78 +32,8 @@ public class FieldMember implements IMember, IField
 	}
 
 	@Override
-	public ISymbolicUnit getUnit()
+	public ISymbolicUnit<E, T> getUnit()
 	{
 		return unit;
-	}
-	
-	@Override
-	public Expression makeStaticGetExpression(CodePosition position, IScopeMethod scope)
-	{
-		return new ExpressionGetStaticField(position, scope, this);
-	}
-	
-	@Override
-	public Expression makeStaticSetExpression(CodePosition position, IScopeMethod scope, Expression value)
-	{
-		return new ExpressionSetStaticField(position, scope, this, value);
-	}
-	
-	@Override
-	public Expression makeInstanceGetExpression(CodePosition position, IScopeMethod scope, Expression target)
-	{
-		return new ExpressionGetInstanceField(position, scope, target, this);
-	}
-	
-	@Override
-	public Expression makeInstanceSetExpression(CodePosition position, IScopeMethod scope, Expression target, Expression value)
-	{
-		return new ExpressionSetInstanceField(position, scope, target, this, value);
-	}
-	
-	// ############################
-	// ### Field implementation ###
-	// ############################
-	
-	@Override
-	public ZenType getType()
-	{
-		return type;
-	}
-
-	@Override
-	public boolean isFinal()
-	{
-		return (access & Modifiers.FINAL) > 0;
-	}
-
-	@Override
-	public boolean isStatic()
-	{
-		return (access & Modifiers.STATIC) > 0;
-	}
-
-	@Override
-	public void compileStaticGet(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void compileStaticSet(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void compileInstanceGet(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void compileInstanceSet(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

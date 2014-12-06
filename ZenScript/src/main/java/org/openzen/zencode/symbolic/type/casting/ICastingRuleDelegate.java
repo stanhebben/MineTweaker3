@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.symbolic.type.casting;
 
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface ICastingRuleDelegate {
-	public void registerCastingRule(ZenType type, ICastingRule rule);
+public interface ICastingRuleDelegate<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+{
+	public void registerCastingRule(T type, ICastingRule<E, T> rule);
 }

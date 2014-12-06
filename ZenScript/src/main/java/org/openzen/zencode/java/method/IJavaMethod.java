@@ -1,18 +1,21 @@
 /*
- * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
  * 
- * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
 package org.openzen.zencode.java.method;
 
-import org.openzen.zencode.java.expression.JavaExpression;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.IMethod;
 
 /**
  *
  * @author Stan
  */
-public interface IJavaMethod extends IMethod<JavaExpression>
+public interface IJavaMethod extends IMethod<IJavaExpression, IJavaType>
 {
+	public String getDeclaringClass();
 	
+	public String getMethodName();
 }

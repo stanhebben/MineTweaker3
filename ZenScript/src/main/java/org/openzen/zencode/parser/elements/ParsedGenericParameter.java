@@ -7,10 +7,8 @@ package org.openzen.zencode.parser.elements;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
-import static org.openzen.zencode.lexer.ZenLexer.T_IMPLEMENTS;
-import static org.openzen.zencode.lexer.ZenLexer.T_THIS;
+import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 
@@ -20,17 +18,20 @@ import org.openzen.zencode.parser.type.TypeParser;
  */
 public class ParsedGenericParameter
 {
-	public static ParsedGenericParameter parse(ZenLexer tokener, ICodeErrorLogger errors)
+	public static ParsedGenericParameter parse(ZenLexer lexer)
 	{
-		String name = tokener.requiredIdentifier();
+		String name = lexer.requiredIdentifier();
 		List<IParsedGenericBound> bounds = new ArrayList<IParsedGenericBound>();
 
 		while (true) {
-			if (tokener.optional(T_IMPLEMENTS) != null) {
-				IParsedType type = TypeParser.parse(tokener, errors);
+			if (lexer.optional(T_IMPLEMENTS) != null) {
+				IParsedType type = TypeParser.parse(lexer);
 				bounds.add(new ParsedGenericBoundImplements(type));
-			} else if (tokener.optional(T_THIS) != null) {
-				ParsedFunctionSignature signature = ParsedFunctionSignature.parse(tokener, errors, null);
+			} else if (lexer.optional(T_EXTENDS) != null) {
+				IParsedType type = TypeParser.parse(lexer);
+				bounds.add(new ParsedGenericBoundExtends(type));
+			} else if (lexer.optional(T_THIS) != null) {
+				ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
 				bounds.add(new ParsedGenericBoundConstructor(signature));
 			} else {
 				break;

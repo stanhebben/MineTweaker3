@@ -3,17 +3,16 @@ package org.openzen.zencode.parser.elements;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.MethodParameter;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.ParsedTypeBasic;
 import org.openzen.zencode.parser.type.TypeParser;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  * Contains a parsed function header. A function header is the combination of
@@ -24,28 +23,31 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
  */
 public class ParsedFunctionSignature
 {
-	public static ParsedFunctionSignature parse(ZenLexer tokener, ICodeErrorLogger errorLogger, List<ParsedGenericParameter> generics)
+	public static ParsedFunctionSignature parse(ZenLexer lexer)
 	{
+		List<ParsedGenericParameter> genericParameters
+				= ParsedGenericParameters.parse(lexer);
+		
 		List<ParsedFunctionParameter> parameters = new ArrayList<ParsedFunctionParameter>();
 
-		tokener.required(T_BROPEN, "( expected");
+		lexer.required(T_BROPEN, "( expected");
 
-		if (tokener.optional(T_BRCLOSE) == null) {
+		if (lexer.optional(T_BRCLOSE) == null) {
 			ParsedFunctionParameter argument;
 			do {
-				argument = ParsedFunctionParameter.parse(tokener, errorLogger);
+				argument = ParsedFunctionParameter.parse(lexer);
 				parameters.add(argument);
-			} while (!argument.isVarArg() && tokener.optional(T_COMMA) != null);
+			} while (!argument.isVarArg() && lexer.optional(T_COMMA) != null);
 
-			tokener.required(T_BRCLOSE, ") or ; expected");
+			lexer.required(T_BRCLOSE, ") expected");
 		}
 
 		IParsedType returnType = ParsedTypeBasic.ANY;
 
-		if (tokener.optional(T_AS) != null)
-			returnType = TypeParser.parse(tokener, errorLogger);
+		if (lexer.optional(T_AS) != null)
+			returnType = TypeParser.parse(lexer);
 
-		return new ParsedFunctionSignature(generics, parameters, returnType);
+		return new ParsedFunctionSignature(genericParameters, parameters, returnType);
 	}
 
 	private final List<ParsedGenericParameter> generics;
@@ -59,17 +61,18 @@ public class ParsedFunctionSignature
 		this.returnType = returnType;
 	}
 
-	public MethodHeader compile(IScopeGlobal scope)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 MethodHeader<E, T> compile(IScopeGlobal<E, T> scope)
 	{
-		ZenType compiledReturnType = this.returnType.compile(scope);
-		List<MethodParameter> compiledArguments = new ArrayList<MethodParameter>();
+		T compiledReturnType = this.returnType.compile(scope);
+		List<MethodParameter<E, T>> compiledArguments = new ArrayList<MethodParameter<E, T>>();
 
 		for (ParsedFunctionParameter parameter : parameters) {
 			compiledArguments.add(parameter.compile(scope));
 		}
 
 		boolean isVararg = !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
-		return new MethodHeader(compiledReturnType, compiledArguments, isVararg);
+		return new MethodHeader<E, T>(compiledReturnType, compiledArguments, isVararg);
 	}
 
 	public List<ParsedFunctionParameter> getArguments()
@@ -87,19 +90,20 @@ public class ParsedFunctionSignature
 		return !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
 	}
 
-	public List<MethodParameter> getCompiledArguments(IScopeGlobal environment)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 List<MethodParameter<E, T>> getCompiledArguments(IScopeGlobal<E, T> environment)
 	{
-		List<MethodParameter> result = new ArrayList<MethodParameter>();
+		List<MethodParameter<E, T>> result = new ArrayList<MethodParameter<E, T>>();
 
 		for (ParsedFunctionParameter parameter : parameters) {
-			ZenType type = parameter.getType().compile(environment);
+			T type = parameter.getType().compile(environment);
 			ParsedExpression defaultValue = parameter.getDefaultValue();
-			Expression compiledDefaultValue = null;
+			E compiledDefaultValue = null;
 
 			if (defaultValue != null)
-				compiledDefaultValue = defaultValue.compile(environment.getTypes().getStaticGlobalEnvironment(), type);
+				compiledDefaultValue = defaultValue.compile(environment.getConstantEnvironment(), type);
 
-			result.add(new MethodParameter(parameter.getName(), type, compiledDefaultValue));
+			result.add(new MethodParameter<E, T>(parameter.getName(), type, compiledDefaultValue));
 		}
 
 		return result;

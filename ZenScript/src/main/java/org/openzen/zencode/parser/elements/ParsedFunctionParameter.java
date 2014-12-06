@@ -1,19 +1,17 @@
 package org.openzen.zencode.parser.elements;
 
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.T_AS;
 import static org.openzen.zencode.lexer.ZenLexer.T_ASSIGN;
-import static org.openzen.zencode.lexer.ZenLexer.T_BRCLOSE;
 import static org.openzen.zencode.lexer.ZenLexer.T_DOT3;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.ParsedTypeBasic;
 import org.openzen.zencode.parser.type.TypeParser;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodParameter;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -22,26 +20,22 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class ParsedFunctionParameter
 {
-	public static ParsedFunctionParameter parse(ZenLexer tokener, ICodeErrorLogger errorLogger)
+	public static ParsedFunctionParameter parse(ZenLexer lexer)
 	{
-		CodePosition position = tokener.getPosition();
-		String argName = tokener.requiredIdentifier();
+		CodePosition position = lexer.getPosition();
+		String argName = lexer.requiredIdentifier();
 		IParsedType argType = ParsedTypeBasic.ANY;
 		ParsedExpression defaultValue = null;
 		boolean isVararg = false;
 
-		if (tokener.optional(T_AS) != null) {
-			argType = TypeParser.parse(tokener, errorLogger);
-		}
+		if (lexer.optional(T_AS) != null)
+			argType = TypeParser.parse(lexer);
 
-		if (tokener.optional(T_ASSIGN) != null) {
-			defaultValue = ParsedExpression.parse(tokener, errorLogger);
-		}
+		if (lexer.optional(T_ASSIGN) != null)
+			defaultValue = ParsedExpression.parse(lexer);
 
-		if (tokener.optional(T_DOT3) != null) {
+		if (lexer.optional(T_DOT3) != null)
 			isVararg = true;
-			tokener.required(T_BRCLOSE, ") expected");
-		}
 
 		return new ParsedFunctionParameter(position, argName, argType, defaultValue, isVararg);
 	}
@@ -85,11 +79,12 @@ public class ParsedFunctionParameter
 	{
 		return vararg;
 	}
-	
-	public MethodParameter compile(IScopeGlobal scope)
+
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 MethodParameter<E, T> compile(IScopeGlobal<E, T> scope)
 	{
-		ZenType cType = type.compile(scope);
-		Expression compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getTypes().getStaticGlobalEnvironment(), cType);
-		return new MethodParameter(name, cType, compiledDefaultValue);
+		T cType = type.compile(scope);
+		E compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getConstantEnvironment(), cType);
+		return new MethodParameter<E, T>(name, cType, compiledDefaultValue);
 	}
 }

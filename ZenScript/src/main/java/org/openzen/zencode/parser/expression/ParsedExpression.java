@@ -11,10 +11,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
@@ -24,6 +21,7 @@ import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import static org.openzen.zencode.util.Strings.unescapeString;
 import org.openzen.zencode.util.CodePosition;
 
@@ -33,173 +31,173 @@ import org.openzen.zencode.util.CodePosition;
  */
 public abstract class ParsedExpression
 {
-	public static ParsedExpression parse(ZenLexer parser, ICodeErrorLogger errorLogger)
+	public static ParsedExpression parse(ZenLexer lexer)
 	{
-		return readAssignExpression(parser, errorLogger);
+		return readAssignExpression(lexer);
 	}
 
-	private static ParsedExpression readAssignExpression(ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readAssignExpression(ZenLexer lexer)
 	{
-		Token token = parser.peek();
+		Token token = lexer.peek();
 		if (token == null) {
-			CodePosition position = new CodePosition(parser.getFile(), parser.getLine(), parser.getLineOffset());
-			errorLogger.error(position, "unexpected end of file; expression expected");
+			CodePosition position = new CodePosition(lexer.getFile(), lexer.getLine(), lexer.getLineOffset());
+			lexer.error(position, "unexpected end of file; expression expected");
 			return new ParsedExpressionInvalid(position);
 		}
 
 		CodePosition position = token.getPosition();
 
-		ParsedExpression left = readConditionalExpression(position, parser, errorLogger);
+		ParsedExpression left = readConditionalExpression(position, lexer);
 
-		if (parser.peek() == null) {
-			CodePosition position2 = new CodePosition(parser.getFile(), parser.getLine(), parser.getLineOffset());
-			errorLogger.error(position2, "unexpected end of file - ; expected");
+		if (lexer.peek() == null) {
+			CodePosition position2 = new CodePosition(lexer.getFile(), lexer.getLine(), lexer.getLineOffset());
+			lexer.error(position2, "unexpected end of file - ; expected");
 			return new ParsedExpressionInvalid(position2);
 		}
 
-		switch (parser.peek().getType()) {
+		switch (lexer.peek().getType()) {
 			case T_ASSIGN:
-				parser.next();
-				return new ParsedExpressionAssign(position, left, readAssignExpression(parser, errorLogger));
+				lexer.next();
+				return new ParsedExpressionAssign(position, left, readAssignExpression(lexer));
 			case T_PLUSASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.ADD);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.ADD);
 			case T_MINUSASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.SUB);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.SUB);
 			case T_TILDEASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.CAT);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.CAT);
 			case T_MULASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.MUL);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.MUL);
 			case T_DIVASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.DIV);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.DIV);
 			case T_MODASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.MOD);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.MOD);
 			case T_ORASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.OR);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.OR);
 			case T_ANDASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.AND);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.AND);
 			case T_XORASSIGN:
-				parser.next();
-				return new ParsedExpressionOpAssign(position, left, readAssignExpression(parser, errorLogger), OperatorType.XOR);
+				lexer.next();
+				return new ParsedExpressionOpAssign(position, left, readAssignExpression(lexer), OperatorType.XOR);
 		}
 
 		return left;
 	}
 
-	private static ParsedExpression readConditionalExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readConditionalExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readOrOrExpression(position, parser, errorLogger);
+		ParsedExpression left = readOrOrExpression(position, lexer);
 
-		if (parser.optional(T_QUEST) != null) {
-			ParsedExpression onIf = readOrOrExpression(parser.peek().getPosition(), parser, errorLogger);
-			parser.required(T_COLON, ": expected");
-			ParsedExpression onElse = readConditionalExpression(parser.peek().getPosition(), parser, errorLogger);
+		if (lexer.optional(T_QUEST) != null) {
+			ParsedExpression onIf = readOrOrExpression(lexer.peek().getPosition(), lexer);
+			lexer.required(T_COLON, ": expected");
+			ParsedExpression onElse = readConditionalExpression(lexer.peek().getPosition(), lexer);
 			return new ParsedExpressionConditional(position, left, onIf, onElse);
 		}
 
 		return left;
 	}
 
-	private static ParsedExpression readOrOrExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readOrOrExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readAndAndExpression(position, parser, errorLogger);
+		ParsedExpression left = readAndAndExpression(position, lexer);
 
-		while (parser.optional(T_OR2) != null) {
-			ParsedExpression right = readAndAndExpression(parser.peek().getPosition(), parser, errorLogger);
+		while (lexer.optional(T_OR2) != null) {
+			ParsedExpression right = readAndAndExpression(lexer.peek().getPosition(), lexer);
 			left = new ParsedExpressionOrOr(position, left, right);
 		}
 		return left;
 	}
 
-	private static ParsedExpression readAndAndExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readAndAndExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readOrExpression(position, parser, errorLogger);
+		ParsedExpression left = readOrExpression(position, lexer);
 
-		while (parser.optional(T_AND2) != null) {
-			ParsedExpression right = readOrExpression(parser.peek().getPosition(), parser, errorLogger);
+		while (lexer.optional(T_AND2) != null) {
+			ParsedExpression right = readOrExpression(lexer.peek().getPosition(), lexer);
 			left = new ParsedExpressionAndAnd(position, left, right);
 		}
 		return left;
 	}
 
-	private static ParsedExpression readOrExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readOrExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readXorExpression(position, parser, errorLogger);
+		ParsedExpression left = readXorExpression(position, lexer);
 
-		while (parser.optional(T_OR) != null) {
-			ParsedExpression right = readXorExpression(parser.peek().getPosition(), parser, errorLogger);
+		while (lexer.optional(T_OR) != null) {
+			ParsedExpression right = readXorExpression(lexer.peek().getPosition(), lexer);
 			left = new ParsedExpressionBinary(position, left, right, OperatorType.OR);
 		}
 		return left;
 	}
 
-	private static ParsedExpression readXorExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readXorExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readAndExpression(position, parser, errorLogger);
+		ParsedExpression left = readAndExpression(position, lexer);
 
-		while (parser.optional(T_XOR) != null) {
-			ParsedExpression right = readAndExpression(parser.peek().getPosition(), parser, errorLogger);
+		while (lexer.optional(T_XOR) != null) {
+			ParsedExpression right = readAndExpression(lexer.peek().getPosition(), lexer);
 			left = new ParsedExpressionBinary(position, left, right, OperatorType.XOR);
 		}
 		return left;
 	}
 
-	private static ParsedExpression readAndExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readAndExpression(CodePosition position, ZenLexer parser)
 	{
-		ParsedExpression left = readCompareExpression(position, parser, errorLogger);
+		ParsedExpression left = readCompareExpression(position, parser);
 
 		while (parser.optional(T_AND) != null) {
-			ParsedExpression right = readCompareExpression(parser.peek().getPosition(), parser, errorLogger);
+			ParsedExpression right = readCompareExpression(parser.peek().getPosition(), parser);
 			left = new ParsedExpressionBinary(position, left, right, OperatorType.AND);
 		}
 		return left;
 	}
 
-	private static ParsedExpression readCompareExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readCompareExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readAddExpression(position, parser, errorLogger);
+		ParsedExpression left = readAddExpression(position, lexer);
 
-		switch (parser.peek() == null ? -1 : parser.peek().getType()) {
+		switch (lexer.peek() == null ? -1 : lexer.peek().getType()) {
 			case T_EQ: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.EQ);
 			}
 			case T_NOTEQ: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.NE);
 			}
 			case T_LT: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.LT);
 			}
 			case T_LTEQ: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.LE);
 			}
 			case T_GT: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.GT);
 			}
 			case T_GTEQ: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionCompare(position, left, right, CompareType.GE);
 			}
 			case T_IN: {
-				parser.next();
-				ParsedExpression right = readAddExpression(parser.peek().getPosition(), parser, errorLogger);
+				lexer.next();
+				ParsedExpression right = readAddExpression(lexer.peek().getPosition(), lexer);
 				return new ParsedExpressionBinary(position, left, right, OperatorType.CONTAINS);
 			}
 		}
@@ -207,19 +205,19 @@ public abstract class ParsedExpression
 		return left;
 	}
 
-	private static ParsedExpression readAddExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readAddExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readMulExpression(position, parser, errorLogger);
+		ParsedExpression left = readMulExpression(position, lexer);
 
 		while (true) {
-			if (parser.optional(T_PLUS) != null) {
-				ParsedExpression right = readMulExpression(parser.peek().getPosition(), parser, errorLogger);
+			if (lexer.optional(T_PLUS) != null) {
+				ParsedExpression right = readMulExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.ADD);
-			} else if (parser.optional(T_MINUS) != null) {
-				ParsedExpression right = readMulExpression(parser.peek().getPosition(), parser, errorLogger);
+			} else if (lexer.optional(T_MINUS) != null) {
+				ParsedExpression right = readMulExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.SUB);
-			} else if (parser.optional(T_TILDE) != null) {
-				ParsedExpression right = readMulExpression(parser.peek().getPosition(), parser, errorLogger);
+			} else if (lexer.optional(T_TILDE) != null) {
+				ParsedExpression right = readMulExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.CAT);
 			} else
 				break;
@@ -227,19 +225,19 @@ public abstract class ParsedExpression
 		return left;
 	}
 
-	private static ParsedExpression readMulExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readMulExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression left = readUnaryExpression(position, parser, errorLogger);
+		ParsedExpression left = readUnaryExpression(position, lexer);
 
 		while (true) {
-			if (parser.optional(T_MUL) != null) {
-				ParsedExpression right = readUnaryExpression(parser.peek().getPosition(), parser, errorLogger);
+			if (lexer.optional(T_MUL) != null) {
+				ParsedExpression right = readUnaryExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.MUL);
-			} else if (parser.optional(T_DIV) != null) {
-				ParsedExpression right = readUnaryExpression(parser.peek().getPosition(), parser, errorLogger);
+			} else if (lexer.optional(T_DIV) != null) {
+				ParsedExpression right = readUnaryExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.DIV);
-			} else if (parser.optional(T_MOD) != null) {
-				ParsedExpression right = readUnaryExpression(parser.peek().getPosition(), parser, errorLogger);
+			} else if (lexer.optional(T_MOD) != null) {
+				ParsedExpression right = readUnaryExpression(lexer.peek().getPosition(), lexer);
 				left = new ParsedExpressionBinary(position, left, right, OperatorType.MOD);
 			} else
 				break;
@@ -248,79 +246,79 @@ public abstract class ParsedExpression
 		return left;
 	}
 
-	private static ParsedExpression readUnaryExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readUnaryExpression(CodePosition position, ZenLexer lexer)
 	{
-		switch (parser.peek().getType()) {
+		switch (lexer.peek().getType()) {
 			case T_NOT:
-				parser.next();
+				lexer.next();
 				return new ParsedExpressionUnary(
 						position,
-						readUnaryExpression(parser.peek().getPosition(), parser, errorLogger),
+						readUnaryExpression(lexer.peek().getPosition(), lexer),
 						OperatorType.NOT);
 
 			case T_MINUS:
-				parser.next();
+				lexer.next();
 				return new ParsedExpressionUnary(
 						position,
-						readUnaryExpression(parser.peek().getPosition(), parser, errorLogger),
+						readUnaryExpression(lexer.peek().getPosition(), lexer),
 						OperatorType.NEG);
 
 			case T_TILDE:
-				parser.next();
+				lexer.next();
 				return new ParsedExpressionUnary(
 						position,
-						readUnaryExpression(parser.peek().getPosition(), parser, errorLogger),
+						readUnaryExpression(lexer.peek().getPosition(), lexer),
 						OperatorType.INVERT);
 
 			default:
-				return readPostfixExpression(position, parser, errorLogger);
+				return readPostfixExpression(position, lexer);
 		}
 	}
 
-	private static ParsedExpression readPostfixExpression(CodePosition position, ZenLexer parser, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readPostfixExpression(CodePosition position, ZenLexer lexer)
 	{
-		ParsedExpression base = readPrimaryExpression(position, parser, errorLogger);
+		ParsedExpression base = readPrimaryExpression(position, lexer);
 
 		outer:
-		while (parser.hasNext()) {
-			switch (parser.peek().getType()) {
+		while (lexer.hasNext()) {
+			switch (lexer.peek().getType()) {
 				case T_DOT:
-					parser.next();
-					Token indexString = parser.optional(TOKEN_ID);
+					lexer.next();
+					Token indexString = lexer.optional(TOKEN_ID);
 					if (indexString != null)
 						base = new ParsedExpressionMember(position, base, indexString.getValue());
 					else {
-						Token indexString2 = parser.optional(T_STRING);
+						Token indexString2 = lexer.optional(T_STRING);
 						if (indexString2 != null)
 							base = new ParsedExpressionMember(position, base, unescapeString(indexString2.getValue()));
 						else {
-							Token last = parser.next();
+							Token last = lexer.next();
 							throw new ParseException(last, "Invalid expression, last token: " + last.getValue());
 						}
 					}
 					break;
 
 				case T_DOT2:
-					parser.next();
-					ParsedExpression to = readAssignExpression(parser, errorLogger);
+					lexer.next();
+					ParsedExpression to = readAssignExpression(lexer);
 					base = new ParsedExpressionRange(base, to);
 					break;
 
 				case T_SQBROPEN:
-					parser.next();
-					ParsedExpression index = readAssignExpression(parser, errorLogger);
+					lexer.next();
+					ParsedExpression index = readAssignExpression(lexer);
 					base = new ParsedExpressionIndex(position, base, index);
-					parser.required(T_SQBRCLOSE, "] expected");
+					lexer.required(T_SQBRCLOSE, "] expected");
 					break;
 
 				case T_BROPEN:
-					ParsedCallArguments callArguments = ParsedCallArguments.parse(parser, errorLogger);
+					ParsedCallArguments callArguments = ParsedCallArguments.parse(lexer);
 					base = new ParsedExpressionCall(base.getPosition(), base, callArguments);
 					break;
 
 				case T_AS:
-					parser.next();
-					IParsedType type = TypeParser.parse(parser, errorLogger);
+					lexer.next();
+					IParsedType type = TypeParser.parse(lexer);
 					base = new ParsedExpressionCast(position, base, type);
 					break;
 
@@ -332,33 +330,33 @@ public abstract class ParsedExpression
 		return base;
 	}
 
-	private static ParsedExpression readPrimaryExpression(CodePosition position, ZenLexer tokener, ICodeErrorLogger errorLogger)
+	private static ParsedExpression readPrimaryExpression(CodePosition position, ZenLexer lexer)
 	{
-		switch (tokener.peek().getType()) {
+		switch (lexer.peek().getType()) {
 			case TOKEN_INTVALUE:
 				return new ParsedExpressionInt(
 						position,
-						Long.parseLong(tokener.next().getValue()));
+						Long.parseLong(lexer.next().getValue()));
 
 			case T_FLOATVALUE:
 				return new ParsedExpressionFloat(
 						position,
-						Double.parseDouble(tokener.next().getValue()));
+						Double.parseDouble(lexer.next().getValue()));
 
 			case T_STRINGVALUE:
 				return new ParsedExpressionString(
 						position,
-						unescapeString(tokener.next().getValue()));
+						unescapeString(lexer.next().getValue()));
 
 			case T_DOLLAR: {
-				if (tokener.isNext(T_STRINGVALUE))
+				if (lexer.isNext(T_STRINGVALUE))
 					return new ParsedExpressionDollar(
 							position,
-							unescapeString(tokener.next().getValue()));
-				else if (tokener.isNext(TOKEN_ID))
+							unescapeString(lexer.next().getValue()));
+				else if (lexer.isNext(TOKEN_ID))
 					return new ParsedExpressionDollar(
 							position,
-							tokener.next().getValue());
+							lexer.next().getValue());
 				else
 					return new ParsedExpressionDollar(
 							position,
@@ -368,60 +366,60 @@ public abstract class ParsedExpression
 			case TOKEN_ID:
 				return new ParsedExpressionVariable(
 						position,
-						tokener.next().getValue());
+						lexer.next().getValue());
 
 			case T_FUNCTION:
 				// function (argname, argname, ...) { ...contents... }
-				tokener.next();
+				lexer.next();
 
-				ParsedFunctionSignature header = ParsedFunctionSignature.parse(tokener, errorLogger, null);
+				ParsedFunctionSignature header = ParsedFunctionSignature.parse(lexer);
 
-				tokener.required(T_AOPEN, "{ expected");
+				lexer.required(T_AOPEN, "{ expected");
 
 				List<ParsedStatement> statements = new ArrayList<ParsedStatement>();
-				if (tokener.optional(T_ACLOSE) == null)
-					while (tokener.optional(T_ACLOSE) == null) {
-						statements.add(ParsedStatement.parse(tokener, errorLogger));
+				if (lexer.optional(T_ACLOSE) == null)
+					while (lexer.optional(T_ACLOSE) == null) {
+						statements.add(ParsedStatement.parse(lexer));
 					}
 
 				return new ParsedExpressionFunction(position, header, statements);
 
 			case T_LT: {
-				Token start = tokener.next();
+				Token start = lexer.next();
 				List<Token> tokens = new ArrayList<Token>();
-				Token next = tokener.next();
+				Token next = lexer.next();
 				while (next.getType() != ZenLexer.T_GT) {
 					tokens.add(next);
-					next = tokener.next();
+					next = lexer.next();
 				}
 				return new ParsedExpressionBracket(start.getPosition(), tokens);
 			}
 			case T_SQBROPEN: {
-				tokener.next();
+				lexer.next();
 				List<ParsedExpression> contents = new ArrayList<ParsedExpression>();
-				if (tokener.optional(T_SQBRCLOSE) == null)
-					while (tokener.optional(T_SQBRCLOSE) == null) {
-						contents.add(readAssignExpression(tokener, errorLogger));
-						if (tokener.optional(T_COMMA) == null) {
-							tokener.required(T_SQBRCLOSE, "] or , expected");
+				if (lexer.optional(T_SQBRCLOSE) == null)
+					while (lexer.optional(T_SQBRCLOSE) == null) {
+						contents.add(readAssignExpression(lexer));
+						if (lexer.optional(T_COMMA) == null) {
+							lexer.required(T_SQBRCLOSE, "] or , expected");
 							break;
 						}
 					}
 				return new ParsedExpressionArray(position, contents);
 			}
 			case T_AOPEN: {
-				tokener.next();
+				lexer.next();
 
 				List<ParsedExpression> keys = new ArrayList<ParsedExpression>();
 				List<ParsedExpression> values = new ArrayList<ParsedExpression>();
-				if (tokener.optional(T_ACLOSE) == null) {
-					while (tokener.optional(T_ACLOSE) == null) {
-						keys.add(readAssignExpression(tokener, errorLogger));
-						tokener.required(T_COLON, ": expected");
-						values.add(readAssignExpression(tokener, errorLogger));
+				if (lexer.optional(T_ACLOSE) == null) {
+					while (lexer.optional(T_ACLOSE) == null) {
+						keys.add(readAssignExpression(lexer));
+						lexer.required(T_COLON, ": expected");
+						values.add(readAssignExpression(lexer));
 
-						if (tokener.optional(T_COMMA) == null) {
-							tokener.required(T_ACLOSE, "} or , expected");
+						if (lexer.optional(T_COMMA) == null) {
+							lexer.required(T_ACLOSE, "} or , expected");
 							break;
 						}
 					}
@@ -430,27 +428,27 @@ public abstract class ParsedExpression
 				}
 			}
 			case T_NEW: {
-				Token newToken = tokener.next();
-				IParsedType type = TypeParser.parse(tokener, errorLogger);
-				ParsedCallArguments arguments = ParsedCallArguments.parse(tokener, errorLogger);
+				Token newToken = lexer.next();
+				IParsedType type = TypeParser.parse(lexer);
+				ParsedCallArguments arguments = ParsedCallArguments.parse(lexer);
 				return new ParsedExpressionNew(newToken.getPosition(), type, arguments);
 			}
 			case T_TRUE:
-				tokener.next();
+				lexer.next();
 				return new ParsedExpressionBool(position, true);
 			case T_FALSE:
-				tokener.next();
+				lexer.next();
 				return new ParsedExpressionBool(position, false);
 			case T_NULL:
-				tokener.next();
+				lexer.next();
 				return new ParsedExpressionNull(position);
 			case T_BROPEN:
-				tokener.next();
-				ParsedExpression result = readAssignExpression(tokener, errorLogger);
-				tokener.required(T_BRCLOSE, ") expected");
+				lexer.next();
+				ParsedExpression result = readAssignExpression(lexer);
+				lexer.required(T_BRCLOSE, ") expected");
 				return result;
 			default:
-				Token last = tokener.next();
+				Token last = lexer.next();
 				throw new ParseException(last, "Invalid expression, last token: " + last.getValue());
 		}
 	}
@@ -467,9 +465,11 @@ public abstract class ParsedExpression
 		return position;
 	}
 
-	public abstract IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType);
+	public abstract <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> environment, T predictedType);
 
-	public final Expression compile(IScopeMethod environment, ZenType predictedType)
+	public final <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 E compile(IScopeMethod<E, T> environment, T predictedType)
 	{
 		return compilePartial(environment, predictedType).eval();
 	}
@@ -479,10 +479,11 @@ public abstract class ParsedExpression
 		return null;
 	}
 
-	public Expression compileKey(IScopeMethod environment, ZenType predictedType)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 E compileKey(IScopeMethod<E, T> environment, T asType)
 	{
-		return compile(environment, predictedType);
+		return compile(environment, asType);
 	}
 
-	public abstract IAny eval(IZenCompileEnvironment environment);
+	public abstract IAny eval(IZenCompileEnvironment<?, ?> environment);
 }

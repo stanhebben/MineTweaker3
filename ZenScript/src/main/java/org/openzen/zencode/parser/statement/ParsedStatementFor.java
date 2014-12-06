@@ -3,91 +3,96 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.statement;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.ScopeStatementBlock;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.statements.StatementForeach;
-import stanhebben.zenscript.statements.StatementNull;
-import stanhebben.zenscript.statements.StatementSwitch;
-import stanhebben.zenscript.symbols.SymbolLocal;
-import stanhebben.zenscript.type.IZenIterator;
+import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.statement.StatementForeach;
+import org.openzen.zencode.symbolic.statement.StatementNull;
+import org.openzen.zencode.symbolic.statement.StatementSwitch;
+import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ParsedStatementFor extends ParsedStatement {
-	public static ParsedStatementFor parse(ZenLexer tokener, ICodeErrorLogger errorLogger) {
-		CodePosition position = tokener.required(T_FOR, "for expected").getPosition();
-		
-		String name = tokener.required(TOKEN_ID, "identifier expected").getValue();
+public class ParsedStatementFor extends ParsedStatement
+{
+	public static ParsedStatementFor parse(ZenLexer lexer)
+	{
+		CodePosition position = lexer.required(T_FOR, "for expected").getPosition();
+
+		String name = lexer.required(TOKEN_ID, "identifier expected").getValue();
 		List<String> names = new ArrayList<String>();
 		names.add(name);
 
-		while (tokener.optional(T_COMMA) != null) {
-			names.add(tokener.required(TOKEN_ID, "identifier expected").getValue());
+		while (lexer.optional(T_COMMA) != null) {
+			names.add(lexer.required(TOKEN_ID, "identifier expected").getValue());
 		}
-		
-		tokener.required(T_IN, "in expected");
-		ParsedExpression source = ParsedExpression.parse(tokener, errorLogger);
-		ParsedStatement content = ParsedStatement.parse(tokener, errorLogger);
+
+		lexer.required(T_IN, "in expected");
+		ParsedExpression source = ParsedExpression.parse(lexer);
+		ParsedStatement content = ParsedStatement.parse(lexer);
 		return new ParsedStatementFor(
 				position,
 				names,
 				source,
 				content);
 	}
-	
+
 	private final List<String> names;
 	private final ParsedExpression source;
 	private final ParsedStatement content;
-	
-	public ParsedStatementFor(CodePosition position, List<String> names, ParsedExpression source, ParsedStatement content) {
+
+	public ParsedStatementFor(CodePosition position, List<String> names, ParsedExpression source, ParsedStatement content)
+	{
 		super(position);
-		
+
 		this.names = names;
 		this.source = source;
 		this.content = content;
 	}
 
 	@Override
-	public Statement compile(IScopeMethod scope) {
-		Expression compiledSource = source.compile(scope, null);
-		IZenIterator iterator = compiledSource.getType().makeIterator(names.size());
-		if (iterator == null) {
-			scope.error(getPosition(), compiledSource.getType().getName() + " has no iterator with " + names.size() + " variables.");
-			return new StatementNull(getPosition(), scope);
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+	{
+		E compiledSource = source.compile(scope, null);
+		List<T> iteratorTypes = compiledSource.getType().getIteratorTypes(names.size());
+		if (iteratorTypes == null) {
+			scope.error(getPosition(), compiledSource.getType() + " has no iterator with " + names.size() + " variables.");
+			return new StatementNull<E, T>(getPosition(), scope);
 		}
-		
-		
-		List<SymbolLocal> symbols = new ArrayList<SymbolLocal>();
-		StatementForeach compiledStatement = new StatementForeach(getPosition(), scope, symbols, compiledSource, iterator);
-		ScopeStatementBlock loopScope = new ScopeStatementBlock(scope, compiledStatement, names);
+
+		List<SymbolLocal<E, T>> symbols = new ArrayList<SymbolLocal<E, T>>();
+		StatementForeach<E, T> compiledStatement = new StatementForeach<E, T>(getPosition(), scope, symbols, compiledSource);
+		ScopeStatementBlock<E, T> loopScope = new ScopeStatementBlock<E, T>(scope, compiledStatement, names);
 		for (int i = 0; i < names.size(); i++) {
-			SymbolLocal symbol = new SymbolLocal(iterator.getType(i), true);
+			SymbolLocal<E, T> symbol = new SymbolLocal<E, T>(iteratorTypes.get(i), true);
 			symbols.add(symbol);
 			loopScope.putValue(names.get(i), symbol, getPosition());
 		}
-		
-		Statement compiledContents = content.compile(loopScope);
+
+		Statement<E, T> compiledContents = content.compile(loopScope);
 		compiledStatement.setBody(compiledContents);
-		
+
 		return compiledStatement;
 	}
 
 	@Override
-	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+	{
 		forSwitch.onStatement(compile(scope));
 	}
 }

@@ -10,26 +10,30 @@ import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class ScopeClass implements IScopeClass
+public class ScopeClass<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IScopeClass<E, T>
 {
 	private final AccessScope accessScope;
-	private final IScopeModule module;
-	private final Map<String, IZenSymbol> local;
+	private final IScopeModule<E, T> module;
+	private final Map<String, IZenSymbol<E, T>> local;
 
-	public ScopeClass(IScopeModule global)
+	public ScopeClass(IScopeModule<E, T> global)
 	{
 		this.accessScope = AccessScope.createClassScope(global.getAccessScope());
 		this.module = global;
-		this.local = new HashMap<String, IZenSymbol>();
+		this.local = new HashMap<String, IZenSymbol<E, T>>();
 	}
 
 	@Override
@@ -39,15 +43,27 @@ public class ScopeClass implements IScopeClass
 	}
 
 	@Override
-	public TypeRegistry getTypes()
+	public ITypeCompiler<E, T> getTypes()
 	{
 		return module.getTypes();
 	}
 
 	@Override
-	public IZenCompileEnvironment getEnvironment()
+	public IZenCompileEnvironment<E, T> getEnvironment()
 	{
 		return module.getEnvironment();
+	}
+	
+	@Override
+	public IExpressionCompiler<E, T> getExpressionCompiler()
+	{
+		return module.getExpressionCompiler();
+	}
+	
+	@Override
+	public IScopeMethod<E, T> getConstantEnvironment()
+	{
+		return module.getConstantEnvironment();
 	}
 
 	@Override
@@ -75,7 +91,7 @@ public class ScopeClass implements IScopeClass
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)
+	public IPartialExpression<E, T> getValue(String name, CodePosition position, IScopeMethod<E, T> environment)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
@@ -84,7 +100,7 @@ public class ScopeClass implements IScopeClass
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			error(position, "Value already defined in this scope: " + name);

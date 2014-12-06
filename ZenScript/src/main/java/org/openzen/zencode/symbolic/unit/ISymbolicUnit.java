@@ -5,15 +5,16 @@
  */
 package org.openzen.zencode.symbolic.unit;
 
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface ISymbolicUnit
+public interface ISymbolicUnit<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public ZenType getType();
 	
-	public void compile();
 }

@@ -91,7 +91,9 @@ public class IngredientTransform {
 			@Override
 			public IItemStack transform(IItemStack item, IPlayer byPlayer) {
 				if (item.getAmount() > 1) {
-					byPlayer.give(withItem);
+					if (byPlayer != null)
+						byPlayer.give(withItem);
+					
 					return item;
 				} else {
 					return withItem.withAmount(withItem.getAmount() + 1);

@@ -6,16 +6,19 @@
 
 package org.openzen.zencode.symbolic.scope;
 
-import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface IScopeMethod extends IScopeClass
+public interface IScopeMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends IScopeClass<E, T>
 {
-	public Statement getControlStatement(String label);
+	public Statement<E, T> getControlStatement(String label);
 	
-	public ZenType getReturnType();
+	public T getReturnType();
 }

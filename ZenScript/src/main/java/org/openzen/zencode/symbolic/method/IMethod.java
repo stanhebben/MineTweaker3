@@ -6,43 +6,42 @@
 
 package org.openzen.zencode.symbolic.method;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeFunction;
-import org.openzen.zencode.util.MethodOutput;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E> expression type
+ * @param <T>
  */
-public interface IMethod<E>
+public interface IMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Expression... arguments);
+	public E callStatic(CodePosition position, IScopeMethod<E, T> scope, E... arguments);
 	
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Object... constantArguments);
+	public E callStaticWithConstants(CodePosition position, IScopeMethod<E, T> scope, Object... constantArguments);
 	
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Expression... arguments);
+	/**
+	 * Returns null if the argument is null, calls the method otherwise.
+	 * 
+	 * @param position
+	 * @param scope
+	 * @param argument
+	 * @return 
+	 */
+	public E callStaticNullable(CodePosition position, IScopeMethod<E, T> scope, E argument);
 	
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Object... constantArguments);
+	public E callVirtual(CodePosition position, IScopeMethod<E, T> scope, E target, E... arguments);
+	
+	public E callVirtualWithConstants(CodePosition position, IScopeMethod<E, T> scope, E target, Object... constantArguments);
 	
 	public boolean isStatic();
 	
-	public void invokeVirtual(MethodOutput output);
+	public T getFunctionType();
 	
-	public void invokeStatic(MethodOutput output);
+	public MethodHeader<E, T> getMethodHeader();
 	
-	public void invokeSpecial(MethodOutput output);
-	
-	public void invokeVirtual(MethodOutput output, Expression receiver, Expression[] arguments);
-	
-	public void invokeStatic(MethodOutput output, Expression[] arguments);
-	
-	public ZenTypeFunction getFunctionType();
-	
-	public MethodHeader getMethodHeader();
-	
-	public ZenType getReturnType();
+	public T getReturnType();
 }

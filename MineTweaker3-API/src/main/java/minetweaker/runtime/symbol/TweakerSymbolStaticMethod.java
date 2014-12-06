@@ -7,8 +7,10 @@ package minetweaker.runtime.symbol;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import minetweaker.runtime.TweakerGlobalScope;
 import org.openzen.zencode.java.JavaNative;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 
@@ -29,7 +31,7 @@ public class TweakerSymbolStaticMethod implements ITweakerSymbol
 	}
 
 	@Override
-	public IZenSymbol convert(IScopeGlobal scope)
+	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope)
 	{
 		return JavaNative.getStaticMethodSymbol(scope, method);
 	}

@@ -3,46 +3,48 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
-public class ParsedExpressionUnary extends ParsedExpression {
+public class ParsedExpressionUnary extends ParsedExpression
+{
 	private final ParsedExpression value;
 	private final OperatorType operator;
-	
-	public ParsedExpressionUnary(CodePosition position, ParsedExpression value, OperatorType operator) {
+
+	public ParsedExpressionUnary(CodePosition position, ParsedExpression value, OperatorType operator)
+	{
 		super(position);
-		
+
 		this.value = value;
 		this.operator = operator;
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
-		// TODO: improve type predictions?
-		Expression cValue = value.compile(environment, predictedType);
-		return cValue.getType().operator(getPosition(), environment, operator, cValue);
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> environment, T predictedType)
+	{
+		E cValue = value.compile(environment, predictedType);
+		return cValue.getType().unary(getPosition(), environment, operator, cValue);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment) {
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	{
 		IAny valueValue = value.eval(environment);
 		if (valueValue == null)
 			return null;
-		
+
 		switch (operator) {
 			case NOT:
 				return valueValue.not();

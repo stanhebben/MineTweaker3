@@ -5,8 +5,9 @@
  */
 package org.openzen.zencode.parser.type;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -26,13 +27,14 @@ public class ParsedTypeNullable implements IParsedType
 	}
 
 	@Override
-	public ZenType compile(IScopeGlobal scope)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 T compile(IScopeGlobal<E, T> scope)
 	{
-		ZenType cBaseType = baseType.compile(scope);
-		ZenType type = cBaseType.nullable();
+		T cBaseType = baseType.compile(scope);
+		T type = cBaseType.nullable();
 		if (type == null) {
 			scope.error(position, baseType + " is not a nullable type");
-			type = scope.getTypes().ANY;
+			type = scope.getTypes().getAny();
 		}
 		return type;
 	}

@@ -6,10 +6,12 @@
 package minetweaker.runtime.symbol;
 
 import java.lang.reflect.Method;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import minetweaker.runtime.TweakerGlobalScope;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.java.method.JavaMethod;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticGetter;
 
 /**
@@ -28,9 +30,9 @@ public class TweakerSymbolStaticGetter implements ITweakerSymbol
 	}
 
 	@Override
-	public IZenSymbol convert(IScopeGlobal scope)
+	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope)
 	{
-		return new SymbolStaticGetter(JavaMethod.get(scope.getTypes(), method));
+		return new SymbolStaticGetter<IJavaExpression, IJavaType>(JavaMethod.get(scope, method));
 	}
 
 	@Override

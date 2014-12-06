@@ -3,82 +3,87 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.statement;
 
 import org.openzen.zencode.symbolic.scope.ScopeStatementBlock;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.statements.StatementIf;
-import stanhebben.zenscript.statements.StatementSwitch;
-import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.statement.StatementIf;
+import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ParsedStatementIf extends ParsedStatement {
-	public static ParsedStatementIf parse(ZenLexer tokener, ICodeErrorLogger errorLogger) {
-		CodePosition position = tokener.required(T_IF, "if expected").getPosition();
-		
-		ParsedExpression condition = ParsedExpression.parse(tokener, errorLogger);
-		ParsedStatement onIf = ParsedStatement.parse(tokener, errorLogger);
+public class ParsedStatementIf extends ParsedStatement
+{
+	public static ParsedStatementIf parse(ZenLexer lexer)
+	{
+		CodePosition position = lexer.required(T_IF, "if expected").getPosition();
+
+		ParsedExpression condition = ParsedExpression.parse(lexer);
+		ParsedStatement onIf = ParsedStatement.parse(lexer);
 		ParsedStatement onElse = null;
-		if (tokener.optional(T_ELSE) != null) {
-			onElse = ParsedStatement.parse(tokener, errorLogger);
-		}
-		
+		if (lexer.optional(T_ELSE) != null)
+			onElse = ParsedStatement.parse(lexer);
+
 		return new ParsedStatementIf(position, condition, onIf, onElse);
 	}
-	
+
 	private final ParsedExpression condition;
 	private final ParsedStatement onIf;
 	private final ParsedStatement onElse;
-	
-	public ParsedStatementIf(CodePosition position, ParsedExpression condition, ParsedStatement onIf, ParsedStatement onElse) {
+
+	public ParsedStatementIf(CodePosition position, ParsedExpression condition, ParsedStatement onIf, ParsedStatement onElse)
+	{
 		super(position);
-		
+
 		this.condition = condition;
 		this.onIf = onIf;
 		this.onElse = onElse;
 	}
 
 	@Override
-	public Statement compile(IScopeMethod scope) {
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+	{
 		IAny eval = condition.eval(scope.getEnvironment());
-		if (eval != null) {
-			// compilePartial-time variable
+		if (eval != null)
+			// compile-time variable
 			if (eval.asBool()) {
-				ScopeStatementBlock ifScope = new ScopeStatementBlock(scope);
+				ScopeStatementBlock<E, T> ifScope = new ScopeStatementBlock<E, T>(scope);
 				return onIf.compile(ifScope);
 			} else {
-				ScopeStatementBlock elseScope = new ScopeStatementBlock(scope);
+				ScopeStatementBlock<E, T> elseScope = new ScopeStatementBlock<E, T>(scope);
 				return onElse.compile(elseScope);
 			}
-		} else {
+		else {
 			// runtime variable
-			Expression compiledCondition = condition.compile(scope, scope.getTypes().BOOL);
-			ScopeStatementBlock ifScope = new ScopeStatementBlock(scope);
-			Statement compiledIf = onIf.compile(ifScope);
-			Statement compiledElse = null;
-			
+			E compiledCondition = condition.compile(scope, scope.getTypes().getBool());
+			ScopeStatementBlock<E, T> ifScope = new ScopeStatementBlock<E, T>(scope);
+			Statement<E, T> compiledIf = onIf.compile(ifScope);
+			Statement<E, T> compiledElse = null;
+
 			if (onElse != null) {
-				ScopeStatementBlock elseScope = new ScopeStatementBlock(scope);
+				ScopeStatementBlock<E, T> elseScope = new ScopeStatementBlock<E, T>(scope);
 				compiledElse = onElse.compile(elseScope);
 			}
-			
-			return new StatementIf(getPosition(), scope, compiledCondition, compiledIf, compiledElse);
+
+			return new StatementIf<E, T>(getPosition(), scope, compiledCondition, compiledIf, compiledElse);
 		}
 	}
 
 	@Override
-	public void compileSwitch(IScopeMethod scope, StatementSwitch forSwitch) {
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+	{
 		forSwitch.onStatement(compile(scope));
 	}
 }

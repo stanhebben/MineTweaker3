@@ -5,8 +5,10 @@
  */
 package zenscript.test;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import static org.junit.Assert.*;
 import org.openzen.zencode.IZenCompileEnvironment;
@@ -15,51 +17,60 @@ import org.openzen.zencode.symbolic.scope.ScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.java.method.JavaMethod;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
+import org.openzen.zencode.test.expression.TestExpression;
+import org.openzen.zencode.test.type.TestType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class TestEnvironment implements IZenCompileEnvironment
+public class TestEnvironment implements IZenCompileEnvironment<TestExpression, TestType>
 {
 	public static final TestEnvironment INSTANCE = new TestEnvironment();
-	
+
 	public static void print(String message)
 	{
 		INSTANCE.logs.add(new LogMessage(LogMessageType.PRINT, message));
 	}
-	
-	public static IScopeGlobal createScope() {
-		IScopeGlobal result = new ScopeGlobal(INSTANCE, new ClassNameGenerator());
-		result.putValue("print", new SymbolStaticMethod(JavaMethod.get(result.getTypes(), TestEnvironment.class, "print", String.class)), null);
-		return result;
+
+	public static IScopeGlobal<TestExpression, TestType> createScope()
+	{
+		return new ScopeGlobal<TestExpression, TestType>(INSTANCE, new ClassNameGenerator());
 	}
-	
+
 	private final Queue<LogMessage> logs = new LinkedList<LogMessage>();
 	private final ICodeErrorLogger errorLogger = new MyErrorLogger();
-	
-	private TestEnvironment() {}
-	
+	private final Map<String, IZenSymbol<TestExpression, TestType>> symbols;
+
+	private TestEnvironment()
+	{
+		symbols = new HashMap<String, IZenSymbol<TestExpression, TestType>>();
+		symbols.put("print", new SymbolStaticMethod<TestExpression, TestType>(new TestMethodPrint(this)));
+	}
+
 	public void consumeError(String message)
 	{
 		consume(LogMessageType.ERROR, message);
 	}
-	
+
 	public void consumeWarning(String message)
 	{
 		consume(LogMessageType.WARNING, message);
 	}
-	
+
 	public void consumePrint(String message)
 	{
 		consume(LogMessageType.PRINT, message);
 	}
-	
+
 	public void noMoreMessages()
 	{
 		if (!logs.isEmpty()) {
@@ -68,23 +79,22 @@ public class TestEnvironment implements IZenCompileEnvironment
 				System.out.println(logMessage.type + ": " + logMessage.message);
 			}
 		}
-		
+
 		assertTrue("unexpected log messages", logs.isEmpty());
 	}
-	
+
 	private void consume(LogMessageType type, String message)
 	{
 		assertFalse("missing log message", logs.isEmpty());
 		LogMessage firstLogMessage = logs.poll();
-		
-		if (type != firstLogMessage.type) {
+
+		if (type != firstLogMessage.type)
 			System.out.println(firstLogMessage.type + ": " + firstLogMessage.message);
-		}
-		
+
 		assertEquals("wrong message type", type, firstLogMessage.type);
 		assertEquals("wrong message value", message, firstLogMessage.message);
 	}
-	
+
 	@Override
 	public ICodeErrorLogger getErrorLogger()
 	{
@@ -92,21 +102,33 @@ public class TestEnvironment implements IZenCompileEnvironment
 	}
 
 	@Override
-	public IZenSymbol getGlobal(String name)
+	public ITypeCompiler<TestExpression, TestType> getTypeCompiler()
 	{
-		return null;
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IZenSymbol getDollar(String name)
+	public IExpressionCompiler<TestExpression, TestType> getExpressionCompiler()
 	{
-		return null;
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IZenSymbol getBracketed(IScopeGlobal environment, List<Token> tokens)
+	public IPartialExpression<TestExpression, TestType> getGlobal(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String name)
 	{
-		return null;
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public IPartialExpression<TestExpression, TestType> getDollar(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String name)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public IPartialExpression<TestExpression, TestType> getBracketed(CodePosition position, IScopeMethod<TestExpression, TestType> scope, List<Token> tokens)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -126,17 +148,17 @@ public class TestEnvironment implements IZenCompileEnvironment
 	{
 		return null;
 	}
-	
+
 	private class MyErrorLogger implements ICodeErrorLogger
 	{
 		private boolean hasErrors = false;
-		
+
 		@Override
 		public boolean hasErrors()
 		{
 			return hasErrors;
 		}
-		
+
 		@Override
 		public void error(CodePosition position, String message)
 		{
@@ -150,19 +172,19 @@ public class TestEnvironment implements IZenCompileEnvironment
 			logs.add(new LogMessage(LogMessageType.WARNING, message));
 		}
 	}
-	
+
 	private static enum LogMessageType
 	{
 		ERROR,
 		WARNING,
 		PRINT
 	}
-	
+
 	private static class LogMessage
 	{
 		private final LogMessageType type;
 		private final String message;
-		
+
 		private LogMessage(LogMessageType type, String message)
 		{
 			this.type = type;

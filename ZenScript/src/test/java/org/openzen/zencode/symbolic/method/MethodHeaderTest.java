@@ -5,8 +5,6 @@
  */
 package org.openzen.zencode.symbolic.method;
 
-import org.openzen.zencode.symbolic.method.MethodParameter;
-import org.openzen.zencode.symbolic.method.MethodHeader;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -18,12 +16,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionBool;
-import stanhebben.zenscript.expression.ExpressionInt;
-import stanhebben.zenscript.expression.ExpressionString;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeArrayBasic;
+import org.openzen.zencode.test.expression.TestExpression;
+import org.openzen.zencode.test.type.TestType;
 import zenscript.test.TestEnvironment;
 
 /**
@@ -32,11 +26,11 @@ import zenscript.test.TestEnvironment;
  */
 public class MethodHeaderTest
 {
-	private IScopeGlobal scope;
-	private ZenType typeInt;
-	private ZenType typeLong;
-	private ZenType typeString;
-	private ZenType typeStringArray;
+	private IScopeGlobal<TestExpression, TestType> scope;
+	private TestType typeInt;
+	private TestType typeLong;
+	private TestType typeString;
+	private TestType typeStringArray;
 	
 	public MethodHeaderTest()
 	{
@@ -56,10 +50,10 @@ public class MethodHeaderTest
 	public void setUp()
 	{
 		scope = TestEnvironment.createScope();
-		typeInt = scope.getTypes().INT;
-		typeLong = scope.getTypes().LONG;
-		typeString = scope.getTypes().STRING;
-		typeStringArray = new ZenTypeArrayBasic(typeString);
+		typeInt = scope.getTypes().getInt();
+		typeLong = scope.getTypes().getLong();
+		typeString = scope.getTypes().getString();
+		typeStringArray = scope.getTypes().getArray(typeString);
 	}
 	
 	@After
@@ -75,8 +69,8 @@ public class MethodHeaderTest
 	public void testGetScope()
 	{
 		System.out.println("getScope");
-		MethodHeader instance = construct_ILS_S();
-		IScopeGlobal result = instance.getScope();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
+		IScopeGlobal<TestExpression, TestType> result = instance.getScope();
 		assertEquals(scope, result);
 	}
 
@@ -87,20 +81,20 @@ public class MethodHeaderTest
 	public void testGetReturnType()
 	{
 		System.out.println("getReturnType");
-		MethodHeader instance = construct_ILS_S();
-		ZenType result = instance.getReturnType();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
+		TestType result = instance.getReturnType();
 		assertEquals(typeString, result);
 	}
 
 	/**
-	 * Test of getArguments method, of class MethodHeader.
+	 * Test of getParameters method, of class MethodHeader.
 	 */
 	@org.junit.Test
 	public void testGetArguments()
 	{
 		System.out.println("getArguments");
-		MethodHeader instance = construct_ILS_S();
-		List<MethodParameter> arguments = instance.getArguments();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
+		List<MethodParameter<TestExpression, TestType>> arguments = instance.getParameters();
 		
 		assertEquals(typeInt, arguments.get(0).getType());
 		assertEquals(typeLong, arguments.get(1).getType());
@@ -111,42 +105,42 @@ public class MethodHeaderTest
 	}
 
 	/**
-	 * Test of getArgumentByIndex method, of class MethodHeader.
+	 * Test of getParameterByIndex method, of class MethodHeader.
 	 */
 	@org.junit.Test
 	public void testGetArgumentByIndex()
 	{
 		System.out.println("getArgumentByIndex");
-		MethodHeader instance = construct_ILS_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		
-		MethodParameter argument = instance.getArgumentByIndex(1);
+		MethodParameter<TestExpression, TestType> argument = instance.getParameterByIndex(1);
 		assertEquals(argument.getType(), typeLong);
 	}
 
 	/**
-	 * Test of getArgumentByName method, of class MethodHeader.
+	 * Test of getParameterByName method, of class MethodHeader.
 	 */
 	@org.junit.Test
 	public void testGetArgumentByName()
 	{
 		System.out.println("getArgumentByName");
 		
-		MethodHeader instance = construct_ILS_S();
-		MethodParameter result = instance.getArgumentByName("S");
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
+		MethodParameter<TestExpression, TestType> result = instance.getParameterByName("S");
 		
 		assertEquals(typeString, result.getType());
 	}
 
 	/**
-	 * Test of getArgumentIndex method, of class MethodHeader.
+	 * Test of getParameterIndex method, of class MethodHeader.
 	 */
 	@org.junit.Test
 	public void testGetArgumentIndex()
 	{
 		System.out.println("getArgumentIndex");
 		
-		MethodHeader instance = construct_ILS_S();
-		int result = instance.getArgumentIndex("L");
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
+		int result = instance.getParameterIndex("L");
 		assertEquals(1, result);
 	}
 
@@ -157,11 +151,11 @@ public class MethodHeaderTest
 	public void testIsVarargs()
 	{
 		System.out.println("isVarargs");
-		MethodHeader instance = construct_ILS_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		boolean result = instance.isVarargs();
 		assertFalse(result);
 		
-		MethodHeader instance2 = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance2 = construct_ILSV_S();
 		boolean result2 = instance2.isVarargs();
 		assertTrue(result2);
 	}
@@ -174,12 +168,12 @@ public class MethodHeaderTest
 	{
 		System.out.println("accepts");
 		
-		MethodHeader instance = construct_ILS_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		assertTrue(instance.accepts(3));
 		assertTrue(instance.accepts(2));
 		assertFalse(instance.accepts(1));
 		
-		MethodHeader instance2 = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance2 = construct_ILSV_S();
 		assertTrue(instance2.accepts(10));
 		assertTrue(instance2.accepts(3));
 		assertTrue(instance2.accepts(2));
@@ -194,9 +188,9 @@ public class MethodHeaderTest
 	public void testGetVarArgBaseType()
 	{
 		System.out.println("getVarArgBaseType");
-		MethodHeader instance = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILSV_S();
 		
-		ZenType result = instance.getVarArgBaseType();
+		TestType result = instance.getVarArgBaseType();
 		assertEquals(typeString, result);
 	}
 
@@ -208,17 +202,17 @@ public class MethodHeaderTest
 	{
 		System.out.println("acceptsWithExactTypes");
 		
-		MethodHeader instance = construct_ILS_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		
-		IScopeMethod staticScope = scope.getTypes().getStaticGlobalEnvironment();
-		Expression eInt = new ExpressionInt(null, staticScope, 0, typeInt);
-		Expression eLong = new ExpressionInt(null, staticScope, 1, typeLong);
-		Expression eString = new ExpressionString(null, staticScope, "Hello");
+		IScopeMethod<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
+		TestExpression eInt = staticScope.getExpressionCompiler().constantInt(null, staticScope, 0);
+		TestExpression eLong = staticScope.getExpressionCompiler().constantLong(null, staticScope, 1);
+		TestExpression eString = staticScope.getExpressionCompiler().constantString(null, staticScope, "Hello");
 		
 		assertTrue(instance.acceptsWithExactTypes(eInt, eLong, eString));
 		assertFalse(instance.acceptsWithExactTypes(eInt, eInt, eString));
 		
-		MethodHeader instance2 = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance2 = construct_ILSV_S();
 		assertTrue(instance2.acceptsWithExactTypes(eInt));
 		assertTrue(instance2.acceptsWithExactTypes(eInt, eLong));
 		assertTrue(instance2.acceptsWithExactTypes(eInt, eLong, eString));
@@ -236,13 +230,13 @@ public class MethodHeaderTest
 	{
 		System.out.println("accepts");
 		
-		MethodHeader instance = construct_ILS_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		
-		IScopeMethod staticScope = scope.getTypes().getStaticGlobalEnvironment();
-		Expression eInt = new ExpressionInt(null, staticScope, 0, typeInt);
-		Expression eLong = new ExpressionInt(null, staticScope, 1, typeLong);
-		Expression eString = new ExpressionString(null, staticScope, "Hello");
-		Expression eBool = new ExpressionBool(null, staticScope, false);
+		IScopeMethod<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
+		TestExpression eInt = staticScope.getExpressionCompiler().constantInt(null, staticScope, 0);
+		TestExpression eLong = staticScope.getExpressionCompiler().constantLong(null, staticScope, 1);
+		TestExpression eString = staticScope.getExpressionCompiler().constantString(null, staticScope, "Hello");
+		TestExpression eBool = staticScope.getExpressionCompiler().constantBool(null, staticScope, false);
 		
 		assertTrue(instance.accepts(eInt, eLong, eString));
 		assertTrue(instance.accepts(eInt, eInt, eString));
@@ -250,7 +244,7 @@ public class MethodHeaderTest
 		assertTrue(instance.accepts(eInt, eLong));
 		assertFalse(instance.accepts(eInt, eBool));
 		
-		MethodHeader instance2 = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance2 = construct_ILSV_S();
 		
 		assertTrue(instance2.accepts(eInt, eLong, eString));
 		assertTrue(instance2.accepts(eInt, eInt, eString));
@@ -269,33 +263,33 @@ public class MethodHeaderTest
 	{
 		System.out.println("getArgumentType");
 		
-		MethodHeader instance = construct_ILSV_S();
+		MethodHeader<TestExpression, TestType> instance = construct_ILSV_S();
 		
 		assertEquals(typeLong, instance.getArgumentType(1));
 		assertEquals(typeStringArray, instance.getArgumentType(2));
 	}
 	
-	private MethodHeader construct_ILS_S()
+	private MethodHeader<TestExpression, TestType> construct_ILS_S()
 	{
-		List<MethodParameter> arguments = new ArrayList<MethodParameter>();
-		arguments.add(new MethodParameter("I", typeInt, null));
-		arguments.add(new MethodParameter("L", typeLong, null));
+		List<MethodParameter<TestExpression, TestType>> arguments = new ArrayList<MethodParameter<TestExpression, TestType>>();
+		arguments.add(new MethodParameter<TestExpression, TestType>("I", typeInt, null));
+		arguments.add(new MethodParameter<TestExpression, TestType>("L", typeLong, null));
 		
-		Expression defaultStringValue = new ExpressionString(null, scope.getTypes().getStaticGlobalEnvironment(), "Hello");
-		arguments.add(new MethodParameter("S", typeString, defaultStringValue));
+		TestExpression defaultStringValue = scope.getExpressionCompiler().constantString(null, scope.getConstantEnvironment(), "Hello");
+		arguments.add(new MethodParameter<TestExpression, TestType>("S", typeString, defaultStringValue));
 		
-		return new MethodHeader(typeString, arguments, false);
+		return new MethodHeader<TestExpression, TestType>(typeString, arguments, false);
 	}
 	
-	private MethodHeader construct_ILSV_S()
+	private MethodHeader<TestExpression, TestType> construct_ILSV_S()
 	{
-		List<MethodParameter> arguments = new ArrayList<MethodParameter>();
-		arguments.add(new MethodParameter("I", typeInt, null));
+		List<MethodParameter<TestExpression, TestType>> arguments = new ArrayList<MethodParameter<TestExpression, TestType>>();
+		arguments.add(new MethodParameter<TestExpression, TestType>("I", typeInt, null));
 		
-		Expression defaultLongValue = new ExpressionInt(null, scope.getTypes().getStaticGlobalEnvironment(), 1, typeLong);
-		arguments.add(new MethodParameter("L", typeLong, defaultLongValue));
-		arguments.add(new MethodParameter("S", typeStringArray, null));
+		TestExpression defaultLongValue = scope.getExpressionCompiler().constantLong(null, scope.getConstantEnvironment(), 1);
+		arguments.add(new MethodParameter<TestExpression, TestType>("L", typeLong, defaultLongValue));
+		arguments.add(new MethodParameter<TestExpression, TestType>("S", typeStringArray, null));
 		
-		return new MethodHeader(typeString, arguments, true);
+		return new MethodHeader<TestExpression, TestType>(typeString, arguments, true);
 	}
 }

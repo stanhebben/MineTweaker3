@@ -7,12 +7,9 @@ package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.ExpressionString;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -37,20 +34,21 @@ public class ParsedExpressionVariable extends ParsedExpression
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod scope, ZenType predictedType)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T predictedType)
 	{
-		IPartialExpression result = scope.getValue(name, getPosition(), scope);
+		IPartialExpression<E, T> result = scope.getValue(name, getPosition(), scope);
 		if (result == null) {
 			if (predictedType == null) {
 				scope.error(getPosition(), "could not find " + name);
-				return new ExpressionInvalid(getPosition(), scope);
+				return scope.getExpressionCompiler().invalid(getPosition(), scope);
 			}
 
 			// enable usage of static members of the same type as the predicted type (eg. enum values)
-			IPartialExpression member = predictedType.getStaticMember(getPosition(), scope, name);
+			IPartialExpression<E, T> member = predictedType.getStaticMember(getPosition(), scope, name);
 			if (member == null || member.getType().getCastingRule(scope.getAccessScope(), predictedType) == null) {
 				scope.error(getPosition(), "could not find " + name);
-				return new ExpressionInvalid(getPosition(), scope);
+				return scope.getExpressionCompiler().invalid(getPosition(), scope, predictedType);
 			} else
 				return member;
 		} else
@@ -58,13 +56,14 @@ public class ParsedExpressionVariable extends ParsedExpression
 	}
 
 	@Override
-	public Expression compileKey(IScopeMethod scope, ZenType predictedType)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 E compileKey(IScopeMethod<E, T> scope, T predictedType)
 	{
-		return new ExpressionString(getPosition(), scope, name);
+		return scope.getExpressionCompiler().constantString(getPosition(), scope, name);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment)
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
 	{
 		return environment.evalGlobal(name);
 	}

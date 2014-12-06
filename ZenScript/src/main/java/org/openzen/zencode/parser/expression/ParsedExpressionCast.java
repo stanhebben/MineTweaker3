@@ -9,9 +9,9 @@ package org.openzen.zencode.parser.expression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -30,15 +30,22 @@ public class ParsedExpressionCast extends ParsedExpression {
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
-		ZenType compiledType = type.compile(environment);
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> environment, T asType) {
+		T compiledType = type.compile(environment);
 		
-		return value.compile(environment, compiledType).cast(getPosition(), compiledType);
+		IPartialExpression<E, T> result = value.compile(environment, compiledType)
+				.cast(getPosition(), compiledType);
+		
+		if (asType != null)
+			result = result.cast(getPosition(), asType);
+		
+		return result;
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment) {
-		// not (yet?) possible
+	public IAny eval(IZenCompileEnvironment<?, ?> environment) {
+		// not (yet) possible
 		return null;
 	}
 }

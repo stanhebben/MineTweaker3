@@ -1,3 +1,8 @@
+/*
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
+ */
 package org.openzen.zencode.lexer;
 
 import java.io.IOException;
@@ -9,6 +14,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -17,9 +23,8 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan Hebben
  */
-public class ZenLexer extends TokenStream
+public class ZenLexer extends TokenStream implements ICodeErrorLogger
 {
-
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final HashMap<String, Integer> KEYWORDS;
 
@@ -73,15 +78,20 @@ public class ZenLexer extends TokenStream
 	public static final int T_ANY = 99;
 	public static final int T_BOOL = 100;
 	public static final int T_BYTE = 101;
-	public static final int T_SHORT = 102;
-	public static final int T_INT = 103;
-	public static final int T_LONG = 104;
-	public static final int T_FLOAT = 105;
-	public static final int T_DOUBLE = 106;
-	public static final int T_STRING = 107;
-	public static final int T_FUNCTION = 108;
-	public static final int T_IN = 109;
-	public static final int T_VOID = 110;
+	public static final int T_UBYTE = 102;
+	public static final int T_SHORT = 103;
+	public static final int T_USHORT = 104;
+	public static final int T_INT = 105;
+	public static final int T_UINT = 106;
+	public static final int T_LONG = 107;
+	public static final int T_ULONG = 108;
+	public static final int T_FLOAT = 109;
+	public static final int T_DOUBLE = 110;
+	public static final int T_CHAR = 111;
+	public static final int T_STRING = 112;
+	public static final int T_FUNCTION = 113;
+	public static final int T_IN = 114;
+	public static final int T_VOID = 115;
 
 	public static final int T_AS = 120;
 	public static final int T_VERSION = 121;
@@ -119,6 +129,7 @@ public class ZenLexer extends TokenStream
 	public static final int T_SUPER = 175;
 	public static final int T_EXPAND = 176;
 	public static final int T_IMPLEMENTS = 177;
+	public static final int T_EXTENDS = 178;
 
 	public static final int T_PRIVATE = 180;
 	public static final int T_PUBLIC = 181;
@@ -126,6 +137,13 @@ public class ZenLexer extends TokenStream
 	public static final int T_GET = 183;
 	public static final int T_SET = 184;
 	public static final int T_FINAL = 185;
+	public static final int T_STATIC = 186;
+	public static final int T_GENERATED = 187;
+	public static final int T_NATIVE = 188;
+	public static final int T_OPEN = 189;
+	public static final int T_SYNCHRONIZED = 190;
+	public static final int T_OVERRIDE = 191;
+	public static final int T_ABSTRACT = 192;
 
 	private static final String[] REGEXPS = {
 		"#[^\n]*[\n\\e]",
@@ -238,11 +256,16 @@ public class ZenLexer extends TokenStream
 		KEYWORDS.put("any", T_ANY);
 		KEYWORDS.put("bool", T_BOOL);
 		KEYWORDS.put("byte", T_BYTE);
+		KEYWORDS.put("ubyte", T_UBYTE);
 		KEYWORDS.put("short", T_SHORT);
+		KEYWORDS.put("ushort", T_USHORT);
 		KEYWORDS.put("int", T_INT);
+		KEYWORDS.put("uint", T_UINT);
 		KEYWORDS.put("long", T_LONG);
+		KEYWORDS.put("ulong", T_ULONG);
 		KEYWORDS.put("float", T_FLOAT);
 		KEYWORDS.put("double", T_DOUBLE);
+		KEYWORDS.put("char", T_CHAR);
 		KEYWORDS.put("string", T_STRING);
 		KEYWORDS.put("function", T_FUNCTION);
 		KEYWORDS.put("in", T_IN);
@@ -278,6 +301,7 @@ public class ZenLexer extends TokenStream
 		KEYWORDS.put("package", T_PACKAGE);
 		KEYWORDS.put("expand", T_EXPAND);
 		KEYWORDS.put("implements", T_IMPLEMENTS);
+		KEYWORDS.put("extends", T_EXTENDS);
 
 		KEYWORDS.put("private", T_PRIVATE);
 		KEYWORDS.put("public", T_PUBLIC);
@@ -285,33 +309,48 @@ public class ZenLexer extends TokenStream
 		KEYWORDS.put("final", T_FINAL);
 		KEYWORDS.put("get", T_GET);
 		KEYWORDS.put("set", T_SET);
+		KEYWORDS.put("static", T_STATIC);
+		KEYWORDS.put("generated", T_GENERATED);
+		KEYWORDS.put("native", T_NATIVE);
+		KEYWORDS.put("open", T_OPEN);
+		KEYWORDS.put("synchronized", T_SYNCHRONIZED);
+		KEYWORDS.put("override", T_OVERRIDE);
+		KEYWORDS.put("abstract", T_ABSTRACT);
 	}
 
-	public static ZenLexer fromInputStream(InputStream inputStream) throws IOException
+	public static ZenLexer fromInputStream(ICodeErrorLogger errorLogger, InputStream inputStream) throws IOException
 	{
-		return new ZenLexer(new InputStreamReader(inputStream, UTF8));
+		return new ZenLexer(errorLogger, new InputStreamReader(inputStream, UTF8));
 	}
+	
+	private final ICodeErrorLogger errorLogger;
 
 	/**
 	 * Constructs a tokener from the given reader.
 	 *
+	 * @param errorLogger
 	 * @param contents file reader
 	 * @throws IOException if the file could not be read properly
 	 */
-	public ZenLexer(Reader contents) throws IOException
+	public ZenLexer(ICodeErrorLogger errorLogger, Reader contents) throws IOException
 	{
 		super(contents, DFA);
+		
+		this.errorLogger = errorLogger;
 	}
 
 	/**
 	 * Constructs a tokener from the given string.
 	 *
+	 * @param errorLogger
 	 * @param contents content string
 	 * @throws IOException shouldn't happen
 	 */
-	public ZenLexer(String contents) throws IOException
+	public ZenLexer(ICodeErrorLogger errorLogger, String contents) throws IOException
 	{
 		super(new StringReader(contents), DFA);
+		
+		this.errorLogger = errorLogger;
 	}
 	
 	public CodePosition getPosition()
@@ -342,7 +381,34 @@ public class ZenLexer extends TokenStream
 	{
 		return required(TOKEN_ID, "identifier expected").getValue();
 	}
-
+	
+	public void requiredSemicolon()
+	{
+		required(T_SEMICOLON, "; expected");
+	}
+	
+	// #######################################
+	// ### ICodeErrorLogger implementation ###
+	// #######################################
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return errorLogger.hasErrors();
+	}
+	
+	@Override
+	public void error(CodePosition position, String message)
+	{
+		errorLogger.error(position, message);
+	}
+	
+	@Override
+	public void warning(CodePosition position, String message)
+	{
+		errorLogger.warning(position, message);
+	}
+	
 	// ##################################
 	// ### TokenStream implementation ###
 	// ##################################

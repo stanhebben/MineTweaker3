@@ -9,26 +9,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.TypeRegistry;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class ScopeModule implements IScopeModule
+public class ScopeModule<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	implements IScopeModule<E, T>
 {
-	private final IScopeGlobal parent;
-	private final Map<String, IZenSymbol> imports;
+	private final IScopeGlobal<E, T> parent;
+	private final Map<String, IZenSymbol<E, T>> imports;
 	private final AccessScope accessScope;
 
-	public ScopeModule(IScopeGlobal parent)
+	public ScopeModule(IScopeGlobal<E, T> parent)
 	{
 		this.parent = parent;
-		imports = new HashMap<String, IZenSymbol>();
+		imports = new HashMap<String, IZenSymbol<E, T>>();
 		accessScope = AccessScope.createModuleScope();
 	}
 
@@ -39,9 +44,21 @@ public class ScopeModule implements IScopeModule
 	}
 
 	@Override
-	public IZenCompileEnvironment getEnvironment()
+	public IZenCompileEnvironment<E, T> getEnvironment()
 	{
 		return parent.getEnvironment();
+	}
+	
+	@Override
+	public IExpressionCompiler<E, T> getExpressionCompiler()
+	{
+		return parent.getExpressionCompiler();
+	}
+	
+	@Override
+	public IScopeMethod<E, T> getConstantEnvironment()
+	{
+		return parent.getConstantEnvironment();
 	}
 
 	@Override
@@ -69,10 +86,10 @@ public class ScopeModule implements IScopeModule
 	}
 
 	@Override
-	public IPartialExpression getValue(String name, CodePosition position, IScopeMethod environment)
+	public IPartialExpression<E, T> getValue(String name, CodePosition position, IScopeMethod<E, T> environment)
 	{
 		if (imports.containsKey(name)) {
-			IZenSymbol imprt = imports.get(name);
+			IZenSymbol<E, T> imprt = imports.get(name);
 			if (imprt == null)
 				throw new RuntimeException("How could this happen?");
 			return imprt.instance(position, environment);
@@ -81,7 +98,7 @@ public class ScopeModule implements IScopeModule
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
 	{
 		if (value == null)
 			throw new IllegalArgumentException("value cannot be null");
@@ -93,7 +110,7 @@ public class ScopeModule implements IScopeModule
 	}
 
 	@Override
-	public TypeRegistry getTypes()
+	public ITypeCompiler<E, T> getTypes()
 	{
 		return parent.getTypes();
 	}

@@ -1,23 +1,34 @@
 /*
- * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
  * 
- * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
 package org.openzen.zencode.java;
 
+import java.lang.annotation.Annotation;
+import org.openzen.zencode.java.field.JavaField;
 import org.openzen.zencode.java.method.JavaMethod;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openzen.zencode.symbolic.field.IField;
-import org.openzen.zencode.symbolic.field.JavaField;
-import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.annotations.ZenCaster;
+import org.openzen.zencode.annotations.ZenGetter;
+import org.openzen.zencode.annotations.ZenMethod;
+import org.openzen.zencode.annotations.ZenMethodStatic;
+import org.openzen.zencode.annotations.ZenOperator;
+import org.openzen.zencode.annotations.ZenSetter;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.field.IJavaField;
+import org.openzen.zencode.java.method.IJavaMethod;
+import org.openzen.zencode.java.method.JavaMethodExpanding;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
-import org.openzen.zencode.symbolic.type.generic.TypeCapture;
+import org.openzen.zencode.symbolic.type.TypeExpansion;
 
 /**
  *
@@ -25,38 +36,40 @@ import org.openzen.zencode.symbolic.type.generic.TypeCapture;
  */
 public class JavaNative
 {
-	private JavaNative() {}
-	
-	public static IMethod getStaticMethod(IScopeGlobal scope, Class<?> cls, String name, Class... parameterTypes)
+	private JavaNative()
+	{
+	}
+
+	public static IJavaMethod getStaticMethod(IJavaScopeGlobal scope, Class<?> cls, String name, Class<?>... parameterTypes)
 	{
 		try {
 			Method method = cls.getMethod(name, parameterTypes);
 			if (method == null)
 				throw new RuntimeException("method " + name + " not found in class " + cls.getName());
-			return new JavaMethod(method, scope.getTypes(), TypeCapture.EMPTY);
+			return new JavaMethod(method, scope);
 		} catch (NoSuchMethodException ex) {
 			throw new RuntimeException("method " + name + " not found in class " + cls.getName(), ex);
 		} catch (SecurityException ex) {
 			throw new RuntimeException("method retrieval not permitted", ex);
 		}
 	}
-	
-	public static IMethod getStaticMethod(IScopeGlobal scope, Method method)
+
+	public static IJavaMethod getStaticMethod(IJavaScopeGlobal scope, Method method)
 	{
-		return new JavaMethod(method, scope.getTypes(), TypeCapture.EMPTY);
+		return new JavaMethod(method, scope);
 	}
-	
-	public static IZenSymbol getStaticMethodSymbol(IScopeGlobal scope, Class<?> cls, String name, Class... parameterTypes)
+
+	public static IZenSymbol<IJavaExpression, IJavaType> getStaticMethodSymbol(IJavaScopeGlobal scope, Class<?> cls, String name, Class<?>... parameterTypes)
 	{
-		return new SymbolStaticMethod(getStaticMethod(scope, cls, name, parameterTypes));
+		return new SymbolStaticMethod<IJavaExpression, IJavaType>(getStaticMethod(scope, cls, name, parameterTypes));
 	}
-	
-	public static IZenSymbol getStaticMethodSymbol(IScopeGlobal scope, Method method)
+
+	public static IZenSymbol<IJavaExpression, IJavaType> getStaticMethodSymbol(IJavaScopeGlobal scope, Method method)
 	{
-		return new SymbolStaticMethod(getStaticMethod(scope, method));
+		return new SymbolStaticMethod<IJavaExpression, IJavaType>(getStaticMethod(scope, method));
 	}
-	
-	public static IField getStaticField(IScopeGlobal scope, Class<?> cls, String name)
+
+	public static IJavaField getStaticField(IJavaScopeGlobal scope, Class<?> cls, String name)
 	{
 		try {
 			Field field = cls.getField(name);
@@ -69,19 +82,89 @@ public class JavaNative
 			return null;
 		}
 	}
-	
-	public static IField getStaticField(IScopeGlobal scope, Field field)
+
+	public static IJavaField getStaticField(IJavaScopeGlobal scope, Field field)
 	{
 		return new JavaField(field, scope.getTypes());
 	}
-	
-	public static IZenSymbol getStaticFieldSymbol(IScopeGlobal scope, Class<?> cls, String name)
+
+	public static IZenSymbol<IJavaExpression, IJavaType> getStaticFieldSymbol(IJavaScopeGlobal scope, Class<?> cls, String name)
 	{
-		return new SymbolStaticField(getStaticField(scope, cls, name));
+		return new SymbolStaticField<IJavaExpression, IJavaType>(getStaticField(scope, cls, name));
 	}
-	
-	public static IZenSymbol getStaticFieldSymbol(IScopeGlobal scope, Field field)
+
+	public static IZenSymbol<IJavaExpression, IJavaType> getStaticFieldSymbol(IJavaScopeGlobal scope, Field field)
 	{
-		return new SymbolStaticField(getStaticField(scope, field));
+		return new SymbolStaticField<IJavaExpression, IJavaType>(getStaticField(scope, field));
+	}
+
+	public static void addExpansion(IJavaScopeGlobal scope, TypeExpansion<IJavaExpression, IJavaType> expansion, Class<?> annotatedClass)
+	{
+		for (Method method : annotatedClass.getMethods()) {
+			String methodName = method.getName();
+
+			for (Annotation annotation : method.getAnnotations()) {
+				if (annotation instanceof ZenCaster) {
+					checkStatic(method);
+					expansion.addCaster(JavaMethod.get(scope, method));
+				} else if (annotation instanceof ZenGetter) {
+					checkStatic(method);
+					ZenGetter getterAnnotation = (ZenGetter) annotation;
+					String name = getterAnnotation.value().length() == 0 ? method.getName() : getterAnnotation.value();
+
+					if (method.getParameterTypes().length == 0)
+						expansion.addStaticGetter(name, JavaMethod.get(scope, method));
+					else if (method.getParameterTypes().length == 1)
+						expansion.addGetter(name, JavaMethod.get(scope, method));
+					else
+						throw new IllegalArgumentException("Not a valid getter - too many parameters");
+				} else if (annotation instanceof ZenSetter) {
+					checkStatic(method);
+					ZenSetter setterAnnotation = (ZenSetter) annotation;
+					String name = setterAnnotation.value().length() == 0 ? method.getName() : setterAnnotation.value();
+
+					if (method.getParameterTypes().length == 1)
+						expansion.addStaticSetter(name, JavaMethod.get(scope, method));
+					else if (method.getParameterTypes().length == 2)
+						expansion.addSetter(name, JavaMethod.get(scope, method));
+					else
+						throw new IllegalArgumentException("Not a valid setter - must have 1 or 2 parameters");
+				} else if (annotation instanceof ZenOperator) {
+					checkStatic(method);
+					ZenOperator operatorAnnotation = (ZenOperator) annotation;
+
+					OperatorType operator = operatorAnnotation.value();
+					if (operator.getArgumentCount() != method.getParameterTypes().length)
+						throw new RuntimeException("Numbor of operator arguments is incorrect");
+
+					expansion.addOperator(operator, JavaMethod.get(scope, method));
+				} else if (annotation instanceof ZenMethod) {
+					checkStatic(method);
+					ZenMethod methodAnnotation = (ZenMethod) annotation;
+					if (methodAnnotation.value().length() > 0)
+						methodName = methodAnnotation.value();
+
+					expansion.addMethod(methodName, new JavaMethodExpanding(JavaMethod.get(scope, method)));
+				} else if (annotation instanceof ZenMethodStatic) {
+					checkStatic(method);
+					ZenMethodStatic methodAnnotation = (ZenMethodStatic) annotation;
+					if (methodAnnotation.value().length() > 0)
+						methodName = methodAnnotation.value();
+
+					expansion.addStaticMethod(methodName, JavaMethod.get(scope, method));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks if the given method is static. Throws an exception if not.
+	 *
+	 * @param method metod to validate
+	 */
+	private static void checkStatic(Method method)
+	{
+		if ((method.getModifiers() & Modifier.STATIC) == 0)
+			throw new RuntimeException("Expansion method " + method.getName() + " must be static");
 	}
 }

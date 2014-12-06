@@ -1,20 +1,24 @@
+/*
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
+ */
 package org.openzen.zencode.parser;
 
+import org.openzen.zencode.parser.statement.ParsedImportStatement;
+import org.openzen.zencode.parser.modifier.IParsedModifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
-import org.openzen.zencode.parser.elements.ParsedFunction;
+import org.openzen.zencode.parser.modifier.ModifierParser;
 import org.openzen.zencode.parser.statement.ParsedStatement;
+import org.openzen.zencode.parser.unit.IParsedUnit;
+import org.openzen.zencode.parser.unit.UnitParser;
 import org.openzen.zencode.symbolic.SymbolicModule;
-import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -39,8 +43,8 @@ public class ParsedFile
 	private final String filename;
 
 	private final ParsedPackage _package;
-	private final List<ParsedImport> imports;
-	private final Map<String, ParsedFunction> functions;
+	private final List<ParsedImportStatement> imports;
+	private final List<IParsedUnit> units;
 	private final List<ParsedStatement> statements;
 
 	/**
@@ -48,21 +52,21 @@ public class ParsedFile
 	 *
 	 * @param module module this file is part of
 	 * @param filename parsed filename
-	 * @param tokener input tokener
+	 * @param lexer input lexer
 	 */
-	public ParsedFile(ParsedModule module, String filename, ZenLexer tokener)
+	public ParsedFile(ParsedModule module, String filename, ZenLexer lexer)
 	{
 		this.filename = filename;
 		this.module = module;
 
-		imports = new ArrayList<ParsedImport>();
-		functions = new HashMap<String, ParsedFunction>();
+		imports = new ArrayList<ParsedImportStatement>();
+		units = new ArrayList<IParsedUnit>();
 		statements = new ArrayList<ParsedStatement>();
 
-		tokener.setFile(this);
+		lexer.setFile(this);
 
-		_package = parsePackage(tokener);
-		loadFileContents(tokener);
+		_package = parseOptionalPackage(lexer);
+		parseScriptElements(lexer);
 	}
 
 	/**
@@ -80,7 +84,7 @@ public class ParsedFile
 	 *
 	 * @return imports list
 	 */
-	public List<ParsedImport> getImports()
+	public List<ParsedImportStatement> getImports()
 	{
 		return imports;
 	}
@@ -94,16 +98,6 @@ public class ParsedFile
 	{
 		return statements;
 	}
-
-	/**
-	 * Gets the functions defined inside this file.
-	 *
-	 * @return script functions
-	 */
-	public Map<String, ParsedFunction> getFunctions()
-	{
-		return functions;
-	}
 	
 	public void compileUnits(SymbolicModule result)
 	{
@@ -114,33 +108,33 @@ public class ParsedFile
 	{
 		// TODO: add functions to symbol table
 		
-		for (ParsedFunction function : functions.values()) {
+		/*for (ParsedFunction function : functions.values()) {
 			result.addUnit(function.compileHeader(result.getScope()));
-		}
+		}*/
 	}
 	
 	public void compileContents(SymbolicModule result)
 	{
-		for (ParsedFunction function : functions.values()) {
+		/*for (ParsedFunction function : functions.values()) {
 			function.compileContents();
 		}
 		
 		if (!statements.isEmpty())
-			compileScriptContents(result);
+			compileScriptContents(result);*/
 	}
 	
 	private void compileScriptContents(SymbolicModule result)
 	{
-		SymbolicFunction scriptFunction = new SymbolicFunction(
+		/*SymbolicFunction scriptFunction = new SymbolicFunction(
 				new CodePosition(this, 1, 1),
-				MethodHeader.noArguments(result.getScope().getTypes().VOID),
+				MethodHeader.noParameters(result.getScope().getTypes().getVoid()),
 				result.getScope());
 		
 		for (ParsedStatement statement : statements) {
 			scriptFunction.addStatement(statement.compile(scriptFunction.getScope()));
 		}
 		
-		result.addScript(scriptFunction);
+		result.addScript(scriptFunction);*/
 	}
 
 	// #############################
@@ -167,113 +161,72 @@ public class ParsedFile
 						"Could not load file " + filename
 				);
 			} else {
-					loadFileContents(ZenLexer.fromInputStream(file));
+				parseScriptElements(ZenLexer.fromInputStream(module.getErrorLogger(), file));
 			}
 		} catch (IOException ex) {
 			module.getErrorLogger().error(position, "Could not load file " + filename);
 		}
 	}
 
-	private void loadFileContents(ZenLexer tokener)
+	private void parseScriptElements(ZenLexer lexer)
 	{
-		while (tokener.hasNext()) {
-			Token next = tokener.peek();
+		List<ParsedAnnotation> annotations = ParsedAnnotation.parseAll(lexer);
+		List<IParsedModifier> modifiers = ModifierParser.parseUnitModifiers(lexer);
+		
+		while (lexer.hasNext()) {
+			Token next = lexer.peek();
 			switch (next.getType()) {
-				case T_IMPORT:
-					imports.add(ParsedImport.parse(tokener, module.getErrorLogger()));
-					break;
-
 				case T_INCLUDE:
-					readInclude(tokener);
+					if (annotations != null && !annotations.isEmpty())
+						module.getErrorLogger().error(lexer.getPosition(), "Include cannot have annotations");
+					
+					if (modifiers != null && !modifiers.isEmpty())
+						module.getErrorLogger().error(lexer.getPosition(), "Include cannot have modifiers");
+					
+					readInclude(lexer);
 					break;
-
+					
 				case T_CLASS:
-					parseClass(tokener);
-					break;
-
 				case T_INTERFACE:
-					parseInterface(tokener);
-					break;
-
 				case T_ENUM:
-					parseEnum(tokener);
-					break;
-
 				case T_STRUCT:
-					parseStruct(tokener);
-					break;
-
 				case T_EXPAND:
-					parseExpansion(tokener);
-					break;
-
 				case T_FUNCTION:
-					parseFunction(tokener, module.getErrorLogger());
+					units.add(UnitParser.parse(lexer, annotations, modifiers));
 					break;
 
 				default:
-					statements.add(ParsedStatement.parse(tokener, module.getErrorLogger()));
+					if (modifiers != null && !modifiers.isEmpty())
+						module.getErrorLogger().error(lexer.getPosition(), "Statement cannot have modifiers");
+					
+					if (annotations != null && !annotations.isEmpty())
+						module.getErrorLogger().error(lexer.getPosition(), "Statement cannot have annotations");
+					
+					statements.add(ParsedStatement.parse(lexer));
 					break;
 			}
 		}
 	}
 
-	private void readInclude(ZenLexer tokener)
+	private void readInclude(ZenLexer lexer)
 	{
-		// process "include" token
-		tokener.next();
+		// consume "include" token
+		lexer.next();
 
-		Token includeFileName = tokener.required(T_STRINGVALUE, "string literal expected");
-		tokener.required(T_SEMICOLON, "; expected");
+		Token includeFileName = lexer.required(T_STRINGVALUE, "string literal expected");
+		lexer.requiredSemicolon();
 
 		tryLoadFileContents(includeFileName.getPosition(), includeFileName.getValue());
 	}
-
-	private void parseClass(ZenLexer tokener)
+	
+	private static ParsedPackage parseOptionalPackage(ZenLexer lexer)
 	{
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	private void parseInterface(ZenLexer tokener)
-	{
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	private void parseEnum(ZenLexer tokener)
-	{
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	private void parseStruct(ZenLexer tokener)
-	{
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	private void parseExpansion(ZenLexer tokener)
-	{
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	private void parseFunction(ZenLexer tokener, ICodeErrorLogger errorLogger)
-	{
-		ParsedFunction function = ParsedFunction.parse(tokener, errorLogger);
-
-		if (functions.containsKey(function.getName())) {
-			module.getErrorLogger().error(function.getPosition(), "function " + function.getName() + " already exists");
-		} else {
-			functions.put(function.getName(), function);
-		}
-	}
-
-	private static ParsedPackage parsePackage(ZenLexer tokener)
-	{
-		if (tokener.optional(T_PACKAGE) == null) {
+		if (lexer.optional(T_PACKAGE) == null)
 			return null;
-		}
+		
+		List<String> nameParts = lexer.parseIdentifierDotSequence();
+		lexer.requiredSemicolon();
 
-		List<String> name = tokener.parseIdentifierDotSequence();
-		tokener.required(T_SEMICOLON, "; expected");
-
-		return new ParsedPackage(Strings.join(name, "."));
+		return new ParsedPackage(nameParts);
 	}
 }

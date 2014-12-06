@@ -6,7 +6,7 @@
 
 package stanhebben.zenscript.util;
 
-import org.openzen.zencode.util.MethodOutput;
+import org.openzen.zencode.java.util.MethodOutput;
 import org.objectweb.asm.ClassVisitor;
 
 /**

@@ -1,23 +1,33 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
-
 package org.openzen.zencode.parser;
+
+import java.util.List;
+import org.openzen.zencode.util.Strings;
 
 /**
  *
  * @author Stan
  */
-public class ParsedPackage {
-	private final String name;
+public class ParsedPackage
+{
+	private final List<String> nameParts;
 	
-	public ParsedPackage(String name) {
-		this.name = name;
+	public ParsedPackage(List<String> nameParts)
+	{
+		this.nameParts = nameParts;
 	}
 	
-	public String getName() {
-		return name;
+	public List<String> getNameParts()
+	{
+		return nameParts;
+	}
+	
+	public String getName()
+	{
+		return Strings.join(nameParts, ".");
 	}
 }

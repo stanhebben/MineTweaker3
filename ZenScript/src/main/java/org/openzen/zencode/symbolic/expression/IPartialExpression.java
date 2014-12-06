@@ -7,26 +7,34 @@
 package org.openzen.zencode.symbolic.expression;
 
 import java.util.List;
-import stanhebben.zenscript.expression.Expression;
+import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan Hebben
+ * 
+ * @param <E> expression type
+ * @param <T> type type
  */
-public interface IPartialExpression
+public interface IPartialExpression<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public Expression eval();
+	public CodePosition getPosition();
 	
-	public Expression assign(CodePosition position, Expression other);
+	public IScopeMethod<E, T> getScope();
 	
-	public IPartialExpression getMember(CodePosition position, String name);
+	public E eval();
 	
-	public List<IMethod> getMethods();
+	public E assign(CodePosition position, E other);
+	
+	public IPartialExpression<E, T> getMember(CodePosition position, String name);
+	
+	public List<IMethod<E, T>> getMethods();
 	
 	/**
 	 * Calls the given method from this expression. Method must be one of the
@@ -38,13 +46,15 @@ public interface IPartialExpression
 	 * @param arguments
 	 * @return 
 	 */
-	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments);
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments);
 	
-	public IZenSymbol toSymbol();
+	public E cast(CodePosition position, T type);
 	
-	public ZenType getType();
+	public IZenSymbol<E, T> toSymbol();
 	
-	public ZenType toType(List<ZenType> genericTypes);
+	public T getType();
 	
-	public IPartialExpression via(SymbolicFunction function);
+	public T toType(List<T> genericTypes);
+	
+	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function);
 }

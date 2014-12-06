@@ -5,7 +5,6 @@
  */
 package org.openzen.zencode.parser.expression;
 
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.T_COLON;
 
@@ -15,18 +14,18 @@ import static org.openzen.zencode.lexer.ZenLexer.T_COLON;
  */
 public class ParsedCallArgument
 {
-	public static ParsedCallArgument parse(ZenLexer tokener, ICodeErrorLogger errors)
+	public static ParsedCallArgument parse(ZenLexer lexer)
 	{
-		ParsedExpression expression = ParsedExpression.parse(tokener, errors);
+		ParsedExpression expression = ParsedExpression.parse(lexer);
 
-		if (tokener.optional(T_COLON) == null)
+		if (lexer.optional(T_COLON) == null)
 			return new ParsedCallArgument(null, expression);
 
 		String key = expression.asIdentifier();
 		if (key == null)
-			errors.error(expression.getPosition(), "Invalid key");
+			lexer.error(expression.getPosition(), "Invalid key");
 
-		return new ParsedCallArgument(key, ParsedExpression.parse(tokener, errors));
+		return new ParsedCallArgument(key, ParsedExpression.parse(lexer));
 	}
 
 	private final String key;

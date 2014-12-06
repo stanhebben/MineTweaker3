@@ -6,13 +6,12 @@
 
 package stanhebben.zenscript.util;
 
-import org.openzen.zencode.util.MethodOutput;
-import java.util.Iterator;
+import org.openzen.zencode.java.util.MethodOutput;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import static org.openzen.zencode.util.ZenTypeUtil.internal;
-import static org.openzen.zencode.util.ZenTypeUtil.signature;
+import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
+import static org.openzen.zencode.java.type.JavaTypeUtil.signature;
 import org.openzen.zencode.runtime.IAny;
 
 /**

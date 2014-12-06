@@ -5,25 +5,17 @@
  */
 package org.openzen.zencode.symbolic.unit;
 
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class SymbolicInterface implements ISymbolicUnit
+public class SymbolicInterface<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	implements ISymbolicUnit<E, T>
 {
 
-	@Override
-	public ZenType getType()
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void compile()
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	
 }

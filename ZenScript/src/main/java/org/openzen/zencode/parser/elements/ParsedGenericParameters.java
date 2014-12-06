@@ -8,7 +8,6 @@ package org.openzen.zencode.parser.elements;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 
 /**
@@ -17,22 +16,22 @@ import org.openzen.zencode.lexer.ZenLexer;
  */
 public class ParsedGenericParameters
 {
-	public static List<ParsedGenericParameter> parse(ZenLexer tokener, ICodeErrorLogger errors)
+	public static List<ParsedGenericParameter> parse(ZenLexer lexer)
 	{
-		if (tokener.optional(ZenLexer.T_LT) == null)
+		if (lexer.optional(ZenLexer.T_LT) == null)
 			return null;
 
-		if (tokener.optional(ZenLexer.T_GT) != null)
-			return Collections.EMPTY_LIST;
+		if (lexer.optional(ZenLexer.T_GT) != null)
+			return Collections.emptyList();
 
 		List<ParsedGenericParameter> parameters = new ArrayList<ParsedGenericParameter>();
 		do {
-			parameters.add(ParsedGenericParameter.parse(tokener, errors));
+			parameters.add(ParsedGenericParameter.parse(lexer));
 
-			if (tokener.optional(ZenLexer.T_LT) == null)
+			if (lexer.optional(ZenLexer.T_LT) == null)
 				break;
 
-		} while (tokener.optional(ZenLexer.T_COMMA) != null);
+		} while (lexer.optional(ZenLexer.T_COMMA) != null);
 
 		return parameters;
 	}

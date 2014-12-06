@@ -7,85 +7,83 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionGetStaticField;
-import stanhebben.zenscript.expression.ExpressionSetStaticField;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.field.IField;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
  */
-public class PartialStaticField implements IPartialExpression
+public class PartialStaticField<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	extends AbstractPartialExpression<E, T>
 {
-	private final CodePosition position;
-	private final IScopeMethod scope;
-	private final IField field;
+	private final IField<E, T> field;
 	
-	public PartialStaticField(CodePosition position, IScopeMethod scope, IField field)
+	public PartialStaticField(CodePosition position, IScopeMethod<E, T> scope, IField<E, T> field)
 	{
-		this.position = position;
-		this.scope = scope;
+		super(position, scope);
+		
 		this.field = field;
 	}
 
 	@Override
-	public Expression eval()
+	public E eval()
 	{
-		return new ExpressionGetStaticField(position, scope, field);
+		return field.makeStaticGetExpression(getPosition(), getScope());
 	}
 
 	@Override
-	public Expression assign(CodePosition position, Expression other)
+	public E assign(CodePosition position, E value)
 	{
-		return new ExpressionSetStaticField(position, scope, field, other);
+		return field.makeStaticSetExpression(getPosition(), getScope(), value);
 	}
 
 	@Override
-	public IPartialExpression getMember(CodePosition position, String name)
+	public IPartialExpression<E, T> getMember(CodePosition position, String name)
 	{
 		return eval().getMember(position, name);
 	}
 
 	@Override
-	public List<IMethod> getMethods()
+	public List<IMethod<E, T>> getMethods()
 	{
-		return field.getType().getMethods();
+		return field.getType().getInstanceMethods();
 	}
 	
 	@Override
-	public IPartialExpression call(CodePosition position, IMethod method, Expression... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
 	{
-		return method.callVirtual(position, scope, eval(), arguments);
+		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
 
 	@Override
-	public IZenSymbol toSymbol()
+	public IZenSymbol<E, T> toSymbol()
 	{
-		return new SymbolStaticField(field);
+		return new SymbolStaticField<E, T>(field);
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
 		return field.getType();
 	}
 
 	@Override
-	public ZenType toType(List<ZenType> genericTypes)
+	public T toType(List<T> genericTypes)
 	{
-		throw new UnsupportedOperationException("Cannot convert static field to type");
+		getScope().error(getPosition(), "Cannot convert static field to type");
+		return getScope().getTypes().getAny();
 	}
 
 	@Override
-	public IPartialExpression via(SymbolicFunction function)
+	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
 	}

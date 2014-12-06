@@ -9,24 +9,27 @@ import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticGetter;
 import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class SymbolStaticGetter implements IZenSymbol
+public class SymbolStaticGetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IZenSymbol<E, T>
 {
-	private final IMethod method;
+	private final IMethod<E, T> method;
 	
-	public SymbolStaticGetter(IMethod method)
+	public SymbolStaticGetter(IMethod<E, T> method)
 	{
 		this.method = method;
 	}
 	
 	@Override
-	public IPartialExpression instance(CodePosition position, IScopeMethod scope)
+	public IPartialExpression<E, T> instance(CodePosition position, IScopeMethod<E, T> scope)
 	{
-		return new PartialStaticGetter(position, scope, method);
+		return new PartialStaticGetter<E, T>(position, scope, method);
 	}
 }

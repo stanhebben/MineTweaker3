@@ -5,22 +5,24 @@
  */
 package org.openzen.zencode.symbolic.method;
 
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.symbols.SymbolLocal;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class MethodParameter
+public class MethodParameter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
 	private final String name;
-	private final ZenType type;
-	private final Expression defaultValue;
-	private SymbolLocal local;
+	private final T type;
+	private final E defaultValue;
+	private SymbolLocal<E, T> local;
 
-	public MethodParameter(String name, ZenType type, Expression defaultValue)
+	public MethodParameter(String name, T type, E defaultValue)
 	{
 		this.name = name;
 		this.type = type;
@@ -32,20 +34,20 @@ public class MethodParameter
 		return name;
 	}
 
-	public ZenType getType()
+	public T getType()
 	{
 		return type;
 	}
 
-	public Expression getDefaultValue()
+	public E getDefaultValue()
 	{
 		return defaultValue;
 	}
 
-	public SymbolLocal getLocal()
+	public SymbolLocal<E, T> getLocal()
 	{
 		if (local == null)
-			local = new SymbolLocal(type, false);
+			local = new SymbolLocal<E, T>(type, false);
 
 		return local;
 	}

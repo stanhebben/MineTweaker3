@@ -5,9 +5,9 @@
  */
 package org.openzen.zencode.parser.type;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeArrayBasic;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  * Parsed array type (valuetype[]).
@@ -24,9 +24,10 @@ public class ParsedTypeArray implements IParsedType
 	}
 
 	@Override
-	public ZenType compile(IScopeGlobal scope)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 T compile(IScopeGlobal<E, T> scope)
 	{
-		return new ZenTypeArrayBasic(baseType.compile(scope));
+		return scope.getTypes().getArray(baseType.compile(scope));
 	}
 	
 	@Override

@@ -5,10 +5,9 @@
  */
 package org.openzen.zencode.symbolic.type;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.symbolic.MemberVirtual;
+import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.util.CodePosition;
@@ -16,26 +15,29 @@ import org.openzen.zencode.util.CodePosition;
 /**
  *
  * @author Stan
+ * @param <E>
  */
-public class ExpansionSetter implements ISetter
+public class ExpansionSetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		implements ISetter<E, T>
 {
-	private final MemberVirtual member;
-	private final IMethod method;
+	private final PartialVirtualMember<E, T> member;
+	private final IMethod<E, T> method;
 	
-	public ExpansionSetter(MemberVirtual member, IMethod method)
+	public ExpansionSetter(PartialVirtualMember<E, T> member, IMethod<E, T> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
 		return method.getMethodHeader().getArgumentType(1);
 	}
 
 	@Override
-	public Expression compile(CodePosition position, IScopeMethod scope, Expression value)
+	@SuppressWarnings("unchecked")
+	public E compile(CodePosition position, IScopeMethod<E, T> scope, E value)
 	{
 		return method.callStatic(position, scope, member.getTarget(), value);
 	}

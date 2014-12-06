@@ -3,20 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.symbolic.type.casting;
 
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.util.MethodOutput;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface ICastingRule {
-	public void compile(MethodOutput method);
+public interface ICastingRule<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+{
+	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value);
+
+	public T getInputType();
+
+	public T getResultingType();
 	
-	public ZenType getInputType();
-	
-	public ZenType getResultingType();
+	public boolean isExplicit();
 }

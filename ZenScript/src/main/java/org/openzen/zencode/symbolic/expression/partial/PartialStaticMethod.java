@@ -8,88 +8,82 @@ package org.openzen.zencode.symbolic.expression.partial;
 import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.ExpressionMethodStatic;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeFunction;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
  */
-public class PartialStaticMethod implements IPartialExpression
+public class PartialStaticMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	extends AbstractPartialExpression<E, T>
 {
-	private final CodePosition position;
-	private final IScopeMethod scope;
-	private final IMethod method;
-	private final ZenTypeFunction type;
+	private final IMethod<E, T> method;
 	
-	public PartialStaticMethod(CodePosition position, IScopeMethod scope, IMethod method)
+	public PartialStaticMethod(CodePosition position, IScopeMethod<E, T> scope, IMethod<E, T> method)
 	{
-		this.position = position;
-		this.scope = scope;
+		super(position, scope);
+		
 		this.method = method;
-		type = new ZenTypeFunction(method.getMethodHeader());
 	}
 
 	@Override
-	public Expression eval()
+	public E eval()
 	{
-		return new ExpressionMethodStatic(position, scope, method);
+		return getScope().getExpressionCompiler().staticMethodValue(getPosition(), getScope(), method);
 	}
 
 	@Override
-	public Expression assign(CodePosition position, Expression other)
+	public E assign(CodePosition position, E other)
 	{
-		scope.error(position, "Cannot assign to a method");
-		return new ExpressionInvalid(position, scope, other.getType());
+		getScope().error(position, "Cannot assign to a method");
+		return getScope().getExpressionCompiler().invalid(getPosition(), getScope(), other.getType());
 	}
 
 	@Override
-	public IPartialExpression getMember(CodePosition position, String name)
+	public IPartialExpression<E, T> getMember(CodePosition position, String name)
 	{
-		return type.getMember(position, scope, this, name);
+		return method.getFunctionType().getInstanceMember(position, getScope(), eval(), name);
 	}
 	
 	@Override
-	public List<IMethod> getMethods()
+	public List<IMethod<E, T>> getMethods()
 	{
 		return Collections.singletonList(method);
 	}
 	
 	@Override
-	public IPartialExpression call(CodePosition position, IMethod method, Expression... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
 	{
-		return method.callStatic(position, scope, arguments);
+		return method.callStatic(position, getScope(), arguments);
 	}
 
 	@Override
-	public IZenSymbol toSymbol()
+	public IZenSymbol<E, T> toSymbol()
 	{
-		return new SymbolStaticMethod(method);
+		return new SymbolStaticMethod<E, T>(method);
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
-		return type;
+		return method.getFunctionType();
 	}
 
 	@Override
-	public ZenType toType(List<ZenType> genericTypes)
+	public T toType(List<T> genericTypes)
 	{
 		throw new UnsupportedOperationException("Cannot convert function to type");
 	}
 
 	@Override
-	public IPartialExpression via(SymbolicFunction function)
+	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
 	}

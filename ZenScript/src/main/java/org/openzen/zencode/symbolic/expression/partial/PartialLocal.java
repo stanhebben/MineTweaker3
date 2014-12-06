@@ -7,91 +7,87 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionInvalid;
-import stanhebben.zenscript.expression.ExpressionLocalGet;
-import stanhebben.zenscript.expression.ExpressionLocalSet;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.symbols.SymbolLocal;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
+ * @param <E>
+ * @param <T>
  */
-public class PartialLocal implements IPartialExpression
+public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends AbstractPartialExpression<E, T>
 {
-	private final CodePosition position;
-	private final IScopeMethod scope;
-	private final SymbolLocal variable;
+	private final SymbolLocal<E, T> variable;
 
-	public PartialLocal(CodePosition position, IScopeMethod environment, SymbolLocal variable)
+	public PartialLocal(CodePosition position, IScopeMethod<E, T> scope, SymbolLocal<E, T> variable)
 	{
-		this.position = position;
-		this.scope = environment;
+		super(position, scope);
+		
 		this.variable = variable;
 	}
 
 	@Override
-	public Expression eval()
+	public E eval()
 	{
-		return new ExpressionLocalGet(position, scope, variable);
+		return getScope().getExpressionCompiler().localGet(getPosition(), getScope(), variable);
 	}
 
 	@Override
-	public IPartialExpression getMember(CodePosition position, String name)
+	public IPartialExpression<E, T> getMember(CodePosition position, String name)
 	{
-		return variable.getType().getMember(position, scope, this, name);
+		return variable.getType().getInstanceMember(position, getScope(), eval(), name);
 	}
 
 	@Override
-	public Expression assign(CodePosition position, Expression other)
+	public E assign(CodePosition position, E other)
 	{
 		if (variable.isFinal()) {
-			scope.error(position, "value cannot be changed");
-			return new ExpressionInvalid(position, scope);
+			getScope().error(position, "value cannot be changed");
+			return getScope().getExpressionCompiler().invalid(position, getScope());
 		} else
-			return new ExpressionLocalSet(position, scope, variable, other);
+			return getScope().getExpressionCompiler().localSet(position, getScope(), variable, other);
 	}
 
 	@Override
-	public IZenSymbol toSymbol()
+	public IZenSymbol<E, T> toSymbol()
 	{
 		return variable;
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
 		return variable.getType();
 	}
 
 	@Override
-	public ZenType toType(List<ZenType> genericTypes)
+	public T toType(List<T> genericTypes)
 	{
-		scope.error(position, "not a valid type");
-		return scope.getTypes().ANY;
+		getScope().error(getPosition(), "not a valid type");
+		return getScope().getTypes().getAny();
 	}
 
 	@Override
-	public List<IMethod> getMethods()
+	public List<IMethod<E, T>> getMethods()
 	{
-		return variable.getType().getMethods();
+		return variable.getType().getInstanceMethods();
 	}
 	
 	@Override
-	public Expression call(CodePosition position, IMethod method, Expression... arguments)
+	public E call(CodePosition position, IMethod<E, T> method, E... arguments)
 	{
-		return method.callVirtual(position, scope, eval(), arguments);
+		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
 
 	@Override
-	public IPartialExpression via(SymbolicFunction function)
+	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
-		return function.addCapture(position, scope, variable);
+		return function.addCapture(getPosition(), getScope(), variable);
 	}
 }

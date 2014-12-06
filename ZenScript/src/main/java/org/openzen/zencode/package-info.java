@@ -1,3 +1,9 @@
+/*
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
+ * 
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
+ */
+
 /**
  * <h1>ZenCode library</h1>
  * 

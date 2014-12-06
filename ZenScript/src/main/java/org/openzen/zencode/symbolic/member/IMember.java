@@ -5,13 +5,17 @@
  */
 package org.openzen.zencode.symbolic.member;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface IMember
+public interface IMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public ISymbolicUnit getUnit();
+	public ISymbolicUnit<E, T> getUnit();
 }

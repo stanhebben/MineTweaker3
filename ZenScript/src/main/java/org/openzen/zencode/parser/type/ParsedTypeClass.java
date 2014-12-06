@@ -9,11 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -29,7 +28,7 @@ public class ParsedTypeClass implements IParsedType
 	private final List<String> name;
 	private final List<IParsedType> genericType;
 
-	public ParsedTypeClass(ICodeErrorLogger errors, ZenLexer lexer)
+	public ParsedTypeClass(ZenLexer lexer)
 	{
 		Token nameFirst = lexer.required(TOKEN_ID, "identifier expected");
 		position = nameFirst.getPosition();
@@ -48,7 +47,7 @@ public class ParsedTypeClass implements IParsedType
 			genericType = new ArrayList<IParsedType>();
 			if (lexer.optional(T_GT) == null) {
 				do {
-					IParsedType type = TypeParser.parse(lexer, errors);
+					IParsedType type = TypeParser.parse(lexer);
 					genericType.add(type);
 					
 					if (lexer.optional(T_COMMA) == null) {
@@ -61,35 +60,36 @@ public class ParsedTypeClass implements IParsedType
 	}
 
 	@Override
-	public ZenType compile(IScopeGlobal scope)
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 T compile(IScopeGlobal<E, T> scope)
 	{
-		IPartialExpression expression = scope.getValue(
+		IPartialExpression<E, T> expression = scope.getValue(
 				name.get(0),
 				position,
-				scope.getTypes().getStaticGlobalEnvironment());
+				scope.getConstantEnvironment());
 		
 		for (int i = 1; i < name.size(); i++) {
 			expression = expression.getMember(position, name.get(i));
 			if (expression == null) {
 				scope.error(position, "Could not find package or class " + Strings.join(name.subList(0, i), "."));
-				return scope.getTypes().ANY;
+				return scope.getTypes().getAny();
 			}
 		}
 
-		List<ZenType> compiledGenericTypes;
+		List<T> compiledGenericTypes;
 		if (genericType == null)
 			compiledGenericTypes = null;
 		else {
-			compiledGenericTypes = new ArrayList<ZenType>();
+			compiledGenericTypes = new ArrayList<T>();
 			for (IParsedType type : genericType) {
 				compiledGenericTypes.add(type.compile(scope));
 			}
 		}
 
-		ZenType type = expression.toType(compiledGenericTypes);
+		T type = expression.toType(compiledGenericTypes);
 		if (type == null) {
 			scope.error(position, Strings.join(name, ".") + " is not a valid type");
-			type = scope.getTypes().ANY;
+			type = scope.getTypes().getAny();
 		}
 
 		return type;

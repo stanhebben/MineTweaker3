@@ -2,13 +2,13 @@ package org.openzen.zencode.parser.type;
 
 import java.io.IOException;
 import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import static org.openzen.zencode.parser.type.ParsedTypeBasic.*;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  * Utility class to parse types.
@@ -21,16 +21,17 @@ public class TypeParser
 	{
 	}
 
-	public static ZenType parseDirect(String value, IScopeGlobal scope)
+	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 T parseDirect(String value, IScopeGlobal<E, T> scope)
 	{
 		try {
-			return parse(new ZenLexer(value), scope).compile(scope);
+			return parse(new ZenLexer(scope, value)).compile(scope);
 		} catch (IOException ex) {
 			throw new RuntimeException("Could not parse type " + value, ex);
 		}
 	}
 
-	public static IParsedType parse(ZenLexer lexer, ICodeErrorLogger errors)
+	public static IParsedType parse(ZenLexer lexer)
 	{
 		IParsedType result;
 
@@ -55,20 +56,40 @@ public class TypeParser
 				lexer.next();
 				result = BYTE;
 				break;
+				
+			case T_UBYTE:
+				lexer.next();
+				result = UBYTE;
+				break;
 
 			case T_SHORT:
 				lexer.next();
 				result = SHORT;
+				break;
+				
+			case T_USHORT:
+				lexer.next();
+				result = USHORT;
 				break;
 
 			case T_INT:
 				lexer.next();
 				result = INT;
 				break;
+			
+			case T_UINT:
+				lexer.next();
+				result = UINT;
+				break;
 
 			case T_LONG:
 				lexer.next();
 				result = LONG;
+				break;
+				
+			case T_ULONG:
+				lexer.next();
+				result = ULONG;
 				break;
 
 			case T_FLOAT:
@@ -80,6 +101,11 @@ public class TypeParser
 				lexer.next();
 				result = DOUBLE;
 				break;
+				
+			case T_CHAR:
+				lexer.next();
+				result = CHAR;
+				break;
 
 			case T_STRING:
 				lexer.next();
@@ -87,7 +113,7 @@ public class TypeParser
 				break;
 
 			case TOKEN_ID:
-				result = new ParsedTypeClass(errors, lexer);
+				result = new ParsedTypeClass(lexer);
 				break;
 
 			default:
@@ -105,7 +131,7 @@ public class TypeParser
 				lexer.next();
 
 				if (lexer.optional(T_SQBRCLOSE) == null) {
-					IParsedType keyType = parse(lexer, errors);
+					IParsedType keyType = parse(lexer);
 					result = new ParsedTypeAssociative(keyType, result);
 
 					lexer.required(T_SQBRCLOSE, "] expected");

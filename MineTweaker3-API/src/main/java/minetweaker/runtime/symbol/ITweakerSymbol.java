@@ -5,7 +5,9 @@
  */
 package minetweaker.runtime.symbol;
 
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import minetweaker.runtime.TweakerGlobalScope;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 
@@ -14,11 +16,12 @@ import org.openzen.zencode.runtime.IAny;
  * to be registered outside a compilation scope. Tweaker symbols are there to
  * fill that gap - they are converted into ZenCode symbols when compilation is
  * being prepared.
- * 
+ *
  * @author Stan Hebben
  */
-public interface ITweakerSymbol {
-	public IZenSymbol convert(IScopeGlobal scope);
-	
+public interface ITweakerSymbol
+{
+	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope);
+
 	public IAny eval();
 }

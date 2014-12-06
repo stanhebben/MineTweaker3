@@ -6,9 +6,12 @@
 package minetweaker.api;
 
 import java.util.List;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  * Bracket handlers enable processing of the bracket syntax.
@@ -30,10 +33,12 @@ public interface IBracketHandler
 	 *
 	 * If the series of tokens is unrecognized, this method should return null.
 	 *
+	 * @param position
+	 * @param scope
 	 * @param tokens token stream to be detected
 	 * @return the resolved symbol, or null
 	 */
-	public IZenSymbol resolve(List<Token> tokens);
+	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens);
 
 	/**
 	 * Evaluates the compile-time value of the given bracket value.

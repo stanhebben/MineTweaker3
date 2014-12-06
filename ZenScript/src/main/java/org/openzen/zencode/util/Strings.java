@@ -7,8 +7,9 @@ package org.openzen.zencode.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import stanhebben.zenscript.expression.Expression;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
@@ -53,11 +54,14 @@ public class Strings
 	 * If a set of methods is available and none matches, this method creates a
 	 * suitable message.
 	 *
+	 * @param <E>
+	 * @param <T>
 	 * @param methods matching methods
 	 * @param arguments calling arguments
 	 * @return return value
 	 */
-	public static String methodMatchingError(List<IMethod> methods, Expression... arguments)
+	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 String methodMatchingError(List<IMethod<E, T>> methods, E... arguments)
 	{
 		if (methods.isEmpty())
 			return "no method with that name available";
@@ -69,7 +73,8 @@ public class Strings
 				message.append(methods.size()).append(" methods ");
 			message.append("available but none matches the parameters (");
 			boolean first = true;
-			for (Expression value : arguments) {
+			
+			for (E value : arguments) {
 				if (first)
 					first = false;
 				else

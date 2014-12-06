@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import minetweaker.api.mods.ILoadedMods;
 import minetweaker.api.mods.IMod;
-import stanhebben.zenscript.util.MappingIterator;
+import org.openzen.zencode.util.MappingIterator;
 
 /**
  *

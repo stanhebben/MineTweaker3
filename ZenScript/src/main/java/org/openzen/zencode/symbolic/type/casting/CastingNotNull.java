@@ -3,46 +3,52 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.symbolic.type.casting;
 
-import org.objectweb.asm.Label;
-import stanhebben.zenscript.type.ZenType;
-import org.openzen.zencode.util.MethodOutput;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class CastingNotNull implements ICastingRule {
-	private final ZenType fromType;
-	private final ZenType bool;
-	
-	public CastingNotNull(ZenType fromType, ZenType bool) {
+public class CastingNotNull<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		implements ICastingRule<E, T>
+{
+	private final T fromType;
+	private final T bool;
+
+	public CastingNotNull(T fromType, T bool)
+	{
 		this.fromType = fromType;
 		this.bool = bool;
 	}
 
 	@Override
-	public void compile(MethodOutput output) {
-		Label labelElse = new Label();
-		Label labelAfter = new Label();
-		
-		output.ifNull(labelElse);
-		output.iConst1();
-		output.goTo(labelAfter);
-		output.label(labelElse);
-		output.iConst0();
-		output.label(labelAfter);
-	}
-
-	@Override
-	public ZenType getInputType() {
+	public T getInputType()
+	{
 		return fromType;
 	}
 
 	@Override
-	public ZenType getResultingType() {
+	public T getResultingType()
+	{
 		return bool;
+	}
+
+	@Override
+	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value)
+	{
+		return scope.getExpressionCompiler().notNull(position, scope, value);
+	}
+
+	@Override
+	public boolean isExplicit()
+	{
+		return false;
 	}
 }

@@ -3,50 +3,58 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.runtime.AnyBool;
 import org.openzen.zencode.runtime.AnyInt;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  */
-public class ParsedExpressionBinary extends ParsedExpression {
+public class ParsedExpressionBinary extends ParsedExpression
+{
 	private final ParsedExpression left;
 	private final ParsedExpression right;
 	private final OperatorType operator;
-	
-	public ParsedExpressionBinary(CodePosition position, ParsedExpression left, ParsedExpression right, OperatorType operator) {
+
+	public ParsedExpressionBinary(CodePosition position, ParsedExpression left, ParsedExpression right, OperatorType operator)
+	{
 		super(position);
-		
+
 		this.left = left;
 		this.right = right;
 		this.operator = operator;
 	}
 
 	@Override
-	public IPartialExpression compilePartial(IScopeMethod environment, ZenType predictedType) {
-		// TODO: make better predictions
-		Expression cLeft = left.compile(environment, predictedType);
-		Expression cRight = right.compile(environment, predictedType);
-		return cLeft.getType().operator(getPosition(), environment, operator, cLeft, cRight);
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+	{
+		E cLeft = left.compile(scope, asType);
+		T predictedRightType = cLeft.getType().predictOperatorArgumentType(operator).get(0);
+		E cRight = right.compile(scope, predictedRightType);
+		
+		E result = cLeft.getType().binary(getPosition(), scope, operator, cLeft, cRight);
+		if (asType != null)
+			result = result.cast(getPosition(), asType);
+		
+		return result;
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment environment) {
+	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	{
 		IAny leftValue = left.eval(environment);
 		IAny rightValue = right.eval(environment);
-		
+
 		switch (operator) {
 			case ADD:
 				return leftValue.add(rightValue);

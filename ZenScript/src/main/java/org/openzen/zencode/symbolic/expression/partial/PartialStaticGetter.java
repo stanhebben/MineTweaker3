@@ -7,85 +7,84 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionCallStatic;
-import stanhebben.zenscript.expression.ExpressionInvalid;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import stanhebben.zenscript.type.ZenType;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticGetter;
+import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class PartialStaticGetter implements IPartialExpression
+public class PartialStaticGetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	extends AbstractPartialExpression<E, T>
 {
-	private final CodePosition position;
-	private final IScopeMethod scope;
-	private final IMethod method;
+	private final IMethod<E, T> method;
 	
-	public PartialStaticGetter(CodePosition position, IScopeMethod scope, IMethod method)
+	public PartialStaticGetter(CodePosition position, IScopeMethod<E, T> scope, IMethod<E, T> method)
 	{
-		this.position = position;
-		this.scope = scope;
+		super(position, scope);
+		
 		this.method = method;
 	}
 
 	@Override
-	public Expression eval()
+	@SuppressWarnings("unchecked")
+	public E eval()
 	{
-		return new ExpressionCallStatic(position, scope, method);
+		return method.callStatic(getPosition(), getScope());
 	}
 
 	@Override
-	public Expression assign(CodePosition position, Expression other)
+	public E assign(CodePosition position, E other)
 	{
-		scope.error(position, "Cannot assign to a static getter");
-		return new ExpressionInvalid(position, scope, method.getReturnType());
+		getScope().error(position, "Cannot assign to a static getter");
+		return getScope().getExpressionCompiler().invalid(getPosition(), getScope());
 	}
 
 	@Override
-	public IPartialExpression getMember(CodePosition position, String name)
+	public IPartialExpression<E, T> getMember(CodePosition position, String name)
 	{
 		return eval().getMember(position, name);
 	}
 
 	@Override
-	public List<IMethod> getMethods()
+	public List<IMethod<E, T>> getMethods()
 	{
-		return getType().getMethods();
+		return getType().getInstanceMethods();
 	}
 	
 	@Override
-	public IPartialExpression call(CodePosition position, IMethod method, Expression[] arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
 	{
-		return method.callVirtual(position, scope, eval(), arguments);
+		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
 
 	@Override
-	public IZenSymbol toSymbol()
+	public IZenSymbol<E, T> toSymbol()
 	{
-		return new SymbolStaticGetter(method);
+		return new SymbolStaticGetter<E, T>(method);
 	}
 
 	@Override
-	public ZenType getType()
+	public T getType()
 	{
 		return method.getReturnType();
 	}
 
 	@Override
-	public ZenType toType(List<ZenType> genericTypes)
+	public T toType(List<T> genericTypes)
 	{
 		throw new UnsupportedOperationException("Cannot convert static getter to type");
 	}
 
 	@Override
-	public IPartialExpression via(SymbolicFunction function)
+	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
 	}

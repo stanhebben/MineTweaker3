@@ -27,7 +27,7 @@ import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.parser.ParsedFile;
 import org.openzen.zencode.parser.ParsedModule;
-import org.openzen.zencode.parser.ParserEnvironment;
+import org.openzen.zencode.java.JavaCompiler;
 
 /**
  *
@@ -95,7 +95,7 @@ public final class Tweaker
 		IScopeGlobal global = GlobalRegistry.makeGlobalEnvironment();
 
 		// Step 1: parse all files
-		ParserEnvironment parserEnvironment = new ParserEnvironment(global);
+		JavaCompiler parserEnvironment = new JavaCompiler(global);
 		
 		if (DEBUG)
 			parserEnvironment.setDebugOutputDirectory(new File("scripts-debug"));

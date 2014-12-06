@@ -7,41 +7,33 @@ package org.openzen.zencode.symbolic.unit;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
-import stanhebben.zenscript.type.ZenType;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class SymbolicStruct implements ISymbolicUnit
+public class SymbolicStruct<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	implements ISymbolicUnit<E, T>
 {
-	private final List<IMember> members;
+	private final List<IMember<E, T>> members;
 	
 	public SymbolicStruct()
 	{
-		this.members = new ArrayList<IMember>();
+		this.members = new ArrayList<IMember<E, T>>();
 	}
 	
-	public void addMember(IMember member)
+	public void addMember(IMember<E, T> member)
 	{
 		members.add(member);
 	}
 	
-	public List<IMember> getMembers()
+	public List<IMember<E, T>> getMembers()
 	{
 		return members;
-	}
-
-	@Override
-	public ZenType getType()
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void compile()
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

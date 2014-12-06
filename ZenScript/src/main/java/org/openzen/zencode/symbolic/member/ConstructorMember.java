@@ -7,38 +7,33 @@ package org.openzen.zencode.symbolic.member;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openzen.zencode.symbolic.expression.Expressions;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
 import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
-import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.expression.Expression;
-import stanhebben.zenscript.expression.ExpressionNew;
-import stanhebben.zenscript.statements.Statement;
-import stanhebben.zenscript.type.ZenType;
-import stanhebben.zenscript.type.ZenTypeFunction;
-import org.openzen.zencode.util.MethodOutput;
+import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public class ConstructorMember implements IMember, IMethod
+public class ConstructorMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	implements IMember<E, T>
 {
-	private final ISymbolicUnit unit;
-	private final MethodHeader header;
-	private final List<Statement> statements;
-	private ZenTypeFunction functionType;
+	private final ISymbolicUnit<E, T> unit;
+	private final MethodHeader<E, T> header;
+	private final List<Statement<E, T>> statements;
 	
-	public ConstructorMember(ISymbolicUnit unit, MethodHeader header)
+	public ConstructorMember(ISymbolicUnit<E, T> unit, MethodHeader<E, T> header)
 	{
 		this.unit = unit;
 		this.header = header;
-		this.statements = new ArrayList<Statement>();
+		this.statements = new ArrayList<Statement<E, T>>();
 	}
 	
-	public void addStatement(Statement statement)
+	public void addStatement(Statement<E, T> statement)
 	{
 		statements.add(statement);
 	}
@@ -48,93 +43,8 @@ public class ConstructorMember implements IMember, IMethod
 	// #################################
 
 	@Override
-	public ISymbolicUnit getUnit()
+	public ISymbolicUnit<E, T> getUnit()
 	{
 		return unit;
-	}
-	
-	// #################################
-	// ### Implementation of IMethod ###
-	// #################################
-	
-	@Override
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Expression... arguments)
-	{
-		return new ExpressionNew(position, scope, unit.getType(), this, arguments);
-	}
-	
-	@Override
-	public Expression callStatic(CodePosition position, IScopeMethod scope, Object... constantArguments)
-	{
-		return callStatic(position, scope, Expressions.convert(position, scope, constantArguments));
-	}
-	
-	@Override
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Expression... arguments)
-	{
-		throw new UnsupportedOperationException("Cannot call a constructor as virtual method");
-	}
-	
-	@Override
-	public Expression callVirtual(CodePosition position, IScopeMethod scope, Expression target, Object... constantArguments)
-	{
-		throw new UnsupportedOperationException("Cannot call a constructor as virtual method");
-	}
-
-	@Override
-	public boolean isStatic()
-	{
-		return true;
-	}
-
-	@Override
-	public void invokeVirtual(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void invokeStatic(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void invokeSpecial(MethodOutput output)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void invokeVirtual(MethodOutput output, Expression receiver, Expression[] arguments)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void invokeStatic(MethodOutput output, Expression[] arguments)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public ZenTypeFunction getFunctionType()
-	{
-		if (functionType == null)
-			functionType = new ZenTypeFunction(header);
-		
-		return functionType;
-	}
-
-	@Override
-	public MethodHeader getMethodHeader()
-	{
-		return header;
-	}
-
-	@Override
-	public ZenType getReturnType()
-	{
-		return header.getReturnType();
 	}
 }

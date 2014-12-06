@@ -1,27 +1,31 @@
 /*
- * This file is part of MineTweaker API, licensed under the MIT License (MIT).
+ * This file is part of ZenCode, licensed under the MIT License (MIT).
  * 
- * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
+ * Copyright (c) 2014 openzen.org <http://zencode.openzen.org>
  */
 package org.openzen.zencode.compiler;
 
 import java.util.List;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.unit.SymbolicClass;
 import org.openzen.zencode.symbolic.unit.SymbolicEnum;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.symbolic.unit.SymbolicInterface;
 import org.openzen.zencode.symbolic.unit.SymbolicStruct;
-import stanhebben.zenscript.statements.Statement;
+import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
-public interface IModuleCompiler
+public interface IModuleCompiler<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public void compileScript(List<Statement> statements);
+	public void compileScript(List<Statement<E, T>> statements);
 	
-	public void compileFunction(SymbolicFunction function);
+	public void compileFunction(SymbolicFunction<E, T> function);
 	
 	public void compileClass(SymbolicClass _class);
 	
