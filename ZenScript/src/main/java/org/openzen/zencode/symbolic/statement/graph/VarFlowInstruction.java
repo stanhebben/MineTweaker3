@@ -8,20 +8,18 @@ package org.openzen.zencode.symbolic.statement.graph;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class VarFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
+public class VarFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
-	private final SymbolLocal<E, T> symbol;
+	private final SymbolLocal<E> symbol;
 	private final E initializer;
 	
-	public VarFlowInstruction(SymbolLocal<E, T> symbol, E initializer)
+	public VarFlowInstruction(SymbolLocal<E> symbol, E initializer)
 	{
 		this.symbol = symbol;
 		this.initializer = initializer;
@@ -34,7 +32,7 @@ public class VarFlowInstruction<E extends IPartialExpression<E, T>, T extends IT
 	}
 
 	@Override
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
 		if (initializer != null) {
 			initializer.validate();

@@ -18,7 +18,7 @@ import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -66,11 +66,11 @@ public class ParsedAnnotation
 		this.arguments = arguments;
 	}
 	
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		SymbolicAnnotation<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		SymbolicAnnotation<E> compile(IModuleScope<E> scope)
 	{
-		T type = annotationType.compile(scope);
-		MatchedArguments<E, T> compiledArguments = arguments.compile(type.getConstructors(), scope.getConstantEnvironment());
+		TypeInstance<E> type = annotationType.compile(scope);
+		MatchedArguments<E> compiledArguments = arguments.compile(type.getConstructors(), scope.getConstantEnvironment());
 		if (compiledArguments == null) {
 			if (type.getConstructors().isEmpty()) {
 				scope.getErrorLogger().errorNoConstructorsForType(position, type);
@@ -80,6 +80,6 @@ public class ParsedAnnotation
 			
 			return null;
 		}
-		return new SymbolicAnnotation<E, T>(position, type, compiledArguments.method, compiledArguments.arguments);
+		return new SymbolicAnnotation<E>(position, type, compiledArguments.method, compiledArguments.arguments);
 	}
 }

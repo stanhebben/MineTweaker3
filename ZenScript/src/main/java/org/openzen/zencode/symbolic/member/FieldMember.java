@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -24,23 +24,22 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class FieldMember<E extends IPartialExpression<E>> implements IMember<E>
 {
-	private final IDefinitionScope<E, T> unitScope;
+	private final IDefinitionScope<E> unitScope;
 	private final ParsedField source;
 	private final int modifiers;
 	
 	private final String name;
-	private final T type;
+	private final TypeInstance<E> type;
 	
-	private final FieldGetterMember<E, T> getter;
-	private final FieldSetterMember<E, T> setter;
+	private final FieldGetterMember<E> getter;
+	private final FieldSetterMember<E> setter;
 	
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public FieldMember(IDefinitionScope<E, T> unitScope, int modifiers, String name, T type)
+	public FieldMember(IDefinitionScope<E> unitScope, int modifiers, String name, TypeInstance<E> type)
 	{
 		this.unitScope = unitScope;
 		this.source = null;
@@ -53,7 +52,7 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 		setter = makeDefaultSetter();
 	}
 	
-	public FieldMember(ParsedField source, IDefinitionScope<E, T> scope)
+	public FieldMember(ParsedField source, IDefinitionScope<E> scope)
 	{
 		this.unitScope = scope;
 		this.source = source;
@@ -62,14 +61,14 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 		this.name = source.getName();
 		this.type = source.getAsType().compile(scope);
 		
-		FieldGetterMember<E, T> _getter = makeDefaultGetter();
-		FieldSetterMember<E, T> _setter = makeDefaultSetter();
+		FieldGetterMember<E> _getter = makeDefaultGetter();
+		FieldSetterMember<E> _setter = makeDefaultSetter();
 		
 		for (ParsedAccessor accessor : source.getAccessors()) {
 			if (accessor.getType() == ParsedAccessor.Type.GET) {
-				_getter = new FieldGetterMember<E, T>(this, accessor);
+				_getter = new FieldGetterMember<E>(this, accessor);
 			} else {
-				_setter = new FieldSetterMember<E, T>(this, accessor);
+				_setter = new FieldSetterMember<E>(this, accessor);
 			}
 		}
 		
@@ -77,18 +76,18 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 		this.setter = _setter;
 	}
 	
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return type;
 	}
 	
-	public IDefinitionScope<E, T> getUnitScope()
+	public IDefinitionScope<E> getUnitScope()
 	{
 		return unitScope;
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return unitScope.getDefinition();
 	}
@@ -115,12 +114,12 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}
 	
-	private FieldGetterMember<E, T> makeDefaultGetter()
+	private FieldGetterMember<E> makeDefaultGetter()
 	{
 		ParsedStatement statement = ParsedStatement.parse("return $;", unitScope.getErrorLogger());
 		ParsedAccessor accessor = new ParsedAccessor(
@@ -129,10 +128,10 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 				Collections.<ParsedAnnotation>emptyList(), // TODO: need to copy from field!
 				Collections.<IParsedModifier>emptyList(),
 				statement);
-		return new FieldGetterMember<E, T>(this, accessor);
+		return new FieldGetterMember<E>(this, accessor);
 	}
 	
-	private FieldSetterMember<E, T> makeDefaultSetter()
+	private FieldSetterMember<E> makeDefaultSetter()
 	{
 		ParsedStatement statement = ParsedStatement.parse("$ = value;", unitScope.getErrorLogger());
 		ParsedAccessor accessor = new ParsedAccessor(
@@ -141,6 +140,6 @@ public class FieldMember<E extends IPartialExpression<E, T>, T extends ITypeInst
 				Collections.<ParsedAnnotation>emptyList(), // TODO: need to copy from field!
 				Collections.<IParsedModifier>emptyList(),
 				statement);
-		return new FieldSetterMember<E, T>(this, accessor);
+		return new FieldSetterMember<E>(this, accessor);
 	}
 }

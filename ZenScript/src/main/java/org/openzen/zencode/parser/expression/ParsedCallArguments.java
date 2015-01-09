@@ -16,7 +16,7 @@ import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -57,21 +57,21 @@ public class ParsedCallArguments
 		numUnkeyedValues = numberOfUnkeyedValues;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 MatchedArguments<E, T> compile(List<IMethod<E, T>> methods, IMethodScope<E, T> environment)
+	public <E extends IPartialExpression<E>>
+		 MatchedArguments<E> compile(List<IMethod<E>> methods, IMethodScope<E> environment)
 	{
-		List<T> predictedTypes = predictArgumentTypes(methods);
+		List<TypeInstance<E>> predictedTypes = predictArgumentTypes(methods);
 		List<E> compiledArguments = compileArguments(environment, predictedTypes);
 
-		MatchedArguments<E, T> matchedExactly = matchExactly(methods, environment, compiledArguments);
+		MatchedArguments<E> matchedExactly = matchExactly(methods, environment, compiledArguments);
 		if (matchedExactly != null)
 			return matchedExactly;
 
 		return matchWithImplicitConversion(methods, environment, compiledArguments);
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<E> compileArguments(IMethodScope<E, T> environment, List<T> predictedTypes)
+	private <E extends IPartialExpression<E>>
+		 List<E> compileArguments(IMethodScope<E> environment, List<TypeInstance<E>> predictedTypes)
 	{
 		List<E> compiled = new ArrayList<E>();
 		for (int i = 0; i < arguments.size(); i++) {
@@ -81,31 +81,31 @@ public class ParsedCallArguments
 		return compiled;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 MatchedArguments<E, T> matchExactly(List<IMethod<E, T>> methods, IMethodScope<E, T> environment, List<E> compiled)
+	private <E extends IPartialExpression<E>>
+		 MatchedArguments<E> matchExactly(List<IMethod<E>> methods, IMethodScope<E> environment, List<E> compiled)
 	{
-		for (IMethod<E, T> method : methods) {
+		for (IMethod<E> method : methods) {
 			List<E> matched = matchArgumentsExactly(method.getMethodHeader(), environment, compiled);
 			if (matched != null)
-				return new MatchedArguments<E, T>(method, matched);
+				return new MatchedArguments<E>(method, matched);
 		}
 
 		return null;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 MatchedArguments<E, T> matchWithImplicitConversion(List<IMethod<E, T>> methods, IMethodScope<E, T> environment, List<E> compiled)
+	private <E extends IPartialExpression<E>>
+		 MatchedArguments<E> matchWithImplicitConversion(List<IMethod<E>> methods, IMethodScope<E> environment, List<E> compiled)
 	{
-		for (IMethod<E, T> method : methods) {
+		for (IMethod<E> method : methods) {
 			List<E> matched = matchArgumentsWithImplicitConversion(method.getMethodHeader(), environment, compiled);
 			if (matched != null)
-				return new MatchedArguments<E, T>(method, matched);
+				return new MatchedArguments<E>(method, matched);
 		}
 
 		return null;
 	}
 
-	public IAny[] compileConstants(IZenCompileEnvironment<?, ?> environment)
+	public IAny[] compileConstants(IZenCompileEnvironment<?> environment)
 	{
 		if (hasKeyedArguments())
 			return null;
@@ -135,14 +135,14 @@ public class ParsedCallArguments
 		return false;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<T> predictArgumentTypes(List<IMethod<E, T>> methods)
+	private <E extends IPartialExpression<E>>
+		 List<TypeInstance<E>> predictArgumentTypes(List<IMethod<E>> methods)
 	{
-		List<T> predictedTypes = new ArrayList<T>();
+		List<TypeInstance<E>> predictedTypes = new ArrayList<TypeInstance<E>>();
 		boolean[] ambiguous = new boolean[arguments.size()];
 
-		for (IMethod<E, T> method : methods) {
-			MethodHeader<E, T> header = method.getMethodHeader();
+		for (IMethod<E> method : methods) {
+			MethodHeader<E> header = method.getMethodHeader();
 
 			if (!header.accepts(arguments.size()))
 				continue;
@@ -156,8 +156,8 @@ public class ParsedCallArguments
 		return predictedTypes;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 boolean[] getUsedKeyedArgumentPositions(MethodHeader<E, T> method)
+	private <E extends IPartialExpression<E>>
+		 boolean[] getUsedKeyedArgumentPositions(MethodHeader<E> method)
 	{
 		boolean[] isUsed = new boolean[method.getParameters().size() - numUnkeyedValues];
 		for (int i = numUnkeyedValues; i < arguments.size(); i++) {
@@ -171,14 +171,14 @@ public class ParsedCallArguments
 		return isUsed;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 boolean checkUnusedArgumentPositions(MethodHeader<E, T> method)
+	private <E extends IPartialExpression<E>>
+		 boolean checkUnusedArgumentPositions(MethodHeader<E> method)
 	{
 		// this method assumes that number of arguments has already been checked
 		// then only needs to check for unused keyed argument positions
 		boolean[] isUsed = getUsedKeyedArgumentPositions(method);
 
-		List<MethodParameter<E, T>> methodArguments = method.getParameters();
+		List<MethodParameter<E>> methodArguments = method.getParameters();
 		for (int i = 0; i < isUsed.length; i++) {
 			if (!isUsed[i] && methodArguments.get(numUnkeyedValues + i).getDefaultValue() == null)
 				return false;
@@ -187,10 +187,10 @@ public class ParsedCallArguments
 		return true;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void predictArgumentTypesForMethod(MethodHeader<E, T> method, List<T> predictedTypes, boolean[] ambiguous)
+	private <E extends IPartialExpression<E>>
+		 void predictArgumentTypesForMethod(MethodHeader<E> method, List<TypeInstance<E>> predictedTypes, boolean[] ambiguous)
 	{
-		List<MethodParameter<E, T>> methodArguments = method.getParameters();
+		List<MethodParameter<E>> methodArguments = method.getParameters();
 
 		for (int i = 0; i < numUnkeyedValues; i++) {
 			if (ambiguous[i])
@@ -208,7 +208,7 @@ public class ParsedCallArguments
 			if (ambiguous[i])
 				continue;
 
-			T argumentType = methodArguments.get(method.getParameterIndex(getArgumentKey(i))).getType();
+			TypeInstance<E> argumentType = methodArguments.get(method.getParameterIndex(getArgumentKey(i))).getType();
 
 			if (predictedTypes.get(i) == null)
 				predictedTypes.set(i, argumentType);
@@ -224,14 +224,14 @@ public class ParsedCallArguments
 		return arguments.get(index).getKey();
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<E> matchArgumentsExactly(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled)
+	private <E extends IPartialExpression<E>>
+		 List<E> matchArgumentsExactly(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, true);
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<E> matchArgumentsWithImplicitConversion(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled)
+	private <E extends IPartialExpression<E>>
+		 List<E> matchArgumentsWithImplicitConversion(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, false);
 	}
@@ -246,12 +246,12 @@ public class ParsedCallArguments
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked"})
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<E> matchArguments(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled, boolean exactly)
+	private <E extends IPartialExpression<E>>
+		 List<E> matchArguments(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled, boolean exactly)
 	{
 		int numUnkeyed = numUnkeyedValues;
 
-		List<MethodParameter<E, T>> methodArguments = method.getParameters();
+		List<MethodParameter<E>> methodArguments = method.getParameters();
 
 		// little optimization
 		if (!method.accepts(numUnkeyed))
@@ -259,7 +259,7 @@ public class ParsedCallArguments
 
 		boolean[] isUsed = new boolean[methodArguments.size() - numUnkeyed];
 		boolean isVarargCall = false;
-		T varargBaseType = null;
+		TypeInstance<E> varargBaseType = null;
 
 		if (method.isVarargs())
 			varargBaseType = method.getVarArgBaseType();
@@ -339,8 +339,8 @@ public class ParsedCallArguments
 	 * @param exactly
 	 * @return
 	 */
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 boolean matches(E expression, T type, boolean exactly)
+	private <E extends IPartialExpression<E>>
+		 boolean matches(E expression, TypeInstance<E> type, boolean exactly)
 	{
 		if (exactly)
 			return expression.getType().equals(type);
@@ -357,10 +357,10 @@ public class ParsedCallArguments
 	 * @param fromIndex index in the expressions array to assemble from
 	 * @return array expression with vararg values
 	 */
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 E assembleVararg(MethodParameter<E, T> argument, IMethodScope<E, T> scope, List<E> compiled, int fromIndex)
+	private <E extends IPartialExpression<E>>
+		 E assembleVararg(MethodParameter<E> argument, IMethodScope<E> scope, List<E> compiled, int fromIndex)
 	{
-		T varargBaseType = argument.getType().getArrayBaseType();
+		TypeInstance<E> varargBaseType = argument.getType().getArrayBaseType();
 
 		// combine varargs into an array expression
 		List<E> arrayMembers = new ArrayList<E>();
@@ -377,12 +377,12 @@ public class ParsedCallArguments
 				arrayMembers);
 	}
 
-	public class MatchedArguments<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+	public class MatchedArguments<E extends IPartialExpression<E>>
 	{
-		public final IMethod<E, T> method;
+		public final IMethod<E> method;
 		public final List<E> arguments;
 
-		public MatchedArguments(IMethod<E, T> method, List<E> arguments)
+		public MatchedArguments(IMethod<E> method, List<E> arguments)
 		{
 			this.method = method;
 			this.arguments = arguments;

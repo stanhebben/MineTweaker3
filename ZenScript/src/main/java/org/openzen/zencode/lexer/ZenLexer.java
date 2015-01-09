@@ -324,12 +324,12 @@ public class ZenLexer extends TokenStream
 		KEYWORDS.put("abstract", T_ABSTRACT);
 	}
 
-	public static ZenLexer fromInputStream(ICodeErrorLogger<?, ?> errorLogger, InputStream inputStream) throws IOException
+	public static ZenLexer fromInputStream(ICodeErrorLogger<?> errorLogger, InputStream inputStream) throws IOException
 	{
 		return new ZenLexer(errorLogger, new InputStreamReader(inputStream, UTF8));
 	}
 	
-	private final ICodeErrorLogger<?, ?> errorLogger;
+	private final ICodeErrorLogger<?> errorLogger;
 	
 	/**
 	 * Constructs a tokener from the given reader.
@@ -338,7 +338,7 @@ public class ZenLexer extends TokenStream
 	 * @param contents file reader
 	 * @throws IOException if the file could not be read properly
 	 */
-	public ZenLexer(ICodeErrorLogger<?, ?> errorLogger, Reader contents) throws IOException
+	public ZenLexer(ICodeErrorLogger<?> errorLogger, Reader contents) throws IOException
 	{
 		super(contents, DFA);
 		
@@ -352,7 +352,7 @@ public class ZenLexer extends TokenStream
 	 * @param contents content string
 	 * @throws IOException shouldn't happen
 	 */
-	public ZenLexer(ICodeErrorLogger<?, ?> errorLogger, String contents) throws IOException
+	public ZenLexer(ICodeErrorLogger<?> errorLogger, String contents) throws IOException
 	{
 		super(new StringReader(contents), DFA);
 		
@@ -393,7 +393,7 @@ public class ZenLexer extends TokenStream
 		required(T_SEMICOLON, "; expected");
 	}
 	
-	public ICodeErrorLogger<?, ?> getErrorLogger()
+	public ICodeErrorLogger<?> getErrorLogger()
 	{
 		return errorLogger;
 	}

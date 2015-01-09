@@ -11,7 +11,7 @@ import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -20,21 +20,20 @@ import org.openzen.zencode.util.CodePosition;
  * @author Stan Hebben
  * 
  * @param <E> expression type
- * @param <T> type type
  */
-public interface IPartialExpression<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IPartialExpression<E extends IPartialExpression<E>>
 {
 	public CodePosition getPosition();
 	
-	public IMethodScope<E, T> getScope();
+	public IMethodScope<E> getScope();
 	
 	public E eval();
 	
 	public E assign(CodePosition position, E other);
 	
-	public IPartialExpression<E, T> getMember(CodePosition position, String name);
+	public IPartialExpression<E> getMember(CodePosition position, String name);
 	
-	public List<IMethod<E, T>> getMethods();
+	public List<IMethod<E>> getMethods();
 	
 	/**
 	 * Calls the given method from this expression. Method must be one of the
@@ -46,17 +45,17 @@ public interface IPartialExpression<E extends IPartialExpression<E, T>, T extend
 	 * @param arguments
 	 * @return 
 	 */
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments);
+	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments);
 	
-	public E cast(CodePosition position, T type);
+	public E cast(CodePosition position, TypeInstance<E> type);
 	
-	public IZenSymbol<E, T> toSymbol();
+	public IZenSymbol<E> toSymbol();
 	
-	public T getType();
+	public TypeInstance<E> getType();
 	
-	public T toType(List<T> genericTypes);
+	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes);
 	
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function);
+	public IPartialExpression<E> via(SymbolicFunction<E> function);
 	
 	public IAny getCompileTimeValue();
 	

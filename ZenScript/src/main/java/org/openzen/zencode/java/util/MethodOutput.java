@@ -16,7 +16,6 @@ import static org.objectweb.asm.Opcodes.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.util.CodePosition;
@@ -30,8 +29,8 @@ import static org.openzen.zencode.java.type.JavaTypeUtil.signature;
 public class MethodOutput
 {
 	private final LocalVariablesSorter visitor;
-	private final HashMap<SymbolLocal<IJavaExpression, IJavaType>, Integer> locals;
-	private final HashMap<Statement<IJavaExpression, IJavaType>, ControlLabels> controlLabels;
+	private final HashMap<SymbolLocal<IJavaExpression>, Integer> locals;
+	private final HashMap<Statement<IJavaExpression>, ControlLabels> controlLabels;
 
 	private boolean debug = false;
 	private int labelIndex = 1;
@@ -41,15 +40,15 @@ public class MethodOutput
 	{
 		MethodVisitor methodVisitor = cls.visitMethod(access, name, descriptor, signature, exceptions);
 		visitor = new LocalVariablesSorter(access, descriptor, methodVisitor);
-		this.locals = new HashMap<SymbolLocal<IJavaExpression, IJavaType>, Integer>();
-		controlLabels = new HashMap<Statement<IJavaExpression, IJavaType>, ControlLabels>();
+		this.locals = new HashMap<SymbolLocal<IJavaExpression>, Integer>();
+		controlLabels = new HashMap<Statement<IJavaExpression>, ControlLabels>();
 	}
 
 	public MethodOutput(LocalVariablesSorter visitor)
 	{
 		this.visitor = visitor;
-		this.locals = new HashMap<SymbolLocal<IJavaExpression, IJavaType>, Integer>();
-		this.controlLabels = new HashMap<Statement<IJavaExpression, IJavaType>, ControlLabels>();
+		this.locals = new HashMap<SymbolLocal<IJavaExpression>, Integer>();
+		this.controlLabels = new HashMap<Statement<IJavaExpression>, ControlLabels>();
 	}
 
 	public void enableDebug()
@@ -57,17 +56,17 @@ public class MethodOutput
 		debug = true;
 	}
 
-	public void putControlLabels(Statement<IJavaExpression, IJavaType> statement, ControlLabels labels)
+	public void putControlLabels(Statement<IJavaExpression> statement, ControlLabels labels)
 	{
 		controlLabels.put(statement, labels);
 	}
 
-	public ControlLabels getControlLabels(Statement<IJavaExpression, IJavaType> statement)
+	public ControlLabels getControlLabels(Statement<IJavaExpression> statement)
 	{
 		return controlLabels.get(statement);
 	}
 
-	public int getLocal(SymbolLocal<IJavaExpression, IJavaType> variable)
+	public int getLocal(SymbolLocal<IJavaExpression> variable)
 	{
 		if (!locals.containsKey(variable))
 			locals.put(variable, local(variable.getType().toASMType()));

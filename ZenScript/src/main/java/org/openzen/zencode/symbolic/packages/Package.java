@@ -9,36 +9,34 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class Package<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IPackageSymbol<E, T>
+public class Package<E extends IPartialExpression<E>>
+	implements IPackageSymbol<E>
 {
-	private Map<String, IPackageSymbol<E, T>> contents;
+	private Map<String, IPackageSymbol<E>> contents;
 	
 	public Package()
 	{
-		contents = new HashMap<String, IPackageSymbol<E, T>>();
+		contents = new HashMap<String, IPackageSymbol<E>>();
 	}
 	
-	public Map<String, IPackageSymbol<E, T>> getAllContents()
+	public Map<String, IPackageSymbol<E>> getAllContents()
 	{
 		return contents;
 	}
 	
-	public IPackageSymbol<E, T> get(String name)
+	public IPackageSymbol<E> get(String name)
 	{
 		return contents.get(name);
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol()
+	public IZenSymbol<E> toSymbol()
 	{
 		return null;
 	}

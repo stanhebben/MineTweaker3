@@ -11,21 +11,19 @@ import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.VarFlowInstruction;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class StatementVar<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementVar<E extends IPartialExpression<E>> extends Statement<E>
 {
-	private final SymbolLocal<E, T> symbol;
+	private final SymbolLocal<E> symbol;
 	private final E initializer;
 
-	public StatementVar(CodePosition position, IMethodScope<E, T> method, SymbolLocal<E, T> symbol, E initializer)
+	public StatementVar(CodePosition position, IMethodScope<E> method, SymbolLocal<E> symbol, E initializer)
 	{
 		super(position, method);
 
@@ -33,7 +31,7 @@ public class StatementVar<E extends IPartialExpression<E, T>, T extends ITypeIns
 		this.initializer = initializer;
 	}
 	
-	public SymbolLocal<E, T> getSymbol()
+	public SymbolLocal<E> getSymbol()
 	{
 		return symbol;
 	}
@@ -44,14 +42,14 @@ public class StatementVar<E extends IPartialExpression<E, T>, T extends ITypeIns
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onVar(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
-		return next.prependInstruction(new VarFlowInstruction<E, T>(symbol, initializer));
+		return next.prependInstruction(new VarFlowInstruction<E>(symbol, initializer));
 	}
 }

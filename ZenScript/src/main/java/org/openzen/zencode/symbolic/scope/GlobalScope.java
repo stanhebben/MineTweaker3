@@ -14,7 +14,6 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.ClassNameGenerator;
 
@@ -22,50 +21,48 @@ import org.openzen.zencode.util.ClassNameGenerator;
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class GlobalScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IGlobalScope<E, T>
+public class GlobalScope<E extends IPartialExpression<E>> implements IGlobalScope<E>
 {
-	private final IZenCompileEnvironment<E, T> environment;
-	private final ICodeErrorLogger<E, T> errors;
+	private final IZenCompileEnvironment<E> environment;
+	private final ICodeErrorLogger<E> errors;
 	private final Map<String, byte[]> classes;
-	private final Map<String, IZenSymbol<E, T>> local;
+	private final Map<String, IZenSymbol<E>> local;
 	private final ClassNameGenerator nameGen;
-	private final ConstantScope<E, T> constantScope;
+	private final ConstantScope<E> constantScope;
 
 	public GlobalScope(
-			IZenCompileEnvironment<E, T> environment,
+			IZenCompileEnvironment<E> environment,
 			ClassNameGenerator nameGen)
 	{
 		this.environment = environment;
 		this.errors = environment.getErrorLogger();
 		this.classes = new HashMap<String, byte[]>();
 		this.nameGen = nameGen;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
-		constantScope = new ConstantScope<E, T>(this);
+		this.local = new HashMap<String, IZenSymbol<E>>();
+		constantScope = new ConstantScope<E>(this);
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return environment;
 	}
 
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return environment.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return constantScope;
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return environment.getTypeCompiler();
 	}
@@ -95,13 +92,13 @@ public class GlobalScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 	
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return errors;
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> scope)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> scope)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, scope);
@@ -110,7 +107,7 @@ public class GlobalScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);

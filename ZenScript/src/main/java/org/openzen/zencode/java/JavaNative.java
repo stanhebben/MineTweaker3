@@ -59,14 +59,14 @@ public class JavaNative
 		return new JavaMethod(method, scope);
 	}
 
-	public static IZenSymbol<IJavaExpression, IJavaType> getStaticMethodSymbol(IJavaScopeGlobal scope, Class<?> cls, String name, Class<?>... parameterTypes)
+	public static IZenSymbol<IJavaExpression> getStaticMethodSymbol(IJavaScopeGlobal scope, Class<?> cls, String name, Class<?>... parameterTypes)
 	{
-		return new SymbolStaticMethod<IJavaExpression, IJavaType>(getStaticMethod(scope, cls, name, parameterTypes));
+		return new SymbolStaticMethod<IJavaExpression>(getStaticMethod(scope, cls, name, parameterTypes));
 	}
 
-	public static IZenSymbol<IJavaExpression, IJavaType> getStaticMethodSymbol(IJavaScopeGlobal scope, Method method)
+	public static IZenSymbol<IJavaExpression> getStaticMethodSymbol(IJavaScopeGlobal scope, Method method)
 	{
-		return new SymbolStaticMethod<IJavaExpression, IJavaType>(getStaticMethod(scope, method));
+		return new SymbolStaticMethod<IJavaExpression>(getStaticMethod(scope, method));
 	}
 
 	public static IJavaField getStaticField(IJavaScopeGlobal scope, Class<?> cls, String name)
@@ -88,17 +88,17 @@ public class JavaNative
 		return new JavaField(field, scope.getTypeCompiler());
 	}
 
-	public static IZenSymbol<IJavaExpression, IJavaType> getStaticFieldSymbol(IJavaScopeGlobal scope, Class<?> cls, String name)
+	public static IZenSymbol<IJavaExpression> getStaticFieldSymbol(IJavaScopeGlobal scope, Class<?> cls, String name)
 	{
-		return new SymbolStaticField<IJavaExpression, IJavaType>(getStaticField(scope, cls, name));
+		return new SymbolStaticField<IJavaExpression>(getStaticField(scope, cls, name));
 	}
 
-	public static IZenSymbol<IJavaExpression, IJavaType> getStaticFieldSymbol(IJavaScopeGlobal scope, Field field)
+	public static IZenSymbol<IJavaExpression> getStaticFieldSymbol(IJavaScopeGlobal scope, Field field)
 	{
-		return new SymbolStaticField<IJavaExpression, IJavaType>(getStaticField(scope, field));
+		return new SymbolStaticField<IJavaExpression>(getStaticField(scope, field));
 	}
 
-	public static void addExpansion(IJavaScopeGlobal scope, TypeExpansion<IJavaExpression, IJavaType> expansion, Class<?> annotatedClass)
+	public static void addExpansion(IJavaScopeGlobal scope, TypeExpansion<IJavaExpression> expansion, Class<?> annotatedClass)
 	{
 		for (Method method : annotatedClass.getMethods()) {
 			String methodName = method.getName();
@@ -144,7 +144,7 @@ public class JavaNative
 					if (methodAnnotation.value().length() > 0)
 						methodName = methodAnnotation.value();
 
-					expansion.addMethod(methodName, new JavaMethodExpanding(JavaMethod.get(scope, method)));
+					expansion.addMethod(methodName, new JavaMethodExpanding(JavaMethod.get(scope, method), scope));
 				} else if (annotation instanceof ZenMethodStatic) {
 					checkStatic(method);
 					ZenMethodStatic methodAnnotation = (ZenMethodStatic) annotation;

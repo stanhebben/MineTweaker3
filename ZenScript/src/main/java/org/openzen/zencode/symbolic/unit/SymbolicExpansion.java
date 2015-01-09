@@ -12,30 +12,28 @@ import org.openzen.zencode.parser.unit.ParsedExpansion;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicExpansion<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractSymbolicDefinition<E, T>
+public class SymbolicExpansion<E extends IPartialExpression<E>>
+	extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedExpansion source;
-	private final List<IMember<E, T>> members;
+	private final List<IMember<E>> members;
 	
-	public SymbolicExpansion(ParsedExpansion source, IModuleScope<E, T> scope)
+	public SymbolicExpansion(ParsedExpansion source, IModuleScope<E> scope)
 	{
 		super(source, scope);
 		
 		this.source = source;
-		this.members = new ArrayList<IMember<E, T>>();
+		this.members = new ArrayList<IMember<E>>();
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		for (IParsedMember member : source.getMembers()) {
 			member.collectInnerDefinitions(units, scope);
@@ -57,7 +55,7 @@ public class SymbolicExpansion<E extends IPartialExpression<E, T>, T extends ITy
 	{
 		super.compileMemberContents();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 	}
@@ -67,7 +65,7 @@ public class SymbolicExpansion<E extends IPartialExpression<E, T>, T extends ITy
 	{
 		super.validate();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 	}

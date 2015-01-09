@@ -16,7 +16,6 @@ import static org.openzen.zencode.lexer.ZenLexer.T_COLON;
 import static org.openzen.zencode.lexer.ZenLexer.T_WHILE;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -53,19 +52,19 @@ public class ParsedStatementWhile extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 Statement<E> compile(IMethodScope<E> scope)
 	{
 		E cCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
-		StatementWhile<E, T> result = new StatementWhile<E, T>(getPosition(), scope, cCondition);
-		StatementBlockScope<E, T> blockScope = new StatementBlockScope<E, T>(scope, result, label);
+		StatementWhile<E> result = new StatementWhile<E>(getPosition(), scope, cCondition);
+		StatementBlockScope<E> blockScope = new StatementBlockScope<E>(scope, result, label);
 		result.setContents(contents.compile(blockScope));
 		return result;
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

@@ -14,7 +14,6 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -43,10 +42,9 @@ public class ParsedStatementBreak extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>> Statement<E> compile(IMethodScope<E> scope)
 	{
-		Statement<E, T> controlStatement = scope.getControlStatement(label);
+		Statement<E> controlStatement = scope.getControlStatement(label);
 
 		if (controlStatement == null) {
 			if (label == null)
@@ -54,14 +52,14 @@ public class ParsedStatementBreak extends ParsedStatement
 			else
 				scope.getErrorLogger().errorNoLabeledControlStatement(getPosition(), label);
 			
-			return new StatementNull<E, T>(getPosition(), scope);
+			return new StatementNull<E>(getPosition(), scope);
 		} else
-			return new StatementBreak<E, T>(getPosition(), scope, controlStatement);
+			return new StatementBreak<E>(getPosition(), scope, controlStatement);
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

@@ -13,7 +13,6 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.ThrowStatement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -39,13 +38,13 @@ public class ParsedThrowStatement extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>> Statement<E> compile(IMethodScope<E> scope)
 	{
-		return new ThrowStatement<E, T>(getPosition(), scope, expression.compile(scope, null));
+		return new ThrowStatement<E>(getPosition(), scope, expression.compile(scope, null));
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>> void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

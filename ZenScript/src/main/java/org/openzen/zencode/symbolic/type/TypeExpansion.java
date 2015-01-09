@@ -27,39 +27,38 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class TypeExpansion<E extends IPartialExpression<E>>
 {
 	private final AccessType accessType;
 	private final AccessScope accessScope;
-	private final IGlobalScope<E, T> scope;
+	private final IGlobalScope<E> scope;
 	
-	private final Map<OperatorType, List<IMethod<E, T>>> operators;
-	private final Map<String, IMethod<E, T>> getters;
-	private final Map<String, IMethod<E, T>> setters;
-	private final Map<String, List<IMethod<E, T>>> methods;
-	private final List<IMethod<E, T>> casters;
+	private final Map<OperatorType, List<IMethod<E>>> operators;
+	private final Map<String, IMethod<E>> getters;
+	private final Map<String, IMethod<E>> setters;
+	private final Map<String, List<IMethod<E>>> methods;
+	private final List<IMethod<E>> casters;
 	
-	private final Map<String, IMethod<E, T>> staticGetters;
-	private final Map<String, IMethod<E, T>> staticSetters;
-	private final Map<String, List<IMethod<E, T>>> staticMethods;
+	private final Map<String, IMethod<E>> staticGetters;
+	private final Map<String, IMethod<E>> staticSetters;
+	private final Map<String, List<IMethod<E>>> staticMethods;
 	
-	public TypeExpansion(IGlobalScope<E, T> scope, AccessType accessType, AccessScope accessScope)
+	public TypeExpansion(IGlobalScope<E> scope, AccessType accessType, AccessScope accessScope)
 	{
 		this.scope = scope;
 		this.accessType = accessType;
 		this.accessScope = accessScope;
 		
-		operators = new EnumMap<OperatorType, List<IMethod<E, T>>>(OperatorType.class);
-		getters = new HashMap<String, IMethod<E, T>>();
-		setters = new HashMap<String, IMethod<E, T>>();
-		methods = new HashMap<String, List<IMethod<E, T>>>();
-		casters = new ArrayList<IMethod<E, T>>();
+		operators = new EnumMap<OperatorType, List<IMethod<E>>>(OperatorType.class);
+		getters = new HashMap<String, IMethod<E>>();
+		setters = new HashMap<String, IMethod<E>>();
+		methods = new HashMap<String, List<IMethod<E>>>();
+		casters = new ArrayList<IMethod<E>>();
 		
-		staticGetters = new HashMap<String, IMethod<E, T>>();
-		staticSetters = new HashMap<String, IMethod<E, T>>();
-		staticMethods = new HashMap<String, List<IMethod<E, T>>>();
+		staticGetters = new HashMap<String, IMethod<E>>();
+		staticSetters = new HashMap<String, IMethod<E>>();
+		staticMethods = new HashMap<String, List<IMethod<E>>>();
 	}
 	
 	public AccessScope getScope()
@@ -72,51 +71,51 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeIn
 		return accessType.isVisible(usingScope, accessScope);
 	}
 	
-	public void addCaster(IMethod<E, T> caster)
+	public void addCaster(IMethod<E> caster)
 	{
 		casters.add(caster);
 	}
 	
-	public void addGetter(String name, IMethod<E, T> getter)
+	public void addGetter(String name, IMethod<E> getter)
 	{
 		getters.put(name, getter);
 	}
 	
-	public void addSetter(String name, IMethod<E, T> setter)
+	public void addSetter(String name, IMethod<E> setter)
 	{
 		setters.put(name, setter);
 	}
 	
-	public void addMethod(String name, IMethod<E, T> method)
+	public void addMethod(String name, IMethod<E> method)
 	{
 		if (!methods.containsKey(name))
-			methods.put(name, new ArrayList<IMethod<E, T>>());
+			methods.put(name, new ArrayList<IMethod<E>>());
 		
 		methods.get(name).add(method);
 	}
 	
-	public void addOperator(OperatorType operator, IMethod<E, T> method)
+	public void addOperator(OperatorType operator, IMethod<E> method)
 	{
 		if (!operators.containsKey(operator))
-			operators.put(operator, new ArrayList<IMethod<E, T>>());
+			operators.put(operator, new ArrayList<IMethod<E>>());
 		
 		operators.get(operator).add(method);
 	}
 	
-	public void addStaticGetter(String name, IMethod<E, T> getter)
+	public void addStaticGetter(String name, IMethod<E> getter)
 	{
 		staticGetters.put(name, getter);
 	}
 	
-	public void addStaticSetter(String name, IMethod<E, T> setter)
+	public void addStaticSetter(String name, IMethod<E> setter)
 	{
 		staticSetters.put(name, setter);
 	}
 	
-	public void addStaticMethod(String name, IMethod<E, T> method)
+	public void addStaticMethod(String name, IMethod<E> method)
 	{
 		if (!staticMethods.containsKey(name))
-			staticMethods.put(name, new ArrayList<IMethod<E, T>>());
+			staticMethods.put(name, new ArrayList<IMethod<E>>());
 		
 		staticMethods.get(name).add(method);
 	}
@@ -126,12 +125,12 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeIn
 		return operators.containsKey(operator);
 	}
 	
-	public E operatorExact(CodePosition position, IMethodScope<E, T> scope, OperatorType operator, List<E> values)
+	public E operatorExact(CodePosition position, IMethodScope<E> scope, OperatorType operator, List<E> values)
 	{
 		if (!operators.containsKey(operator))
 			return null;
 		
-		for (IMethod<E, T> method : operators.get(operator)) {
+		for (IMethod<E> method : operators.get(operator)) {
 			if (method.getMethodHeader().acceptsWithExactTypes(values))
 				return method.callStatic(position, scope, values);
 		}
@@ -139,12 +138,12 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeIn
 		return null;
 	}
 	
-	public E operator(CodePosition position, IMethodScope<E, T> scope, OperatorType operator, List<E> values)
+	public E operator(CodePosition position, IMethodScope<E> scope, OperatorType operator, List<E> values)
 	{
 		if (!operators.containsKey(operator))
 			return null;
 		
-		for (IMethod<E, T> method : operators.get(operator)) {
+		for (IMethod<E> method : operators.get(operator)) {
 			if (method.getMethodHeader().accepts(values))
 				return method.callStatic(position, scope, values);
 		}
@@ -152,45 +151,45 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeIn
 		return null;
 	}
 	
-	public List<IMethod<E, T>> getOperators(OperatorType operator)
+	public List<IMethod<E>> getOperators(OperatorType operator)
 	{
 		return operators.get(operator);
 	}
 	
-	public void expandMember(PartialVirtualMember<E, T> member, T type)
+	public void expandMember(PartialVirtualMember<E> member, TypeInstance<E> type)
 	{
 		if (getters.containsKey(member.getName()))
-			member.setGetter(new ExpansionGetter<E, T>(member, getters.get(member.getName())));
+			member.setGetter(new ExpansionGetter<E>(member, getters.get(member.getName())));
 		
 		if (setters.containsKey(member.getName()))
-			member.setSetter(new ExpansionSetter<E, T>(member, setters.get(member.getName())));
+			member.setSetter(new ExpansionSetter<E>(member, setters.get(member.getName())));
 		
 		if (methods.containsKey(member.getName())) {
-			for (IMethod<E, T> method : methods.get(member.getName())) {
+			for (IMethod<E> method : methods.get(member.getName())) {
 				member.addMethod(method);
 			}
 		}
 	}
 	
-	public void expandStaticMember(PartialStaticMember<E, T> member)
+	public void expandStaticMember(PartialStaticMember<E> member)
 	{
 		if (staticGetters.containsKey(member.getName()))
-			member.setGetter(new ExpansionStaticGetter<E, T>(member, staticGetters.get(member.getName())));
+			member.setGetter(new ExpansionStaticGetter<E>(member, staticGetters.get(member.getName())));
 		
 		if (staticSetters.containsKey(member.getName()))
-			member.setSetter(new ExpansionStaticSetter<E, T>(member, staticSetters.get(member.getName())));
+			member.setSetter(new ExpansionStaticSetter<E>(member, staticSetters.get(member.getName())));
 		
 		if (staticMethods.containsKey(member.getName())) {
-			for (IMethod<E, T> method : methods.get(member.getName())) {
+			for (IMethod<E> method : methods.get(member.getName())) {
 				member.addMethod(method);
 			}
 		}
 	}
 	
-	public void expandCastingRules(ICastingRuleDelegate<E, T> rules)
+	public void expandCastingRules(ICastingRuleDelegate<E> rules)
 	{
-		for (IMethod<E, T> caster : casters) {
-			rules.registerCastingRule(caster.getReturnType(), new CastingRuleStaticMethod<E, T>(caster));
+		for (IMethod<E> caster : casters) {
+			rules.registerCastingRule(caster.getReturnType(), new CastingRuleStaticMethod<E>(caster));
 		}
 	}
 }

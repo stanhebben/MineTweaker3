@@ -13,7 +13,6 @@ import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
@@ -31,7 +30,13 @@ public class ParsedFunction implements IParsedDefinition
 	private final ParsedFunctionSignature signature;
 	private final ParsedStatement contents;
 	
-	public ParsedFunction(CodePosition position, List<ParsedAnnotation> annotations, List<IParsedModifier> modifiers, String name, ParsedFunctionSignature signature, ParsedStatement contents)
+	public ParsedFunction(
+			CodePosition position,
+			List<ParsedAnnotation> annotations,
+			List<IParsedModifier> modifiers,
+			String name,
+			ParsedFunctionSignature signature,
+			ParsedStatement contents)
 	{
 		this.position = position;
 		this.annotations = annotations;
@@ -74,9 +79,9 @@ public class ParsedFunction implements IParsedDefinition
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>> ISymbolicDefinition<E> compile(IModuleScope<E> scope)
 	{
-		return new SymbolicFunction<E, T>(this, scope);
+		return new SymbolicFunction<E>(this, scope);
 	}
 
 	@Override

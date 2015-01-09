@@ -15,37 +15,36 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class CasterMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class CasterMember<E extends IPartialExpression<E>> implements IMember<E>
 {
 	private final ParsedCaster source;
-	private final IMethodScope<E, T> methodScope;
-	private final T asType;
+	private final IMethodScope<E> methodScope;
+	private final TypeInstance<E> asType;
 	private final int modifiers;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public CasterMember(ParsedCaster source, IDefinitionScope<E, T> unit)
+	public CasterMember(ParsedCaster source, IDefinitionScope<E> unit)
 	{
 		this.source = source;
 		asType = source.getAsType().compile(unit);
 		
-		MethodHeader<E, T> methodHeader = MethodHeader.noParameters(asType);
-		methodScope = new MethodScope<E, T>(unit, methodHeader);
+		MethodHeader<E> methodHeader = MethodHeader.noParameters(asType);
+		methodScope = new MethodScope<E>(unit, methodHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), unit.getErrorLogger());
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return methodScope.getDefinition();
 	}
@@ -71,7 +70,7 @@ public class CasterMember<E extends IPartialExpression<E, T>, T extends ITypeIns
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

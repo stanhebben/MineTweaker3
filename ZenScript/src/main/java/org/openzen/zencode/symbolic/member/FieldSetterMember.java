@@ -15,42 +15,40 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class FieldSetterMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class FieldSetterMember<E extends IPartialExpression<E>> implements IMember<E>
 {
-	private final FieldMember<E, T> field;
+	private final FieldMember<E> field;
 	private final ParsedAccessor source;
 	private final int modifiers;
 	
-	private final IMethodScope<E, T> methodScope;
+	private final IMethodScope<E> methodScope;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public FieldSetterMember(FieldMember<E, T> field, ParsedAccessor source)
+	public FieldSetterMember(FieldMember<E> field, ParsedAccessor source)
 	{
 		this.field = field;
 		this.source = source;
 		
-		IDefinitionScope<E, T> unitScope = field.getUnitScope();
-		MethodHeader<E, T> methodHeader = MethodHeader.singleParameter(
+		IDefinitionScope<E> unitScope = field.getUnitScope();
+		MethodHeader<E> methodHeader = MethodHeader.singleParameter(
 				unitScope.getTypeCompiler().getVoid(unitScope),
 				"value",
 				field.getType());
-		methodScope = new MethodScope<E, T>(field.getUnitScope(), methodHeader);
+		methodScope = new MethodScope<E>(field.getUnitScope(), methodHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), unitScope.getErrorLogger());
 	}
 	
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return field.getUnit();
 	}
@@ -78,7 +76,7 @@ public class FieldSetterMember<E extends IPartialExpression<E, T>, T extends ITy
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

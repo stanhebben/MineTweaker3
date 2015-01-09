@@ -11,28 +11,26 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.IfFlowInstruction;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class StatementWhile<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementWhile<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E condition;
-	private Statement<E, T> contents;
+	private Statement<E> contents;
 
-	public StatementWhile(CodePosition position, IMethodScope<E, T> scope, E condition)
+	public StatementWhile(CodePosition position, IMethodScope<E> scope, E condition)
 	{
 		super(position, scope);
 
 		this.condition = condition;
 	}
 
-	public void setContents(Statement<E, T> contents)
+	public void setContents(Statement<E> contents)
 	{
 		this.contents = contents;
 	}
@@ -42,28 +40,28 @@ public class StatementWhile<E extends IPartialExpression<E, T>, T extends ITypeI
 		return condition;
 	}
 	
-	public Statement<E, T> getContents()
+	public Statement<E> getContents()
 	{
 		return contents;
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onWhile(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
 		IAny conditionConstant = condition.getCompileTimeValue();
 		if (conditionConstant != null && conditionConstant.canCastImplicit(boolean.class)) {
 			if (conditionConstant.asBool()) {
-				FlowBlock<E, T> loop = new FlowBlock<E, T>();
+				FlowBlock<E> loop = new FlowBlock<E>();
 				builder.pushLoop(this, next, loop);
 				
-				FlowBlock<E, T> bodyEnd = new FlowBlock<E, T>();
-				FlowBlock<E, T> bodyStart = contents.createFlowBlock(bodyEnd, builder);
+				FlowBlock<E> bodyEnd = new FlowBlock<E>();
+				FlowBlock<E> bodyStart = contents.createFlowBlock(bodyEnd, builder);
 				bodyEnd.addOutgoing(bodyStart);
 				
 				builder.pop();
@@ -74,13 +72,13 @@ public class StatementWhile<E extends IPartialExpression<E, T>, T extends ITypeI
 			}
 		}
 		
-		FlowBlock<E, T> loop = new FlowBlock<E, T>();
+		FlowBlock<E> loop = new FlowBlock<E>();
 		builder.pushLoop(this, next, loop);
 		
-		FlowBlock<E, T> bodyEnd = new FlowBlock<E, T>();
-		FlowBlock<E, T> bodyStart = contents.createFlowBlock(bodyEnd, builder);
+		FlowBlock<E> bodyEnd = new FlowBlock<E>();
+		FlowBlock<E> bodyStart = contents.createFlowBlock(bodyEnd, builder);
 		
-		loop.prependInstruction(new IfFlowInstruction<E, T>(condition, bodyStart, next));
+		loop.prependInstruction(new IfFlowInstruction<E>(condition, bodyStart, next));
 		loop.addOutgoing(bodyStart);
 		loop.addOutgoing(next);
 		bodyEnd.addOutgoing(loop);

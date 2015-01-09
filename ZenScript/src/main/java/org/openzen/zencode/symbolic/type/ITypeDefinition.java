@@ -23,49 +23,48 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface ITypeDefinition<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface ITypeDefinition<E extends IPartialExpression<E>>
 {
-	public List<ITypeVariable> getGenericParameters();
+	public List<ITypeVariable<E>> getGenericParameters();
 	
-	public List<IMethod<E, T>> getConstructors(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public List<IMethod<E>> getConstructors(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public List<IMethod<E, T>> getInstanceMethods(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public List<IMethod<E>> getInstanceMethods(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public List<IMethod<E, T>> getStaticMethods(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public List<IMethod<E>> getStaticMethods(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public IPartialExpression<E, T> getInstanceMember(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, String name, E instance);
+	public IPartialExpression<E> getInstanceMember(IModuleScope<E> scope, TypeCapture<E> typeCapture, String name, E instance);
 	
-	public IPartialExpression<E, T> getStaticMember(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, String name);
+	public IPartialExpression<E> getStaticMember(IModuleScope<E> scope, TypeCapture<E> typeCapture, String name);
 	
-	public E getOperator(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, OperatorType operator, E... operands);
+	public E getOperator(IModuleScope<E> scope, TypeCapture<E> typeCapture, OperatorType operator, E... operands);
 	
-	public ICastingRule<E, T> getCastingRule(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, T toType);
+	public ICastingRule<E> getCastingRule(IModuleScope<E> scope, TypeCapture<E> typeCapture, TypeInstance<E> toType);
 	
-	public void addExpansion(SymbolicExpansion<E, T> expansion);
+	public void addExpansion(SymbolicExpansion<E> expansion);
 	
-	public T nullable(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public TypeInstance<E> nullable(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public T nonNull(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public TypeInstance<E> nonNull(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
 	public boolean isNullable();
 	
-	public E createDefaultValue(CodePosition position, IMethodScope<E, T> scope);
+	public E createDefaultValue(CodePosition position, IMethodScope<E> scope);
 	
-	public T getArrayBaseType(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public TypeInstance<E> getArrayBaseType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public T getMapKeyType(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public TypeInstance<E> getMapKeyType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public T getMapValueType(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public TypeInstance<E> getMapValueType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public List<T> predictOperatorArgumentType(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, OperatorType operator);
+	public List<TypeInstance<E>> predictOperatorArgumentType(IModuleScope<E> scope, TypeCapture<E> typeCapture, OperatorType operator);
 	
-	public E compare(IMethodScope<E, T> scope, TypeCapture<E, T> typeCapture, CodePosition position, E left, E right, CompareType comparator);
+	public E compare(IMethodScope<E> scope, TypeCapture<E> typeCapture, CodePosition position, E left, E right, CompareType comparator);
 	
-	public MethodHeader<E, T> getFunctionHeader(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture);
+	public MethodHeader<E> getFunctionHeader(IModuleScope<E> scope, TypeCapture<E> typeCapture);
 	
-	public List<T> getIteratorTypes(IModuleScope<E, T> scope, TypeCapture<E, T> typeCapture, int numArguments);
+	public List<TypeInstance<E>> getIteratorTypes(IModuleScope<E> scope, TypeCapture<E> typeCapture, int numArguments);
 	
 	public boolean isValidSwitchType();
 	

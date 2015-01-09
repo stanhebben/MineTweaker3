@@ -7,15 +7,13 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ThrowFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
+public class ThrowFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
 	private final E value;
 	
@@ -31,7 +29,7 @@ public class ThrowFlowInstruction<E extends IPartialExpression<E, T>, T extends 
 	}
 
 	@Override
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
 		// TODO: is this a valid exception?
 		value.validate();

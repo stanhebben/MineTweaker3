@@ -7,16 +7,14 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ReturnFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
+public class ReturnFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
 	private final CodePosition position;
 	private final E value;
@@ -34,7 +32,7 @@ public class ReturnFlowInstruction<E extends IPartialExpression<E, T>, T extends
 	}
 
 	@Override
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
 		if (value == null) {
 			if (scope.getReturnType() != scope.getTypeCompiler().getVoid(scope)

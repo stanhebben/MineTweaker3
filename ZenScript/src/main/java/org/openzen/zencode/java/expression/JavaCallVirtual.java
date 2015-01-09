@@ -8,11 +8,11 @@ package org.openzen.zencode.java.expression;
 import java.util.List;
 import org.openzen.zencode.java.method.IJavaMethod;
 import org.openzen.zencode.java.method.JavaMethods;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -24,7 +24,7 @@ public class JavaCallVirtual extends AbstractJavaExpression
 	private final IJavaExpression target;
 	private final List<IJavaExpression> arguments;
 	
-	public JavaCallVirtual(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaMethod method, IJavaExpression target, List<IJavaExpression> arguments)
+	public JavaCallVirtual(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaMethod method, IJavaExpression target, List<IJavaExpression> arguments)
 	{
 		super(position, scope);
 		
@@ -53,7 +53,7 @@ public class JavaCallVirtual extends AbstractJavaExpression
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return method.getReturnType();
 	}

@@ -6,16 +6,15 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.IfFlowInstruction;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementIf<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementIf<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E condition;
-	private final Statement<E, T> onThen;
-	private final Statement<E, T> onElse;
+	private final Statement<E> onThen;
+	private final Statement<E> onElse;
 
-	public StatementIf(CodePosition position, IMethodScope<E, T> environment, E condition, Statement<E, T> onThen, Statement<E, T> onElse)
+	public StatementIf(CodePosition position, IMethodScope<E> environment, E condition, Statement<E> onThen, Statement<E> onElse)
 	{
 		super(position, environment);
 
@@ -29,24 +28,24 @@ public class StatementIf<E extends IPartialExpression<E, T>, T extends ITypeInst
 		return condition;
 	}
 
-	public Statement<E, T> getThen()
+	public Statement<E> getThen()
 	{
 		return onThen;
 	}
 
-	public Statement<E, T> getElse()
+	public Statement<E> getElse()
 	{
 		return onElse;
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onIf(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
 		IAny conditionConstant = condition.getCompileTimeValue();
 		if (conditionConstant != null && conditionConstant.canCastImplicit(boolean.class)) {
@@ -57,22 +56,22 @@ public class StatementIf<E extends IPartialExpression<E, T>, T extends ITypeInst
 			}
 		}
 		
-		FlowBlock<E, T> onThenBlockEnd = new FlowBlock<E, T>();
-		FlowBlock<E, T> onThenBlockStart = onThen.createFlowBlock(onThenBlockEnd, builder);
+		FlowBlock<E> onThenBlockEnd = new FlowBlock<E>();
+		FlowBlock<E> onThenBlockStart = onThen.createFlowBlock(onThenBlockEnd, builder);
 		if (onThenBlockEnd.doesFallthrough())
 			onThenBlockEnd.addOutgoing(next);
 		
-		FlowBlock<E, T> onElseBlockStart = next;
+		FlowBlock<E> onElseBlockStart = next;
 		if (onElse != null) {
-			FlowBlock<E, T> onElseBlockEnd = new FlowBlock<E, T>();
+			FlowBlock<E> onElseBlockEnd = new FlowBlock<E>();
 			onElseBlockStart = onElse.createFlowBlock(onElseBlockEnd, builder);
 			
 			if (onElseBlockEnd.doesFallthrough())
 				onElseBlockEnd.addOutgoing(next);
 		}
 		
-		FlowBlock<E, T> conditionBlock = new FlowBlock<E, T>();
-		conditionBlock.prependInstruction(new IfFlowInstruction<E, T>(
+		FlowBlock<E> conditionBlock = new FlowBlock<E>();
+		conditionBlock.prependInstruction(new IfFlowInstruction<E>(
 				condition,
 				onThenBlockStart,
 				onElseBlockStart));

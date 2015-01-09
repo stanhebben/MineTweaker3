@@ -8,7 +8,7 @@ package org.openzen.zencode.parser.type;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -40,10 +40,10 @@ public enum ParsedTypeBasic implements IParsedType
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 T compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 TypeInstance<E> compile(IModuleScope<E> scope)
 	{
-		ITypeCompiler<E, T> types = scope.getTypeCompiler();
+		ITypeCompiler<E> types = scope.getTypeCompiler();
 		
 		switch (this) {
 			case ANY:

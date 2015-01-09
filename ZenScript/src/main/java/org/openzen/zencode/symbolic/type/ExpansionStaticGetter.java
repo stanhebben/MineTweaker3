@@ -17,29 +17,28 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ExpansionStaticGetter<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		implements IGetter<E, T>
+public class ExpansionStaticGetter<E extends IPartialExpression<E>>
+		implements IGetter<E>
 {
-	private final PartialStaticMember<E, T> member;
-	private final IMethod<E, T> method;
+	private final PartialStaticMember<E> member;
+	private final IMethod<E> method;
 	
-	public ExpansionStaticGetter(PartialStaticMember<E, T> member, IMethod<E, T> method)
+	public ExpansionStaticGetter(PartialStaticMember<E> member, IMethod<E> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return method.getReturnType();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public IPartialExpression<E, T> compileGet(CodePosition position, IMethodScope<E, T> scope)
+	public IPartialExpression<E> compileGet(CodePosition position, IMethodScope<E> scope)
 	{
 		return method.callStatic(position, scope, Collections.<E>emptyList());
 	}

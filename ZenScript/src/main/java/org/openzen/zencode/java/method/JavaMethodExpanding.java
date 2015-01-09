@@ -8,11 +8,11 @@ package org.openzen.zencode.java.method;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -25,19 +25,19 @@ import org.openzen.zencode.util.CodePosition;
 public class JavaMethodExpanding implements IJavaMethod
 {
 	private final IJavaMethod baseMethod;
-	private final IJavaType functionType;
+	private final TypeInstance<IJavaExpression> functionType;
 	
-	public JavaMethodExpanding(IJavaMethod baseMethod, IModuleScope<IJavaExpression, IJavaType> scope)
+	public JavaMethodExpanding(IJavaMethod baseMethod, IModuleScope<IJavaExpression> scope)
 	{
 		this.baseMethod = baseMethod;
 
-		MethodHeader<IJavaExpression, IJavaType> originalHeader = baseMethod.getMethodHeader();
+		MethodHeader<IJavaExpression> originalHeader = baseMethod.getMethodHeader();
 
-		List<MethodParameter<IJavaExpression, IJavaType>> arguments = baseMethod.getMethodHeader().getParameters().subList(
+		List<MethodParameter<IJavaExpression>> arguments = baseMethod.getMethodHeader().getParameters().subList(
 				1,
 				baseMethod.getMethodHeader().getParameters().size());
-		MethodHeader<IJavaExpression, IJavaType> newHeader
-				= new MethodHeader<IJavaExpression, IJavaType>(
+		MethodHeader<IJavaExpression> newHeader
+				= new MethodHeader<IJavaExpression>(
 						originalHeader.getPosition(), 
 						originalHeader.getGenericParameters(),
 						originalHeader.getReturnType(),
@@ -54,7 +54,7 @@ public class JavaMethodExpanding implements IJavaMethod
 	}
 
 	@Override
-	public IJavaType getFunctionType()
+	public TypeInstance<IJavaExpression> getFunctionType()
 	{
 		return functionType;
 	}
@@ -72,25 +72,25 @@ public class JavaMethodExpanding implements IJavaMethod
 	}
 
 	@Override
-	public IJavaExpression callStatic(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<IJavaExpression> arguments)
+	public IJavaExpression callStatic(CodePosition position, IMethodScope<IJavaExpression> scope, List<IJavaExpression> arguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callStaticWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object... constantArguments)
+	public IJavaExpression callStaticWithConstants(CodePosition position, IMethodScope<IJavaExpression> scope, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callStaticNullable(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression argument)
+	public IJavaExpression callStaticNullable(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression argument)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callVirtual(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, List<IJavaExpression> arguments)
+	public IJavaExpression callVirtual(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression target, List<IJavaExpression> arguments)
 	{
 		List<IJavaExpression> newArguments = new ArrayList<IJavaExpression>();
 		newArguments.add(target);
@@ -100,25 +100,25 @@ public class JavaMethodExpanding implements IJavaMethod
 	}
 
 	@Override
-	public IJavaExpression callVirtualWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
+	public IJavaExpression callVirtualWithConstants(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression target, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public MethodHeader<IJavaExpression, IJavaType> getMethodHeader()
+	public MethodHeader<IJavaExpression> getMethodHeader()
 	{
 		return functionType.getFunctionHeader();
 	}
 
 	@Override
-	public IJavaType getReturnType()
+	public TypeInstance<IJavaExpression> getReturnType()
 	{
 		return functionType.getFunctionHeader().getReturnType();
 	}
 
 	@Override
-	public void validateCall(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
+	public void validateCall(CodePosition position, IMethodScope<IJavaExpression> scope, List<IJavaExpression> arguments)
 	{
 		// TODO: implement
 	}

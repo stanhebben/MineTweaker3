@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyLong;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,11 +31,11 @@ public class ParsedExpressionInt extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
 	{
-		IExpressionCompiler<E, T> compiler = scope.getExpressionCompiler();
-		ITypeCompiler<E, T> types = scope.getTypeCompiler();
+		IExpressionCompiler<E> compiler = scope.getExpressionCompiler();
+		ITypeCompiler<E> types = scope.getTypeCompiler();
 		
 		if (predictedType != null) {
 			if (predictedType.equals(types.getByte(scope)))
@@ -64,7 +64,7 @@ public class ParsedExpressionInt extends ParsedExpression
 				return compiler.constantString(getPosition(), scope, Long.toString(value));
 		}
 		
-		IPartialExpression<E, T> result;
+		IPartialExpression<E> result;
 		if (value <= Integer.MAX_VALUE)
 			result = compiler.constantInt(getPosition(), scope, (int) value);
 		else
@@ -77,7 +77,7 @@ public class ParsedExpressionInt extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		return new AnyLong(value);
 	}

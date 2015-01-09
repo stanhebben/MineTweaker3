@@ -7,18 +7,16 @@ package org.openzen.zencode.symbolic.scope;
 
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface IModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends IGlobalScope<E, T>
+public interface IModuleScope<E extends IPartialExpression<E>> extends IGlobalScope<E>
 {
 	public AccessScope getAccessScope();
 	
-	public TypeCapture<E, T> getTypeCapture();
+	public TypeCapture<E> getTypeCapture();
 }

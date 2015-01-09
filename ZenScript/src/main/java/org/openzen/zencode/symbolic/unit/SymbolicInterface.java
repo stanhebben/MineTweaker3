@@ -14,32 +14,30 @@ import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.DefinitionScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicInterface<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractSymbolicDefinition<E, T>
+public class SymbolicInterface<E extends IPartialExpression<E>>
+	extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedInterface source;
-	private final IDefinitionScope<E, T> scope;
-	private final List<IMember<E, T>> members;
+	private final IDefinitionScope<E> scope;
+	private final List<IMember<E>> members;
 	
-	public SymbolicInterface(ParsedInterface source, IModuleScope<E, T> scope)
+	public SymbolicInterface(ParsedInterface source, IModuleScope<E> scope)
 	{
 		super(source, scope);
 		
 		this.source = source;
-		this.scope = new DefinitionScope<E, T>(scope, this);
-		members = new ArrayList<IMember<E, T>>();
+		this.scope = new DefinitionScope<E>(scope, this);
+		members = new ArrayList<IMember<E>>();
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		for (IParsedMember member : source.getMembers()) {
 			member.collectInnerDefinitions(units, scope);
@@ -52,7 +50,7 @@ public class SymbolicInterface<E extends IPartialExpression<E, T>, T extends ITy
 		super.compileMembers();
 		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiled = member.compile(scope);
+			IMember<E> compiled = member.compile(scope);
 			if (compiled != null)
 				members.add(compiled);
 		}
@@ -63,7 +61,7 @@ public class SymbolicInterface<E extends IPartialExpression<E, T>, T extends ITy
 	{
 		super.compileMemberContents();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 	}
@@ -73,7 +71,7 @@ public class SymbolicInterface<E extends IPartialExpression<E, T>, T extends ITy
 	{
 		super.validate();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 	}

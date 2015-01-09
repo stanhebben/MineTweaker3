@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
@@ -18,12 +17,11 @@ import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class TypeVariableNative<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements ITypeVariable<E, T>
+public class TypeVariableNative<E extends IPartialExpression<E>> implements ITypeVariable<E>
 {
 	private final TypeVariable<?> typeVariable;
-	private List<IGenericParameterBound<E, T>> bounds;
+	private List<IGenericParameterBound<E>> bounds;
 	
 	public TypeVariableNative(TypeVariable<?> typeVariable)
 	{
@@ -35,7 +33,7 @@ public class TypeVariableNative<E extends IPartialExpression<E, T>, T extends IT
 	}
 
 	@Override
-	public List<IGenericParameterBound<E, T>> getBounds()
+	public List<IGenericParameterBound<E>> getBounds()
 	{
 		return bounds;
 	}

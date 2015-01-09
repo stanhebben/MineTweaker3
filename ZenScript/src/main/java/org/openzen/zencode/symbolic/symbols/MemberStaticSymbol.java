@@ -8,27 +8,24 @@ package org.openzen.zencode.symbolic.symbols;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class MemberStaticSymbol<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		implements IZenSymbol<E, T>
+public class MemberStaticSymbol<E extends IPartialExpression<E>> implements IZenSymbol<E>
 {
-	private final PartialStaticMember<E, T> member;
+	private final PartialStaticMember<E> member;
 
-	public MemberStaticSymbol(PartialStaticMember<E, T> member)
+	public MemberStaticSymbol(PartialStaticMember<E> member)
 	{
 		this.member = member;
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> instance(CodePosition position, IMethodScope<E> environment)
 	{
 		return member.makeVariant(position, environment);
 	}

@@ -13,31 +13,29 @@ import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ImplementationMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class ImplementationMember<E extends IPartialExpression<E>> implements IMember<E>
 {
-	private final IDefinitionScope<E, T> unitScope;
+	private final IDefinitionScope<E> unitScope;
 	private final ParsedImplementation source;
-	private final List<IMember<E, T>> members;
+	private final List<IMember<E>> members;
 	private final int modifiers;
 	
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public ImplementationMember(ParsedImplementation source, IDefinitionScope<E, T> unitScope)
+	public ImplementationMember(ParsedImplementation source, IDefinitionScope<E> unitScope)
 	{
 		this.unitScope = unitScope;
 		this.source = source;
-		members = new ArrayList<IMember<E, T>>();
+		members = new ArrayList<IMember<E>>();
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiledMember = member.compile(unitScope);
+			IMember<E> compiledMember = member.compile(unitScope);
 			if (compiledMember != null)
 				members.add(compiledMember);
 		}
@@ -46,7 +44,7 @@ public class ImplementationMember<E extends IPartialExpression<E, T>, T extends 
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return unitScope.getDefinition();
 	}
@@ -54,7 +52,7 @@ public class ImplementationMember<E extends IPartialExpression<E, T>, T extends 
 	@Override
 	public void completeContents()
 	{
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 		
@@ -64,7 +62,7 @@ public class ImplementationMember<E extends IPartialExpression<E, T>, T extends 
 	@Override
 	public void validate()
 	{
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 		
@@ -78,7 +76,7 @@ public class ImplementationMember<E extends IPartialExpression<E, T>, T extends 
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

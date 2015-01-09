@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -30,10 +30,10 @@ public class ParsedExpressionBracket extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
-		IPartialExpression<E, T> result = scope.getEnvironment().getBracketed(getPosition(), scope, tokens);
+		IPartialExpression<E> result = scope.getEnvironment().getBracketed(getPosition(), scope, tokens);
 		if (result == null)
 			return errorUnresolved(scope);
 		
@@ -43,15 +43,15 @@ public class ParsedExpressionBracket extends ParsedExpression
 		return result;
 	}
 		 
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		E errorUnresolved(IMethodScope<E, T> environment)
+	private <E extends IPartialExpression<E>>
+		E errorUnresolved(IMethodScope<E> environment)
 	{
 		environment.getErrorLogger().errorCouldNotResolveBracket(getPosition(), tokens);
 		return environment.getExpressionCompiler().invalid(getPosition(), environment);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		return environment.evalBracketed(tokens);
 	}

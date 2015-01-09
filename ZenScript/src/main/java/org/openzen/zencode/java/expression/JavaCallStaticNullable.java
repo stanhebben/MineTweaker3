@@ -5,13 +5,14 @@
  */
 package org.openzen.zencode.java.expression;
 
+import java.util.Arrays;
 import org.objectweb.asm.Label;
 import org.openzen.zencode.java.method.IJavaMethod;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -24,7 +25,7 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	
 	public JavaCallStaticNullable(
 			CodePosition position,
-			IMethodScope<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression> scope,
 			IJavaMethod method,
 			IJavaExpression value)
 	{
@@ -53,14 +54,14 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 		IJavaExpression expression = this.method.callStatic(
 				getPosition(),
 				getScope(),
-				new JavaTOS(getPosition(), getScope(), value.getType()));
+				Arrays.<IJavaExpression>asList(new JavaTOS(getPosition(), getScope(), value.getType())));
 		expression.compile(true, method);
 
 		method.label(lblAfter);
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return method.getReturnType();
 	}
@@ -74,6 +75,6 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		method.validateCall(getPosition(), getScope(), value);
+		method.validateCall(getPosition(), getScope(), Arrays.asList(value));
 	}
 }

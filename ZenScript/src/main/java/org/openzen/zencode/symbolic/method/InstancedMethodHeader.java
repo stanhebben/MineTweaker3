@@ -8,20 +8,21 @@ package org.openzen.zencode.symbolic.method;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
+ * @param <E>
  */
-public class InstancedMethodHeader<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class InstancedMethodHeader<E extends IPartialExpression<E>>
 {
-	private final IDefinitionScope<E, T> scope;
-	private final T returnType;
-	private final List<MethodParameter<E, T>> parameters;
+	private final IDefinitionScope<E> scope;
+	private final TypeInstance<E> returnType;
+	private final List<MethodParameter<E>> parameters;
 	private final boolean isVararg;
 	
-	public InstancedMethodHeader(IDefinitionScope<E, T> scope, T returnType, List<MethodParameter<E, T>> parameters, boolean isVararg)
+	public InstancedMethodHeader(IDefinitionScope<E> scope, TypeInstance<E> returnType, List<MethodParameter<E>> parameters, boolean isVararg)
 	{
 		this.scope = scope;
 		this.returnType = returnType;

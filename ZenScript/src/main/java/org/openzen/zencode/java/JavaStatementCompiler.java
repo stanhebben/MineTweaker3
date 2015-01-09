@@ -9,7 +9,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.iterator.IJavaIterator;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.statement.IStatementProcessor;
 import org.openzen.zencode.symbolic.statement.Statement;
@@ -25,12 +24,13 @@ import org.openzen.zencode.symbolic.statement.StatementReturn;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.statement.StatementWhile;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
  */
-public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, IJavaType, Void>
+public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, Void>
 {
 	private final MethodOutput output;
 	
@@ -40,9 +40,9 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 	
 	@Override
-	public Void onBlock(StatementBlock<IJavaExpression, IJavaType> statement)
+	public Void onBlock(StatementBlock<IJavaExpression> statement)
 	{
-		for (Statement<IJavaExpression, IJavaType> element : statement.getStatements()) {
+		for (Statement<IJavaExpression> element : statement.getStatements()) {
 			element.process(this);
 			
 			if (element.isReturn())
@@ -53,7 +53,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onBreak(StatementBreak<IJavaExpression, IJavaType> statement)
+	public Void onBreak(StatementBreak<IJavaExpression> statement)
 	{
 		MethodOutput.ControlLabels labels = output.getControlLabels(statement.getTarget());
 		if (labels == null)
@@ -67,7 +67,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onContinue(StatementContinue<IJavaExpression, IJavaType> statement)
+	public Void onContinue(StatementContinue<IJavaExpression> statement)
 	{
 		MethodOutput.ControlLabels controls = output.getControlLabels(statement.getTarget());
 		if (controls == null)
@@ -83,7 +83,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onDoWhile(StatementDoWhile<IJavaExpression, IJavaType> statement)
+	public Void onDoWhile(StatementDoWhile<IJavaExpression> statement)
 	{
 		Label lblRepeat = new Label();
 		Label lblContinue = new Label();
@@ -100,7 +100,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onExpression(StatementExpression<IJavaExpression, IJavaType> statement)
+	public Void onExpression(StatementExpression<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
 		statement.getExpression().compile(false, output);
@@ -109,7 +109,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onForeach(StatementForeach<IJavaExpression, IJavaType> statement)
+	public Void onForeach(StatementForeach<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
 		
@@ -138,12 +138,12 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onIf(StatementIf<IJavaExpression, IJavaType> statement)
+	public Void onIf(StatementIf<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
 		
-		IJavaType expressionType = statement.getCondition().getType();
-		if (expressionType != statement.getScope().getTypeCompiler().getBool())
+		TypeInstance<IJavaExpression> expressionType = statement.getCondition().getType();
+		if (expressionType != statement.getScope().getTypeCompiler().getBool(statement.getScope()))
 			throw new RuntimeException("condition is not a boolean");
 		
 		Label labelEnd = new Label();
@@ -164,14 +164,14 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onEmpty(StatementNull<IJavaExpression, IJavaType> statement)
+	public Void onEmpty(StatementNull<IJavaExpression> statement)
 	{
 		// nothing to do
 		return null;
 	}
 
 	@Override
-	public Void onReturn(StatementReturn<IJavaExpression, IJavaType> statement)
+	public Void onReturn(StatementReturn<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
 
@@ -188,13 +188,13 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onSwitch(StatementSwitch<IJavaExpression, IJavaType> statement)
+	public Void onSwitch(StatementSwitch<IJavaExpression> statement)
 	{
 		
 	}
 
 	@Override
-	public Void onVar(StatementVar<IJavaExpression, IJavaType> statement)
+	public Void onVar(StatementVar<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
 
@@ -207,7 +207,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Void onWhile(StatementWhile<IJavaExpression, IJavaType> statement)
+	public Void onWhile(StatementWhile<IJavaExpression> statement)
 	{
 		Label lblRepeat = new Label();
 		Label lblBreak = new Label();

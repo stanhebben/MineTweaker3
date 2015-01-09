@@ -11,21 +11,20 @@ import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicAnnotation<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class SymbolicAnnotation<E extends IPartialExpression<E>>
 {
-	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
-		 List<SymbolicAnnotation<ES, TS>> compileAll(List<ParsedAnnotation> annotations, IDefinitionScope<ES, TS> scope)
+	public static <ES extends IPartialExpression<ES>>
+		 List<SymbolicAnnotation<ES>> compileAll(List<ParsedAnnotation> annotations, IDefinitionScope<ES> scope)
 	{
-		List<SymbolicAnnotation<ES, TS>> result = new ArrayList<SymbolicAnnotation<ES, TS>>();
+		List<SymbolicAnnotation<ES>> result = new ArrayList<SymbolicAnnotation<ES>>();
 		for (ParsedAnnotation annotation : annotations) {
 			result.add(annotation.compile(scope));
 		}
@@ -33,11 +32,11 @@ public class SymbolicAnnotation<E extends IPartialExpression<E, T>, T extends IT
 	}
 	
 	private final CodePosition position;
-	private T type;
-	private IMethod<E, T> constructor;
+	private TypeInstance<E> type;
+	private IMethod<E> constructor;
 	private List<E> arguments;
 	
-	public SymbolicAnnotation(CodePosition position, T type, IMethod<E, T> constructor, List<E> arguments)
+	public SymbolicAnnotation(CodePosition position, TypeInstance<E> type, IMethod<E> constructor, List<E> arguments)
 	{
 		this.position = position;
 		this.type = type;

@@ -11,7 +11,6 @@ import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -20,9 +19,8 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  */
 public interface IParsedDefinition
 {
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope);
-		 
+	public <E extends IPartialExpression<E>> ISymbolicDefinition<E> compile(IModuleScope<E> scope);
+	
 	public List<IParsedModifier> getModifiers();
 	
 	public List<ParsedAnnotation> getAnnotations();

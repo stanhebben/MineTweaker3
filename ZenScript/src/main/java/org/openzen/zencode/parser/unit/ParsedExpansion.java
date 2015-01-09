@@ -14,7 +14,6 @@ import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicExpansion;
 import org.openzen.zencode.util.CodePosition;
@@ -72,9 +71,9 @@ public class ParsedExpansion implements IParsedDefinition
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>> ISymbolicDefinition<E> compile(IModuleScope<E> scope)
 	{
-		return new SymbolicExpansion<E, T>(this, scope);
+		return new SymbolicExpansion<E>(this, scope);
 	}
 
 	@Override

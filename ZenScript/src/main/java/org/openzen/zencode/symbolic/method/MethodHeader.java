@@ -15,29 +15,29 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 /**
  *
  * @author Stan Hebben
  * @param <E>
- * @param <T>
  */
-public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class MethodHeader<E extends IPartialExpression<E>>
 {
-	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
-		 MethodHeader<ES, TS> noParameters(TS returnType)
+	public static <ES extends IPartialExpression<ES>>
+		 MethodHeader<ES> noParameters(TypeInstance<ES> returnType)
 	{
-		return new MethodHeader<ES, TS>(
+		return new MethodHeader<ES>(
 				CodePosition.SYSTEM,
-				Collections.<GenericParameter<ES, TS>>emptyList(),
+				Collections.<GenericParameter<ES>>emptyList(),
 				returnType,
-				Collections.<MethodParameter<ES, TS>>emptyList(),
+				Collections.<MethodParameter<ES>>emptyList(),
 				false);
 	}
 	
-	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
-		 MethodHeader<ES, TS> singleParameterVoid(String argumentName, TS argumentType)
+	public static <ES extends IPartialExpression<ES>>
+		 MethodHeader<ES> singleParameterVoid(String argumentName, TypeInstance<ES> argumentType)
 	{
 		return singleParameter(
 				argumentType.getScope().getTypeCompiler().getVoid(argumentType.getScope()),
@@ -45,30 +45,30 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 				argumentType);
 	}
 
-	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
-		 MethodHeader<ES, TS> singleParameter(
-				 TS returnType,
+	public static <ES extends IPartialExpression<ES>>
+		 MethodHeader<ES> singleParameter(
+				 TypeInstance<ES> returnType,
 				 String argumentName,
-				 TS argumentType)
+				 TypeInstance<ES> argumentType)
 	{
-		MethodParameter<ES, TS> argument = new MethodParameter<ES, TS>(
+		MethodParameter<ES> argument = new MethodParameter<ES>(
 				CodePosition.SYSTEM,
 				argumentName,
 				argumentType,
 				null);
 		
-		return new MethodHeader<ES, TS>(
+		return new MethodHeader<ES>(
 				CodePosition.SYSTEM,
-				Collections.<GenericParameter<ES, TS>>emptyList(),
+				Collections.<GenericParameter<ES>>emptyList(),
 				returnType,
 				Collections.singletonList(argument),
 				false);
 	}
 
 	private final CodePosition position;
-	private final T returnType;
-	private final List<GenericParameter<E, T>> genericParameters;
-	private final List<MethodParameter<E, T>> parameters;
+	private final TypeInstance<E> returnType;
+	private final List<GenericParameter<E>> genericParameters;
+	private final List<MethodParameter<E>> parameters;
 	private final boolean isVarargs;
 
 	// optimization
@@ -76,9 +76,9 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 
 	public MethodHeader(
 			CodePosition position,
-			List<GenericParameter<E, T>> genericParameters,
-			T returnType,
-			List<MethodParameter<E, T>> parameters,
+			List<GenericParameter<E>> genericParameters,
+			TypeInstance<E> returnType,
+			List<MethodParameter<E>> parameters,
 			boolean isVarargs)
 	{
 		if (isVarargs && (parameters.isEmpty()))
@@ -105,32 +105,32 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 		return position;
 	}
 	
-	public List<GenericParameter<E, T>> getGenericParameters()
+	public List<GenericParameter<E>> getGenericParameters()
 	{
 		return genericParameters;
 	}
 
-	public T getReturnType()
+	public TypeInstance<E> getReturnType()
 	{
 		return returnType;
 	}
 
-	public List<MethodParameter<E, T>> getParameters()
+	public List<MethodParameter<E>> getParameters()
 	{
 		return parameters;
 	}
 
-	public MethodParameter<E, T> getParameterByIndex(int index)
+	public MethodParameter<E> getParameterByIndex(int index)
 	{
 		return parameters.get(index);
 	}
 
-	public MethodParameter<E, T> getParameterByName(String name)
+	public MethodParameter<E> getParameterByName(String name)
 	{
 		return parameters.get(parameterIndicesByName.get(name));
 	}
 	
-	public E makeArgumentGetExpression(int index, CodePosition position, IMethodScope<E, T> scope)
+	public E makeArgumentGetExpression(int index, CodePosition position, IMethodScope<E> scope)
 	{
 		return scope.getExpressionCompiler().localGet(position, scope, parameters.get(index).getLocal());
 	}
@@ -161,7 +161,7 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 		}
 	}
 	
-	public T getVarArgBaseType()
+	public TypeInstance<E> getVarArgBaseType()
 	{
 		if (!isVarargs())
 			return null;
@@ -203,7 +203,7 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 		return true;
 	}
 	
-	public boolean accepts(IModuleScope<E, T> scope, T... arguments)
+	public boolean accepts(IModuleScope<E> scope, TypeInstance<E>... arguments)
 	{
 		if (!accepts(arguments.length))
 			return false;
@@ -221,42 +221,47 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeIns
 		return true;
 	}
 
-	public T getArgumentType(int index)
+	public TypeInstance<E> getArgumentType(int index)
 	{
 		return parameters.get(index).getType();
 	}
 	
-	public void completeMembers(IModuleScope<E, T> scope)
+	public void completeMembers(IModuleScope<E> scope)
 	{
-		for (GenericParameter<E, T> genericParameter : genericParameters) {
+		for (GenericParameter<E> genericParameter : genericParameters) {
 			genericParameter.completeMembers(scope);
 		}
 	}
 	
-	public void completeContents(IMethodScope<E, T> scope)
+	public void completeContents(IMethodScope<E> scope)
 	{
-		for (MethodParameter<E, T> parameter : parameters) {
+		for (MethodParameter<E> parameter : parameters) {
 			parameter.completeContents(scope);
 		}
 	}
 	
-	public InstancedMethodHeader<E, T> instance(IDefinitionScope<E, T> scope, Map<GenericParameter<E, T>, T> genericArguments)
+	public InstancedMethodHeader<E> instance(IDefinitionScope<E> scope, Map<GenericParameter<E>, TypeInstance<E>> genericArguments)
 	{
-		List<MethodParameter<E, T>> instancedParameters = new ArrayList<MethodParameter<E, T>>();
-		for (MethodParameter<E, T> parameter : parameters) {
-			instancedParameters.add(parameter.instance(scope, genericArguments));
+		TypeCapture<E> capture = new TypeCapture<E>(scope.getTypeCapture());
+		for (Map.Entry<GenericParameter<E>, TypeInstance<E>> genericArgument : genericArguments.entrySet()) {
+			capture.put(genericArgument.getKey(), genericArgument.getValue());
 		}
 		
-		return new InstancedMethodHeader<E, T>(
+		List<MethodParameter<E>> instancedParameters = new ArrayList<MethodParameter<E>>();
+		for (MethodParameter<E> parameter : parameters) {
+			instancedParameters.add(parameter.instance(scope, capture));
+		}
+		
+		return new InstancedMethodHeader<E>(
 				scope, 
-				returnType.instance(scope, genericArguments),
+				returnType.instance(scope, capture),
 				instancedParameters, 
 				isVarargs);
 	}
 	
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
-		for (MethodParameter<E, T> parameter : parameters) {
+		for (MethodParameter<E> parameter : parameters) {
 			parameter.validate(scope);
 		}
 	}

@@ -14,7 +14,6 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.DefinitionScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
@@ -22,39 +21,38 @@ import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements ISymbolicDefinition<E, T>
+public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E>>
+	implements ISymbolicDefinition<E>
 {
 	private final IParsedDefinition source;
 	
 	private final int modifiers;
-	private final IDefinitionScope<E, T> definitionScope;
-	private final List<GenericParameter<E, T>> genericParameters;
+	private final IDefinitionScope<E> definitionScope;
+	private final List<GenericParameter<E>> genericParameters;
 	
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public AbstractSymbolicDefinition(IParsedDefinition source, IModuleScope<E, T> scope)
+	public AbstractSymbolicDefinition(IParsedDefinition source, IModuleScope<E> scope)
 	{
 		this.source = source;
 		
 		modifiers = Modifier.compileModifiers(source.getModifiers(), scope.getErrorLogger());
-		definitionScope = new DefinitionScope<E, T>(scope, this);
+		definitionScope = new DefinitionScope<E>(scope, this);
 		genericParameters = GenericParameter.compile(source.getGenericParameters(), scope);
 	}
 	
-	public AbstractSymbolicDefinition(int modifiers, List<SymbolicAnnotation<E, T>> annotations, IModuleScope<E, T> scope)
+	public AbstractSymbolicDefinition(int modifiers, List<SymbolicAnnotation<E>> annotations, IModuleScope<E> scope)
 	{
 		this.source = null;
 		
 		this.modifiers = modifiers;
 		this.annotations = annotations;
-		definitionScope = new DefinitionScope<E, T>(scope, this);
+		definitionScope = new DefinitionScope<E>(scope, this);
 		genericParameters = Collections.emptyList();
 	}
 	
-	public IDefinitionScope<E, T> getScope()
+	public IDefinitionScope<E> getScope()
 	{
 		return definitionScope;
 	}
@@ -66,7 +64,7 @@ public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E,
 	}
 	
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}
@@ -74,7 +72,7 @@ public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E,
 	@Override
 	public void compileMembers()
 	{
-		for (GenericParameter<E, T> parameter : genericParameters) {
+		for (GenericParameter<E> parameter : genericParameters) {
 			parameter.completeMembers(getScope());
 		}
 	}
@@ -85,7 +83,7 @@ public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E,
 		if (source != null)
 			annotations = SymbolicAnnotation.compileAll(source.getAnnotations(), getScope());
 		
-		for (GenericParameter<E, T> parameter : genericParameters) {
+		for (GenericParameter<E> parameter : genericParameters) {
 			parameter.completeContents(getScope());
 		}
 	}
@@ -93,13 +91,13 @@ public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E,
 	@Override
 	public void validate()
 	{
-		for (SymbolicAnnotation<E, T> annotation : annotations) {
+		for (SymbolicAnnotation<E> annotation : annotations) {
 			annotation.validate();
 		}
 	}
 	
 	@Override
-	public List<? extends ITypeVariable<E, T>> getTypeVariables()
+	public List<? extends ITypeVariable<E>> getTypeVariables()
 	{
 		return genericParameters;
 	}

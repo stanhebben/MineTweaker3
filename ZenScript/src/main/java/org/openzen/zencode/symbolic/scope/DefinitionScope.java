@@ -15,7 +15,6 @@ import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
@@ -25,31 +24,30 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class DefinitionScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IDefinitionScope<E, T>
+public class DefinitionScope<E extends IPartialExpression<E>> implements IDefinitionScope<E>
 {
 	private final AccessScope accessScope;
-	private final IModuleScope<E, T> module;
-	private final ISymbolicDefinition<E, T> unit;
-	private final Map<String, IZenSymbol<E, T>> local;
-	private final TypeCapture<E, T> typeCapture;
+	private final IModuleScope<E> module;
+	private final ISymbolicDefinition<E> unit;
+	private final Map<String, IZenSymbol<E>> local;
+	private final TypeCapture<E> typeCapture;
 	
-	public DefinitionScope(IModuleScope<E, T> global, ISymbolicDefinition<E, T> unit)
+	public DefinitionScope(IModuleScope<E> global, ISymbolicDefinition<E> unit)
 	{
 		this.accessScope = AccessScope.createClassScope(global.getAccessScope());
 		this.module = global;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
+		this.local = new HashMap<String, IZenSymbol<E>>();
 		this.unit = unit;
-		this.typeCapture = new TypeCapture<E, T>(null);
+		this.typeCapture = new TypeCapture<E>(null);
 		
-		for (ITypeVariable<E, T> typeVariable : unit.getTypeVariables()) {
+		for (ITypeVariable<E> typeVariable : unit.getTypeVariables()) {
 			typeCapture.put(typeVariable, global.getTypeCompiler().getGeneric(typeVariable));
 		}
 	}
 	
 	@Override
-	public ISymbolicDefinition<E, T> getDefinition()
+	public ISymbolicDefinition<E> getDefinition()
 	{
 		return unit;
 	}
@@ -61,25 +59,25 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return module.getTypeCompiler();
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return module.getEnvironment();
 	}
 	
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return module.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return module.getConstantEnvironment();
 	}
@@ -109,7 +107,7 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
@@ -118,7 +116,7 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);
@@ -139,13 +137,13 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return module.getErrorLogger();
 	}
 
 	@Override
-	public TypeCapture<E, T> getTypeCapture()
+	public TypeCapture<E> getTypeCapture()
 	{
 		return typeCapture;
 	}

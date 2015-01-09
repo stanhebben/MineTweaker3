@@ -12,7 +12,6 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -23,30 +22,29 @@ import org.openzen.zencode.util.CodePosition;
  * @author Stan Hebben
  *
  * @param <E> compiler expression type
- * @param <T> compiler value type
  */
-public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IZenCompileEnvironment<E extends IPartialExpression<E>>
 {
 	/**
 	 * Gets the type compiler for the current target language.
 	 *
 	 * @return type compiler
 	 */
-	public ITypeCompiler<E, T> getTypeCompiler();
+	public ITypeCompiler<E> getTypeCompiler();
 
 	/**
 	 * Gets the expression compiler for the current target language.
 	 *
 	 * @return expression compiler
 	 */
-	public IExpressionCompiler<E, T> getExpressionCompiler();
+	public IExpressionCompiler<E> getExpressionCompiler();
 
 	/**
 	 * Gets the error logger used to report warnings and errors.
 	 *
 	 * @return error logger
 	 */
-	public ICodeErrorLogger<E, T> getErrorLogger();
+	public ICodeErrorLogger<E> getErrorLogger();
 
 	/**
 	 * Gets a global symbol. Should return null if the symbol doesn't exist.
@@ -56,7 +54,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param name global symbol name
 	 * @return symbol
 	 */
-	public IPartialExpression<E, T> getGlobal(CodePosition position, IMethodScope<E, T> scope, String name);
+	public IPartialExpression<E> getGlobal(CodePosition position, IMethodScope<E> scope, String name);
 
 	/**
 	 * Gets a dollar symbol. Should return null if the symbol doesn't exist.
@@ -66,7 +64,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param name variable name
 	 * @return symbol
 	 */
-	public IPartialExpression<E, T> getDollar(CodePosition position, IMethodScope<E, T> scope, String name);
+	public IPartialExpression<E> getDollar(CodePosition position, IMethodScope<E> scope, String name);
 
 	/**
 	 * Evaluates the bracketed value. Should return null if it can't be
@@ -78,7 +76,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param tokens
 	 * @return
 	 */
-	public IPartialExpression<E, T> getBracketed(CodePosition position, IMethodScope<E, T> scope, List<Token> tokens);
+	public IPartialExpression<E> getBracketed(CodePosition position, IMethodScope<E> scope, List<Token> tokens);
 
 	/**
 	 * Evaluates a global value. Should return null if it can't be evaluated

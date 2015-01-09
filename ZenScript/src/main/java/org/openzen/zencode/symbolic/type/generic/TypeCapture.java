@@ -8,35 +8,34 @@ package org.openzen.zencode.symbolic.type.generic;
 import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class TypeCapture<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class TypeCapture<E extends IPartialExpression<E>>
 {
 	@SuppressWarnings("unchecked")
-	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 TypeCapture<E, T> empty()
+	public static <E extends IPartialExpression<E>>
+		 TypeCapture<E> empty()
 	{
-		return (TypeCapture<E, T>) EMPTY;
+		return (TypeCapture<E>) EMPTY;
 	}
 	
-	public static final TypeCapture EMPTY = new TypeCapture(null);
+	private static final TypeCapture EMPTY = new TypeCapture(null);
 	
-	private final TypeCapture<E, T> outer;
-	private final Map<ITypeVariable, T> variables;
+	private final TypeCapture<E> outer;
+	private final Map<ITypeVariable<E>, TypeInstance<E>> variables;
 
-	public TypeCapture(TypeCapture<E, T> outer)
+	public TypeCapture(TypeCapture<E> outer)
 	{
 		this.outer = outer;
-		variables = new HashMap<ITypeVariable, T>();
+		variables = new HashMap<ITypeVariable<E>, TypeInstance<E>>();
 	}
 
-	public T get(ITypeVariable variable)
+	public TypeInstance<E> get(ITypeVariable<E> variable)
 	{
 		if (variables.containsKey(variable))
 			return variables.get(variable);
@@ -46,7 +45,7 @@ public class TypeCapture<E extends IPartialExpression<E, T>, T extends ITypeInst
 			throw new RuntimeException("Could not resolve type variable");
 	}
 
-	public void put(ITypeVariable variable, T type)
+	public void put(ITypeVariable<E> variable, TypeInstance<E> type)
 	{
 		variables.put(variable, type);
 	}

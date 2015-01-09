@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -33,16 +33,16 @@ public class ParsedExpressionNew extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
 	{
-		T cType = type.compile(scope);
-		MatchedArguments<E, T> compiledArguments = callArguments.compile(cType.getConstructors(), scope);
+		TypeInstance<E> cType = type.compile(scope);
+		MatchedArguments<E> compiledArguments = callArguments.compile(cType.getConstructors(), scope);
 		return scope.getExpressionCompiler().constructNew(getPosition(), scope, cType, compiledArguments.method, compiledArguments.arguments);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		return null;
 	}

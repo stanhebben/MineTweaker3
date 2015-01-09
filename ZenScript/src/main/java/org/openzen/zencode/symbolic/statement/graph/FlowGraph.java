@@ -9,24 +9,22 @@ import java.util.HashSet;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class FlowGraph<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class FlowGraph<E extends IPartialExpression<E>>
 {
-	private final FlowBlock<E, T> start;
+	private final FlowBlock<E> start;
 	
-	public FlowGraph(FlowBlock<E, T> start)
+	public FlowGraph(FlowBlock<E> start)
 	{
 		this.start = start;
 	}
 	
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
 		// Validations:
 		// - Check individual instructions
@@ -35,7 +33,7 @@ public class FlowGraph<E extends IPartialExpression<E, T>, T extends ITypeInstan
 		// - Check if every used variable has an assigned value
 		// - Check if final variables are not being assigned to
 		
-		Set<FlowBlock<E, T>> validated = new HashSet<FlowBlock<E, T>>();
+		Set<FlowBlock<E>> validated = new HashSet<FlowBlock<E>>();
 		start.validate(scope, validated);
 	}
 }

@@ -14,7 +14,8 @@ import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.ITypeDefinition;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
 
@@ -22,10 +23,9 @@ import org.openzen.zencode.util.Strings;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements ICodeErrorLogger<E, T>
+public class AbstractErrorLogger<E extends IPartialExpression<E>>
+	implements ICodeErrorLogger<E>
 {
 	private boolean hasErrors;
 	
@@ -75,31 +75,31 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorInvalidNumberOfGenericArguments(CodePosition position, T type, List<T> genericArguments)
+	public void errorInvalidNumberOfGenericArguments(CodePosition position, ITypeDefinition<E> type, List<TypeInstance<E>> genericArguments)
 	{
 		error(position, "Invalid number of generic arguments for " + type);
 	}
 
 	@Override
-	public void errorCannotCastImplicit(CodePosition position, T fromType, T toType)
+	public void errorCannotCastImplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType)
 	{
 		error(position, "No implicit cast available from " + fromType + " to " + toType);
 	}
 
 	@Override
-	public void errorCannotCastExplicit(CodePosition position, T fromType, T toType)
+	public void errorCannotCastExplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType)
 	{
 		error(position, "Cannot cast " + fromType + " to " + toType);
 	}
 
 	@Override
-	public void errorCannotAssignTo(CodePosition position, IPartialExpression<E, T> target)
+	public void errorCannotAssignTo(CodePosition position, IPartialExpression<E> target)
 	{
 		error(position, "Cannot assign to this value");
 	}
 
 	@Override
-	public void errorNotAType(CodePosition position, IPartialExpression<E, T> value)
+	public void errorNotAType(CodePosition position, IPartialExpression<E> value)
 	{
 		error(position, "Not a valid type");
 	}
@@ -117,7 +117,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorCannotCastArrayTo(CodePosition position, T toType)
+	public void errorCannotCastArrayTo(CodePosition position, TypeInstance<E> toType)
 	{
 		error(position, "Cannot cast array to " + toType);
 	}
@@ -135,7 +135,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorCannotCastMapTo(CodePosition position, T toType)
+	public void errorCannotCastMapTo(CodePosition position, TypeInstance<E> toType)
 	{
 		error(position, "Cannot cast map to " + toType);
 	}
@@ -171,7 +171,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorNoMatchingMethod(CodePosition position, List<IMethod<E, T>> methods, ParsedCallArguments arguments)
+	public void errorNoMatchingMethod(CodePosition position, List<IMethod<E>> methods, ParsedCallArguments arguments)
 	{
 		// TODO: assemble a more useful error message, since this causes common confusion
 		
@@ -188,7 +188,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorCannotCombineTypes(CodePosition position, T type1, T type2)
+	public void errorCannotCombineTypes(CodePosition position, TypeInstance<E> type1, TypeInstance<E> type2)
 	{
 		error(position, "Cannot combine " + type1 + " with " + type2);
 	}
@@ -230,7 +230,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorNoSuchIterator(CodePosition position, T type, int numVariables)
+	public void errorNoSuchIterator(CodePosition position, TypeInstance<E> type, int numVariables)
 	{
 		error(position, type + " has no iterator for " + numVariables + " variables");
 	}
@@ -242,7 +242,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorNotAType(CodePosition position, IPartialExpression<E, T> value, String name)
+	public void errorNotAType(CodePosition position, IPartialExpression<E> value, String name)
 	{
 		error(position, name + " is not a valid type");
 	}
@@ -272,25 +272,25 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorCannotBeNullable(CodePosition position, T type)
+	public void errorCannotBeNullable(CodePosition position, TypeInstance<E> type)
 	{
 		error(position, "Cannot be nullable: " + type);
 	}
 
 	@Override
-	public void errorInvalidExpression(CodePosition position, IPartialExpression<E, T> expression)
+	public void errorInvalidExpression(CodePosition position, IPartialExpression<E> expression)
 	{
 		error(position, "Invalid expression");
 	}
 
 	@Override
-	public void errorCannotCall(CodePosition position, IPartialExpression<E, T> expression)
+	public void errorCannotCall(CodePosition position, IPartialExpression<E> expression)
 	{
 		error(position, "Cannot call such value");
 	}
 
 	@Override
-	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E, T> header, T... expectedTypes)
+	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E> header, TypeInstance<E>... expectedTypes)
 	{
 		StringBuilder errorBuilder = new StringBuilder();
 		errorBuilder.append("Illegal parameters for ");
@@ -381,7 +381,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void errorNoConstructorsForType(CodePosition position, T type)
+	public void errorNoConstructorsForType(CodePosition position, TypeInstance<E> type)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

@@ -15,7 +15,6 @@ import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 
@@ -23,19 +22,18 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IModuleScope<E, T>
+public class ModuleScope<E extends IPartialExpression<E>>
+	implements IModuleScope<E>
 {
-	private final IGlobalScope<E, T> parent;
-	private final Map<String, IZenSymbol<E, T>> imports;
+	private final IGlobalScope<E> parent;
+	private final Map<String, IZenSymbol<E>> imports;
 	private final AccessScope accessScope;
 
-	public ModuleScope(IGlobalScope<E, T> parent)
+	public ModuleScope(IGlobalScope<E> parent)
 	{
 		this.parent = parent;
-		imports = new HashMap<String, IZenSymbol<E, T>>();
+		imports = new HashMap<String, IZenSymbol<E>>();
 		accessScope = AccessScope.createModuleScope();
 	}
 
@@ -46,19 +44,19 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return parent.getEnvironment();
 	}
 	
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return parent.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return parent.getConstantEnvironment();
 	}
@@ -88,10 +86,10 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment)
 	{
 		if (imports.containsKey(name)) {
-			IZenSymbol<E, T> imprt = imports.get(name);
+			IZenSymbol<E> imprt = imports.get(name);
 			if (imprt == null)
 				throw new RuntimeException("How could this happen?");
 			return imprt.instance(position, environment);
@@ -100,7 +98,7 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		if (value == null)
 			throw new IllegalArgumentException("value cannot be null");
@@ -112,7 +110,7 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return parent.getTypeCompiler();
 	}
@@ -130,13 +128,13 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return parent.getErrorLogger();
 	}
 
 	@Override
-	public TypeCapture<E, T> getTypeCapture()
+	public TypeCapture<E> getTypeCapture()
 	{
 		return TypeCapture.empty();
 	}

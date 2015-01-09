@@ -5,14 +5,13 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.ReturnFlowInstruction;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementReturn<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementReturn<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E expression;
 
-	public StatementReturn(CodePosition position, IMethodScope<E, T> environment, E expression)
+	public StatementReturn(CodePosition position, IMethodScope<E> environment, E expression)
 	{
 		super(position, environment);
 
@@ -31,15 +30,15 @@ public class StatementReturn<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onReturn(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
-		FlowBlock<E, T> result = new FlowBlock<E, T>();
-		return result.prependInstruction(new ReturnFlowInstruction<E, T>(getPosition(), expression));
+		FlowBlock<E> result = new FlowBlock<E>();
+		return result.prependInstruction(new ReturnFlowInstruction<E>(getPosition(), expression));
 	}
 }

@@ -9,39 +9,38 @@ import java.util.Collections;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class CastingRuleStaticMethod<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements ICastingRule<E, T>
+public class CastingRuleStaticMethod<E extends IPartialExpression<E>> implements ICastingRule<E>
 {
-	private final IMethod<E, T> method;
+	private final IMethod<E> method;
 	
-	public CastingRuleStaticMethod(IMethod<E, T> method)
+	public CastingRuleStaticMethod(IMethod<E> method)
 	{
 		this.method = method;
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E> scope, E value)
 	{
 		return method.callStatic(position, scope, Collections.singletonList(value));
 	}
 
 	@Override
-	public T getInputType()
+	public TypeInstance<E> getInputType()
 	{
 		return method.getMethodHeader().getArgumentType(0);
 	}
 
 	@Override
-	public T getResultingType()
+	public TypeInstance<E> getResultingType()
 	{
 		return method.getReturnType();
 	}

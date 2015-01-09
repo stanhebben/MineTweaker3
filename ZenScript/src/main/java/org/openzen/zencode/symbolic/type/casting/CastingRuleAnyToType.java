@@ -8,41 +8,39 @@ package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class CastingRuleAnyToType<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements ICastingRule<E, T>
+public class CastingRuleAnyToType<E extends IPartialExpression<E>> implements ICastingRule<E>
 {
-	private final T fromType;
-	private final T toType;
+	private final TypeInstance<E> fromType;
+	private final TypeInstance<E> toType;
 	
-	public CastingRuleAnyToType(T fromType, T toType)
+	public CastingRuleAnyToType(TypeInstance<E> fromType, TypeInstance<E> toType)
 	{
 		this.fromType = fromType;
 		this.toType = toType;
 	}
 
 	@Override
-	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E> scope, E value)
 	{
 		return scope.getExpressionCompiler().anyCastTo(position, scope, value, toType);
 	}
 
 	@Override
-	public T getInputType()
+	public TypeInstance<E> getInputType()
 	{
 		return fromType;
 	}
 
 	@Override
-	public T getResultingType()
+	public TypeInstance<E> getResultingType()
 	{
 		return toType;
 	}

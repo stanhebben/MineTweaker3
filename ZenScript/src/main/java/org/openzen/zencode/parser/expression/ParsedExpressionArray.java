@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyArray;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
@@ -32,11 +32,11 @@ public class ParsedExpressionArray extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-			IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
+	public <E extends IPartialExpression<E>>
+			IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
-		T arrayType;
-		ICastingRule<E, T> castingRule = null;
+		TypeInstance<E> arrayType;
+		ICastingRule<E> castingRule = null;
 		
 		if (asType != null && asType.getArrayBaseType() != null)
 			arrayType = asType;
@@ -64,8 +64,8 @@ public class ParsedExpressionArray extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-			E compileKey(IMethodScope<E, T> environment, T predictedType)
+	public <E extends IPartialExpression<E>>
+			E compileKey(IMethodScope<E> environment, TypeInstance<E> predictedType)
 	{
 		if (contents.size() == 1 && contents.get(0) instanceof ParsedExpressionVariable)
 			return contents.get(0).compile(environment, predictedType);
@@ -74,7 +74,7 @@ public class ParsedExpressionArray extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		IAny[] values = new IAny[contents.size()];
 		for (int i = 0; i < contents.size(); i++) {

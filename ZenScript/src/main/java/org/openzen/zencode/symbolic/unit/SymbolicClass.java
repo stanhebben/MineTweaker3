@@ -12,24 +12,23 @@ import org.openzen.zencode.parser.unit.ParsedClass;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractSymbolicDefinition<E, T>
+public class SymbolicClass<E extends IPartialExpression<E>>
+	extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedClass source;
 	
 	private final String className;
-	private final T superclass;
-	private final List<IMember<E, T>> members;
+	private final TypeInstance<E> superclass;
+	private final List<IMember<E>> members;
 	
-	public SymbolicClass(ParsedClass source, IModuleScope<E, T> moduleScope)
+	public SymbolicClass(ParsedClass source, IModuleScope<E> moduleScope)
 	{
 		super(source, moduleScope);
 		
@@ -45,11 +44,11 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeIn
 			superclass = source.getExtendsTypes().get(0).compile(moduleScope);
 		}
 		
-		members = new ArrayList<IMember<E, T>>();
+		members = new ArrayList<IMember<E>>();
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		for (IParsedMember member : source.getMembers()) {
 			member.collectInnerDefinitions(units, scope);
@@ -62,7 +61,7 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeIn
 		super.compileMembers();
 		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiledMember = member.compile(getScope());
+			IMember<E> compiledMember = member.compile(getScope());
 			if (compiledMember != null)
 				members.add(compiledMember);
 		}
@@ -73,7 +72,7 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeIn
 	{
 		super.compileMemberContents();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 	}
@@ -83,7 +82,7 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeIn
 	{
 		super.validate();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 	}

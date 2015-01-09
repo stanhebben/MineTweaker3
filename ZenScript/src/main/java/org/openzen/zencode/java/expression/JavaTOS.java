@@ -5,11 +5,11 @@
  */
 package org.openzen.zencode.java.expression;
 
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  * Special expression to indicate the top of stack.
@@ -18,9 +18,9 @@ import org.openzen.zencode.runtime.IAny;
  */
 public class JavaTOS extends AbstractJavaExpression
 {
-	private final IJavaType type;
+	private final TypeInstance<IJavaExpression> type;
 	
-	public JavaTOS(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaType type)
+	public JavaTOS(CodePosition position, IMethodScope<IJavaExpression> scope, TypeInstance<IJavaExpression> type)
 	{
 		super(position, scope);
 		
@@ -35,7 +35,7 @@ public class JavaTOS extends AbstractJavaExpression
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return type;
 	}

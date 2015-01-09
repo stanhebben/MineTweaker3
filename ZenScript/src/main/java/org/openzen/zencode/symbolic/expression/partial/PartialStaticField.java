@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.field.IField;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -21,14 +21,13 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class PartialStaticField<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractPartialExpression<E, T>
+public class PartialStaticField<E extends IPartialExpression<E>>
+	extends AbstractPartialExpression<E>
 {
-	private final IField<E, T> field;
+	private final IField<E> field;
 	
-	public PartialStaticField(CodePosition position, IMethodScope<E, T> scope, IField<E, T> field)
+	public PartialStaticField(CodePosition position, IMethodScope<E> scope, IField<E> field)
 	{
 		super(position, scope);
 		
@@ -48,44 +47,44 @@ public class PartialStaticField<E extends IPartialExpression<E, T>, T extends IT
 	}
 
 	@Override
-	public IPartialExpression<E, T> getMember(CodePosition position, String name)
+	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
 		return eval().getMember(position, name);
 	}
 
 	@Override
-	public List<IMethod<E, T>> getMethods()
+	public List<IMethod<E>> getMethods()
 	{
 		return field.getType().getInstanceMethods();
 	}
 	
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
+	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol()
+	public IZenSymbol<E> toSymbol()
 	{
-		return new SymbolStaticField<E, T>(field);
+		return new SymbolStaticField<E>(field);
 	}
 
 	@Override
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return field.getType();
 	}
 
 	@Override
-	public T toType(List<T> genericTypes)
+	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
 	{
 		getScope().getErrorLogger().errorNotAType(getPosition(), this);
 		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
+	public IPartialExpression<E> via(SymbolicFunction<E> function)
 	{
 		return this;
 	}

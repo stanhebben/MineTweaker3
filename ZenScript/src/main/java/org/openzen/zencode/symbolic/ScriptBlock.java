@@ -8,15 +8,13 @@ package org.openzen.zencode.symbolic;
 import java.util.List;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ScriptBlock<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class ScriptBlock<E extends IPartialExpression<E>>
 {
 	private final String filename;
 	private final List<ParsedStatement> sourceStatements;

@@ -15,34 +15,32 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class GetMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class GetMember<E extends IPartialExpression<E>> implements IMember<E>
 {
 	private final ParsedGetMember source;
-	private final IMethodScope<E, T> methodScope;
+	private final IMethodScope<E> methodScope;
 	private final int modifiers;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public GetMember(ParsedGetMember source, IDefinitionScope<E, T> unitScope)
+	public GetMember(ParsedGetMember source, IDefinitionScope<E> unitScope)
 	{
 		this.source = source;
-		MethodHeader<E, T> methodHeader = MethodHeader.noParameters(source.getAsType().compile(unitScope));
-		methodScope = new MethodScope<E, T>(unitScope, methodHeader);
+		MethodHeader<E> methodHeader = MethodHeader.noParameters(source.getAsType().compile(unitScope));
+		methodScope = new MethodScope<E>(unitScope, methodHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), unitScope.getErrorLogger());
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return methodScope.getDefinition();
 	}
@@ -69,7 +67,7 @@ public class GetMember<E extends IPartialExpression<E, T>, T extends ITypeInstan
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

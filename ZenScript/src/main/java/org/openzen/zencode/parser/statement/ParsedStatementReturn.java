@@ -14,7 +14,6 @@ import static org.openzen.zencode.lexer.ZenLexer.T_RETURN;
 import static org.openzen.zencode.lexer.ZenLexer.T_SEMICOLON;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -46,18 +45,18 @@ public class ParsedStatementReturn extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		Statement<E> compile(IMethodScope<E> scope)
 	{
-		return new StatementReturn<E, T>(
+		return new StatementReturn<E>(
 				getPosition(),
 				scope,
 				value == null ? null : value.compile(scope, scope.getReturnType()));
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

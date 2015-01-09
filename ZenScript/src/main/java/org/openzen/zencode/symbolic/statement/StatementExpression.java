@@ -5,14 +5,13 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.ExpressionFlowInstruction;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementExpression<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementExpression<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E expression;
 
-	public StatementExpression(CodePosition position, IMethodScope<E, T> environment, E expression)
+	public StatementExpression(CodePosition position, IMethodScope<E> environment, E expression)
 	{
 		super(position, environment);
 
@@ -25,14 +24,14 @@ public class StatementExpression<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onExpression(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
-		return next.prependInstruction(new ExpressionFlowInstruction<E, T>(expression));
+		return next.prependInstruction(new ExpressionFlowInstruction<E>(expression));
 	}
 }

@@ -8,24 +8,22 @@ package org.openzen.zencode.symbolic.statement.graph;
 import java.util.Map;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SwitchFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
+public class SwitchFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
 	private final E value;
-	private final FlowBlock<E, T> defaultBlock;
-	private final Map<E, FlowBlock<E, T>> caseBlocks;
+	private final FlowBlock<E> defaultBlock;
+	private final Map<E, FlowBlock<E>> caseBlocks;
 	
 	public SwitchFlowInstruction(
 			E value,
-			FlowBlock<E, T> defaultBlock,
-			Map<E, FlowBlock<E, T>> caseBlocks)
+			FlowBlock<E> defaultBlock,
+			Map<E, FlowBlock<E>> caseBlocks)
 	{
 		this.value = value;
 		this.defaultBlock = defaultBlock;
@@ -39,7 +37,7 @@ public class SwitchFlowInstruction<E extends IPartialExpression<E, T>, T extends
 	}
 
 	@Override
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
 		// Does the given type support enums?
 		if (!value.getType().isValidSwitchType())

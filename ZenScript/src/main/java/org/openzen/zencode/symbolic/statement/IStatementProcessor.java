@@ -6,44 +6,42 @@
 package org.openzen.zencode.symbolic.statement;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  * @param <U>
  */
-public interface IStatementProcessor<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>, U>
+public interface IStatementProcessor<E extends IPartialExpression<E>, U>
 {
-	public U onBlock(StatementBlock<E, T> statement);
+	public U onBlock(StatementBlock<E> statement);
 	
-	public U onBreak(StatementBreak<E, T> statement);
+	public U onBreak(StatementBreak<E> statement);
 	
-	public U onContinue(StatementContinue<E, T> statement);
+	public U onContinue(StatementContinue<E> statement);
 	
-	public U onDoWhile(StatementDoWhile<E, T> statement);
+	public U onDoWhile(StatementDoWhile<E> statement);
 	
-	public U onExpression(StatementExpression<E, T> statement);
+	public U onExpression(StatementExpression<E> statement);
 	
-	public U onForeach(StatementForeach<E, T> statement);
+	public U onForeach(StatementForeach<E> statement);
 	
-	public U onIf(StatementIf<E, T> statement);
+	public U onIf(StatementIf<E> statement);
 	
-	public U onEmpty(StatementNull<E, T> statement);
+	public U onEmpty(StatementNull<E> statement);
 	
-	public U onReturn(StatementReturn<E, T> statement);
+	public U onReturn(StatementReturn<E> statement);
 	
-	public U onSwitch(StatementSwitch<E, T> statement);
+	public U onSwitch(StatementSwitch<E> statement);
 	
-	public U onVar(StatementVar<E, T> statement);
+	public U onVar(StatementVar<E> statement);
 	
-	public U onWhile(StatementWhile<E, T> statement);
+	public U onWhile(StatementWhile<E> statement);
 	
-	public U onTryCatch(TryStatement<E, T> statement);
+	public U onTryCatch(TryStatement<E> statement);
 	
-	public U onThrow(ThrowStatement<E, T> statement);
+	public U onThrow(ThrowStatement<E> statement);
 	
-	public U onSynchronized(SynchronizedStatement<E, T> statement);
+	public U onSynchronized(SynchronizedStatement<E> statement);
 }

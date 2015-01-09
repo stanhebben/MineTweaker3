@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.field;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -15,19 +15,19 @@ import org.openzen.zencode.util.CodePosition;
  * @author Stan
  * @param <E>
  */
-public interface IField<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IField<E extends IPartialExpression<E>>
 {
-	public T getType();
+	public TypeInstance<E> getType();
 	
 	public boolean isFinal();
 	
 	public boolean isStatic();
 	
-	public E makeStaticGetExpression(CodePosition position, IMethodScope<E, T> scope);
+	public E makeStaticGetExpression(CodePosition position, IMethodScope<E> scope);
 	
-	public E makeStaticSetExpression(CodePosition position, IMethodScope<E, T> scope, E value);
+	public E makeStaticSetExpression(CodePosition position, IMethodScope<E> scope, E value);
 	
-	public E makeInstanceGetExpression(CodePosition position, IMethodScope<E, T> scope, E target);
+	public E makeInstanceGetExpression(CodePosition position, IMethodScope<E> scope, E target);
 	
-	public E makeInstanceSetExpression(CodePosition position, IMethodScope<E, T> scope, E target, E value);
+	public E makeInstanceSetExpression(CodePosition position, IMethodScope<E> scope, E target, E value);
 }

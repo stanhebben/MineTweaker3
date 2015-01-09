@@ -12,7 +12,6 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
 import org.openzen.zencode.symbolic.type.generic.ImplementsGenericParameterBound;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -31,8 +30,8 @@ public class ParsedGenericBoundImplements implements IParsedGenericBound {
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> IGenericParameterBound<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>> IGenericParameterBound<E> compile(IModuleScope<E> scope)
 	{
-		return new ImplementsGenericParameterBound<E, T>(this, scope);
+		return new ImplementsGenericParameterBound<E>(this, scope);
 	}
 }

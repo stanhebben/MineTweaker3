@@ -12,48 +12,46 @@ import org.openzen.zencode.parser.elements.IParsedGenericBound;
 import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class GenericParameter<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements ITypeVariable<E, T>
+public class GenericParameter<E extends IPartialExpression<E>> implements ITypeVariable<E>
 {
-	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
-		 List<GenericParameter<ES, TS>> compile(List<ParsedGenericParameter> parameters, IModuleScope<ES, TS> scope)
+	public static <ES extends IPartialExpression<ES>>
+		 List<GenericParameter<ES>> compile(List<ParsedGenericParameter> parameters, IModuleScope<ES> scope)
 	{
 		if (parameters.isEmpty())
 			return Collections.emptyList();
 		
-		List<GenericParameter<ES, TS>> result = new ArrayList<GenericParameter<ES, TS>>();
+		List<GenericParameter<ES>> result = new ArrayList<GenericParameter<ES>>();
 		for (ParsedGenericParameter parameter : parameters) {
-			result.add(new GenericParameter<ES, TS>(parameter, scope));
+			result.add(new GenericParameter<ES>(parameter, scope));
 		}
 		return result;
 	}
 	
 	private final ParsedGenericParameter source;
-	private final IModuleScope<E, T> scope;
+	private final IModuleScope<E> scope;
 	
 	private final CodePosition position;
 	private final String name;
-	private final List<IGenericParameterBound<E, T>> bounds;
+	private final List<IGenericParameterBound<E>> bounds;
 	
-	public GenericParameter(ParsedGenericParameter source, IModuleScope<E, T> scope)
+	public GenericParameter(ParsedGenericParameter source, IModuleScope<E> scope)
 	{
 		this.source = source;
 		this.scope = scope;
 		
 		this.position = source.getPosition();
 		this.name = source.getName();
-		this.bounds = new ArrayList<IGenericParameterBound<E, T>>();
+		this.bounds = new ArrayList<IGenericParameterBound<E>>();
 	}
 	
-	public GenericParameter(CodePosition position, String name, List<IGenericParameterBound<E, T>> bounds)
+	public GenericParameter(CodePosition position, String name, List<IGenericParameterBound<E>> bounds)
 	{
 		this.source = null;
 		this.scope = null;
@@ -64,12 +62,12 @@ public class GenericParameter<E extends IPartialExpression<E, T>, T extends ITyp
 	}
 
 	@Override
-	public List<IGenericParameterBound<E, T>> getBounds()
+	public List<IGenericParameterBound<E>> getBounds()
 	{
 		return bounds;
 	}
 	
-	public void completeMembers(IModuleScope<E, T> scope)
+	public void completeMembers(IModuleScope<E> scope)
 	{
 		if (source == null)
 			return;
@@ -79,9 +77,9 @@ public class GenericParameter<E extends IPartialExpression<E, T>, T extends ITyp
 		}
 	}
 	
-	public void completeContents(IModuleScope<E, T> scope)
+	public void completeContents(IModuleScope<E> scope)
 	{
-		for (IGenericParameterBound<E, T> bound : bounds) {
+		for (IGenericParameterBound<E> bound : bounds) {
 			bound.completeContents(scope.getConstantEnvironment());
 		}
 	}

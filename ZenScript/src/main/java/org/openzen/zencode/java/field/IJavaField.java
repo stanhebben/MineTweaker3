@@ -6,14 +6,13 @@
 package org.openzen.zencode.java.field;
 
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.field.IField;
 
 /**
  *
  * @author Stan
  */
-public interface IJavaField extends IField<IJavaExpression, IJavaType>
+public interface IJavaField extends IField<IJavaExpression>
 {
 	public String getInternalClassName();
 	

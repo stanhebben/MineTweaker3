@@ -7,7 +7,7 @@ package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  * Represents a parsed type.
@@ -16,6 +16,6 @@ import org.openzen.zencode.symbolic.type.ITypeInstance;
  */
 public interface IParsedType
 {
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> 
-		T compile(IModuleScope<E, T> environment);
+	public <E extends IPartialExpression<E>> 
+		TypeInstance<E> compile(IModuleScope<E> environment);
 }

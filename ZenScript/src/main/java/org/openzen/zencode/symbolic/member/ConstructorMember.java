@@ -16,48 +16,45 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ConstructorMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IMember<E, T>
+public class ConstructorMember<E extends IPartialExpression<E>> implements IMember<E>
 {	
 	private final ParsedConstructor source;
-	private final IMethodScope<E, T> methodScope;
+	private final IMethodScope<E> methodScope;
 	private final int modifiers;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public ConstructorMember(IDefinitionScope<E, T> scope, int modifiers, MethodHeader<E, T> header, Statement<E, T> contents)
+	public ConstructorMember(IDefinitionScope<E> scope, int modifiers, MethodHeader<E> header, Statement<E> contents)
 	{
 		source = null;
 		this.contents = contents;
-		methodScope = new MethodScope<E, T>(scope, header);
+		methodScope = new MethodScope<E>(scope, header);
 		this.modifiers = modifiers;
 	}
 	
-	public ConstructorMember(ParsedConstructor source, IDefinitionScope<E, T> scope)
+	public ConstructorMember(ParsedConstructor source, IDefinitionScope<E> scope)
 	{
 		this.source = source;
 		
-		MethodHeader<E, T> definedHeader = source.getSignature().compile(scope);
+		MethodHeader<E> definedHeader = source.getSignature().compile(scope);
 		if (definedHeader.getReturnType() != null)
 			scope.getErrorLogger().errorConstructorHasReturnType(definedHeader.getPosition());
 		
-		MethodHeader<E, T> actualHeader = new MethodHeader<E, T>(
+		MethodHeader<E> actualHeader = new MethodHeader<E>(
 				definedHeader.getPosition(),
 				definedHeader.getGenericParameters(),
 				scope.getTypeCompiler().getVoid(scope),
 				definedHeader.getParameters(),
 				definedHeader.isVarargs());
 		
-		methodScope = new MethodScope<E, T>(scope, actualHeader);
+		methodScope = new MethodScope<E>(scope, actualHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), scope.getErrorLogger());
 	}
 	
@@ -66,7 +63,7 @@ public class ConstructorMember<E extends IPartialExpression<E, T>, T extends ITy
 	// #################################
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return methodScope.getDefinition();
 	}
@@ -97,7 +94,7 @@ public class ConstructorMember<E extends IPartialExpression<E, T>, T extends ITy
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

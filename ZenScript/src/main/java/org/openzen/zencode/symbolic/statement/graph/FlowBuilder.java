@@ -10,35 +10,33 @@ import java.util.Map;
 import java.util.Stack;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class FlowBuilder<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class FlowBuilder<E extends IPartialExpression<E>>
 {
-	private final Stack<Statement<E, T>> loops;
-	private final Map<Statement<E, T>, FlowBlock<E, T>> breakLabels;
-	private final Map<Statement<E, T>, FlowBlock<E, T>> continueLabels;
+	private final Stack<Statement<E>> loops;
+	private final Map<Statement<E>, FlowBlock<E>> breakLabels;
+	private final Map<Statement<E>, FlowBlock<E>> continueLabels;
 	
 	public FlowBuilder()
 	{
-		loops = new Stack<Statement<E, T>>();
-		breakLabels = new HashMap<Statement<E, T>, FlowBlock<E, T>>();
-		continueLabels = new HashMap<Statement<E, T>, FlowBlock<E, T>>();
+		loops = new Stack<Statement<E>>();
+		breakLabels = new HashMap<Statement<E>, FlowBlock<E>>();
+		continueLabels = new HashMap<Statement<E>, FlowBlock<E>>();
 	}
 	
-	public void pushLoop(Statement<E, T> loop, FlowBlock<E, T> breakLabel, FlowBlock<E, T> continueLabel)
+	public void pushLoop(Statement<E> loop, FlowBlock<E> breakLabel, FlowBlock<E> continueLabel)
 	{
 		loops.push(loop);
 		breakLabels.put(loop, breakLabel);
 		continueLabels.put(loop, continueLabel);
 	}
 	
-	public void pushSwitch(Statement<E, T> loop, FlowBlock<E, T> breakLabel)
+	public void pushSwitch(Statement<E> loop, FlowBlock<E> breakLabel)
 	{
 		loops.push(loop);
 		breakLabels.put(loop, breakLabel);
@@ -49,18 +47,18 @@ public class FlowBuilder<E extends IPartialExpression<E, T>, T extends ITypeInst
 		loops.pop();
 	}
 	
-	public FlowBlock<E, T> getBreakLabel(Statement<E, T> label)
+	public FlowBlock<E> getBreakLabel(Statement<E> label)
 	{
 		return loops.isEmpty() ? createInvalidBlock() : breakLabels.get(label == null ? loops.peek() : label);
 	}
 	
-	public FlowBlock<E, T> getContinueLabel(Statement<E, T> label)
+	public FlowBlock<E> getContinueLabel(Statement<E> label)
 	{
 		return loops.isEmpty() ? createInvalidBlock() : breakLabels.get(label == null ? loops.peek() : label);
 	}
 	
-	private FlowBlock<E, T> createInvalidBlock()
+	private FlowBlock<E> createInvalidBlock()
 	{
-		return new FlowBlock<E, T>();
+		return new FlowBlock<E>();
 	}
 }

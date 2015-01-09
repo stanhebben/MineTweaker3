@@ -15,7 +15,6 @@ import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -51,38 +50,38 @@ public class ParsedStatementIf extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 Statement<E> compile(IMethodScope<E> scope)
 	{
 		IAny eval = condition.eval(scope.getEnvironment());
 		if (eval != null)
 			// compile-time variable
 			if (eval.asBool()) {
-				StatementBlockScope<E, T> ifScope = new StatementBlockScope<E, T>(scope);
+				StatementBlockScope<E> ifScope = new StatementBlockScope<E>(scope);
 				return onIf.compile(ifScope);
 			} else {
-				StatementBlockScope<E, T> elseScope = new StatementBlockScope<E, T>(scope);
+				StatementBlockScope<E> elseScope = new StatementBlockScope<E>(scope);
 				return onElse.compile(elseScope);
 			}
 		else {
 			// runtime variable
 			E compiledCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
-			StatementBlockScope<E, T> ifScope = new StatementBlockScope<E, T>(scope);
-			Statement<E, T> compiledIf = onIf.compile(ifScope);
-			Statement<E, T> compiledElse = null;
+			StatementBlockScope<E> ifScope = new StatementBlockScope<E>(scope);
+			Statement<E> compiledIf = onIf.compile(ifScope);
+			Statement<E> compiledElse = null;
 
 			if (onElse != null) {
-				StatementBlockScope<E, T> elseScope = new StatementBlockScope<E, T>(scope);
+				StatementBlockScope<E> elseScope = new StatementBlockScope<E>(scope);
 				compiledElse = onElse.compile(elseScope);
 			}
 
-			return new StatementIf<E, T>(getPosition(), scope, compiledCondition, compiledIf, compiledElse);
+			return new StatementIf<E>(getPosition(), scope, compiledCondition, compiledIf, compiledElse);
 		}
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

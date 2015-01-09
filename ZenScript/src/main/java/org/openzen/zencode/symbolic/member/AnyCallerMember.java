@@ -17,35 +17,33 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class AnyCallerMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class AnyCallerMember<E extends IPartialExpression<E>> implements IMember<E>
 {
 	private final ParsedAnyCaller source;
 	private final int modifiers;
-	private final IMethodScope<E, T> methodScope;
+	private final IMethodScope<E> methodScope;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public AnyCallerMember(ParsedAnyCaller source, IDefinitionScope<E, T> unitScope)
+	public AnyCallerMember(ParsedAnyCaller source, IDefinitionScope<E> unitScope)
 	{
 		this.source = source;
 		
-		MethodHeader<E, T> methodHeader = source.getSignature().compile(unitScope);
-		methodScope = new MethodScope<E, T>(unitScope, methodHeader);
+		MethodHeader<E> methodHeader = source.getSignature().compile(unitScope);
+		methodScope = new MethodScope<E>(unitScope, methodHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), unitScope.getErrorLogger());
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return methodScope.getDefinition();
 	}
@@ -61,9 +59,9 @@ public class AnyCallerMember<E extends IPartialExpression<E, T>, T extends IType
 	@SuppressWarnings("unchecked")
 	public void validate()
 	{
-		ITypeCompiler<E, T> types = methodScope.getTypeCompiler();
+		ITypeCompiler<E> types = methodScope.getTypeCompiler();
 		
-		MethodHeader<E, T> methodHeader = methodScope.getMethodHeader();
+		MethodHeader<E> methodHeader = methodScope.getMethodHeader();
 		if (!methodHeader.accepts(
 				methodScope,
 				types.getString(methodScope),
@@ -88,7 +86,7 @@ public class AnyCallerMember<E extends IPartialExpression<E, T>, T extends IType
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

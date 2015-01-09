@@ -8,27 +8,26 @@ package org.openzen.zencode.symbolic.symbols;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialLocal;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class SymbolLocal<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IZenSymbol<E, T>
+public class SymbolLocal<E extends IPartialExpression<E>> implements IZenSymbol<E>
 {
-	private final T type;
+	private final TypeInstance<E> type;
 	private final boolean isFinal;
 
-	public SymbolLocal(T type, boolean isFinal)
+	public SymbolLocal(TypeInstance<E> type, boolean isFinal)
 	{
 		this.type = type;
 		this.isFinal = isFinal;
 	}
 
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return type;
 	}
@@ -39,8 +38,8 @@ public class SymbolLocal<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> instance(CodePosition position, IMethodScope<E> environment)
 	{
-		return new PartialLocal<E, T>(position, environment, this);
+		return new PartialLocal<E>(position, environment, this);
 	}
 }

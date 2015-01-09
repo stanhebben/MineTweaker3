@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -71,20 +71,20 @@ public class ParsedFunctionSignature
 		this.returnType = returnType;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 MethodHeader<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 MethodHeader<E> compile(IModuleScope<E> scope)
 	{
-		T compiledReturnType = this.returnType.compile(scope);
-		List<MethodParameter<E, T>> compiledArguments = new ArrayList<MethodParameter<E, T>>();
+		TypeInstance<E> compiledReturnType = this.returnType.compile(scope);
+		List<MethodParameter<E>> compiledArguments = new ArrayList<MethodParameter<E>>();
 
 		for (ParsedFunctionParameter parameter : parameters) {
 			compiledArguments.add(parameter.compile(scope));
 		}
 		
-		List<GenericParameter<E, T>> genericParameters = GenericParameter.compile(generics, scope);
+		List<GenericParameter<E>> genericParameters = GenericParameter.compile(generics, scope);
 
 		boolean isVararg = !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
-		MethodHeader<E, T> result = new MethodHeader<E, T>(position, genericParameters, compiledReturnType, compiledArguments, isVararg);
+		MethodHeader<E> result = new MethodHeader<E>(position, genericParameters, compiledReturnType, compiledArguments, isVararg);
 		result.completeMembers(scope);
 		return result;
 	}
@@ -109,10 +109,10 @@ public class ParsedFunctionSignature
 		return !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 List<MethodParameter<E, T>> getCompiledArguments(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 List<MethodParameter<E>> getCompiledArguments(IModuleScope<E> scope)
 	{
-		List<MethodParameter<E, T>> result = new ArrayList<MethodParameter<E, T>>();
+		List<MethodParameter<E>> result = new ArrayList<MethodParameter<E>>();
 
 		for (ParsedFunctionParameter parameter : parameters) {
 			result.add(parameter.compile(scope));

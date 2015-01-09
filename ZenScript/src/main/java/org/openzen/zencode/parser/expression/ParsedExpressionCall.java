@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,12 +31,12 @@ public class ParsedExpressionCall extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
-		IPartialExpression<E, T> cReceiver = receiver.compilePartial(scope, null);
+		IPartialExpression<E> cReceiver = receiver.compilePartial(scope, null);
 
-		MatchedArguments<E, T> matchedArguments = arguments.compile(cReceiver.getMethods(), scope);
+		MatchedArguments<E> matchedArguments = arguments.compile(cReceiver.getMethods(), scope);
 		if (matchedArguments == null) {
 			if (cReceiver.getMethods().isEmpty())
 				scope.getErrorLogger().errorNotAValidMethod(getPosition());
@@ -46,7 +46,7 @@ public class ParsedExpressionCall extends ParsedExpression
 			return scope.getExpressionCompiler().invalid(getPosition(), scope);
 		}
 
-		IPartialExpression<E, T> result = cReceiver.call(getPosition(), matchedArguments.method, matchedArguments.arguments);
+		IPartialExpression<E> result = cReceiver.call(getPosition(), matchedArguments.method, matchedArguments.arguments);
 		if (asType != null)
 			result = result.cast(getPosition(), asType);
 		
@@ -54,7 +54,7 @@ public class ParsedExpressionCall extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		IAny receiverValue = receiver.eval(environment);
 		if (receiverValue == null)

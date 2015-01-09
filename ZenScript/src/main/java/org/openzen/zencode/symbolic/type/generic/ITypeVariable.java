@@ -8,15 +8,13 @@ package org.openzen.zencode.symbolic.type.generic;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface ITypeVariable<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> 
+public interface ITypeVariable<E extends IPartialExpression<E>> 
 {
-	public List<IGenericParameterBound<E, T>> getBounds();
+	public List<IGenericParameterBound<E>> getBounds();
 }

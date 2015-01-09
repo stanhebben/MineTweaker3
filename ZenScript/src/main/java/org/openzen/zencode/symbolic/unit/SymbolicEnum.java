@@ -13,34 +13,31 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractSymbolicDefinition<E, T>
+public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedEnum source;
 	private final String name;
 	private final List<EnumValue> values;
-	private final List<IMember<E, T>> members;
+	private final List<IMember<E>> members;
 	
-	public SymbolicEnum(ParsedEnum source, IModuleScope<E, T> moduleScope)
+	public SymbolicEnum(ParsedEnum source, IModuleScope<E> moduleScope)
 	{
 		super(source, moduleScope);
 		
 		this.source = source;
 		this.name = source.getName();
 		this.values = new ArrayList<EnumValue>();
-		this.members = new ArrayList<IMember<E, T>>();
+		this.members = new ArrayList<IMember<E>>();
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		for (IParsedMember member : source.getMembers()) {
 			member.collectInnerDefinitions(units, scope);
@@ -53,7 +50,7 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeIns
 		super.compileMembers();
 		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiledMember = member.compile(getScope());
+			IMember<E> compiledMember = member.compile(getScope());
 			if (compiledMember != null)
 				members.add(compiledMember);
 		}
@@ -68,7 +65,7 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeIns
 	{
 		super.compileMemberContents();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 		
@@ -82,7 +79,7 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeIns
 	{
 		super.validate();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 		
@@ -97,7 +94,7 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeIns
 		
 		private final String name;
 		
-		private IMethod<E, T> constructor;
+		private IMethod<E> constructor;
 		private List<E> arguments;
 		
 		public EnumValue(ParsedEnum.Value source)

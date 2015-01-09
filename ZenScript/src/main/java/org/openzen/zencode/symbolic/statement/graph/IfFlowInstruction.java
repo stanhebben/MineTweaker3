@@ -7,21 +7,20 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class IfFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
+public class IfFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
 	private final E condition;
-	private final FlowBlock<E, T> onIf;
-	private final FlowBlock<E, T> onElse;
+	private final FlowBlock<E> onIf;
+	private final FlowBlock<E> onElse;
 	
-	public IfFlowInstruction(E condition, FlowBlock<E, T> onIf, FlowBlock<E, T> onElse)
+	public IfFlowInstruction(E condition, FlowBlock<E> onIf, FlowBlock<E> onElse)
 	{
 		this.condition = condition;
 		this.onIf = onIf;
@@ -35,9 +34,9 @@ public class IfFlowInstruction<E extends IPartialExpression<E, T>, T extends ITy
 	}
 
 	@Override
-	public void validate(IMethodScope<E, T> scope)
+	public void validate(IMethodScope<E> scope)
 	{
-		T type = condition.getType();
+		TypeInstance<E> type = condition.getType();
 		if (!type.canCastImplicit(scope.getTypeCompiler().getBool(scope)))
 			scope.getErrorLogger().errorCannotCastImplicit(condition.getPosition(), type, scope.getTypeCompiler().getBool(scope));
 	}

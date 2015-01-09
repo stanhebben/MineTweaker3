@@ -10,7 +10,7 @@ import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,15 +31,15 @@ public class ParsedExpressionUnary extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType)
 	{
 		E cValue = value.compile(environment, predictedType);
 		return cValue.getType().unary(getPosition(), environment, operator, cValue);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		IAny valueValue = value.eval(environment);
 		if (valueValue == null)

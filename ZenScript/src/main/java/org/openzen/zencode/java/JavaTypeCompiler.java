@@ -18,13 +18,14 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.java.type.TypeVariableNative;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaType>
+public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression>
 {
 	private final IJavaScopeGlobal scope;
 	
@@ -33,7 +34,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 		this.scope = scope;
 	}
 	
-	public IJavaType getNativeType(CodePosition position, Type type, TypeCapture<IJavaExpression, IJavaType> capture)
+	public TypeInstance<IJavaExpression> getNativeType(CodePosition position, Type type, TypeCapture<IJavaExpression> capture)
 	{
 		if (type instanceof ParameterizedType)
 			return getParameterizedType(position, (ParameterizedType) type, capture);
@@ -45,7 +46,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 			throw new RuntimeException("Could not convert native type: " + type);
 	}
 	
-	private IJavaType getParameterizedType(CodePosition position, ParameterizedType type, TypeCapture<IJavaExpression, IJavaType> capture)
+	private TypeInstance<IJavaExpression> getParameterizedType(CodePosition position, ParameterizedType type, TypeCapture<IJavaExpression> capture)
 	{
 		Type raw = type.getRawType();
 		if (raw instanceof Class) {
@@ -65,7 +66,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 			return getNativeType(position, raw, capture);
 	}
 	
-	private IJavaType getTypeVariableType(CodePosition position, TypeVariable<?> type, TypeCapture<IJavaExpression, IJavaType> capture)
+	private TypeInstance<IJavaExpression> getTypeVariableType(CodePosition position, TypeVariable<?> type, TypeCapture<IJavaExpression> capture)
 	{
 		for (Type t : type.getBounds()) {
 			return getNativeType(position, t, capture);
@@ -74,7 +75,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 		return getNativeType(position, Object.class, capture);
 	}
 
-	public IJavaType getInstancedNativeType(CodePosition position, Type type, List<IJavaType> genericTypes, TypeCapture<IJavaExpression, IJavaType> capture)
+	public TypeInstance<IJavaExpression> getInstancedNativeType(CodePosition position, Type type, List<TypeInstance<IJavaExpression>> genericTypes, TypeCapture<IJavaExpression> capture)
 	{
 		if (type instanceof ParameterizedType) {
 			ParameterizedType pType = (ParameterizedType) type;
@@ -89,7 +90,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 				else {
 					Type[] parameters = pType.getActualTypeArguments();
 					TypeVariable<?>[] typeVariables = rawCls.getTypeParameters();
-					TypeCapture<IJavaExpression, IJavaType> newCapture = new TypeCapture<IJavaExpression, IJavaType>(capture);
+					TypeCapture<IJavaExpression> newCapture = new TypeCapture<IJavaExpression>(capture);
 					for (int i = 0; i < parameters.length; i++) {
 						newCapture.put(new TypeVariableNative(
 								typeVariables[i]),
@@ -110,9 +111,9 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 				return getNativeType(position, type, capture);
 			}
 
-			TypeCapture<IJavaExpression, IJavaType> newCapture = new TypeCapture<IJavaExpression, IJavaType>(capture);
+			TypeCapture<IJavaExpression> newCapture = new TypeCapture<IJavaExpression>(capture);
 			for (int i = 0; i < typeVariables.length; i++) {
-				newCapture.put(new TypeVariableNative(typeVariables[i]), genericTypes.get(i));
+				newCapture.put(new TypeVariableNative<IJavaExpression>(typeVariables[i]), genericTypes.get(i));
 			}
 
 			return getNativeClassType(position, cls, newCapture);
@@ -124,14 +125,14 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 	// ### Private methods ###
 	// #######################
 	
-	private final Map<Class<?>, IJavaType> nativeTypes = new HashMap<Class<?>, IJavaType>();
+	private final Map<Class<?>, TypeInstance<IJavaExpression>> nativeTypes = new HashMap<Class<?>, TypeInstance<IJavaExpression>>();
 	
-	private IJavaType getNativeClassType(CodePosition position, Class<?> cls, TypeCapture<IJavaExpression, IJavaType> capture)
+	private TypeInstance<IJavaExpression> getNativeClassType(CodePosition position, Class<?> cls, TypeCapture<IJavaExpression> capture)
 	{
 		if (nativeTypes.containsKey(cls))
 			return nativeTypes.get(cls);
 		else if (cls.isArray()) {
-			IJavaType result = getArray(getNativeType(position, cls.getComponentType(), capture));
+			TypeInstance<IJavaExpression> result = getArray(getNativeType(position, cls.getComponentType(), capture));
 			nativeTypes.put(cls, result);
 			return result;
 		} else {
@@ -144,20 +145,20 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 		}
 	}
 
-	private IJavaType getListType(ParameterizedType type)
+	private TypeInstance<IJavaExpression> getListType(ParameterizedType type)
 	{
 		if (type.getRawType() == List.class)
-			return getArray(getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.<IJavaExpression, IJavaType>empty()));
+			return getArray(getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.<IJavaExpression>empty()));
 
 		return null;
 	}
 
-	private IJavaType getMapType(ParameterizedType type)
+	private TypeInstance<IJavaExpression> getMapType(ParameterizedType type)
 	{
 		if (type.getRawType() == Map.class)
 			return getMap(
-					getNativeType(null, type.getActualTypeArguments()[1], TypeCapture.<IJavaExpression, IJavaType>empty()),
-					getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.<IJavaExpression, IJavaType>empty()));
+					getNativeType(null, type.getActualTypeArguments()[1], TypeCapture.<IJavaExpression>empty()),
+					getNativeType(null, type.getActualTypeArguments()[0], TypeCapture.<IJavaExpression>empty()));
 
 		return null;
 	}
@@ -167,7 +168,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 	// ####################################
 	
 	@Override
-	public IJavaType getAny()
+	public TypeInstance<IJavaExpression> getAny()
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

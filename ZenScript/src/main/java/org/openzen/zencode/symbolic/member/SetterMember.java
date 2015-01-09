@@ -15,40 +15,38 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SetterMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
+public class SetterMember<E extends IPartialExpression<E>> implements IMember<E>
 {
-	private final IDefinitionScope<E, T> unitScope;
+	private final IDefinitionScope<E> unitScope;
 	private final ParsedSetMember source;
-	private final MethodHeader<E, T> methodHeader;
-	private final IMethodScope<E, T> methodScope;
+	private final MethodHeader<E> methodHeader;
+	private final IMethodScope<E> methodScope;
 	private final int modifiers;
 	
-	private Statement<E, T> contents;
-	private List<SymbolicAnnotation<E, T>> annotations;
+	private Statement<E> contents;
+	private List<SymbolicAnnotation<E>> annotations;
 	
-	public SetterMember(ParsedSetMember source, IDefinitionScope<E, T> scope)
+	public SetterMember(ParsedSetMember source, IDefinitionScope<E> scope)
 	{
 		this.source = source;
 		this.unitScope = scope;
-		methodHeader = MethodHeader.<E, T>singleParameter(
+		methodHeader = MethodHeader.<E>singleParameter(
 				scope.getTypeCompiler().getVoid(scope),
 				"value",
 				source.getAsType().compile(scope));
-		methodScope = new MethodScope<E, T>(unitScope, methodHeader);
+		methodScope = new MethodScope<E>(unitScope, methodHeader);
 		modifiers = Modifier.compileModifiers(source.getModifiers(), scope.getErrorLogger());
 	}
 
 	@Override
-	public ISymbolicDefinition<E, T> getUnit()
+	public ISymbolicDefinition<E> getUnit()
 	{
 		return unitScope.getDefinition();
 	}
@@ -74,7 +72,7 @@ public class SetterMember<E extends IPartialExpression<E, T>, T extends ITypeIns
 	}
 
 	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
+	public List<SymbolicAnnotation<E>> getAnnotations()
 	{
 		return annotations;
 	}

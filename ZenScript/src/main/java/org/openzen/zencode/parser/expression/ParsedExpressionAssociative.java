@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyAssociative;
 import org.openzen.zencode.runtime.AnyNull;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
@@ -41,14 +41,14 @@ public class ParsedExpressionAssociative extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-			IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
+	public <E extends IPartialExpression<E>>
+			IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
 		if (asType != null && asType.isStruct())
 			return compileAsStruct(scope, asType);
 		
-		ICastingRule<E, T> castingRule = null;
-		T mapType;
+		ICastingRule<E> castingRule = null;
+		TypeInstance<E> mapType;
 		
 		if (asType != null && asType.getMapKeyType() != null)
 			mapType = asType;
@@ -85,7 +85,7 @@ public class ParsedExpressionAssociative extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		Map<IAny, IAny> map = new HashMap<IAny, IAny>();
 		for (int i = 0; i < keys.size(); i++) {
@@ -109,8 +109,8 @@ public class ParsedExpressionAssociative extends ParsedExpression
 		return new AnyAssociative(map);
 	}
 	
-	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-			IPartialExpression<E, T> compileAsStruct(IMethodScope<E, T> scope, T asType)
+	private <E extends IPartialExpression<E>>
+			IPartialExpression<E> compileAsStruct(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
 		List<ParsedCallArgument> arguments = new ArrayList<ParsedCallArgument>();
 		for (int i = 0; i < keys.size(); i++) {
@@ -126,7 +126,7 @@ public class ParsedExpressionAssociative extends ParsedExpression
 		}
 		
 		ParsedCallArguments allArguments = new ParsedCallArguments(arguments);
-		MatchedArguments<E, T> compiledArguments = allArguments.compile(asType.getConstructors(), scope);
+		MatchedArguments<E> compiledArguments = allArguments.compile(asType.getConstructors(), scope);
 		return compiledArguments.method.callStatic(getPosition(), scope, compiledArguments.arguments);
 	}
 }

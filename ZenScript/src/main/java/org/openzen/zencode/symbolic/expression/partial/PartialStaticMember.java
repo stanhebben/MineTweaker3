@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.member.IGetter;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -23,29 +23,28 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		extends AbstractPartialExpression<E, T>
+public class PartialStaticMember<E extends IPartialExpression<E>>
+		extends AbstractPartialExpression<E>
 {
-	private final T target;
+	private final TypeInstance<E> target;
 
 	private final String name;
 
-	private IGetter<E, T> getter;
-	private ISetter<E, T> setter;
-	private final List<IMethod<E, T>> methods;
+	private IGetter<E> getter;
+	private ISetter<E> setter;
+	private final List<IMethod<E>> methods;
 
-	public PartialStaticMember(CodePosition position, IMethodScope<E, T> scope, T target, String name)
+	public PartialStaticMember(CodePosition position, IMethodScope<E> scope, TypeInstance<E> target, String name)
 	{
 		super(position, scope);
 
 		this.target = target;
 		this.name = name;
-		this.methods = new ArrayList<IMethod<E, T>>();
+		this.methods = new ArrayList<IMethod<E>>();
 	}
 
-	private PartialStaticMember(CodePosition position, IMethodScope<E, T> scope, PartialStaticMember<E, T> original)
+	private PartialStaticMember(CodePosition position, IMethodScope<E> scope, PartialStaticMember<E> original)
 	{
 		super(position, scope);
 
@@ -54,7 +53,7 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 		this.methods = original.methods;
 	}
 
-	public T getTarget()
+	public TypeInstance<E> getTarget()
 	{
 		return target;
 	}
@@ -64,17 +63,17 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 		return name;
 	}
 
-	public void setGetter(IGetter<E, T> getter)
+	public void setGetter(IGetter<E> getter)
 	{
 		this.getter = getter;
 	}
 
-	public void setSetter(ISetter<E, T> setter)
+	public void setSetter(ISetter<E> setter)
 	{
 		this.setter = setter;
 	}
 
-	public void addMethod(IMethod<E, T> method)
+	public void addMethod(IMethod<E> method)
 	{
 		methods.add(method);
 	}
@@ -84,9 +83,9 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 		return getter == null && setter == null && methods.isEmpty();
 	}
 
-	public PartialStaticMember<E, T> makeVariant(CodePosition position, IMethodScope<E, T> scope)
+	public PartialStaticMember<E> makeVariant(CodePosition position, IMethodScope<E> scope)
 	{
-		return new PartialStaticMember<E, T>(position, scope, this);
+		return new PartialStaticMember<E>(position, scope, this);
 	}
 
 	@Override
@@ -108,7 +107,7 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public IPartialExpression<E, T> getMember(CodePosition position, String name)
+	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
 		if (getter == null)
 			throw new UnsupportedOperationException("This member is not a property or not readable");
@@ -117,25 +116,25 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
+	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
 	{
 		return method.callStatic(getPosition(), getScope(), arguments);
 	}
 
 	@Override
-	public List<IMethod<E, T>> getMethods()
+	public List<IMethod<E>> getMethods()
 	{
 		return methods;
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol()
+	public IZenSymbol<E> toSymbol()
 	{
-		return new MemberStaticSymbol<E, T>(this);
+		return new MemberStaticSymbol<E>(this);
 	}
 
 	@Override
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		if (getter == null)
 			return null;
@@ -144,13 +143,13 @@ public class PartialStaticMember<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public T toType(List<T> genericTypes)
+	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
 	{
 		return null;
 	}
 
 	@Override
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
+	public IPartialExpression<E> via(SymbolicFunction<E> function)
 	{
 		return this;
 	}

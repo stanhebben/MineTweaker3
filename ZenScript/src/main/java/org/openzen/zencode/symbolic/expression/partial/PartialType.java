@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolType;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -22,65 +22,68 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class PartialType<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractPartialExpression<E, T>
+public class PartialType<E extends IPartialExpression<E>> extends AbstractPartialExpression<E>
 {
-	private final T type;
+	private final TypeInstance<E> type;
 	
-	public PartialType(CodePosition position, IMethodScope<E, T> scope, T type) {
+	public PartialType(CodePosition position, IMethodScope<E> scope, TypeInstance<E> type)
+	{
 		super(position, scope);
 		
 		this.type = type;
 	}
 
 	@Override
-	public E eval() {
+	public E eval()
+	{
 		getScope().getErrorLogger().errorInvalidExpression(getPosition(), this);
 		return getScope().getExpressionCompiler().invalid(getPosition(), getScope(), type);
 	}
 
 	@Override
-	public E assign(CodePosition position, E value) {
+	public E assign(CodePosition position, E value)
+	{
 		getScope().getErrorLogger().errorCannotAssignTo(position, this);
 		return getScope().getExpressionCompiler().invalid(position, getScope(), type);
 	}
 
 	@Override
-	public IPartialExpression<E, T> getMember(CodePosition position, String name)
+	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
 		return type.getStaticMember(position, getScope(), name);
 	}
 
 	@Override
-	public E call(CodePosition position, IMethod<E, T> method, List<E> arguments) {
+	public E call(CodePosition position, IMethod<E> method, List<E> arguments)
+	{
 		getScope().getErrorLogger().errorCannotCall(position, this);
 		return getScope().getExpressionCompiler().invalid(position, getScope(), method.getReturnType());
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol() {
-		return new SymbolType<E, T>(type);
+	public IZenSymbol<E> toSymbol()
+	{
+		return new SymbolType<E>(type);
 	}
 	
 	@Override
-	public T getType() {
+	public TypeInstance<E> getType() {
 		return null; // not an expression
 	}
 
 	@Override
-	public T toType(List<T> genericTypes) {
+	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes) {
 		return type;
 	}
 
 	@Override
-	public List<IMethod<E, T>> getMethods() {
+	public List<IMethod<E>> getMethods() {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function) {
+	public IPartialExpression<E> via(SymbolicFunction<E> function) {
 		return this;
 	}
 

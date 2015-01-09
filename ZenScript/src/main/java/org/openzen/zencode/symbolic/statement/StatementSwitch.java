@@ -14,31 +14,30 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.SwitchFlowInstruction;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class StatementSwitch<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementSwitch<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E value;
-	private final List<Statement<E, T>> contents = new ArrayList<Statement<E, T>>();
+	private final List<Statement<E>> contents = new ArrayList<Statement<E>>();
 	private final List<E> caseValues = new ArrayList<E>();
 	private final List<Integer> caseLabels = new ArrayList<Integer>();
 	private int defaultLabel = -1;
 	
-	public StatementSwitch(CodePosition position, IMethodScope<E, T> scope, E value)
+	public StatementSwitch(CodePosition position, IMethodScope<E> scope, E value)
 	{
 		super(position, scope);
 
 		this.value = value;
 	}
 	
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return value.getType();
 	}
@@ -61,28 +60,28 @@ public class StatementSwitch<E extends IPartialExpression<E, T>, T extends IType
 			defaultLabel = contents.size();
 	}
 
-	public void onStatement(Statement<E, T> statement)
+	public void onStatement(Statement<E> statement)
 	{
 		contents.add(statement);
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onSwitch(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
 		builder.pushSwitch(this, next);
 		
-		FlowBlock<E, T> switchBlock = new FlowBlock<E, T>();
+		FlowBlock<E> switchBlock = new FlowBlock<E>();
 		
 		int caseIndex = caseLabels.size() - 1;
-		Map<E, FlowBlock<E, T>> caseBlocks = new HashMap<E, FlowBlock<E, T>>();
-		FlowBlock<E, T> currentFlowBlock = new FlowBlock<E, T>();
-		FlowBlock<E, T> defaultFlowBlock = next;
+		Map<E, FlowBlock<E>> caseBlocks = new HashMap<E, FlowBlock<E>>();
+		FlowBlock<E> currentFlowBlock = new FlowBlock<E>();
+		FlowBlock<E> defaultFlowBlock = next;
 		
 		for (int i = contents.size() - 1; i >= 0; i--) {
 			
@@ -102,7 +101,7 @@ public class StatementSwitch<E extends IPartialExpression<E, T>, T extends IType
 		
 		builder.pop();
 		
-		return switchBlock.prependInstruction(new SwitchFlowInstruction<E, T>(
+		return switchBlock.prependInstruction(new SwitchFlowInstruction<E>(
 				value,
 				defaultFlowBlock,
 				caseBlocks));

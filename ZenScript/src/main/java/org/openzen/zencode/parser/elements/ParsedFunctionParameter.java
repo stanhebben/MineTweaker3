@@ -11,7 +11,7 @@ import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -80,11 +80,11 @@ public class ParsedFunctionParameter
 		return vararg;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 MethodParameter<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 MethodParameter<E> compile(IModuleScope<E> scope)
 	{
-		T cType = type.compile(scope);
+		TypeInstance<E> cType = type.compile(scope);
 		E compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getConstantEnvironment(), cType);
-		return new MethodParameter<E, T>(position, name, cType, compiledDefaultValue);
+		return new MethodParameter<E>(position, name, cType, compiledDefaultValue);
 	}
 }

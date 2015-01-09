@@ -9,19 +9,18 @@ package org.openzen.zencode.symbolic.scope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface IMethodScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends IDefinitionScope<E, T>
+public interface IMethodScope<E extends IPartialExpression<E>> extends IDefinitionScope<E>
 {
-	public Statement<E, T> getControlStatement(String label);
+	public Statement<E> getControlStatement(String label);
 	
-	public MethodHeader<E, T> getMethodHeader();
+	public MethodHeader<E> getMethodHeader();
 	
-	public T getReturnType();
+	public TypeInstance<E> getReturnType();
 }

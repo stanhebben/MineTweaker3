@@ -6,7 +6,6 @@
 package org.openzen.zencode.java.expression;
 
 import org.objectweb.asm.Label;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.java.util.MethodOutput;
 
@@ -14,7 +13,7 @@ import org.openzen.zencode.java.util.MethodOutput;
  *
  * @author Stan
  */
-public interface IJavaExpression extends IPartialExpression<IJavaExpression, IJavaType>
+public interface IJavaExpression extends IPartialExpression<IJavaExpression>
 {
 	public void compile(boolean pushResult, MethodOutput method);
 	

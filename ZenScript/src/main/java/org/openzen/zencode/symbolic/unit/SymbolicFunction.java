@@ -21,58 +21,57 @@ import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicFunction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends AbstractSymbolicDefinition<E, T>
+public class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedFunction source;
 	
 	private final CodePosition position;
-	private final SymbolLocal<E, T> localThis;
-	private final T type;
+	private final SymbolLocal<E> localThis;
+	private final TypeInstance<E> type;
 	private final String generatedClassName;
-	private Statement<E, T> content;
+	private Statement<E> content;
 	
-	private final IMethodScope<E, T> methodScope;
+	private final IMethodScope<E> methodScope;
 
-	private final Map<SymbolLocal<E, T>, Capture<E, T>> captured = new HashMap<SymbolLocal<E, T>, Capture<E, T>>();
+	private final Map<SymbolLocal<E>, Capture<E>> captured = new HashMap<SymbolLocal<E>, Capture<E>>();
 
-	public SymbolicFunction(CodePosition position, int modifiers, MethodHeader<E, T> header, IModuleScope<E, T> scope)
+	public SymbolicFunction(CodePosition position, int modifiers, MethodHeader<E> header, IModuleScope<E> scope)
 	{
-		super(modifiers, Collections.<SymbolicAnnotation<E, T>>emptyList(), scope);
+		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), scope);
 		
 		source = null;
-		methodScope = new MethodScope<E, T>(getScope(), header);
+		methodScope = new MethodScope<E>(getScope(), header);
 		
 		this.position = position;
 		this.type = scope.getTypeCompiler().getFunction(methodScope, header);
 		generatedClassName = header.getReturnType().getScope().makeClassName();
 		
-		localThis = new SymbolLocal<E, T>(type, true);
+		localThis = new SymbolLocal<E>(type, true);
 	}
 	
-	public SymbolicFunction(ParsedFunction source, IModuleScope<E, T> scope)
+	public SymbolicFunction(ParsedFunction source, IModuleScope<E> scope)
 	{
 		super(source, scope);
 		
 		this.source = source;
 		position = source.getPosition();
-		MethodHeader<E, T> header = source.getSignature().compile(getScope());
-		methodScope = new MethodScope<E, T>(getScope(), header);
+		MethodHeader<E> header = source.getSignature().compile(getScope());
+		methodScope = new MethodScope<E>(getScope(), header);
 		type = scope.getTypeCompiler().getFunction(getScope(), header);
 		generatedClassName = header.getReturnType().getScope().makeClassName();
 		
-		localThis = new SymbolLocal<E, T>(type, true);
+		localThis = new SymbolLocal<E>(type, true);
 	}
 	
-	public final IMethodScope<E, T> getMethodScope()
+	public final IMethodScope<E> getMethodScope()
 	{
 		return methodScope;
 	}
@@ -109,20 +108,20 @@ public class SymbolicFunction<E extends IPartialExpression<E, T>, T extends ITyp
 		classScope.putClass(generatedClassName, classWriter.toByteArray());
 	}*/
 
-	public MethodHeader<E, T> getHeader()
+	public MethodHeader<E> getHeader()
 	{
 		return type.getFunctionHeader();
 	}
 
-	public IPartialExpression<E, T> addCapture(CodePosition position, IMethodScope<E, T> scope, SymbolLocal<E, T> local)
+	public IPartialExpression<E> addCapture(CodePosition position, IMethodScope<E> scope, SymbolLocal<E> local)
 	{
 		if (!captured.containsKey(local)) {
-			FieldMember<E, T> field = new FieldMember<E, T>(
+			FieldMember<E> field = new FieldMember<E>(
 					getScope(),
 					Modifier.PRIVATE.getCode() | Modifier.FINAL.getCode(),
 					"__capture" + captured.size(),
 					local.getType());
-			captured.put(local, new Capture<E, T>(local, field));
+			captured.put(local, new Capture<E>(local, field));
 		}
 
 		//return new ExpressionGetInstanceField(position, scope, scope.getExpressionCompiler().localGet(position, scope, localThis), captured.get(local).field);
@@ -130,7 +129,7 @@ public class SymbolicFunction<E extends IPartialExpression<E, T>, T extends ITyp
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		
 	}
@@ -153,17 +152,17 @@ public class SymbolicFunction<E extends IPartialExpression<E, T>, T extends ITyp
 	}
 
 	@Override
-	public List<? extends ITypeVariable<E, T>> getTypeVariables()
+	public List<? extends ITypeVariable<E>> getTypeVariables()
 	{
 		return methodScope.getMethodHeader().getGenericParameters();
 	}
 	
-	private static class Capture<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+	private static class Capture<E extends IPartialExpression<E>>
 	{
-		private final SymbolLocal<E, T> local;
-		private final FieldMember<E, T> field;
+		private final SymbolLocal<E> local;
+		private final FieldMember<E> field;
 
-		public Capture(SymbolLocal<E, T> local, FieldMember<E, T> field)
+		public Capture(SymbolLocal<E> local, FieldMember<E> field)
 		{
 			this.local = local;
 			this.field = field;

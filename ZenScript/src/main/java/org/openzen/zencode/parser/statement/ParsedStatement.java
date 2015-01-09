@@ -14,7 +14,6 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -23,7 +22,7 @@ import org.openzen.zencode.util.CodePosition;
  */
 public abstract class ParsedStatement
 {
-	public static ParsedStatement parse(String value, ICodeErrorLogger<?, ?> errorLogger)
+	public static ParsedStatement parse(String value, ICodeErrorLogger<?> errorLogger)
 	{
 		try {
 			return parse(new ZenLexer(errorLogger, value));
@@ -102,9 +101,9 @@ public abstract class ParsedStatement
 		return position;
 	}
 
-	public abstract <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope);
+	public abstract <E extends IPartialExpression<E>>
+		 Statement<E> compile(IMethodScope<E> scope);
 
-	public abstract <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch);
+	public abstract <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch);
 }

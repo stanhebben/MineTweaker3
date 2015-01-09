@@ -22,7 +22,6 @@ import org.openzen.zencode.symbolic.ScriptBlock;
 import org.openzen.zencode.symbolic.SymbolicModule;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IGlobalScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -32,13 +31,13 @@ public class ParsedModule
 {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	private final ICodeErrorLogger<?, ?> errorLogger;
+	private final ICodeErrorLogger<?> errorLogger;
 	private final IFileLoader fileLoader;
 	private final String name;
 	private final List<ParsedFile> files;
 
 	public ParsedModule(
-			ICodeErrorLogger<?, ?> errorLogger,
+			ICodeErrorLogger<?> errorLogger,
 			IFileLoader fileLoader,
 			String name)
 	{
@@ -48,7 +47,7 @@ public class ParsedModule
 		this.files = new ArrayList<ParsedFile>();
 	}
 
-	public ICodeErrorLogger<?, ?> getErrorLogger()
+	public ICodeErrorLogger<?> getErrorLogger()
 	{
 		return errorLogger;
 	}
@@ -87,9 +86,9 @@ public class ParsedModule
 		return files;
 	}
 	
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> SymbolicModule<E, T> compileDefinitions(IGlobalScope<E, T> global)
+	public <E extends IPartialExpression<E>> SymbolicModule<E> compileDefinitions(IGlobalScope<E> global)
 	{
-		SymbolicModule<E, T> symbolicModule = new SymbolicModule<E, T>(global);
+		SymbolicModule<E> symbolicModule = new SymbolicModule<E>(global);
 		
 		for (ParsedFile file : files) {
 			for (IParsedDefinition definition : file.getDefinitions()) {
@@ -97,7 +96,7 @@ public class ParsedModule
 			}
 			
 			if (!file.getStatements().isEmpty()) {
-				symbolicModule.addScript(new ScriptBlock<E, T>(file.getFileName(), file.getStatements()));
+				symbolicModule.addScript(new ScriptBlock<E>(file.getFileName(), file.getStatements()));
 			}
 		}
 		

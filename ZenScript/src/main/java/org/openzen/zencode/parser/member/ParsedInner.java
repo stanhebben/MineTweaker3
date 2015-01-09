@@ -11,7 +11,6 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -28,16 +27,16 @@ public class ParsedInner implements IParsedMember
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>> void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
-		ISymbolicDefinition<E, T> compiled = unit.compile(scope);
+		ISymbolicDefinition<E> compiled = unit.compile(scope);
 		units.add(compiled);
 		
 		compiled.collectInnerDefinitions(units, scope);
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> IMember<E, T> compile(IDefinitionScope<E, T> scope)
+	public <E extends IPartialExpression<E>> IMember<E> compile(IDefinitionScope<E> scope)
 	{
 		return null;
 	}

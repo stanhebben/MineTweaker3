@@ -16,7 +16,6 @@ import org.objectweb.asm.Opcodes;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenClassLoader;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.parser.IFileLoader;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.symbolic.SymbolicModule;
@@ -32,10 +31,10 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 public class JavaCompiler
 {
 	private final List<ParsedModule> modules;
-	private final IGlobalScope<IJavaExpression, IJavaType> global;
+	private final IGlobalScope<IJavaExpression> global;
 	private File debugOutputDirectory;
 
-	public JavaCompiler(IGlobalScope<IJavaExpression, IJavaType> global)
+	public JavaCompiler(IGlobalScope<IJavaExpression> global)
 	{
 		modules = new ArrayList<ParsedModule>();
 		this.global = global;
@@ -61,35 +60,35 @@ public class JavaCompiler
 		modules.add(module);
 	}
 
-	public IZenCompileEnvironment<IJavaExpression, IJavaType> getCompileEnvironment()
+	public IZenCompileEnvironment<IJavaExpression> getCompileEnvironment()
 	{
 		return global.getEnvironment();
 	}
 
 	public Runnable compile()
 	{
-		List<SymbolicModule<IJavaExpression, IJavaType>> symbolicModules = new ArrayList<SymbolicModule<IJavaExpression, IJavaType>>();
+		List<SymbolicModule<IJavaExpression>> symbolicModules = new ArrayList<SymbolicModule<IJavaExpression>>();
 		for (ParsedModule module : modules) {
 			symbolicModules.add(module.compileDefinitions(global));
 		}
 
-		for (SymbolicModule<IJavaExpression, IJavaType> symbolicModule : symbolicModules) {
+		for (SymbolicModule<IJavaExpression> symbolicModule : symbolicModules) {
 			symbolicModule.compileMembers();
 		}
 
-		for (SymbolicModule<IJavaExpression, IJavaType> symbolicModule : symbolicModules) {
+		for (SymbolicModule<IJavaExpression> symbolicModule : symbolicModules) {
 			symbolicModule.compileMembers();
 		}
 		
-		for (SymbolicModule<IJavaExpression, IJavaType> symbolicModule : symbolicModules) {
+		for (SymbolicModule<IJavaExpression> symbolicModule : symbolicModules) {
 			symbolicModule.validate();
 		}
 		
 		// everything is compiled to symbolic level and validated... now to compile it to java bytecode!
 		
-		for (SymbolicModule<IJavaExpression, IJavaType> symbolicModule : symbolicModules) {
-			for (ISymbolicDefinition<IJavaExpression, IJavaType> definition : symbolicModule.getDefinitions()) {
-				
+		for (SymbolicModule<IJavaExpression> symbolicModule : symbolicModules) {
+			for (ISymbolicDefinition<IJavaExpression> definition : symbolicModule.getDefinitions()) {
+				// TODO: complete this
 			}
 		}
 
@@ -107,7 +106,7 @@ public class JavaCompiler
 		MethodOutput mainScript = new MethodOutput(clsMain, Opcodes.ACC_PUBLIC, "run", "()V", null, null);
 		mainScript.start();
 
-		for (SymbolicModule<IJavaExpression, IJavaType> module : symbolicModules) {
+		for (SymbolicModule<IJavaExpression> module : symbolicModules) {
 			throw new UnsupportedOperationException("TODO");
 			// TODO
 			//module.compileDefinitions(mainScript);

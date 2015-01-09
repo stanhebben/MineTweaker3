@@ -13,11 +13,6 @@ import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
-import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.generic.GenericParameter;
-import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
-import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**

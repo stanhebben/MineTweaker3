@@ -8,22 +8,20 @@ package org.openzen.zencode.symbolic.member;
 import java.util.List;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface IMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IMember<E extends IPartialExpression<E>>
 {
-	public ISymbolicDefinition<E, T> getUnit();
+	public ISymbolicDefinition<E> getUnit();
 	
 	public int getModifiers();
 	
-	public List<SymbolicAnnotation<E, T>> getAnnotations();
+	public List<SymbolicAnnotation<E>> getAnnotations();
 	
 	public void completeContents();
 	

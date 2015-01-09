@@ -9,7 +9,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -28,10 +28,10 @@ public class ParsedExpressionDollar extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
 	{
-		IPartialExpression<E, T> result = scope.getEnvironment().getDollar(getPosition(), scope, name);
+		IPartialExpression<E> result = scope.getEnvironment().getDollar(getPosition(), scope, name);
 		if (result == null) {
 			scope.getErrorLogger().errorNoSuchDollarVariable(getPosition(), name);
 			return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
@@ -44,7 +44,7 @@ public class ParsedExpressionDollar extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		if (name == null)
 			return null;

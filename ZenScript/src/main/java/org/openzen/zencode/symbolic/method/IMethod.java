@@ -9,20 +9,19 @@ package org.openzen.zencode.symbolic.method;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E> expression type
- * @param <T>
  */
-public interface IMethod<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IMethod<E extends IPartialExpression<E>>
 {
-	public E callStatic(CodePosition position, IMethodScope<E, T> scope, List<E> arguments);
+	public E callStatic(CodePosition position, IMethodScope<E> scope, List<E> arguments);
 	
-	public E callStaticWithConstants(CodePosition position, IMethodScope<E, T> scope, Object... constantArguments);
+	public E callStaticWithConstants(CodePosition position, IMethodScope<E> scope, Object... constantArguments);
 	
 	/**
 	 * Returns null if the argument is null, calls the method otherwise.
@@ -32,19 +31,19 @@ public interface IMethod<E extends IPartialExpression<E, T>, T extends ITypeInst
 	 * @param argument
 	 * @return 
 	 */
-	public E callStaticNullable(CodePosition position, IMethodScope<E, T> scope, E argument);
+	public E callStaticNullable(CodePosition position, IMethodScope<E> scope, E argument);
 	
-	public E callVirtual(CodePosition position, IMethodScope<E, T> scope, E target, List<E> arguments);
+	public E callVirtual(CodePosition position, IMethodScope<E> scope, E target, List<E> arguments);
 	
-	public E callVirtualWithConstants(CodePosition position, IMethodScope<E, T> scope, E target, Object... constantArguments);
+	public E callVirtualWithConstants(CodePosition position, IMethodScope<E> scope, E target, Object... constantArguments);
 	
 	public boolean isStatic();
 	
-	public T getFunctionType();
+	public TypeInstance<E> getFunctionType();
 	
-	public MethodHeader<E, T> getMethodHeader();
+	public MethodHeader<E> getMethodHeader();
 	
-	public T getReturnType();
+	public TypeInstance<E> getReturnType();
 	
-	public void validateCall(CodePosition position, IMethodScope<E, T> scope, List<E> arguments);
+	public void validateCall(CodePosition position, IMethodScope<E> scope, List<E> arguments);
 }

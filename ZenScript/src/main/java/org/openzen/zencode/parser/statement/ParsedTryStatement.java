@@ -19,7 +19,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.statement.TryStatement;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -94,20 +94,20 @@ public class ParsedTryStatement extends ParsedStatement
 	}
 	
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>> Statement<E> compile(IMethodScope<E> scope)
 	{
-		StatementVar<E, T> withVariableCompiled = null;
+		StatementVar<E> withVariableCompiled = null;
 		if (withVariable != null)
 			withVariableCompiled = withVariable.compile(scope);
 		
-		Statement<E, T> contentsCompiled = contents.compile(scope);
-		List<TryStatement.CatchClause<E, T>> catchesCompiled = new ArrayList<TryStatement.CatchClause<E, T>>();
+		Statement<E> contentsCompiled = contents.compile(scope);
+		List<TryStatement.CatchClause<E>> catchesCompiled = new ArrayList<TryStatement.CatchClause<E>>();
 		for (CatchClause catchClause : catches) {
 			catchesCompiled.add(catchClause.compile(scope));
 		}
 		
-		Statement<E, T> finallyCompiled = finallyContents == null ? null : finallyContents.compile(scope);
-		return new TryStatement<E, T>(
+		Statement<E> finallyCompiled = finallyContents == null ? null : finallyContents.compile(scope);
+		return new TryStatement<E>(
 				getPosition(),
 				scope,
 				withVariableCompiled,
@@ -117,7 +117,7 @@ public class ParsedTryStatement extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>> void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}
@@ -141,16 +141,16 @@ public class ParsedTryStatement extends ParsedStatement
 			this.contents = contents;
 		}
 		
-		public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> TryStatement.CatchClause<E, T>
-			compile(IMethodScope<E, T> scope)
+		public <E extends IPartialExpression<E>> TryStatement.CatchClause<E>
+			compile(IMethodScope<E> scope)
 		{
-			List<T> compiledTypes = new ArrayList<T>();
+			List<TypeInstance<E>> compiledTypes = new ArrayList<TypeInstance<E>>();
 			for (IParsedType type : types)
 			{
 				compiledTypes.add(type.compile(scope));
 			}
 			
-			return new TryStatement.CatchClause<E, T>(compiledTypes, contents.compile(scope));
+			return new TryStatement.CatchClause<E>(compiledTypes, contents.compile(scope));
 		}
 	}
 }

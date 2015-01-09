@@ -12,54 +12,52 @@ import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.ModuleScope;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicModule<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class SymbolicModule<E extends IPartialExpression<E>>
 {
-	private final IModuleScope<E, T> scope;
-	private final List<ScriptBlock<E, T>> scripts = new ArrayList<ScriptBlock<E, T>>();
-	private final List<ISymbolicDefinition<E, T>> definitions = new ArrayList<ISymbolicDefinition<E, T>>();
+	private final IModuleScope<E> scope;
+	private final List<ScriptBlock<E>> scripts = new ArrayList<ScriptBlock<E>>();
+	private final List<ISymbolicDefinition<E>> definitions = new ArrayList<ISymbolicDefinition<E>>();
 	
-	public SymbolicModule(IGlobalScope<E, T> scope)
+	public SymbolicModule(IGlobalScope<E> scope)
 	{
-		this.scope = new ModuleScope<E, T>(scope);
+		this.scope = new ModuleScope<E>(scope);
 	}
 	
-	public IModuleScope<E, T> getScope()
+	public IModuleScope<E> getScope()
 	{
 		return scope;
 	}
 	
-	public void addUnit(ISymbolicDefinition<E, T> unit)
+	public void addUnit(ISymbolicDefinition<E> unit)
 	{
 		definitions.add(unit);
 	}
 	
-	public void addScript(ScriptBlock<E, T> script)
+	public void addScript(ScriptBlock<E> script)
 	{
 		scripts.add(script);
 	}
 
-	public List<ScriptBlock<E, T>> getScripts()
+	public List<ScriptBlock<E>> getScripts()
 	{
 		return scripts;
 	}
 
-	public List<ISymbolicDefinition<E, T>> getDefinitions()
+	public List<ISymbolicDefinition<E>> getDefinitions()
 	{
 		return definitions;
 	}
 	
 	public void compileDefinitions()
 	{
-		List<ISymbolicDefinition<E, T>> innerDefinitions = new ArrayList<ISymbolicDefinition<E, T>>();
-		for (ISymbolicDefinition<E, T> definition : definitions) {
+		List<ISymbolicDefinition<E>> innerDefinitions = new ArrayList<ISymbolicDefinition<E>>();
+		for (ISymbolicDefinition<E> definition : definitions) {
 			definition.collectInnerDefinitions(innerDefinitions, scope);
 		}
 		definitions.addAll(innerDefinitions);
@@ -67,21 +65,21 @@ public class SymbolicModule<E extends IPartialExpression<E, T>, T extends ITypeI
 	
 	public void compileMembers()
 	{
-		for (ISymbolicDefinition<E, T> definition : definitions) {
+		for (ISymbolicDefinition<E> definition : definitions) {
 			definition.compileMembers();
 		}
 	}
 	
 	public void compileMemberContents()
 	{
-		for (ISymbolicDefinition<E, T> definition : definitions) {
+		for (ISymbolicDefinition<E> definition : definitions) {
 			definition.compileMemberContents();
 		}
 	}
 	
 	public void validate()
 	{
-		for (ISymbolicDefinition<E, T> definition : definitions) {
+		for (ISymbolicDefinition<E> definition : definitions) {
 			definition.validate();
 		}
 	}

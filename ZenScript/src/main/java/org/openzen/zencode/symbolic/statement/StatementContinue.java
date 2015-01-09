@@ -9,39 +9,37 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class StatementContinue<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementContinue<E extends IPartialExpression<E>> extends Statement<E>
 {
-	private final Statement<E, T> target;
+	private final Statement<E> target;
 
-	public StatementContinue(CodePosition position, IMethodScope<E, T> scope, Statement<E, T> target)
+	public StatementContinue(CodePosition position, IMethodScope<E> scope, Statement<E> target)
 	{
 		super(position, scope);
 
 		this.target = target;
 	}
 
-	public Statement<E, T> getTarget()
+	public Statement<E> getTarget()
 	{
 		return target;
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onContinue(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
 		return builder.getContinueLabel(target);
 	}

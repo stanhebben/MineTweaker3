@@ -9,7 +9,7 @@ import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import static org.openzen.zencode.parser.type.ParsedTypeBasic.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  * Utility class to parse types.
@@ -22,8 +22,8 @@ public class TypeParser
 	{
 	}
 
-	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 T parseDirect(String value, IModuleScope<E, T> scope)
+	public static <E extends IPartialExpression<E>>
+		 TypeInstance<E> parseDirect(String value, IModuleScope<E> scope)
 	{
 		try {
 			return parse(new ZenLexer(scope.getErrorLogger(), value)).compile(scope);

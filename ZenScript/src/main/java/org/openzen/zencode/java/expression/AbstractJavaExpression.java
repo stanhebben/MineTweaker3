@@ -7,7 +7,6 @@ package org.openzen.zencode.java.expression;
 
 import java.util.List;
 import org.objectweb.asm.Label;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
@@ -19,6 +18,7 @@ import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementExpression;
 import org.openzen.zencode.symbolic.statement.StatementReturn;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -27,9 +27,9 @@ import org.openzen.zencode.symbolic.statement.StatementReturn;
 public abstract class AbstractJavaExpression implements IJavaExpression
 {
 	private final CodePosition position;
-	private final IMethodScope<IJavaExpression, IJavaType> scope;
+	private final IMethodScope<IJavaExpression> scope;
 
-	public AbstractJavaExpression(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope)
+	public AbstractJavaExpression(CodePosition position, IMethodScope<IJavaExpression> scope)
 	{
 		this.position = position;
 		this.scope = scope;
@@ -42,18 +42,18 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 	}
 
 	@Override
-	public IMethodScope<IJavaExpression, IJavaType> getScope()
+	public IMethodScope<IJavaExpression> getScope()
 	{
 		return scope;
 	}
 
 	@Override
-	public IJavaExpression cast(CodePosition position, IJavaType type)
+	public IJavaExpression cast(CodePosition position, TypeInstance<IJavaExpression> type)
 	{
 		if (getType().equals(type))
 			return this;
 		else {
-			ICastingRule<IJavaExpression, IJavaType> castingRule = getType().getCastingRule(type);
+			ICastingRule<IJavaExpression> castingRule = getType().getCastingRule(type);
 			if (castingRule == null) {
 				getScope().getErrorLogger().errorCannotCastExplicit(position, getType(), type);
 				return getScope().getExpressionCompiler().invalid(position, getScope(), type);
@@ -88,14 +88,14 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 			throw new RuntimeException("cannot compile non-pointer non-boolean value to if condition");
 	}
 
-	public Statement<IJavaExpression, IJavaType> asStatement()
+	public Statement<IJavaExpression> asStatement()
 	{
-		return new StatementExpression<IJavaExpression, IJavaType>(position, scope, this);
+		return new StatementExpression<IJavaExpression>(position, scope, this);
 	}
 	
-	public Statement<IJavaExpression, IJavaType> asReturnStatement()
+	public Statement<IJavaExpression> asReturnStatement()
 	{
-		return new StatementReturn<IJavaExpression, IJavaType>(position, scope, this);
+		return new StatementReturn<IJavaExpression>(position, scope, this);
 	}
 
 	// #########################################
@@ -116,38 +116,38 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 	}
 
 	@Override
-	public IPartialExpression<IJavaExpression, IJavaType> getMember(CodePosition position, String name)
+	public IPartialExpression<IJavaExpression> getMember(CodePosition position, String name)
 	{
 		return getType().getInstanceMember(position, getScope(), this, name);
 	}
 
 	@Override
-	public IZenSymbol<IJavaExpression, IJavaType> toSymbol()
+	public IZenSymbol<IJavaExpression> toSymbol()
 	{
 		return null;
 	}
 
 	@Override
-	public IJavaType toType(List<IJavaType> genericTypes)
+	public TypeInstance<IJavaExpression> toType(List<TypeInstance<IJavaExpression>> genericTypes)
 	{
 		scope.getErrorLogger().errorNotAType(position, this);
 		return scope.getTypeCompiler().getAny(scope);
 	}
 
 	@Override
-	public List<IMethod<IJavaExpression, IJavaType>> getMethods()
+	public List<IMethod<IJavaExpression>> getMethods()
 	{
 		return getType().getInstanceMethods();
 	}
 	
 	@Override
-	public IPartialExpression<IJavaExpression, IJavaType> call(CodePosition position, IMethod<IJavaExpression, IJavaType> method, IJavaExpression... arguments)
+	public IPartialExpression<IJavaExpression> call(CodePosition position, IMethod<IJavaExpression> method, List<IJavaExpression> arguments)
 	{
 		return method.callVirtual(position, scope, this, arguments);
 	}
 
 	@Override
-	public IPartialExpression<IJavaExpression, IJavaType> via(SymbolicFunction<IJavaExpression, IJavaType> function)
+	public IPartialExpression<IJavaExpression> via(SymbolicFunction<IJavaExpression> function)
 	{
 		return this;
 	}

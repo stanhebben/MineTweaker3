@@ -10,7 +10,7 @@ import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -33,8 +33,8 @@ public class ParsedExpressionOpAssign extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType)
 	{
 		E cLeft = left.compile(environment, predictedType);
 		E cRight = right.compile(environment, cLeft.getType().predictOperatorArgumentType(operator).get(0));
@@ -44,7 +44,7 @@ public class ParsedExpressionOpAssign extends ParsedExpression
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		return null;
 	}

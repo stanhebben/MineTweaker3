@@ -13,24 +13,22 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan Hebben
  * @param <E>
- * @param <T>
  */
-public interface IGlobalScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IGlobalScope<E extends IPartialExpression<E>>
 {
-	public IZenCompileEnvironment<E, T> getEnvironment();
+	public IZenCompileEnvironment<E> getEnvironment();
 
-	public ITypeCompiler<E, T> getTypeCompiler();
+	public ITypeCompiler<E> getTypeCompiler();
 
-	public IExpressionCompiler<E, T> getExpressionCompiler();
+	public IExpressionCompiler<E> getExpressionCompiler();
 
-	public IMethodScope<E, T> getConstantEnvironment();
+	public IMethodScope<E> getConstantEnvironment();
 	
 	public String makeClassName();
 
@@ -44,11 +42,11 @@ public interface IGlobalScope<E extends IPartialExpression<E, T>, T extends ITyp
 
 	public Map<String, byte[]> getClasses();
 
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment);
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment);
 
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position);
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position);
 	
-	public ICodeErrorLogger<E, T> getErrorLogger();
+	public ICodeErrorLogger<E> getErrorLogger();
 	
 	//public Package getRootPackage();
 }

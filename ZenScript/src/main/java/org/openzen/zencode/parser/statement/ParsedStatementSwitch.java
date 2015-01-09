@@ -13,7 +13,6 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -54,21 +53,21 @@ public class ParsedStatementSwitch extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 Statement<E> compile(IMethodScope<E> scope)
 	{
 		E cValue = value.compile(scope, null);
-		StatementSwitch<E, T> forSwitch = new StatementSwitch<E, T>(getPosition(), scope, cValue);
+		StatementSwitch<E> forSwitch = new StatementSwitch<E>(getPosition(), scope, cValue);
 
-		IMethodScope<E, T> switchScope = new StatementBlockScope<E, T>(scope, forSwitch, label);
+		IMethodScope<E> switchScope = new StatementBlockScope<E>(scope, forSwitch, label);
 		contents.compileSwitch(switchScope, forSwitch);
 
 		return forSwitch;
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

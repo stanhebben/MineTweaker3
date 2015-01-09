@@ -18,7 +18,7 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -63,34 +63,34 @@ public class ParsedStatementFor extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 Statement<E> compile(IMethodScope<E> scope)
 	{
 		E compiledSource = source.compile(scope, null);
-		List<T> iteratorTypes = compiledSource.getType().getIteratorTypes(names.size());
+		List<TypeInstance<E>> iteratorTypes = compiledSource.getType().getIteratorTypes(names.size());
 		if (iteratorTypes == null) {
 			scope.getErrorLogger().errorNoSuchIterator(getPosition(), compiledSource.getType(), names.size());
-			return new StatementNull<E, T>(getPosition(), scope);
+			return new StatementNull<E>(getPosition(), scope);
 		}
 
-		List<SymbolLocal<E, T>> symbols = new ArrayList<SymbolLocal<E, T>>();
-		StatementForeach<E, T> compiledStatement = new StatementForeach<E, T>(getPosition(), scope, symbols, compiledSource);
-		StatementBlockScope<E, T> loopScope = new StatementBlockScope<E, T>(scope, compiledStatement, names);
+		List<SymbolLocal<E>> symbols = new ArrayList<SymbolLocal<E>>();
+		StatementForeach<E> compiledStatement = new StatementForeach<E>(getPosition(), scope, symbols, compiledSource);
+		StatementBlockScope<E> loopScope = new StatementBlockScope<E>(scope, compiledStatement, names);
 		for (int i = 0; i < names.size(); i++) {
-			SymbolLocal<E, T> symbol = new SymbolLocal<E, T>(iteratorTypes.get(i), true);
+			SymbolLocal<E> symbol = new SymbolLocal<E>(iteratorTypes.get(i), true);
 			symbols.add(symbol);
 			loopScope.putValue(names.get(i), symbol, getPosition());
 		}
 
-		Statement<E, T> compiledContents = content.compile(loopScope);
+		Statement<E> compiledContents = content.compile(loopScope);
 		compiledStatement.setBody(compiledContents);
 
 		return compiledStatement;
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

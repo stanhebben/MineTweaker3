@@ -17,7 +17,7 @@ import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -62,22 +62,22 @@ public class ParsedStatementVar extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 StatementVar<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 StatementVar<E> compile(IMethodScope<E> scope)
 	{
-		T cType = scope.getTypeCompiler().getAny(scope);
+		TypeInstance<E> cType = scope.getTypeCompiler().getAny(scope);
 		E cInitializer = null;
 		if (asType != null)
 			cType = asType.compile(scope);
 
-		SymbolLocal<E, T> symbol = new SymbolLocal<E, T>(cType, isFinal);
+		SymbolLocal<E> symbol = new SymbolLocal<E>(cType, isFinal);
 		scope.putValue(name, symbol, getPosition());
-		return new StatementVar<E, T>(getPosition(), scope, symbol, cInitializer);
+		return new StatementVar<E>(getPosition(), scope, symbol, cInitializer);
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>>
+		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

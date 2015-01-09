@@ -24,7 +24,7 @@ import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IGlobalScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import static org.openzen.zencode.util.Strings.unescapeString;
 import org.openzen.zencode.util.CodePosition;
 
@@ -34,7 +34,7 @@ import org.openzen.zencode.util.CodePosition;
  */
 public abstract class ParsedExpression
 {
-	public static ParsedExpression parse(String value, ICodeErrorLogger<?, ?> errorLogger)
+	public static ParsedExpression parse(String value, ICodeErrorLogger<?> errorLogger)
 	{
 		try {
 			return parse(new ZenLexer(errorLogger, value));
@@ -43,7 +43,7 @@ public abstract class ParsedExpression
 		}
 	}
 	
-	public static IAny evalToAny(String value, IGlobalScope<?, ?> scope)
+	public static IAny evalToAny(String value, IGlobalScope<?> scope)
 	{
 		ParsedExpression parsed = parse(value, scope.getErrorLogger());
 		return parsed
@@ -489,11 +489,11 @@ public abstract class ParsedExpression
 		return position;
 	}
 
-	public abstract <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType);
+	public abstract <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType);
 
-	public final <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 E compile(IMethodScope<E, T> environment, T predictedType)
+	public final <E extends IPartialExpression<E>>
+		 E compile(IMethodScope<E> environment, TypeInstance<E> predictedType)
 	{
 		return compilePartial(environment, predictedType).eval();
 	}
@@ -503,11 +503,11 @@ public abstract class ParsedExpression
 		return null;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 E compileKey(IMethodScope<E, T> environment, T asType)
+	public <E extends IPartialExpression<E>>
+		 E compileKey(IMethodScope<E> environment, TypeInstance<E> asType)
 	{
 		return compile(environment, asType);
 	}
 
-	public abstract IAny eval(IZenCompileEnvironment<?, ?> environment);
+	public abstract IAny eval(IZenCompileEnvironment<?> environment);
 }

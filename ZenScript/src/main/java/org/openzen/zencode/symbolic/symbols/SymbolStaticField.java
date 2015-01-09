@@ -9,28 +9,26 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticField;
 import org.openzen.zencode.symbolic.field.IField;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolStaticField<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		implements IZenSymbol<E, T>
+public class SymbolStaticField<E extends IPartialExpression<E>>
+		implements IZenSymbol<E>
 {
-	private final IField<E, T> field;
+	private final IField<E> field;
 
-	public SymbolStaticField(IField<E, T> field)
+	public SymbolStaticField(IField<E> field)
 	{
 		this.field = field;
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> scope)
+	public IPartialExpression<E> instance(CodePosition position, IMethodScope<E> scope)
 	{
-		return new PartialStaticField<E, T>(position, scope, field);
+		return new PartialStaticField<E>(position, scope, field);
 	}
 }

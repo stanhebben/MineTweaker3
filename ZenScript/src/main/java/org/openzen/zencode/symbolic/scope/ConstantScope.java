@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
@@ -25,21 +25,20 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ConstantScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IMethodScope<E, T>
+public class ConstantScope<E extends IPartialExpression<E>>
+	implements IMethodScope<E>
 {
-	private final IGlobalScope<E, T> scope;
+	private final IGlobalScope<E> scope;
 	private final AccessScope access = AccessScope.createModuleScope();
 	
-	public ConstantScope(IGlobalScope<E, T> scope)
+	public ConstantScope(IGlobalScope<E> scope)
 	{
 		this.scope = scope;
 	}
 	
 	@Override
-	public ISymbolicDefinition<E, T> getDefinition()
+	public ISymbolicDefinition<E> getDefinition()
 	{
 		return null;
 	}
@@ -51,25 +50,25 @@ public class ConstantScope<E extends IPartialExpression<E, T>, T extends ITypeIn
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return scope.getTypeCompiler();
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return scope.getEnvironment();
 	}
 
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return scope.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return this;
 	}
@@ -111,43 +110,43 @@ public class ConstantScope<E extends IPartialExpression<E, T>, T extends ITypeIn
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment)
 	{
 		return environment.getValue(name, position, environment);
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		getErrorLogger().errorCannotAssignInConstantScope(position);
 	}
 
 	@Override
-	public Statement<E, T> getControlStatement(String label)
+	public Statement<E> getControlStatement(String label)
 	{
 		return null;
 	}
 
 	@Override
-	public T getReturnType()
+	public TypeInstance<E> getReturnType()
 	{
 		return null;
 	}
 
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return scope.getErrorLogger();
 	}
 
 	@Override
-	public MethodHeader<E, T> getMethodHeader()
+	public MethodHeader<E> getMethodHeader()
 	{
 		return null;
 	}
 
 	@Override
-	public TypeCapture<E, T> getTypeCapture()
+	public TypeCapture<E> getTypeCapture()
 	{
 		return TypeCapture.empty();
 	}

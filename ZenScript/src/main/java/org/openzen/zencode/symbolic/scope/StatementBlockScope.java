@@ -20,7 +20,7 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
@@ -31,45 +31,44 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		implements IMethodScope<E, T>
+public class StatementBlockScope<E extends IPartialExpression<E>> implements IMethodScope<E>
 {
-	private final IMethodScope<E, T> outer;
-	private final Map<String, IZenSymbol<E, T>> local;
-	private final Map<SymbolLocal<E, T>, Integer> locals;
+	private final IMethodScope<E> outer;
+	private final Map<String, IZenSymbol<E>> local;
+	private final Map<SymbolLocal<E>, Integer> locals;
 
-	private final Statement<E, T> controlStatement;
+	private final Statement<E> controlStatement;
 	private final List<String> labels;
 
-	public StatementBlockScope(IMethodScope<E, T> outer)
+	public StatementBlockScope(IMethodScope<E> outer)
 	{
 		this.outer = outer;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
-		this.locals = new HashMap<SymbolLocal<E, T>, Integer>();
+		this.local = new HashMap<String, IZenSymbol<E>>();
+		this.locals = new HashMap<SymbolLocal<E>, Integer>();
 		this.controlStatement = null;
 		this.labels = null;
 	}
 
-	public StatementBlockScope(IMethodScope<E, T> outer, Statement<E, T> controlStatement, String label)
+	public StatementBlockScope(IMethodScope<E> outer, Statement<E> controlStatement, String label)
 	{
 		this.outer = outer;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
-		this.locals = new HashMap<SymbolLocal<E, T>, Integer>();
+		this.local = new HashMap<String, IZenSymbol<E>>();
+		this.locals = new HashMap<SymbolLocal<E>, Integer>();
 		this.controlStatement = controlStatement;
 		this.labels = label == null ? null : Collections.singletonList(label);
 	}
 
-	public StatementBlockScope(IMethodScope<E, T> outer, Statement<E, T> controlStatement, List<String> labels)
+	public StatementBlockScope(IMethodScope<E> outer, Statement<E> controlStatement, List<String> labels)
 	{
 		this.outer = outer;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
-		this.locals = new HashMap<SymbolLocal<E, T>, Integer>();
+		this.local = new HashMap<String, IZenSymbol<E>>();
+		this.locals = new HashMap<SymbolLocal<E>, Integer>();
 		this.controlStatement = controlStatement;
 		this.labels = labels;
 	}
 	
 	@Override
-	public ISymbolicDefinition<E, T> getDefinition()
+	public ISymbolicDefinition<E> getDefinition()
 	{
 		return outer.getDefinition();
 	}
@@ -81,25 +80,25 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return outer.getTypeCompiler();
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return outer.getEnvironment();
 	}
 	
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return outer.getExpressionCompiler();
 	}
 
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return outer.getConstantEnvironment();
 	}
@@ -129,7 +128,7 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
@@ -138,7 +137,7 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);
@@ -159,7 +158,7 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public Statement<E, T> getControlStatement(String label)
+	public Statement<E> getControlStatement(String label)
 	{
 		if (label == null && controlStatement != null)
 			return controlStatement;
@@ -170,25 +169,25 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	}
 
 	@Override
-	public T getReturnType()
+	public TypeInstance<E> getReturnType()
 	{
 		return outer.getReturnType();
 	}
 
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return outer.getErrorLogger();
 	}
 
 	@Override
-	public MethodHeader<E, T> getMethodHeader()
+	public MethodHeader<E> getMethodHeader()
 	{
 		return outer.getMethodHeader();
 	}
 
 	@Override
-	public TypeCapture<E, T> getTypeCapture()
+	public TypeCapture<E> getTypeCapture()
 	{
 		return outer.getTypeCapture();
 	}

@@ -12,7 +12,7 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -60,10 +60,10 @@ public class ParsedTypeClass implements IParsedType
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 T compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E>>
+		 TypeInstance<E> compile(IModuleScope<E> scope)
 	{
-		IPartialExpression<E, T> expression = scope.getValue(
+		IPartialExpression<E> expression = scope.getValue(
 				name.get(0),
 				position,
 				scope.getConstantEnvironment());
@@ -76,17 +76,17 @@ public class ParsedTypeClass implements IParsedType
 			}
 		}
 
-		List<T> compiledGenericTypes;
+		List<TypeInstance<E>> compiledGenericTypes;
 		if (genericType == null)
 			compiledGenericTypes = null;
 		else {
-			compiledGenericTypes = new ArrayList<T>();
+			compiledGenericTypes = new ArrayList<TypeInstance<E>>();
 			for (IParsedType type : genericType) {
 				compiledGenericTypes.add(type.compile(scope));
 			}
 		}
 
-		T type = expression.toType(compiledGenericTypes);
+		TypeInstance<E> type = expression.toType(compiledGenericTypes);
 		if (type == null) {
 			scope.getErrorLogger().errorNotAType(position, expression, Strings.join(name, "."));
 			type = scope.getTypeCompiler().getAny(scope);

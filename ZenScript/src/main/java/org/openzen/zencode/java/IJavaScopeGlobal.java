@@ -6,14 +6,13 @@
 package org.openzen.zencode.java;
 
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IGlobalScope;
 
 /**
  *
  * @author Stan
  */
-public interface IJavaScopeGlobal extends IGlobalScope<IJavaExpression, IJavaType>
+public interface IJavaScopeGlobal extends IGlobalScope<IJavaExpression>
 {
 	@Override
 	public JavaTypeCompiler getTypeCompiler();

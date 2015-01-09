@@ -7,17 +7,15 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface IFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IFlowInstruction<E extends IPartialExpression<E>>
 {
 	public boolean doesFallthough();
 	
-	public void validate(IMethodScope<E, T> scope);
+	public void validate(IMethodScope<E> scope);
 }

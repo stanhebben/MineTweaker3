@@ -7,15 +7,13 @@ package org.openzen.zencode.symbolic.packages;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface IPackageSymbol<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface IPackageSymbol<E extends IPartialExpression<E>>
 {
-	public IZenSymbol<E, T> toSymbol();
+	public IZenSymbol<E> toSymbol();
 }

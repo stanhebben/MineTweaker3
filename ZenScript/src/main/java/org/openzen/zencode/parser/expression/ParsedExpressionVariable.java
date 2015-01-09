@@ -9,7 +9,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,10 +34,10 @@ public class ParsedExpressionVariable extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
 	{
-		IPartialExpression<E, T> result = scope.getValue(name, getPosition(), scope);
+		IPartialExpression<E> result = scope.getValue(name, getPosition(), scope);
 		if (result == null) {
 			if (predictedType == null) {
 				scope.getErrorLogger().errorCouldNotResolveSymbol(getPosition(), name);
@@ -45,7 +45,7 @@ public class ParsedExpressionVariable extends ParsedExpression
 			}
 
 			// enable usage of static members of the same type as the predicted type (eg. enum values)
-			IPartialExpression<E, T> member = predictedType.getStaticMember(getPosition(), scope, name);
+			IPartialExpression<E> member = predictedType.getStaticMember(getPosition(), scope, name);
 			if (member == null || member.getType().getCastingRule(predictedType) == null) {
 				scope.getErrorLogger().errorCouldNotResolveSymbol(getPosition(), name);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, predictedType);
@@ -56,14 +56,14 @@ public class ParsedExpressionVariable extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 E compileKey(IMethodScope<E, T> scope, T predictedType)
+	public <E extends IPartialExpression<E>>
+		 E compileKey(IMethodScope<E> scope, TypeInstance<E> predictedType)
 	{
 		return scope.getExpressionCompiler().constantString(getPosition(), scope, name);
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment)
+	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
 		return environment.evalGlobal(name);
 	}

@@ -14,7 +14,6 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -23,7 +22,7 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class ParsedImportStatement extends ParsedStatement
 {
-	public static ParsedImportStatement parse(ZenLexer lexer, ICodeErrorLogger errorLogger)
+	public static ParsedImportStatement parse(ZenLexer lexer, ICodeErrorLogger<?> errorLogger)
 	{
 		CodePosition position = lexer.required(T_IMPORT, "import expected").getPosition();
 		
@@ -81,13 +80,13 @@ public class ParsedImportStatement extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E>> Statement<E> compile(IMethodScope<E> scope)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E>> void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

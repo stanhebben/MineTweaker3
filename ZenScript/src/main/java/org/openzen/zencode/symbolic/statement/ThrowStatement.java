@@ -10,20 +10,18 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.ThrowFlowInstruction;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class ThrowStatement<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class ThrowStatement<E extends IPartialExpression<E>> extends Statement<E>
 {
 	private final E value;
 	
-	public ThrowStatement(CodePosition position, IMethodScope<E, T> scope, E value)
+	public ThrowStatement(CodePosition position, IMethodScope<E> scope, E value)
 	{
 		super(position, scope);
 		
@@ -31,15 +29,15 @@ public class ThrowStatement<E extends IPartialExpression<E, T>, T extends ITypeI
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onThrow(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
-		FlowBlock<E, T> result = new FlowBlock<E, T>();
-		return result.prependInstruction(new ThrowFlowInstruction<E, T>(value));
+		FlowBlock<E> result = new FlowBlock<E>();
+		return result.prependInstruction(new ThrowFlowInstruction<E>(value));
 	}
 }

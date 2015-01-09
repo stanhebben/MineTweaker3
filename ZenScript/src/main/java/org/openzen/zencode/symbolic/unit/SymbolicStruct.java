@@ -14,48 +14,46 @@ import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class SymbolicStruct<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	extends AbstractSymbolicDefinition<E, T>
+public class SymbolicStruct<E extends IPartialExpression<E>>
+	extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedStruct source;
-	private final List<IMember<E, T>> members;
+	private final List<IMember<E>> members;
 	
-	public SymbolicStruct(int modifiers, IModuleScope<E, T> moduleScope)
+	public SymbolicStruct(int modifiers, IModuleScope<E> moduleScope)
 	{
-		super(modifiers, Collections.<SymbolicAnnotation<E, T>>emptyList(), moduleScope);
+		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), moduleScope);
 		
 		source = null;
-		this.members = new ArrayList<IMember<E, T>>();
+		this.members = new ArrayList<IMember<E>>();
 	}
 	
-	public SymbolicStruct(ParsedStruct source, IModuleScope<E, T> moduleScope)
+	public SymbolicStruct(ParsedStruct source, IModuleScope<E> moduleScope)
 	{
 		super(source, moduleScope);
 		
 		this.source = source;
-		this.members = new ArrayList<IMember<E, T>>();
+		this.members = new ArrayList<IMember<E>>();
 	}
 	
-	public void addMember(IMember<E, T> member)
+	public void addMember(IMember<E> member)
 	{
 		members.add(member);
 	}
 	
-	public List<IMember<E, T>> getMembers()
+	public List<IMember<E>> getMembers()
 	{
 		return members;
 	}
 
 	@Override
-	public void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope)
 	{
 		if (source == null)
 			return;
@@ -71,7 +69,7 @@ public class SymbolicStruct<E extends IPartialExpression<E, T>, T extends ITypeI
 		super.compileMembers();
 		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiled = member.compile(getScope());
+			IMember<E> compiled = member.compile(getScope());
 			if (compiled != null)
 				members.add(compiled);
 		}
@@ -82,7 +80,7 @@ public class SymbolicStruct<E extends IPartialExpression<E, T>, T extends ITypeI
 	{
 		super.compileMemberContents();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.completeContents();
 		}
 	}
@@ -92,7 +90,7 @@ public class SymbolicStruct<E extends IPartialExpression<E, T>, T extends ITypeI
 	{
 		super.validate();
 		
-		for (IMember<E, T> member : members) {
+		for (IMember<E> member : members) {
 			member.validate();
 		}
 	}

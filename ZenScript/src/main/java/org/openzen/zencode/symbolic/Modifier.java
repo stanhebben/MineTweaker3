@@ -48,7 +48,7 @@ public enum Modifier
 		return code;
 	}
 	
-	public static int compileModifiers(List<IParsedModifier> modifiers, ICodeErrorLogger<?, ?> errorLogger)
+	public static int compileModifiers(List<IParsedModifier> modifiers, ICodeErrorLogger<?> errorLogger)
 	{
 		int result = 0;
 		

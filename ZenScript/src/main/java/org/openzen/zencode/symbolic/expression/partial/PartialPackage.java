@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolPackage;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -21,16 +21,14 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class PartialPackage<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IPartialExpression<E, T>
+public class PartialPackage<E extends IPartialExpression<E>> implements IPartialExpression<E>
 {
 	private final CodePosition position;
-	private final IMethodScope<E, T> scope;
-	private final SymbolPackage<E, T> contents;
+	private final IMethodScope<E> scope;
+	private final SymbolPackage<E> contents;
 
-	public PartialPackage(CodePosition position, IMethodScope<E, T> environment, SymbolPackage<E, T> contents)
+	public PartialPackage(CodePosition position, IMethodScope<E> environment, SymbolPackage<E> contents)
 	{
 		this.position = position;
 		this.scope = environment;
@@ -44,7 +42,7 @@ public class PartialPackage<E extends IPartialExpression<E, T>, T extends ITypeI
 	}
 	
 	@Override
-	public IMethodScope<E, T> getScope()
+	public IMethodScope<E> getScope()
 	{
 		return scope;
 	}
@@ -64,9 +62,9 @@ public class PartialPackage<E extends IPartialExpression<E, T>, T extends ITypeI
 	}
 
 	@Override
-	public IPartialExpression<E, T> getMember(CodePosition position, String name)
+	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
-		IZenSymbol<E, T> member = contents.get(name);
+		IZenSymbol<E> member = contents.get(name);
 		if (member == null) {
 			scope.getErrorLogger().errorCouldNotResolveSymbol(position, name);
 			return scope.getExpressionCompiler().invalid(position, scope);
@@ -75,46 +73,46 @@ public class PartialPackage<E extends IPartialExpression<E, T>, T extends ITypeI
 	}
 
 	@Override
-	public E call(CodePosition position, IMethod<E, T> method, List<E> arguments)
+	public E call(CodePosition position, IMethod<E> method, List<E> arguments)
 	{
 		scope.getErrorLogger().errorCannotCall(position, this);
 		return scope.getExpressionCompiler().invalid(position, scope);
 	}
 	
 	@Override
-	public E cast(CodePosition position, T type)
+	public E cast(CodePosition position, TypeInstance<E> type)
 	{
 		scope.getErrorLogger().errorInvalidExpression(position, this);
 		return scope.getExpressionCompiler().invalid(position, scope, type);
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol()
+	public IZenSymbol<E> toSymbol()
 	{
 		return null; // not supposed to be used as symbol
 	}
 
 	@Override
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return null;
 	}
 
 	@Override
-	public T toType(List<T> types)
+	public TypeInstance<E> toType(List<TypeInstance<E>> types)
 	{
 		scope.getErrorLogger().errorNotAType(position, this);
 		return scope.getTypeCompiler().getAny(scope);
 	}
 
 	@Override
-	public List<IMethod<E, T>> getMethods()
+	public List<IMethod<E>> getMethods()
 	{
 		return Collections.emptyList();
 	}
 
 	@Override
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
+	public IPartialExpression<E> via(SymbolicFunction<E> function)
 	{
 		return this;
 	}

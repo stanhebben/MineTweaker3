@@ -7,16 +7,15 @@ import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.ForeachFlowInstruction;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementForeach<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
+public class StatementForeach<E extends IPartialExpression<E>> extends Statement<E>
 {
-	private final List<SymbolLocal<E, T>> variables;
+	private final List<SymbolLocal<E>> variables;
 	private final E list;
-	private Statement<E, T> body;
+	private Statement<E> body;
 
-	public StatementForeach(CodePosition position, IMethodScope<E, T> environment, List<SymbolLocal<E, T>> variables, E list)
+	public StatementForeach(CodePosition position, IMethodScope<E> environment, List<SymbolLocal<E>> variables, E list)
 	{
 		super(position, environment);
 
@@ -24,12 +23,12 @@ public class StatementForeach<E extends IPartialExpression<E, T>, T extends ITyp
 		this.list = list;
 	}
 
-	public void setBody(Statement<E, T> body)
+	public void setBody(Statement<E> body)
 	{
 		this.body = body;
 	}
 
-	public List<SymbolLocal<E, T>> getVariables()
+	public List<SymbolLocal<E>> getVariables()
 	{
 		return variables;
 	}
@@ -39,29 +38,29 @@ public class StatementForeach<E extends IPartialExpression<E, T>, T extends ITyp
 		return list;
 	}
 
-	public Statement<E, T> getBody()
+	public Statement<E> getBody()
 	{
 		return body;
 	}
 
 	@Override
-	public <U> U process(IStatementProcessor<E, T, U> processor)
+	public <U> U process(IStatementProcessor<E, U> processor)
 	{
 		return processor.onForeach(this);
 	}
 
 	@Override
-	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	public FlowBlock<E> createFlowBlock(FlowBlock<E> next, FlowBuilder<E> builder)
 	{
-		FlowBlock<E, T> loop = new FlowBlock<E, T>();
+		FlowBlock<E> loop = new FlowBlock<E>();
 		builder.pushLoop(this, next, loop);
 		
-		FlowBlock<E, T> bodyEnd = new FlowBlock<E, T>();
-		FlowBlock<E, T> bodyStart = body.createFlowBlock(bodyEnd, builder);
+		FlowBlock<E> bodyEnd = new FlowBlock<E>();
+		FlowBlock<E> bodyStart = body.createFlowBlock(bodyEnd, builder);
 		
 		builder.pop();
 		
-		loop.prependInstruction(new ForeachFlowInstruction<E, T>(list, bodyStart, next));
+		loop.prependInstruction(new ForeachFlowInstruction<E>(list, bodyStart, next));
 		bodyEnd.addOutgoing(loop);
 		return loop;
 	}

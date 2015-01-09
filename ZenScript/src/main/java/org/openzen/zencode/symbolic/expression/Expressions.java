@@ -7,7 +7,6 @@ package org.openzen.zencode.symbolic.expression;
 
 import org.openzen.zencode.symbolic.field.IField;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,8 +17,8 @@ public class Expressions
 {
 	private Expressions() {}
 	
-	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 E[] convert(CodePosition position, IMethodScope<E, T> scope, Object[] constants)
+	public static <E extends IPartialExpression<E>>
+		 E[] convert(CodePosition position, IMethodScope<E> scope, Object[] constants)
 	{
 		@SuppressWarnings("unchecked")
 		E[] results = (E[]) new IPartialExpression[constants.length];
@@ -31,8 +30,8 @@ public class Expressions
 		return results;
 	}
 	
-	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		E convert(CodePosition position, IMethodScope<E, T> scope, Object constant)
+	public static <E extends IPartialExpression<E>>
+		E convert(CodePosition position, IMethodScope<E> scope, Object constant)
 	{
 		if (constant == null) {
 			return scope.getExpressionCompiler().constantNull(position, scope);
@@ -56,7 +55,7 @@ public class Expressions
 			return scope.getExpressionCompiler().constantBool(position, scope, (Boolean) constant);
 		} else if (constant instanceof IField) {
 			@SuppressWarnings("unchecked")
-			IField<E, T> field = (IField<E, T>) constant;
+			IField<E> field = (IField<E>) constant;
 			if (!field.isStatic())
 				throw new IllegalArgumentException("Can only use static fields as constant values");
 

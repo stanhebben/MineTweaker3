@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -20,13 +20,12 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class PartialLocal<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends AbstractPartialExpression<E, T>
+public class PartialLocal<E extends IPartialExpression<E>> extends AbstractPartialExpression<E>
 {
-	private final SymbolLocal<E, T> variable;
+	private final SymbolLocal<E> variable;
 
-	public PartialLocal(CodePosition position, IMethodScope<E, T> scope, SymbolLocal<E, T> variable)
+	public PartialLocal(CodePosition position, IMethodScope<E> scope, SymbolLocal<E> variable)
 	{
 		super(position, scope);
 		
@@ -40,7 +39,7 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends ITypeIns
 	}
 
 	@Override
-	public IPartialExpression<E, T> getMember(CodePosition position, String name)
+	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
 		return variable.getType().getInstanceMember(position, getScope(), eval(), name);
 	}
@@ -52,38 +51,38 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends ITypeIns
 	}
 
 	@Override
-	public IZenSymbol<E, T> toSymbol()
+	public IZenSymbol<E> toSymbol()
 	{
 		return variable;
 	}
 
 	@Override
-	public T getType()
+	public TypeInstance<E> getType()
 	{
 		return variable.getType();
 	}
 
 	@Override
-	public T toType(List<T> genericTypes)
+	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
 	{
 		getScope().getErrorLogger().errorNotAType(getPosition(), this);
 		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override
-	public List<IMethod<E, T>> getMethods()
+	public List<IMethod<E>> getMethods()
 	{
 		return variable.getType().getInstanceMethods();
 	}
 	
 	@Override
-	public E call(CodePosition position, IMethod<E, T> method, List<E> arguments)
+	public E call(CodePosition position, IMethod<E> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
 
 	@Override
-	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
+	public IPartialExpression<E> via(SymbolicFunction<E> function)
 	{
 		return function.addCapture(getPosition(), getScope(), variable);
 	}

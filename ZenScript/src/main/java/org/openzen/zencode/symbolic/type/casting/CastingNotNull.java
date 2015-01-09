@@ -7,41 +7,39 @@ package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class CastingNotNull<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		implements ICastingRule<E, T>
+public class CastingNotNull<E extends IPartialExpression<E>> implements ICastingRule<E>
 {
-	private final T fromType;
-	private final T bool;
+	private final TypeInstance<E> fromType;
+	private final TypeInstance<E> bool;
 
-	public CastingNotNull(T fromType, T bool)
+	public CastingNotNull(TypeInstance<E> fromType, TypeInstance<E> bool)
 	{
 		this.fromType = fromType;
 		this.bool = bool;
 	}
 
 	@Override
-	public T getInputType()
+	public TypeInstance<E> getInputType()
 	{
 		return fromType;
 	}
 
 	@Override
-	public T getResultingType()
+	public TypeInstance<E> getResultingType()
 	{
 		return bool;
 	}
 
 	@Override
-	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E> scope, E value)
 	{
 		return scope.getExpressionCompiler().notNull(position, scope, value);
 	}

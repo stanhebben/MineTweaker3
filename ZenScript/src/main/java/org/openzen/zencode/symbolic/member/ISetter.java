@@ -7,18 +7,17 @@ package org.openzen.zencode.symbolic.member;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public interface ISetter<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public interface ISetter<E extends IPartialExpression<E>>
 {
-	public T getType();
+	public TypeInstance<E> getType();
 	
-	public E compile(CodePosition position, IMethodScope<E, T> scope, E value);
+	public E compile(CodePosition position, IMethodScope<E> scope, E value);
 }

@@ -12,7 +12,6 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialPackage;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -20,19 +19,17 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class SymbolPackage<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-	implements IZenSymbol<E, T>
+public class SymbolPackage<E extends IPartialExpression<E>> implements IZenSymbol<E>
 {
-	private final HashMap<String, IZenSymbol<E, T>> members;
+	private final HashMap<String, IZenSymbol<E>> members;
 
 	private final String name;
 
 	public SymbolPackage(String name)
 	{
 		this.name = name;
-		members = new HashMap<String, IZenSymbol<E, T>>();
+		members = new HashMap<String, IZenSymbol<E>>();
 	}
 
 	public String getName()
@@ -40,21 +37,21 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends ITypeIn
 		return name;
 	}
 
-	public Map<String, IZenSymbol<E, T>> getPackages()
+	public Map<String, IZenSymbol<E>> getPackages()
 	{
 		return members;
 	}
 
-	public IZenSymbol<E, T> get(String name)
+	public IZenSymbol<E> get(String name)
 	{
 		return members.get(name);
 	}
 
-	public void put(String name, IZenSymbol<E, T> symbol, ICodeErrorLogger<E, T> errors)
+	public void put(String name, IZenSymbol<E> symbol, ICodeErrorLogger<E> errors)
 	{
 		String[] parts = Strings.split(name, '.');
 		String[] pkgParts = Arrays.copyOf(parts, parts.length - 1);
-		SymbolPackage<E, T> pkgCurrent = this;
+		SymbolPackage<E> pkgCurrent = this;
 		String pkgName = null;
 		for (String part : pkgParts) {
 			if (pkgName == null)
@@ -63,15 +60,15 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends ITypeIn
 				pkgName = pkgName + '.' + part;
 
 			if (pkgCurrent.members.containsKey(part)) {
-				IZenSymbol<E, T> member = pkgCurrent.members.get(part);
+				IZenSymbol<E> member = pkgCurrent.members.get(part);
 				if (member instanceof SymbolPackage)
-					pkgCurrent = (SymbolPackage<E, T>) member;
+					pkgCurrent = (SymbolPackage<E>) member;
 				else {
 					errors.errorNotAPackage(CodePosition.SYSTEM, part);
 					return;
 				}
 			} else {
-				SymbolPackage<E, T> child = new SymbolPackage<E, T>(pkgName);
+				SymbolPackage<E> child = new SymbolPackage<E>(pkgName);
 				pkgCurrent.members.put(part, child);
 				pkgCurrent = child;
 			}
@@ -85,8 +82,8 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends ITypeIn
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> instance(CodePosition position, IMethodScope<E> environment)
 	{
-		return new PartialPackage<E, T>(position, environment, this);
+		return new PartialPackage<E>(position, environment, this);
 	}
 }

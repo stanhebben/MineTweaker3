@@ -10,40 +10,38 @@ import java.util.List;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
-public class FlowBlock<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+public class FlowBlock<E extends IPartialExpression<E>>
 {
-	private final List<IFlowInstruction<E, T>> instructions;
-	private final List<FlowBlock<E, T>> outgoing;
-	private final List<FlowBlock<E, T>> incoming;
+	private final List<IFlowInstruction<E>> instructions;
+	private final List<FlowBlock<E>> outgoing;
+	private final List<FlowBlock<E>> incoming;
 	
 	public FlowBlock()
 	{
-		instructions = new ArrayList<IFlowInstruction<E, T>>();
-		outgoing = new ArrayList<FlowBlock<E, T>>();
-		incoming = new ArrayList<FlowBlock<E, T>>();
+		instructions = new ArrayList<IFlowInstruction<E>>();
+		outgoing = new ArrayList<FlowBlock<E>>();
+		incoming = new ArrayList<FlowBlock<E>>();
 	}
 	
-	public FlowBlock<E, T> prependInstruction(IFlowInstruction<E, T> instruction)
+	public FlowBlock<E> prependInstruction(IFlowInstruction<E> instruction)
 	{
 		if (incoming.isEmpty()) {
 			instructions.add(0, instruction);
 			return this;
 		} else {
-			FlowBlock<E, T> newBlock = new FlowBlock<E, T>();
+			FlowBlock<E> newBlock = new FlowBlock<E>();
 			newBlock.addOutgoing(this);
 			return newBlock.prependInstruction(instruction);
 		}
 	}
 	
-	public void addOutgoing(FlowBlock<E, T> block)
+	public void addOutgoing(FlowBlock<E> block)
 	{
 		this.outgoing.add(block);
 		block.incoming.add(this);
@@ -55,9 +53,9 @@ public class FlowBlock<E extends IPartialExpression<E, T>, T extends ITypeInstan
 				|| instructions.get(instructions.size() - 1).doesFallthough();
 	}
 	
-	public void validate(IMethodScope<E, T> scope, Set<FlowBlock<E, T>> validated)
+	public void validate(IMethodScope<E> scope, Set<FlowBlock<E>> validated)
 	{
-		for (IFlowInstruction<E, T> instruction : instructions) {
+		for (IFlowInstruction<E> instruction : instructions) {
 			instruction.validate(scope);
 		}
 	}

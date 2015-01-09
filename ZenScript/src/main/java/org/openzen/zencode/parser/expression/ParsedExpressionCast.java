@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -30,11 +30,11 @@ public class ParsedExpressionCast extends ParsedExpression {
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
-		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T asType) {
-		T compiledType = type.compile(environment);
+	public <E extends IPartialExpression<E>>
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> asType) {
+		TypeInstance<E> compiledType = type.compile(environment);
 		
-		IPartialExpression<E, T> result = value.compile(environment, compiledType)
+		IPartialExpression<E> result = value.compile(environment, compiledType)
 				.cast(getPosition(), compiledType);
 		
 		if (asType != null)
@@ -44,7 +44,7 @@ public class ParsedExpressionCast extends ParsedExpression {
 	}
 
 	@Override
-	public IAny eval(IZenCompileEnvironment<?, ?> environment) {
+	public IAny eval(IZenCompileEnvironment<?> environment) {
 		// not (yet) possible
 		return null;
 	}

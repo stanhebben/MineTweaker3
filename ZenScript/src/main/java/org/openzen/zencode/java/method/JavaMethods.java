@@ -6,7 +6,6 @@
 package org.openzen.zencode.java.method;
 
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 
@@ -18,12 +17,12 @@ public class JavaMethods
 {
 	private JavaMethods() {}
 	
-	public static String getSignature(MethodHeader<IJavaExpression, IJavaType> methodHeader)
+	public static String getSignature(MethodHeader<IJavaExpression> methodHeader)
 	{
 		StringBuilder result = new StringBuilder();
 		result.append('(');
 		
-		for (MethodParameter<IJavaExpression, IJavaType> parameter : methodHeader.getParameters())
+		for (MethodParameter<IJavaExpression> parameter : methodHeader.getParameters())
 		{
 			result.append(parameter.getType().getSignature());
 		}

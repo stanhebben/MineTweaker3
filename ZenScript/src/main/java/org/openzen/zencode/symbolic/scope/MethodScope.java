@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
@@ -27,29 +27,28 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stanneke
  * @param <E>
- * @param <T>
  */
-public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMethodScope<E, T>
+public class MethodScope<E extends IPartialExpression<E>> implements IMethodScope<E>
 {
-	private final IDefinitionScope<E, T> scope;
-	private final Map<String, IZenSymbol<E, T>> local;
-	private final MethodHeader<E, T> methodHeader;
-	private final TypeCapture<E, T> typeCapture;
+	private final IDefinitionScope<E> scope;
+	private final Map<String, IZenSymbol<E>> local;
+	private final MethodHeader<E> methodHeader;
+	private final TypeCapture<E> typeCapture;
 	
-	public MethodScope(IDefinitionScope<E, T> environment, MethodHeader<E, T> methodHeader)
+	public MethodScope(IDefinitionScope<E> environment, MethodHeader<E> methodHeader)
 	{
 		this.scope = environment;
-		this.local = new HashMap<String, IZenSymbol<E, T>>();
+		this.local = new HashMap<String, IZenSymbol<E>>();
 		this.methodHeader = methodHeader;
 		
-		typeCapture = new TypeCapture<E, T>(environment.getTypeCapture());
-		for (GenericParameter<E, T> parameter : methodHeader.getGenericParameters()) {
+		typeCapture = new TypeCapture<E>(environment.getTypeCapture());
+		for (GenericParameter<E> parameter : methodHeader.getGenericParameters()) {
 			typeCapture.put(parameter, environment.getTypeCompiler().getGeneric(parameter));
 		}
 	}
 	
 	@Override
-	public ISymbolicDefinition<E, T> getDefinition()
+	public ISymbolicDefinition<E> getDefinition()
 	{
 		return scope.getDefinition();
 	}
@@ -61,25 +60,25 @@ public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public ITypeCompiler<E, T> getTypeCompiler()
+	public ITypeCompiler<E> getTypeCompiler()
 	{
 		return scope.getTypeCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E, T> getConstantEnvironment()
+	public IMethodScope<E> getConstantEnvironment()
 	{
 		return scope.getConstantEnvironment();
 	}
 
 	@Override
-	public IZenCompileEnvironment<E, T> getEnvironment()
+	public IZenCompileEnvironment<E> getEnvironment()
 	{
 		return scope.getEnvironment();
 	}
 	
 	@Override
-	public IExpressionCompiler<E, T> getExpressionCompiler()
+	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return scope.getExpressionCompiler();
 	}
@@ -103,7 +102,7 @@ public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
+	public IPartialExpression<E> getValue(String name, CodePosition position, IMethodScope<E> environment)
 	{
 		if (local.containsKey(name))
 			return local.get(name).instance(position, environment);
@@ -112,7 +111,7 @@ public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public void putValue(String name, IZenSymbol<E, T> value, CodePosition position)
+	public void putValue(String name, IZenSymbol<E> value, CodePosition position)
 	{
 		if (local.containsKey(name))
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);
@@ -139,31 +138,31 @@ public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInst
 	}
 
 	@Override
-	public Statement<E, T> getControlStatement(String label)
+	public Statement<E> getControlStatement(String label)
 	{
 		return null;
 	}
 
 	@Override
-	public T getReturnType()
+	public TypeInstance<E> getReturnType()
 	{
 		return methodHeader.getReturnType();
 	}
 
 	@Override
-	public ICodeErrorLogger<E, T> getErrorLogger()
+	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return scope.getErrorLogger();
 	}
 
 	@Override
-	public MethodHeader<E, T> getMethodHeader()
+	public MethodHeader<E> getMethodHeader()
 	{
 		return methodHeader;
 	}
 
 	@Override
-	public TypeCapture<E, T> getTypeCapture()
+	public TypeCapture<E> getTypeCapture()
 	{
 		return typeCapture;
 	}
