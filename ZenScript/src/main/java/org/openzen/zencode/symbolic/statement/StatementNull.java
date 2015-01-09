@@ -6,7 +6,9 @@
 package org.openzen.zencode.symbolic.statement;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
+import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -18,7 +20,7 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class StatementNull<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
 {
-	public StatementNull(CodePosition position, IScopeMethod<E, T> environment)
+	public StatementNull(CodePosition position, IMethodScope<E, T> environment)
 	{
 		super(position, environment);
 	}
@@ -27,5 +29,11 @@ public class StatementNull<E extends IPartialExpression<E, T>, T extends IZenTyp
 	public <U> U process(IStatementProcessor<E, T, U> processor)
 	{
 		return processor.onEmpty(this);
+	}
+
+	@Override
+	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	{
+		return next;
 	}
 }

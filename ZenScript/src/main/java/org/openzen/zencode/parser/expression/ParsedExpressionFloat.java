@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyDouble;
 import org.openzen.zencode.runtime.IAny;
@@ -30,11 +30,11 @@ public class ParsedExpressionFloat extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
-		if (asType == scope.getTypes().getFloat())
+		if (asType == scope.getTypeCompiler().getFloat(scope))
 			return scope.getExpressionCompiler().constantFloat(getPosition(), scope, (float) value);
-		else if (asType == scope.getTypes().getDouble() || asType == null)
+		else if (asType == scope.getTypeCompiler().getDouble(scope) || asType == null)
 			return scope.getExpressionCompiler().constantDouble(getPosition(), scope, value);
 		else
 			return scope.getExpressionCompiler()

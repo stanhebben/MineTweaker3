@@ -2,14 +2,17 @@ package org.openzen.zencode.symbolic.statement;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
+import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementBlock<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T> {
+public class StatementBlock<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
+{
 	private final List<Statement<E, T>> statements;
 	
-	public StatementBlock(CodePosition position, IScopeMethod<E, T> environment, List<Statement<E, T>> statements)
+	public StatementBlock(CodePosition position, IMethodScope<E, T> environment, List<Statement<E, T>> statements)
 	{
 		super(position, environment);
 		
@@ -25,5 +28,15 @@ public class StatementBlock<E extends IPartialExpression<E, T>, T extends IZenTy
 	public <U> U process(IStatementProcessor<E, T, U> processor)
 	{
 		return processor.onBlock(this);
+	}
+
+	@Override
+	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	{
+		for (int i = statements.size() - 1; i >= 0; i--) {
+			next = statements.get(i).createFlowBlock(next, builder);
+		}
+		
+		return next;
 	}
 }

@@ -11,7 +11,7 @@ import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -46,7 +46,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 *
 	 * @return error logger
 	 */
-	public ICodeErrorLogger getErrorLogger();
+	public ICodeErrorLogger<E, T> getErrorLogger();
 
 	/**
 	 * Gets a global symbol. Should return null if the symbol doesn't exist.
@@ -56,7 +56,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param name global symbol name
 	 * @return symbol
 	 */
-	public IPartialExpression<E, T> getGlobal(CodePosition position, IScopeMethod<E, T> scope, String name);
+	public IPartialExpression<E, T> getGlobal(CodePosition position, IMethodScope<E, T> scope, String name);
 
 	/**
 	 * Gets a dollar symbol. Should return null if the symbol doesn't exist.
@@ -66,7 +66,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param name variable name
 	 * @return symbol
 	 */
-	public IPartialExpression<E, T> getDollar(CodePosition position, IScopeMethod<E, T> scope, String name);
+	public IPartialExpression<E, T> getDollar(CodePosition position, IMethodScope<E, T> scope, String name);
 
 	/**
 	 * Evaluates the bracketed value. Should return null if it can't be
@@ -78,7 +78,7 @@ public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T ex
 	 * @param tokens
 	 * @return
 	 */
-	public IPartialExpression<E, T> getBracketed(CodePosition position, IScopeMethod<E, T> scope, List<Token> tokens);
+	public IPartialExpression<E, T> getBracketed(CodePosition position, IMethodScope<E, T> scope, List<Token> tokens);
 
 	/**
 	 * Evaluates a global value. Should return null if it can't be evaluated

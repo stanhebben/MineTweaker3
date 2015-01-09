@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -41,7 +41,7 @@ public class CastingNotNull<E extends IPartialExpression<E, T>, T extends IZenTy
 	}
 
 	@Override
-	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
 	{
 		return scope.getExpressionCompiler().notNull(position, scope, value);
 	}

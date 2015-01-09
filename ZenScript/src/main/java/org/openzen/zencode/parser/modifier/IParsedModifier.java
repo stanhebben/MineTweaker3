@@ -5,11 +5,16 @@
  */
 package org.openzen.zencode.parser.modifier;
 
+import org.openzen.zencode.symbolic.Modifier;
+import org.openzen.zencode.util.CodePosition;
+
 /**
  *
  * @author Stan
  */
 public interface IParsedModifier
 {
+	public CodePosition getPosition();
 	
+	public Modifier compile();
 }

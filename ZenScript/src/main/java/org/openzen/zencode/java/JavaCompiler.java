@@ -20,7 +20,7 @@ import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.parser.IFileLoader;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.symbolic.SymbolicModule;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.java.util.MethodOutput;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
 
@@ -31,10 +31,10 @@ import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
 public class JavaCompiler
 {
 	private final List<ParsedModule> modules;
-	private final IScopeGlobal<IJavaExpression, IJavaType> global;
+	private final IGlobalScope<IJavaExpression, IJavaType> global;
 	private File debugOutputDirectory;
 
-	public JavaCompiler(IScopeGlobal<IJavaExpression, IJavaType> global)
+	public JavaCompiler(IGlobalScope<IJavaExpression, IJavaType> global)
 	{
 		modules = new ArrayList<ParsedModule>();
 		this.global = global;

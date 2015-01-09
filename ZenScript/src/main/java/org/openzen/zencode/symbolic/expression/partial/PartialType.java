@@ -9,7 +9,8 @@ package org.openzen.zencode.symbolic.expression.partial;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolType;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -28,7 +29,7 @@ public class PartialType<E extends IPartialExpression<E, T>, T extends IZenType<
 {
 	private final T type;
 	
-	public PartialType(CodePosition position, IScopeMethod<E, T> scope, T type) {
+	public PartialType(CodePosition position, IMethodScope<E, T> scope, T type) {
 		super(position, scope);
 		
 		this.type = type;
@@ -36,13 +37,13 @@ public class PartialType<E extends IPartialExpression<E, T>, T extends IZenType<
 
 	@Override
 	public E eval() {
-		getScope().error(getPosition(), "cannot use type as expression");
+		getScope().getErrorLogger().errorInvalidExpression(getPosition(), this);
 		return getScope().getExpressionCompiler().invalid(getPosition(), getScope(), type);
 	}
 
 	@Override
 	public E assign(CodePosition position, E value) {
-		getScope().error(position, "cannot assign to a type");
+		getScope().getErrorLogger().errorCannotAssignTo(position, this);
 		return getScope().getExpressionCompiler().invalid(position, getScope(), type);
 	}
 
@@ -53,8 +54,8 @@ public class PartialType<E extends IPartialExpression<E, T>, T extends IZenType<
 	}
 
 	@Override
-	public E call(CodePosition position, IMethod<E, T> method, E... arguments) {
-		getScope().error(position, "cannot call a type");
+	public E call(CodePosition position, IMethod<E, T> method, List<E> arguments) {
+		getScope().getErrorLogger().errorCannotCall(position, this);
 		return getScope().getExpressionCompiler().invalid(position, getScope(), method.getReturnType());
 	}
 
@@ -81,5 +82,11 @@ public class PartialType<E extends IPartialExpression<E, T>, T extends IZenType<
 	@Override
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function) {
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
 	}
 }

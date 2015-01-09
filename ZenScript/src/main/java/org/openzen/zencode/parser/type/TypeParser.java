@@ -1,13 +1,13 @@
 package org.openzen.zencode.parser.type;
 
 import java.io.IOException;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import static org.openzen.zencode.parser.type.ParsedTypeBasic.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
@@ -22,10 +22,10 @@ public class TypeParser
 	}
 
 	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 T parseDirect(String value, IScopeGlobal<E, T> scope)
+		 T parseDirect(String value, IModuleScope<E, T> scope)
 	{
 		try {
-			return parse(new ZenLexer(scope, value)).compile(scope);
+			return parse(new ZenLexer(scope.getErrorLogger(), value)).compile(scope);
 		} catch (IOException ex) {
 			throw new RuntimeException("Could not parse type " + value, ex);
 		}
@@ -115,7 +115,11 @@ public class TypeParser
 			case TOKEN_ID:
 				result = new ParsedTypeClass(lexer);
 				break;
-
+				
+			case T_AOPEN:
+				result = new ParsedTypeInlineStruct(lexer);
+				break;
+				
 			default:
 				throw new ParseException(firstToken, "Unknown type: " + firstToken.getValue());
 		}

@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyBool;
 import org.openzen.zencode.runtime.AnyNull;
@@ -33,19 +33,19 @@ public class ParsedExpressionOrOr extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T predictedType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
 	{
 		E cLeft = left.compile(scope, predictedType);
 		E cRight = right.compile(scope, predictedType);
 
 		T type;
-		if (cRight.getType().canCastImplicit(scope.getAccessScope(), cLeft.getType()))
+		if (cRight.getType().canCastImplicit(cLeft.getType()))
 			type = cLeft.getType();
-		else if (cLeft.getType().canCastImplicit(scope.getAccessScope(), cRight.getType()))
+		else if (cLeft.getType().canCastImplicit(cRight.getType()))
 			type = cRight.getType();
 		else {
-			scope.error(getPosition(), "These types could not be unified: " + cLeft.getType() + " and " + cRight.getType());
-			type = scope.getTypes().getAny();
+			scope.getErrorLogger().errorCannotCombineTypes(getPosition(), cLeft.getType(), cRight.getType());
+			type = scope.getTypeCompiler().getAny(scope);
 		}
 
 		return scope.getExpressionCompiler().orOr(

@@ -12,7 +12,7 @@ import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.symbolic.type.IZenType;
@@ -31,247 +31,247 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression invalid(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope)
+	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression invalid(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> valueType)
+	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> valueType)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantNull(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope)
+	public IJavaExpression constantNull(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantBool(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, boolean value)
+	public IJavaExpression constantBool(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, boolean value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantByte(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, byte value)
+	public IJavaExpression constantByte(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, byte value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantUByte(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, int value)
+	public IJavaExpression constantUByte(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, int value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantShort(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, short value)
+	public IJavaExpression constantShort(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, short value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantUShort(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, int value)
+	public IJavaExpression constantUShort(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, int value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantInt(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, int value)
+	public IJavaExpression constantInt(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, int value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantUInt(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, int value)
+	public IJavaExpression constantUInt(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, int value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantLong(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, long value)
+	public IJavaExpression constantLong(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, long value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantULong(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, long value)
+	public IJavaExpression constantULong(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, long value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantFloat(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, float value)
+	public IJavaExpression constantFloat(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, float value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantDouble(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, double value)
+	public IJavaExpression constantDouble(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, double value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantChar(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, int value)
+	public IJavaExpression constantChar(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, int value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constantString(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, String value)
+	public IJavaExpression constantString(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, String value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constant(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, Object value)
+	public IJavaExpression constant(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression[] constants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, Object[] values)
+	public IJavaExpression[] constants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object[] values)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression localGet(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, SymbolLocal<IJavaExpression, IJavaType> local)
+	public IJavaExpression localGet(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, SymbolLocal<IJavaExpression, IJavaType> local)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression localSet(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, SymbolLocal<IJavaExpression, IJavaType> local, IJavaExpression value)
+	public IJavaExpression localSet(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, SymbolLocal<IJavaExpression, IJavaType> local, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression andAnd(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression andAnd(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression orOr(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression orOr(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression compareGeneric(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value, CompareType comparator)
+	public IJavaExpression compareGeneric(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value, CompareType comparator)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression ternary(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression condition, IJavaExpression ifValue, IJavaExpression elseValue)
+	public IJavaExpression ternary(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression condition, IJavaExpression ifValue, IJavaExpression elseValue)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression notNull(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public IJavaExpression notNull(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression range(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression from, IJavaExpression to)
+	public IJavaExpression range(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression from, IJavaExpression to)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression array(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaType arrayType, List<IJavaExpression> values)
+	public IJavaExpression array(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaType arrayType, List<IJavaExpression> values)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression map(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaType mapType, List<IJavaExpression> keys, List<IJavaExpression> maps)
+	public IJavaExpression map(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaType mapType, List<IJavaExpression> keys, List<IJavaExpression> maps)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression constructNew(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> type, IMethod<IJavaExpression, IJavaType> method, IJavaExpression[] arguments)
+	public IJavaExpression constructNew(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> type, IMethod<IJavaExpression, IJavaType> method, IJavaExpression[] arguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression functionExpression(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, MethodHeader<IJavaExpression, IJavaType> header, List<Statement<IJavaExpression, IJavaType>> statements)
+	public IJavaExpression functionExpression(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, MethodHeader<IJavaExpression, IJavaType> header, List<Statement<IJavaExpression, IJavaType>> statements)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression staticMethodValue(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IMethod<IJavaExpression, IJavaType> method)
+	public IJavaExpression staticMethodValue(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IMethod<IJavaExpression, IJavaType> method)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyNot(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public IJavaExpression anyNot(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyNeg(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public IJavaExpression anyNeg(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyInvert(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public IJavaExpression anyInvert(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyAdd(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anyAdd(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anySub(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anySub(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyCat(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anyCat(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyMul(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anyMul(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyDiv(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anyDiv(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyMod(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression anyMod(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression left, IJavaExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression anyCastTo(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value, IJavaType type)
+	public IJavaExpression anyCastTo(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value, IJavaType type)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

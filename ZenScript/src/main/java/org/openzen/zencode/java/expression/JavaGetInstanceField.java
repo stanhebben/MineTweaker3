@@ -7,9 +7,10 @@ package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.field.IJavaField;
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.IAny;
 
 /**
  *
@@ -20,7 +21,7 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 	private final IJavaField field;
 	private final IJavaExpression instance;
 	
-	public JavaGetInstanceField(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaField field, IJavaExpression instance)
+	public JavaGetInstanceField(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaField field, IJavaExpression instance)
 	{
 		super(position, scope);
 		
@@ -41,5 +42,21 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 	public IJavaType getType()
 	{
 		return field.getType();
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		IAny instanceValue = instance.getCompileTimeValue();
+		if (instanceValue == null)
+			return null;
+		
+		return instanceValue.memberGet(field.getFieldName());
+	}
+
+	@Override
+	public void validate()
+	{
+		
 	}
 }

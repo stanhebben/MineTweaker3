@@ -37,7 +37,6 @@ import org.openzen.zencode.symbolic.symbols.SymbolType;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
-import stanhebben.zenscript.type.ZenType;
 
 /**
  *
@@ -91,21 +90,25 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 		
 		// add annotated classes
 		for (Class<?> cls : GlobalRegistry.getAnnotatedClasses()) {
-			for (Annotation annotation : cls.getAnnotations()) {
-				if (annotation instanceof ZenExpansion) {
-					String type = ((ZenExpansion) annotation).value();
-					TypeExpansion<IJavaExpression, IJavaType> expansion
-							= new TypeExpansion<IJavaExpression, IJavaType>(
-									scope,
-									AccessType.EXPORT,
-									ZenType.ACCESS_GLOBAL);
-					JavaNative.addExpansion(scope, expansion, cls);
-					typeCompiler.addExpansion(type, expansion);
-				} else if (annotation instanceof ZenClass)
-					root.put(
-							((ZenClass) annotation).value(),
-							new SymbolType<IJavaExpression, IJavaType>(typeCompiler.getNativeType(null, cls, TypeCapture.<IJavaExpression, IJavaType>empty())),
-							errors);
+			try {
+				for (Annotation annotation : cls.getAnnotations()) {
+					if (annotation instanceof ZenExpansion) {
+						String type = ((ZenExpansion) annotation).value();
+						TypeExpansion<IJavaExpression, IJavaType> expansion
+								= new TypeExpansion<IJavaExpression, IJavaType>(
+										scope,
+										AccessType.EXPORT,
+										ZenType.ACCESS_GLOBAL);
+						JavaNative.addExpansion(scope, expansion, cls);
+						typeCompiler.addExpansion(type, expansion);
+					} else if (annotation instanceof ZenClass)
+						root.put(
+								((ZenClass) annotation).value(),
+								new SymbolType<IJavaExpression, IJavaType>(typeCompiler.getNativeType(null, cls, TypeCapture.<IJavaExpression, IJavaType>empty())),
+								errors);
+				}
+			} catch (Throwable t) {
+				t.printStackTrace();
 			}
 		}
 	}

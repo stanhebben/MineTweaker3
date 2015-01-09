@@ -35,6 +35,21 @@ public class Strings
 
 		return result.toString();
 	}
+	
+	public static String join(Object[] values, String separator)
+	{
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object value : values) {
+			if (first)
+				first = false;
+			else
+				result.append(separator);
+			result.append(value);
+		}
+
+		return result.toString();
+	}
 
 	public static String join(Iterable<String> values, String separator)
 	{

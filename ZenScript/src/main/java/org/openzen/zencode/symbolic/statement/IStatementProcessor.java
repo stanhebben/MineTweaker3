@@ -40,4 +40,10 @@ public interface IStatementProcessor<E extends IPartialExpression<E, T>, T exten
 	public U onVar(StatementVar<E, T> statement);
 	
 	public U onWhile(StatementWhile<E, T> statement);
+	
+	public U onTryCatch(TryStatement<E, T> statement);
+	
+	public U onThrow(ThrowStatement<E, T> statement);
+	
+	public U onSynchronized(SynchronizedStatement<E, T> statement);
 }

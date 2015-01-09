@@ -5,12 +5,14 @@
  */
 package org.openzen.zencode.java.method;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -24,8 +26,8 @@ public class JavaMethodExpanding implements IJavaMethod
 {
 	private final IJavaMethod baseMethod;
 	private final IJavaType functionType;
-
-	public JavaMethodExpanding(IJavaMethod baseMethod)
+	
+	public JavaMethodExpanding(IJavaMethod baseMethod, IModuleScope<IJavaExpression, IJavaType> scope)
 	{
 		this.baseMethod = baseMethod;
 
@@ -35,9 +37,14 @@ public class JavaMethodExpanding implements IJavaMethod
 				1,
 				baseMethod.getMethodHeader().getParameters().size());
 		MethodHeader<IJavaExpression, IJavaType> newHeader
-				= new MethodHeader<IJavaExpression, IJavaType>(originalHeader.getReturnType(), arguments, originalHeader.isVarargs());
+				= new MethodHeader<IJavaExpression, IJavaType>(
+						originalHeader.getPosition(), 
+						originalHeader.getGenericParameters(),
+						originalHeader.getReturnType(),
+						arguments,
+						originalHeader.isVarargs());
 
-		functionType = originalHeader.getReturnType().getScope().getTypes().getFunction(newHeader);
+		functionType = originalHeader.getReturnType().getScope().getTypeCompiler().getFunction(scope, newHeader);
 	}
 
 	@Override
@@ -65,35 +72,35 @@ public class JavaMethodExpanding implements IJavaMethod
 	}
 
 	@Override
-	public IJavaExpression callStatic(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
+	public IJavaExpression callStatic(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<IJavaExpression> arguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callStaticWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, Object... constantArguments)
+	public IJavaExpression callStaticWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callStaticNullable(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression argument)
+	public IJavaExpression callStaticNullable(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression argument)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
 
 	@Override
-	public IJavaExpression callVirtual(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, IJavaExpression... arguments)
+	public IJavaExpression callVirtual(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, List<IJavaExpression> arguments)
 	{
-		IJavaExpression[] newArguments = new IJavaExpression[arguments.length + 1];
-		System.arraycopy(arguments, 0, newArguments, 1, arguments.length);
-		newArguments[0] = target;
+		List<IJavaExpression> newArguments = new ArrayList<IJavaExpression>();
+		newArguments.add(target);
+		newArguments.addAll(arguments);
 		
 		return baseMethod.callStatic(position, scope, newArguments);
 	}
 
 	@Override
-	public IJavaExpression callVirtualWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
+	public IJavaExpression callVirtualWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not possible");
 	}
@@ -108,5 +115,11 @@ public class JavaMethodExpanding implements IJavaMethod
 	public IJavaType getReturnType()
 	{
 		return functionType.getFunctionHeader().getReturnType();
+	}
+
+	@Override
+	public void validateCall(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
+	{
+		// TODO: implement
 	}
 }

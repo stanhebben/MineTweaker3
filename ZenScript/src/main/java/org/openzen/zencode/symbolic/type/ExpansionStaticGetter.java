@@ -5,7 +5,8 @@
  */
 package org.openzen.zencode.symbolic.type;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import java.util.Collections;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -38,8 +39,8 @@ public class ExpansionStaticGetter<E extends IPartialExpression<E, T>, T extends
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public IPartialExpression<E, T> compileGet(CodePosition position, IScopeMethod<E, T> scope)
+	public IPartialExpression<E, T> compileGet(CodePosition position, IMethodScope<E, T> scope)
 	{
-		return method.callStatic(position, scope);
+		return method.callStatic(position, scope, Collections.<E>emptyList());
 	}
 }

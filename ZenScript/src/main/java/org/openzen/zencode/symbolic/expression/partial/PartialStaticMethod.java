@@ -7,7 +7,8 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -20,13 +21,14 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
+ * @param <T>
  */
 public class PartialStaticMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 	extends AbstractPartialExpression<E, T>
 {
 	private final IMethod<E, T> method;
 	
-	public PartialStaticMethod(CodePosition position, IScopeMethod<E, T> scope, IMethod<E, T> method)
+	public PartialStaticMethod(CodePosition position, IMethodScope<E, T> scope, IMethod<E, T> method)
 	{
 		super(position, scope);
 		
@@ -42,7 +44,7 @@ public class PartialStaticMethod<E extends IPartialExpression<E, T>, T extends I
 	@Override
 	public E assign(CodePosition position, E other)
 	{
-		getScope().error(position, "Cannot assign to a method");
+		getScope().getErrorLogger().errorCannotAssignTo(position, this);
 		return getScope().getExpressionCompiler().invalid(getPosition(), getScope(), other.getType());
 	}
 
@@ -59,7 +61,7 @@ public class PartialStaticMethod<E extends IPartialExpression<E, T>, T extends I
 	}
 	
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return method.callStatic(position, getScope(), arguments);
 	}
@@ -86,5 +88,11 @@ public class PartialStaticMethod<E extends IPartialExpression<E, T>, T extends I
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
 	}
 }

@@ -5,15 +5,18 @@
  */
 package org.openzen.zencode.symbolic.type.casting;
 
+import java.util.Collections;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
+ * @param <E>
+ * @param <T>
  */
 public class CastingRuleStaticMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements ICastingRule<E, T>
 {
@@ -26,9 +29,9 @@ public class CastingRuleStaticMethod<E extends IPartialExpression<E, T>, T exten
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
 	{
-		return method.callStatic(position, scope, value);
+		return method.callStatic(position, scope, Collections.singletonList(value));
 	}
 
 	@Override

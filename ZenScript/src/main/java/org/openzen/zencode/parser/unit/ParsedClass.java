@@ -11,13 +11,18 @@ import org.openzen.zencode.parser.elements.ParsedGenericParameter;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.type.IParsedType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.unit.SymbolicClass;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ParsedClass implements IParsedUnit
+public class ParsedClass implements IParsedDefinition
 {
 	private final CodePosition position;
 	private final List<ParsedAnnotation> annotations;
@@ -43,5 +48,46 @@ public class ParsedClass implements IParsedUnit
 		this.genericParameters = genericParameters;
 		this.extendsTypes = extendsTypes;
 		this.members = members;
+	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<ParsedGenericParameter> getGenericParameters()
+	{
+		return genericParameters;
+	}
+
+	public List<IParsedType> getExtendsTypes()
+	{
+		return extendsTypes;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	{
+		return new SymbolicClass<E, T>(this, scope);
 	}
 }

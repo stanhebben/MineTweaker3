@@ -5,7 +5,8 @@
  */
 package org.openzen.zencode.symbolic.type;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import java.util.Collections;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -38,8 +39,8 @@ public class ExpansionGetter<E extends IPartialExpression<E, T>, T extends IZenT
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public IPartialExpression<E, T> compileGet(CodePosition position, IScopeMethod<E, T> scope)
+	public IPartialExpression<E, T> compileGet(CodePosition position, IMethodScope<E, T> scope)
 	{
-		return method.callStatic(position, scope, member.getTarget());
+		return method.callStatic(position, scope, Collections.singletonList(member.getTarget()));
 	}
 }

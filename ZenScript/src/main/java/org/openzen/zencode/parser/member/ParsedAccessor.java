@@ -36,6 +36,31 @@ public class ParsedAccessor
 		this.modifiers = modifiers;
 		this.content = content;
 	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public Type getType()
+	{
+		return type;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public ParsedStatement getContent()
+	{
+		return content;
+	}
 	
 	public static enum Type {
 		GET,

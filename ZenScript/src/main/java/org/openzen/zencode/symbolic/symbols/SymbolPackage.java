@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.symbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialPackage;
@@ -50,7 +50,7 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends IZenTyp
 		return members.get(name);
 	}
 
-	public void put(String name, IZenSymbol<E, T> symbol, ICodeErrorLogger errors)
+	public void put(String name, IZenSymbol<E, T> symbol, ICodeErrorLogger<E, T> errors)
 	{
 		String[] parts = Strings.split(name, '.');
 		String[] pkgParts = Arrays.copyOf(parts, parts.length - 1);
@@ -67,7 +67,7 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends IZenTyp
 				if (member instanceof SymbolPackage)
 					pkgCurrent = (SymbolPackage<E, T>) member;
 				else {
-					errors.error(null, part + " is not a package");
+					errors.errorNotAPackage(CodePosition.SYSTEM, part);
 					return;
 				}
 			} else {
@@ -79,13 +79,13 @@ public class SymbolPackage<E extends IPartialExpression<E, T>, T extends IZenTyp
 
 		//System.out.println("Adding " + parts[parts.length - 1] + " to package " + pkgCurrent.getName() + "(" + symbol + ")");
 		if (pkgCurrent.members.containsKey(parts[parts.length - 1]))
-			errors.error(null, parts[parts.length - 1] + " is already defined in that package");
+			errors.errorAlreadyDefinedInPackage(CodePosition.SYSTEM, name, Strings.join(Arrays.copyOf(parts, parts.length - 1), "."));
 		else
 			pkgCurrent.members.put(parts[parts.length - 1], symbol);
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IScopeMethod<E, T> environment)
+	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> environment)
 	{
 		return new PartialPackage<E, T>(position, environment, this);
 	}

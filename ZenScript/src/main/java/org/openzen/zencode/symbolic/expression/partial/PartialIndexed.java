@@ -7,9 +7,10 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
@@ -28,7 +29,7 @@ public class PartialIndexed<E extends IPartialExpression<E, T>, T extends IZenTy
 	private final E index;
 	private final T asType;
 	
-	public PartialIndexed(CodePosition position, IScopeMethod<E, T> scope, E value, E index, T asType)
+	public PartialIndexed(CodePosition position, IMethodScope<E, T> scope, E value, E index, T asType)
 	{
 		super(position, scope);
 		
@@ -72,7 +73,7 @@ public class PartialIndexed<E extends IPartialExpression<E, T>, T extends IZenTy
 	}
 
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return eval().call(position, method, arguments);
 	}
@@ -92,13 +93,27 @@ public class PartialIndexed<E extends IPartialExpression<E, T>, T extends IZenTy
 	@Override
 	public T toType(List<T> genericTypes)
 	{
-		getScope().error(getPosition(), "not a valid type");
-		return getScope().getTypes().getAny();
+		getScope().getErrorLogger().errorNotAType(getPosition(), this);
+		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		IAny ctValue = value.getCompileTimeValue();
+		if (ctValue == null)
+			return null;
+		
+		IAny ctIndex = index.getCompileTimeValue();
+		if (ctIndex == null)
+			return null;
+		
+		return ctValue.indexGet(ctValue);
 	}
 }

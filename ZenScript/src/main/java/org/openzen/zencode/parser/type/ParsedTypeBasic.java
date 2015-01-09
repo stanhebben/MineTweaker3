@@ -6,8 +6,8 @@
 package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.compiler.ITypeCompiler;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
@@ -41,41 +41,41 @@ public enum ParsedTypeBasic implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 T compile(IScopeGlobal<E, T> scope)
+		 T compile(IModuleScope<E, T> scope)
 	{
-		ITypeCompiler<E, T> types = scope.getTypes();
+		ITypeCompiler<E, T> types = scope.getTypeCompiler();
 		
 		switch (this) {
 			case ANY:
-				return types.getAny();
+				return types.getAny(scope);
 			case VOID:
-				return types.getVoid();
+				return types.getVoid(scope);
 			case BOOL:
-				return types.getBool();
+				return types.getBool(scope);
 			case BYTE:
-				return types.getByte();
+				return types.getByte(scope);
 			case UBYTE:
-				return types.getUByte();
+				return types.getUByte(scope);
 			case SHORT:
-				return types.getShort();
+				return types.getShort(scope);
 			case USHORT:
-				return types.getUShort();
+				return types.getUShort(scope);
 			case INT:
-				return types.getInt();
+				return types.getInt(scope);
 			case UINT:
-				return types.getUInt();
+				return types.getUInt(scope);
 			case LONG:
-				return types.getLong();
+				return types.getLong(scope);
 			case ULONG:
-				return types.getULong();
+				return types.getULong(scope);
 			case FLOAT:
-				return types.getFloat();
+				return types.getFloat(scope);
 			case DOUBLE:
-				return types.getDouble();
+				return types.getDouble(scope);
 			case CHAR:
-				return types.getChar();
+				return types.getChar(scope);
 			case STRING:
-				return types.getString();
+				return types.getString(scope);
 			default:
 				throw new AssertionError("Missing enum value: " + this);
 		}

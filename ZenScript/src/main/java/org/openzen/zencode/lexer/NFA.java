@@ -265,7 +265,7 @@ public class NFA
 			NFAState head = new NFAState();
 			NFAState tail = new NFAState();
 
-			for (int i = 0; i <= 256; i++) {
+			for (int i = 0; i <= 128; i++) {
 				tail.addTransition(i, head);
 			}
 			return new Partial(EPSILON, tail, head);

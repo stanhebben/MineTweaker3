@@ -6,9 +6,10 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -21,7 +22,7 @@ public class JavaLocalGet extends AbstractJavaExpression
 
 	public JavaLocalGet(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> environment,
+			IMethodScope<IJavaExpression, IJavaType> environment,
 			SymbolLocal<IJavaExpression, IJavaType> variable)
 	{
 		super(position, environment);
@@ -40,5 +41,17 @@ public class JavaLocalGet extends AbstractJavaExpression
 	{
 		int local = output.getLocal(variable);
 		output.load(variable.getType().toASMType(), local);
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
+	}
+
+	@Override
+	public void validate()
+	{
+		
 	}
 }

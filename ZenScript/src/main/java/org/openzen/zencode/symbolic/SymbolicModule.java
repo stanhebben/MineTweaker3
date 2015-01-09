@@ -7,10 +7,10 @@ package org.openzen.zencode.symbolic;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import org.openzen.zencode.symbolic.scope.IScopeModule;
-import org.openzen.zencode.symbolic.scope.ScopeModule;
-import org.openzen.zencode.symbolic.unit.ISymbolicUnit;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.scope.ModuleScope;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.IZenType;
@@ -23,21 +23,21 @@ import org.openzen.zencode.symbolic.type.IZenType;
  */
 public class SymbolicModule<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	private final IScopeModule<E, T> scope;
+	private final IModuleScope<E, T> scope;
 	private final List<SymbolicFunction<E, T>> scripts = new ArrayList<SymbolicFunction<E, T>>();
-	private final List<ISymbolicUnit<E, T>> units = new ArrayList<ISymbolicUnit<E, T>>();
+	private final List<ISymbolicDefinition<E, T>> units = new ArrayList<ISymbolicDefinition<E, T>>();
 	
-	public SymbolicModule(IScopeGlobal<E, T> scope)
+	public SymbolicModule(IGlobalScope<E, T> scope)
 	{
-		this.scope = new ScopeModule<E, T>(scope);
+		this.scope = new ModuleScope<E, T>(scope);
 	}
 	
-	public IScopeModule<E, T> getScope()
+	public IModuleScope<E, T> getScope()
 	{
 		return scope;
 	}
 	
-	public void addUnit(ISymbolicUnit<E, T> unit)
+	public void addUnit(ISymbolicDefinition<E, T> unit)
 	{
 		units.add(unit);
 	}
@@ -49,7 +49,7 @@ public class SymbolicModule<E extends IPartialExpression<E, T>, T extends IZenTy
 	
 	/*public void compile(MethodOutput mainScript)
 	{
-		for (ISymbolicUnit unit : units) {
+		for (ISymbolicDefinition unit : units) {
 			unit.compile();
 		}
 		

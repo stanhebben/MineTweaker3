@@ -10,7 +10,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.AccessType;
@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.util.CodePosition;
@@ -33,7 +33,7 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends IZenTyp
 {
 	private final AccessType accessType;
 	private final AccessScope accessScope;
-	private final IScopeGlobal<E, T> scope;
+	private final IGlobalScope<E, T> scope;
 	
 	private final Map<OperatorType, List<IMethod<E, T>>> operators;
 	private final Map<String, IMethod<E, T>> getters;
@@ -45,7 +45,7 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends IZenTyp
 	private final Map<String, IMethod<E, T>> staticSetters;
 	private final Map<String, List<IMethod<E, T>>> staticMethods;
 	
-	public TypeExpansion(IScopeGlobal<E, T> scope, AccessType accessType, AccessScope accessScope)
+	public TypeExpansion(IGlobalScope<E, T> scope, AccessType accessType, AccessScope accessScope)
 	{
 		this.scope = scope;
 		this.accessType = accessType;
@@ -126,7 +126,7 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends IZenTyp
 		return operators.containsKey(operator);
 	}
 	
-	public E operatorExact(CodePosition position, IScopeMethod<E, T> scope, OperatorType operator, E... values)
+	public E operatorExact(CodePosition position, IMethodScope<E, T> scope, OperatorType operator, List<E> values)
 	{
 		if (!operators.containsKey(operator))
 			return null;
@@ -139,7 +139,7 @@ public class TypeExpansion<E extends IPartialExpression<E, T>, T extends IZenTyp
 		return null;
 	}
 	
-	public E operator(CodePosition position, IScopeMethod<E, T> scope, OperatorType operator, E... values)
+	public E operator(CodePosition position, IMethodScope<E, T> scope, OperatorType operator, List<E> values)
 	{
 		if (!operators.containsKey(operator))
 			return null;

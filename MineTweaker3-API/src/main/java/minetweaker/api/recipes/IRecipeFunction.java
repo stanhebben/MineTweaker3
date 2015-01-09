@@ -15,6 +15,7 @@ import org.openzen.zencode.annotations.ZenClass;
  * @author Stan
  */
 @ZenClass("minetweaker.recipes.IRecipeFunction")
-public interface IRecipeFunction {
+public interface IRecipeFunction
+{
 	public IItemStack process(IItemStack output, Map<String, IItemStack> inputs, ICraftingInfo craftingInfo);
 }

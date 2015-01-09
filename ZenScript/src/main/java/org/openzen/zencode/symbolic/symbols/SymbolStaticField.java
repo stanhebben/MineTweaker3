@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.symbolic.symbols;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticField;
 import org.openzen.zencode.symbolic.field.IField;
@@ -29,7 +29,7 @@ public class SymbolStaticField<E extends IPartialExpression<E, T>, T extends IZe
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IScopeMethod<E, T> scope)
+	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> scope)
 	{
 		return new PartialStaticField<E, T>(position, scope, field);
 	}

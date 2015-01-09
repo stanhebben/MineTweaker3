@@ -7,8 +7,9 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.symbols.MemberVirtualSymbol;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.member.IGetter;
@@ -35,7 +36,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends 
 	private ISetter<E, T> setter;
 	private final List<IMethod<E, T>> methods;
 
-	public PartialVirtualMember(CodePosition position, IScopeMethod<E, T> scope, E target, String name)
+	public PartialVirtualMember(CodePosition position, IMethodScope<E, T> scope, E target, String name)
 	{
 		super(position, scope);
 
@@ -44,7 +45,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends 
 		this.methods = new ArrayList<IMethod<E, T>>();
 	}
 
-	private PartialVirtualMember(CodePosition position, IScopeMethod<E, T> scope, PartialVirtualMember<E, T> original)
+	private PartialVirtualMember(CodePosition position, IMethodScope<E, T> scope, PartialVirtualMember<E, T> original)
 	{
 		super(position, scope);
 
@@ -83,7 +84,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends 
 		return getter == null && setter == null && methods.isEmpty();
 	}
 
-	public PartialVirtualMember<E, T> makeVariant(CodePosition position, IScopeMethod<E, T> scope)
+	public PartialVirtualMember<E, T> makeVariant(CodePosition position, IMethodScope<E, T> scope)
 	{
 		return new PartialVirtualMember<E, T>(position, scope, this);
 	}
@@ -122,7 +123,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends 
 	}
 
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), target, arguments);
 	}
@@ -152,5 +153,15 @@ public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends 
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		IAny ctTarget = target.getCompileTimeValue();
+		if (ctTarget == null)
+			return null;
+		
+		return ctTarget.memberGet(name);
 	}
 }

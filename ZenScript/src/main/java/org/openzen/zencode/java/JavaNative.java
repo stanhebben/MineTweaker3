@@ -73,7 +73,7 @@ public class JavaNative
 	{
 		try {
 			Field field = cls.getField(name);
-			return new JavaField(field, scope.getTypes());
+			return new JavaField(field, scope.getTypeCompiler());
 		} catch (NoSuchFieldException ex) {
 			Logger.getLogger(JavaNative.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
@@ -85,7 +85,7 @@ public class JavaNative
 
 	public static IJavaField getStaticField(IJavaScopeGlobal scope, Field field)
 	{
-		return new JavaField(field, scope.getTypes());
+		return new JavaField(field, scope.getTypeCompiler());
 	}
 
 	public static IZenSymbol<IJavaExpression, IJavaType> getStaticFieldSymbol(IJavaScopeGlobal scope, Class<?> cls, String name)

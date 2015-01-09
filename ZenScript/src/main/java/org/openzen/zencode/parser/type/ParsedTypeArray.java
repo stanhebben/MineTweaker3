@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
@@ -25,9 +25,9 @@ public class ParsedTypeArray implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 T compile(IScopeGlobal<E, T> scope)
+		 T compile(IModuleScope<E, T> scope)
 	{
-		return scope.getTypes().getArray(baseType.compile(scope));
+		return scope.getTypeCompiler().getArray(scope, baseType.compile(scope));
 	}
 	
 	@Override

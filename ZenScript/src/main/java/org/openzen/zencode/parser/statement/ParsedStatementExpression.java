@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementExpression;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
@@ -31,7 +31,7 @@ public class ParsedStatementExpression extends ParsedStatement
 
 	private final ParsedExpression expression;
 
-	private ParsedStatementExpression(ParsedExpression expression)
+	public ParsedStatementExpression(ParsedExpression expression)
 	{
 		super(expression.getPosition());
 
@@ -40,14 +40,14 @@ public class ParsedStatementExpression extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-			Statement<E, T> compile(IScopeMethod<E, T> scope)
+			Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		return new StatementExpression<E, T>(getPosition(), scope, expression.compile(scope, null));
 	}
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

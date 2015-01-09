@@ -9,6 +9,13 @@ import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.type.IParsedType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.member.ImplementationMember;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.scope.IDefinitionScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -35,5 +42,42 @@ public class ParsedImplementation implements IParsedMember
 		this.modifiers = modifiers;
 		this.type = type;
 		this.members = members;
+	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public IParsedType getType()
+	{
+		return type;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	{
+		
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> IMember<E, T> compile(IDefinitionScope<E, T> scope)
+	{
+		return new ImplementationMember<E, T>(this, scope);
 	}
 }

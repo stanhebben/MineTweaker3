@@ -6,8 +6,9 @@
 
 package org.openzen.zencode.symbolic.method;
 
+import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -19,9 +20,9 @@ import org.openzen.zencode.util.CodePosition;
  */
 public interface IMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public E callStatic(CodePosition position, IScopeMethod<E, T> scope, E... arguments);
+	public E callStatic(CodePosition position, IMethodScope<E, T> scope, List<E> arguments);
 	
-	public E callStaticWithConstants(CodePosition position, IScopeMethod<E, T> scope, Object... constantArguments);
+	public E callStaticWithConstants(CodePosition position, IMethodScope<E, T> scope, Object... constantArguments);
 	
 	/**
 	 * Returns null if the argument is null, calls the method otherwise.
@@ -31,11 +32,11 @@ public interface IMethod<E extends IPartialExpression<E, T>, T extends IZenType<
 	 * @param argument
 	 * @return 
 	 */
-	public E callStaticNullable(CodePosition position, IScopeMethod<E, T> scope, E argument);
+	public E callStaticNullable(CodePosition position, IMethodScope<E, T> scope, E argument);
 	
-	public E callVirtual(CodePosition position, IScopeMethod<E, T> scope, E target, E... arguments);
+	public E callVirtual(CodePosition position, IMethodScope<E, T> scope, E target, List<E> arguments);
 	
-	public E callVirtualWithConstants(CodePosition position, IScopeMethod<E, T> scope, E target, Object... constantArguments);
+	public E callVirtualWithConstants(CodePosition position, IMethodScope<E, T> scope, E target, Object... constantArguments);
 	
 	public boolean isStatic();
 	
@@ -44,4 +45,6 @@ public interface IMethod<E extends IPartialExpression<E, T>, T extends IZenType<
 	public MethodHeader<E, T> getMethodHeader();
 	
 	public T getReturnType();
+	
+	public void validateCall(CodePosition position, IMethodScope<E, T> scope, List<E> arguments);
 }

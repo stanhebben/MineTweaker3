@@ -23,4 +23,6 @@ public interface IJavaType extends IZenType<IJavaExpression, IJavaType>
 	public Type toASMType();
 	
 	public IJavaIterator getIterator(int variables);
+	
+	public boolean isInterface();
 }

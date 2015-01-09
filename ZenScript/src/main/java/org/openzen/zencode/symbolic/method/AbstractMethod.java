@@ -5,8 +5,10 @@
  */
 package org.openzen.zencode.symbolic.method;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -19,25 +21,25 @@ import org.openzen.zencode.util.CodePosition;
 public abstract class AbstractMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMethod<E, T>
 {
 	private static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
-		 ES[] convert(CodePosition position, IScopeMethod<ES, TS> scope, Object... arguments)
+		 List<ES> convert(CodePosition position, IMethodScope<ES, TS> scope, Object... arguments)
 	{
 		@SuppressWarnings("unchecked")
-		ES[] converted = (ES[]) new IPartialExpression[arguments.length];
-		for (int i = 0; i < arguments.length; i++) {
-			converted[i] = scope.getExpressionCompiler().constant(position, scope, arguments[i]);
+		List<ES> converted = new ArrayList<ES>();
+		for (Object argument : arguments) {
+			converted.add(scope.getExpressionCompiler().constant(position, scope, argument));
 		}
 		
 		return converted;
 	}
 	
 	@Override
-	public E callStaticWithConstants(CodePosition position, IScopeMethod<E, T> scope, Object... constantArguments)
+	public E callStaticWithConstants(CodePosition position, IMethodScope<E, T> scope, Object... constantArguments)
 	{
 		return callStatic(position, scope, convert(position, scope, constantArguments));
 	}
 	
 	@Override
-	public E callVirtualWithConstants(CodePosition position, IScopeMethod<E, T> scope, E target, Object... constantArguments)
+	public E callVirtualWithConstants(CodePosition position, IMethodScope<E, T> scope, E target, Object... constantArguments)
 	{
 		return callVirtual(position, scope, target, convert(position, scope, constantArguments));
 	}

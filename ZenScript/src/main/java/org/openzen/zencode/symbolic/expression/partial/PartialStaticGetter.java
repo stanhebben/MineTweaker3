@@ -5,8 +5,10 @@
  */
 package org.openzen.zencode.symbolic.expression.partial;
 
+import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -26,7 +28,7 @@ public class PartialStaticGetter<E extends IPartialExpression<E, T>, T extends I
 {
 	private final IMethod<E, T> method;
 	
-	public PartialStaticGetter(CodePosition position, IScopeMethod<E, T> scope, IMethod<E, T> method)
+	public PartialStaticGetter(CodePosition position, IMethodScope<E, T> scope, IMethod<E, T> method)
 	{
 		super(position, scope);
 		
@@ -37,13 +39,13 @@ public class PartialStaticGetter<E extends IPartialExpression<E, T>, T extends I
 	@SuppressWarnings("unchecked")
 	public E eval()
 	{
-		return method.callStatic(getPosition(), getScope());
+		return method.callStatic(getPosition(), getScope(), Collections.<E>emptyList());
 	}
 
 	@Override
 	public E assign(CodePosition position, E other)
 	{
-		getScope().error(position, "Cannot assign to a static getter");
+		getScope().getErrorLogger().errorCannotAssignTo(position, this);
 		return getScope().getExpressionCompiler().invalid(getPosition(), getScope());
 	}
 
@@ -60,7 +62,7 @@ public class PartialStaticGetter<E extends IPartialExpression<E, T>, T extends I
 	}
 	
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
@@ -87,5 +89,12 @@ public class PartialStaticGetter<E extends IPartialExpression<E, T>, T extends I
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		// TODO: if we could get constant values...
+		return null;
 	}
 }

@@ -117,7 +117,7 @@ public final class Tweaker
 
 						String filename = script.getName();
 
-						ZenLexer parser = new ZenLexer(reader);
+						ZenLexer parser = new ZenLexer(global, reader);
 						ParsedFile pfile = new ParsedFile(module, filename, parser);
 						module.addScript(pfile);
 					} catch (IOException ex) {

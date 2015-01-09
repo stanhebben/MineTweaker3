@@ -9,7 +9,7 @@ import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.method.IJavaMethod;
 import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,31 +34,31 @@ public class JavaGeneratedMethod implements IJavaMethod
 	}
 
 	@Override
-	public IJavaExpression callStatic(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
+	public IJavaExpression callStatic(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression callStaticWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, Object... constantArguments)
+	public IJavaExpression callStaticWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression callStaticNullable(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression argument)
+	public IJavaExpression callStaticNullable(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression argument)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression callVirtual(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, IJavaExpression... arguments)
+	public IJavaExpression callVirtual(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, IJavaExpression... arguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression callVirtualWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
+	public IJavaExpression callVirtualWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

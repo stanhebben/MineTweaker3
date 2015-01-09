@@ -8,7 +8,7 @@ package zenscript.test;
 import org.openzen.zencode.symbolic.expression.Expressions;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.test.expression.TestExpression;
 import org.openzen.zencode.test.type.TestType;
 import org.openzen.zencode.util.CodePosition;
@@ -31,13 +31,13 @@ public abstract class TestMethod implements IMethod<TestExpression, TestType>
 	}
 	
 	@Override
-	public TestExpression callStaticWithConstants(CodePosition position, IScopeMethod<TestExpression, TestType> scope, Object... constantArguments)
+	public TestExpression callStaticWithConstants(CodePosition position, IMethodScope<TestExpression, TestType> scope, Object... constantArguments)
 	{
 		return callStatic(position, scope, Expressions.convert(position, scope, constantArguments));
 	}
 
 	@Override
-	public TestExpression callVirtualWithConstants(CodePosition position, IScopeMethod<TestExpression, TestType> scope, TestExpression target, Object... constantArguments)
+	public TestExpression callVirtualWithConstants(CodePosition position, IMethodScope<TestExpression, TestType> scope, TestExpression target, Object... constantArguments)
 	{
 		return callVirtual(position, scope, target, Expressions.convert(position, scope, position));
 	}

@@ -9,13 +9,18 @@ import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.unit.SymbolicStruct;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ParsedStruct implements IParsedUnit
+public class ParsedStruct implements IParsedDefinition
 {
 	private final CodePosition position;
 	private final List<ParsedAnnotation> annotations;
@@ -35,5 +40,36 @@ public class ParsedStruct implements IParsedUnit
 		this.modifiers = modifiers;
 		this.name = name;
 		this.members = members;
+	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	{
+		return new SymbolicStruct<E, T>(this, scope);
 	}
 }

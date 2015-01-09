@@ -5,7 +5,9 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import java.io.IOException;
+import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.lexer.Token;
@@ -21,28 +23,46 @@ import org.openzen.zencode.util.CodePosition;
  */
 public abstract class ParsedStatement
 {
+	public static ParsedStatement parse(String value, ICodeErrorLogger<?, ?> errorLogger)
+	{
+		try {
+			return parse(new ZenLexer(errorLogger, value));
+		} catch (IOException ex) {
+			throw new RuntimeException("Could not parse statement " + value, ex);
+		}
+	}
+	
 	public static ParsedStatement parse(ZenLexer lexer)
 	{
 		Token next = lexer.peek();
 		switch (next.getType()) {
-			case T_AOPEN:
-				return ParsedStatementBlock.parse(lexer);
-				
 			case T_IMPORT:
 				return ParsedImportStatement.parse(lexer);
 
+			case T_AOPEN:
+				return ParsedStatementBlock.parse(lexer);
+				
 			case T_RETURN:
 				return ParsedStatementReturn.parse(lexer);
+
+			case T_IF:
+				return ParsedStatementIf.parse(lexer);
 
 			case T_VAR:
 			case T_VAL:
 				return ParsedStatementVar.parse(lexer);
 
-			case T_IF:
-				return ParsedStatementIf.parse(lexer);
-
 			case T_FOR:
 				return ParsedStatementFor.parse(lexer);
+
+			case T_WHILE:
+				return ParsedStatementWhile.parse(lexer);
+
+			case T_DO:
+				return ParsedStatementDoWhile.parse(lexer);
+			
+			case T_TRY:
+				return ParsedTryStatement.parse(lexer);
 
 			case T_SWITCH:
 				return ParsedStatementSwitch.parse(lexer);
@@ -58,12 +78,12 @@ public abstract class ParsedStatement
 
 			case T_CONTINUE:
 				return ParsedStatementContinue.parse(lexer);
-
-			case T_WHILE:
-				return ParsedStatementWhile.parse(lexer);
-
-			case T_DO:
-				return ParsedStatementDoWhile.parse(lexer);
+				
+			case T_THROW:
+				return ParsedThrowStatement.parse(lexer);
+				
+			case T_SYNCHRONIZED:
+				return ParsedSynchronizedStatement.parse(lexer);
 
 			default:
 				return ParsedStatementExpression.parse(lexer);
@@ -83,8 +103,8 @@ public abstract class ParsedStatement
 	}
 
 	public abstract <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope);
+		 Statement<E, T> compile(IMethodScope<E, T> scope);
 
 	public abstract <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch);
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch);
 }

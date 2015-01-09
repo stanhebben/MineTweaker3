@@ -10,6 +10,13 @@ import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.statement.ParsedStatement;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.member.ConstructorMember;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.scope.IDefinitionScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -36,5 +43,42 @@ public class ParsedConstructor implements IParsedMember
 		this.modifiers = modifiers;
 		this.signature = signature;
 		this.contents = contents;
+	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public ParsedFunctionSignature getSignature()
+	{
+		return signature;
+	}
+
+	public ParsedStatement getContents()
+	{
+		return contents;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	{
+		
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> IMember<E, T> compile(IDefinitionScope<E, T> scope)
+	{
+		return new ConstructorMember<E, T>(this, scope);
 	}
 }

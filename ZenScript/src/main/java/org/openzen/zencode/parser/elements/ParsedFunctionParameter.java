@@ -1,6 +1,5 @@
 package org.openzen.zencode.parser.elements;
 
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.T_AS;
 import static org.openzen.zencode.lexer.ZenLexer.T_ASSIGN;
@@ -11,6 +10,7 @@ import org.openzen.zencode.parser.type.ParsedTypeBasic;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodParameter;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -81,10 +81,10 @@ public class ParsedFunctionParameter
 	}
 
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 MethodParameter<E, T> compile(IScopeGlobal<E, T> scope)
+		 MethodParameter<E, T> compile(IModuleScope<E, T> scope)
 	{
 		T cType = type.compile(scope);
 		E compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getConstantEnvironment(), cType);
-		return new MethodParameter<E, T>(name, cType, compiledDefaultValue);
+		return new MethodParameter<E, T>(position, name, cType, compiledDefaultValue);
 	}
 }

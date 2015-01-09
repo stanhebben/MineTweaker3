@@ -5,8 +5,9 @@
  */
 package org.openzen.zencode.symbolic.type;
 
+import java.util.Arrays;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -16,6 +17,7 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
+ * @param <T>
  */
 public class ExpansionSetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 		implements ISetter<E, T>
@@ -37,8 +39,8 @@ public class ExpansionSetter<E extends IPartialExpression<E, T>, T extends IZenT
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public E compile(CodePosition position, IScopeMethod<E, T> scope, E value)
+	public E compile(CodePosition position, IMethodScope<E, T> scope, E value)
 	{
-		return method.callStatic(position, scope, member.getTarget(), value);
+		return method.callStatic(position, scope, Arrays.asList(member.getTarget(), value));
 	}
 }

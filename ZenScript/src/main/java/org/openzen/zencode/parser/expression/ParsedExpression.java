@@ -5,12 +5,14 @@
  */
 package org.openzen.zencode.parser.expression;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
@@ -21,6 +23,7 @@ import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import static org.openzen.zencode.util.Strings.unescapeString;
 import org.openzen.zencode.util.CodePosition;
@@ -31,6 +34,23 @@ import org.openzen.zencode.util.CodePosition;
  */
 public abstract class ParsedExpression
 {
+	public static ParsedExpression parse(String value, ICodeErrorLogger<?, ?> errorLogger)
+	{
+		try {
+			return parse(new ZenLexer(errorLogger, value));
+		} catch (IOException ex) {
+			throw new RuntimeException("Could not parse statement " + value, ex);
+		}
+	}
+	
+	public static IAny evalToAny(String value, IGlobalScope<?, ?> scope)
+	{
+		ParsedExpression parsed = parse(value, scope.getErrorLogger());
+		return parsed
+				.compile(scope.getConstantEnvironment(), null)
+				.getCompileTimeValue();
+	}
+	
 	public static ParsedExpression parse(ZenLexer lexer)
 	{
 		return readAssignExpression(lexer);
@@ -40,9 +60,8 @@ public abstract class ParsedExpression
 	{
 		Token token = lexer.peek();
 		if (token == null) {
-			CodePosition position = new CodePosition(lexer.getFile(), lexer.getLine(), lexer.getLineOffset());
-			lexer.error(position, "unexpected end of file; expression expected");
-			return new ParsedExpressionInvalid(position);
+			lexer.getErrorLogger().errorUnexpectedEndOfFile(lexer.getPosition());
+			return new ParsedExpressionInvalid(lexer.getPosition());
 		}
 
 		CodePosition position = token.getPosition();
@@ -50,9 +69,8 @@ public abstract class ParsedExpression
 		ParsedExpression left = readConditionalExpression(position, lexer);
 
 		if (lexer.peek() == null) {
-			CodePosition position2 = new CodePosition(lexer.getFile(), lexer.getLine(), lexer.getLineOffset());
-			lexer.error(position2, "unexpected end of file - ; expected");
-			return new ParsedExpressionInvalid(position2);
+			lexer.getErrorLogger().errorUnexpectedEndOfFile(lexer.getPosition());
+			return new ParsedExpressionInvalid(lexer.getPosition());
 		}
 
 		switch (lexer.peek().getType()) {
@@ -414,9 +432,15 @@ public abstract class ParsedExpression
 				List<ParsedExpression> values = new ArrayList<ParsedExpression>();
 				if (lexer.optional(T_ACLOSE) == null) {
 					while (lexer.optional(T_ACLOSE) == null) {
-						keys.add(readAssignExpression(lexer));
-						lexer.required(T_COLON, ": expected");
-						values.add(readAssignExpression(lexer));
+						ParsedExpression key = readAssignExpression(lexer);
+						
+						if (lexer.optional(T_COLON) != null) {
+							keys.add(key);
+							values.add(readAssignExpression(lexer));
+						} else {
+							keys.add(null);
+							values.add(key);
+						}
 
 						if (lexer.optional(T_COMMA) == null) {
 							lexer.required(T_ACLOSE, "} or , expected");
@@ -466,10 +490,10 @@ public abstract class ParsedExpression
 	}
 
 	public abstract <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> environment, T predictedType);
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType);
 
 	public final <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 E compile(IScopeMethod<E, T> environment, T predictedType)
+		 E compile(IMethodScope<E, T> environment, T predictedType)
 	{
 		return compilePartial(environment, predictedType).eval();
 	}
@@ -480,7 +504,7 @@ public abstract class ParsedExpression
 	}
 
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 E compileKey(IScopeMethod<E, T> environment, T asType)
+		 E compileKey(IMethodScope<E, T> environment, T asType)
 	{
 		return compile(environment, asType);
 	}

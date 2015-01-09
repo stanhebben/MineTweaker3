@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementBreak;
 import org.openzen.zencode.symbolic.statement.StatementNull;
@@ -44,15 +44,16 @@ public class ParsedStatementBreak extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		Statement<E, T> controlStatement = scope.getControlStatement(label);
 
 		if (controlStatement == null) {
 			if (label == null)
-				scope.error(getPosition(), "Not inside a control statement");
+				scope.getErrorLogger().errorNoBreakableControlStatement(getPosition());
 			else
-				scope.error(getPosition(), "No control statement with the label " + label);
+				scope.getErrorLogger().errorNoLabeledControlStatement(getPosition(), label);
+			
 			return new StatementNull<E, T>(getPosition(), scope);
 		} else
 			return new StatementBreak<E, T>(getPosition(), scope, controlStatement);
@@ -60,7 +61,7 @@ public class ParsedStatementBreak extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

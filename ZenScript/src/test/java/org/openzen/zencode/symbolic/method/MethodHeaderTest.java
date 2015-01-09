@@ -14,8 +14,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.test.expression.TestExpression;
 import org.openzen.zencode.test.type.TestType;
 import zenscript.test.TestEnvironment;
@@ -26,7 +26,7 @@ import zenscript.test.TestEnvironment;
  */
 public class MethodHeaderTest
 {
-	private IScopeGlobal<TestExpression, TestType> scope;
+	private IGlobalScope<TestExpression, TestType> scope;
 	private TestType typeInt;
 	private TestType typeLong;
 	private TestType typeString;
@@ -50,10 +50,10 @@ public class MethodHeaderTest
 	public void setUp()
 	{
 		scope = TestEnvironment.createScope();
-		typeInt = scope.getTypes().getInt();
-		typeLong = scope.getTypes().getLong();
-		typeString = scope.getTypes().getString();
-		typeStringArray = scope.getTypes().getArray(typeString);
+		typeInt = scope.getTypeCompiler().getInt();
+		typeLong = scope.getTypeCompiler().getLong();
+		typeString = scope.getTypeCompiler().getString();
+		typeStringArray = scope.getTypeCompiler().getArray(typeString);
 	}
 	
 	@After
@@ -70,7 +70,7 @@ public class MethodHeaderTest
 	{
 		System.out.println("getScope");
 		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
-		IScopeGlobal<TestExpression, TestType> result = instance.getScope();
+		IGlobalScope<TestExpression, TestType> result = instance.getScope();
 		assertEquals(scope, result);
 	}
 
@@ -204,7 +204,7 @@ public class MethodHeaderTest
 		
 		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		
-		IScopeMethod<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
+		IMethodScope<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
 		TestExpression eInt = staticScope.getExpressionCompiler().constantInt(null, staticScope, 0);
 		TestExpression eLong = staticScope.getExpressionCompiler().constantLong(null, staticScope, 1);
 		TestExpression eString = staticScope.getExpressionCompiler().constantString(null, staticScope, "Hello");
@@ -232,7 +232,7 @@ public class MethodHeaderTest
 		
 		MethodHeader<TestExpression, TestType> instance = construct_ILS_S();
 		
-		IScopeMethod<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
+		IMethodScope<TestExpression, TestType> staticScope = scope.getConstantEnvironment();
 		TestExpression eInt = staticScope.getExpressionCompiler().constantInt(null, staticScope, 0);
 		TestExpression eLong = staticScope.getExpressionCompiler().constantLong(null, staticScope, 1);
 		TestExpression eString = staticScope.getExpressionCompiler().constantString(null, staticScope, "Hello");

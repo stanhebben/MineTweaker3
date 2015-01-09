@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.expression.partial;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
@@ -20,9 +20,9 @@ import org.openzen.zencode.util.CodePosition;
 public abstract class AbstractPartialExpression<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IPartialExpression<E, T>
 {
 	private final CodePosition position;
-	private final IScopeMethod<E, T> scope;
+	private final IMethodScope<E, T> scope;
 	
-	public AbstractPartialExpression(CodePosition position, IScopeMethod<E, T> scope)
+	public AbstractPartialExpression(CodePosition position, IMethodScope<E, T> scope)
 	{
 		this.position = position;
 		this.scope = scope;
@@ -35,7 +35,7 @@ public abstract class AbstractPartialExpression<E extends IPartialExpression<E, 
 	}
 	
 	@Override
-	public IScopeMethod<E, T> getScope()
+	public IMethodScope<E, T> getScope()
 	{
 		return scope;
 	}
@@ -43,13 +43,19 @@ public abstract class AbstractPartialExpression<E extends IPartialExpression<E, 
 	@Override
 	public E cast(CodePosition position, T type)
 	{
-		ICastingRule<E, T> castingRule = getType().getCastingRule(getScope().getAccessScope(), type);
+		ICastingRule<E, T> castingRule = getType().getCastingRule(type);
 		if (castingRule == null)
 		{
-			getScope().error(position, "Cannot cast " + getType() + " to " + type);
+			getScope().getErrorLogger().errorCannotCastExplicit(position, getType(), type);
 			return getScope().getExpressionCompiler().invalid(position, getScope());
 		}
 		
 		return castingRule.cast(position, getScope(), eval());
+	}
+	
+	@Override
+	public void validate()
+	{
+		
 	}
 }

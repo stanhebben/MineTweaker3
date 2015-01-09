@@ -7,7 +7,7 @@ package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.OperatorType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.partial.PartialIndexed;
@@ -34,7 +34,7 @@ public class ParsedExpressionIndex extends ParsedExpression
 	@Override
 	@SuppressWarnings("unchecked")
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		E cValue = value.compile(scope, null);
 		T asKeyType = cValue.getType().predictOperatorArgumentType(OperatorType.INDEXGET).get(0);

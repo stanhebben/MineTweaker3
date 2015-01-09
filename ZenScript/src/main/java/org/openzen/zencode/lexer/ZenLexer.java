@@ -23,7 +23,7 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan Hebben
  */
-public class ZenLexer extends TokenStream implements ICodeErrorLogger
+public class ZenLexer extends TokenStream
 {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 	private static final HashMap<String, Integer> KEYWORDS;
@@ -39,6 +39,7 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	public static final int T_DOT3 = 44;
 	public static final int T_DOT2 = 9;
 	public static final int T_DOT = 10;
+	public static final int T_DOTASSIGN = 46;
 	public static final int T_COMMA = 11;
 	public static final int T_PLUSASSIGN = 12;
 	public static final int T_PLUS = 13;
@@ -65,6 +66,10 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	public static final int T_TILDEASSIGN = 45;
 	public static final int T_TILDE = 32;
 	public static final int T_SEMICOLON = 33;
+	public static final int T_SHL = 47;
+	public static final int T_SHLASSIGN = 48;
+	public static final int T_SHR = 49;
+	public static final int T_SHRASSIGN = 50;
 	public static final int T_LTEQ = 34;
 	public static final int T_LT = 35;
 	public static final int T_GTEQ = 36;
@@ -74,7 +79,7 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	public static final int T_NOTEQ = 42;
 	public static final int T_NOT = 43;
 	public static final int T_DOLLAR = 45;
-
+	
 	public static final int T_ANY = 99;
 	public static final int T_BOOL = 100;
 	public static final int T_BYTE = 101;
@@ -112,6 +117,7 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	public static final int T_NEW = 136;
 	public static final int T_WHILE = 137;
 	public static final int T_DO = 138;
+	public static final int T_THROW = 139;
 
 	public static final int T_NULL = 140;
 	public static final int T_TRUE = 141;
@@ -318,13 +324,13 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 		KEYWORDS.put("abstract", T_ABSTRACT);
 	}
 
-	public static ZenLexer fromInputStream(ICodeErrorLogger errorLogger, InputStream inputStream) throws IOException
+	public static ZenLexer fromInputStream(ICodeErrorLogger<?, ?> errorLogger, InputStream inputStream) throws IOException
 	{
 		return new ZenLexer(errorLogger, new InputStreamReader(inputStream, UTF8));
 	}
 	
-	private final ICodeErrorLogger errorLogger;
-
+	private final ICodeErrorLogger<?, ?> errorLogger;
+	
 	/**
 	 * Constructs a tokener from the given reader.
 	 *
@@ -332,7 +338,7 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	 * @param contents file reader
 	 * @throws IOException if the file could not be read properly
 	 */
-	public ZenLexer(ICodeErrorLogger errorLogger, Reader contents) throws IOException
+	public ZenLexer(ICodeErrorLogger<?, ?> errorLogger, Reader contents) throws IOException
 	{
 		super(contents, DFA);
 		
@@ -346,7 +352,7 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 	 * @param contents content string
 	 * @throws IOException shouldn't happen
 	 */
-	public ZenLexer(ICodeErrorLogger errorLogger, String contents) throws IOException
+	public ZenLexer(ICodeErrorLogger<?, ?> errorLogger, String contents) throws IOException
 	{
 		super(new StringReader(contents), DFA);
 		
@@ -387,26 +393,9 @@ public class ZenLexer extends TokenStream implements ICodeErrorLogger
 		required(T_SEMICOLON, "; expected");
 	}
 	
-	// #######################################
-	// ### ICodeErrorLogger implementation ###
-	// #######################################
-	
-	@Override
-	public boolean hasErrors()
+	public ICodeErrorLogger<?, ?> getErrorLogger()
 	{
-		return errorLogger.hasErrors();
-	}
-	
-	@Override
-	public void error(CodePosition position, String message)
-	{
-		errorLogger.error(position, message);
-	}
-	
-	@Override
-	public void warning(CodePosition position, String message)
-	{
-		errorLogger.warning(position, message);
+		return errorLogger;
 	}
 	
 	// ##################################

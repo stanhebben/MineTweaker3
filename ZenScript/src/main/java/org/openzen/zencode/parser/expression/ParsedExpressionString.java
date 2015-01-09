@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyString;
 import org.openzen.zencode.runtime.IAny;
@@ -30,11 +30,11 @@ public class ParsedExpressionString extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
-		if (asType == scope.getTypes().getChar()) {
+		if (asType == scope.getTypeCompiler().getChar(scope)) {
 			if (value.length() != 1) {
-				scope.error(getPosition(), "Cannot convert string value\"" + value + "\" to char");
+				scope.getErrorLogger().errorCannotConvertToChar(getPosition(), value);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
 			} else {
 				return scope.getExpressionCompiler().constantChar(getPosition(), scope, value.charAt(0));

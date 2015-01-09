@@ -12,8 +12,8 @@ import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.test.expression.TestExpression;
@@ -27,7 +27,7 @@ public class TestType implements IZenType<TestExpression, TestType>
 {
 
 	@Override
-	public IScopeGlobal<TestExpression, TestType> getScope()
+	public IGlobalScope<TestExpression, TestType> getScope()
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -87,25 +87,25 @@ public class TestType implements IZenType<TestExpression, TestType>
 	}
 
 	@Override
-	public TestExpression call(CodePosition position, IScopeMethod<TestExpression, TestType> scope, IMethod<TestExpression, TestType> method, TestExpression... arguments)
+	public TestExpression call(CodePosition position, IMethodScope<TestExpression, TestType> scope, IMethod<TestExpression, TestType> method, TestExpression... arguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getInstanceMember(CodePosition position, IScopeMethod<TestExpression, TestType> scope, TestExpression instance, String name)
+	public IPartialExpression<TestExpression, TestType> getInstanceMember(CodePosition position, IMethodScope<TestExpression, TestType> scope, TestExpression instance, String name)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getStaticMember(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String name)
+	public IPartialExpression<TestExpression, TestType> getStaticMember(CodePosition position, IMethodScope<TestExpression, TestType> scope, String name)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public TestExpression createDefaultValue(CodePosition position, IScopeMethod<TestExpression, TestType> scope)
+	public TestExpression createDefaultValue(CodePosition position, IMethodScope<TestExpression, TestType> scope)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -135,25 +135,25 @@ public class TestType implements IZenType<TestExpression, TestType>
 	}
 
 	@Override
-	public TestExpression unary(CodePosition position, IScopeMethod<TestExpression, TestType> scope, OperatorType operator, TestExpression value)
+	public TestExpression unary(CodePosition position, IMethodScope<TestExpression, TestType> scope, OperatorType operator, TestExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public TestExpression binary(CodePosition position, IScopeMethod<TestExpression, TestType> scope, OperatorType operator, TestExpression left, TestExpression right)
+	public TestExpression binary(CodePosition position, IMethodScope<TestExpression, TestType> scope, OperatorType operator, TestExpression left, TestExpression right)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public TestExpression ternary(CodePosition position, IScopeMethod<TestExpression, TestType> scope, OperatorType operator, TestExpression first, TestExpression second, TestExpression third)
+	public TestExpression ternary(CodePosition position, IMethodScope<TestExpression, TestType> scope, OperatorType operator, TestExpression first, TestExpression second, TestExpression third)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public TestExpression compare(CodePosition position, IScopeMethod<TestExpression, TestType> scope, TestExpression left, TestExpression right, CompareType comparator)
+	public TestExpression compare(CodePosition position, IMethodScope<TestExpression, TestType> scope, TestExpression left, TestExpression right, CompareType comparator)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

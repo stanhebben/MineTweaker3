@@ -5,8 +5,7 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
-import org.openzen.zencode.symbolic.statement.Statement;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
@@ -64,9 +63,9 @@ public class ParsedStatementVar extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+		 StatementVar<E, T> compile(IMethodScope<E, T> scope)
 	{
-		T cType = scope.getTypes().getAny();
+		T cType = scope.getTypeCompiler().getAny(scope);
 		E cInitializer = null;
 		if (asType != null)
 			cType = asType.compile(scope);
@@ -78,7 +77,7 @@ public class ParsedStatementVar extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

@@ -32,7 +32,7 @@ public class TweakerSymbolStaticField implements ITweakerSymbol
 	@Override
 	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope)
 	{
-		return new SymbolStaticField<IJavaExpression, IJavaType>(new JavaField(field, scope.getTypes()));
+		return new SymbolStaticField<IJavaExpression, IJavaType>(new JavaField(field, scope.getTypeCompiler()));
 	}
 
 	@Override

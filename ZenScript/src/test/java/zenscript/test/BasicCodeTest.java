@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.java.JavaCompiler;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
 
 /**
  *
@@ -21,7 +21,7 @@ import org.openzen.zencode.symbolic.scope.IScopeGlobal;
  */
 public class BasicCodeTest
 {
-	private IScopeGlobal scope;
+	private IGlobalScope scope;
 	
 	public BasicCodeTest()
 	{

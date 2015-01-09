@@ -8,7 +8,8 @@ package org.openzen.zencode.java.expression;
 import org.objectweb.asm.Label;
 import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.java.util.MethodOutput;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -19,7 +20,7 @@ public class JavaNotNull extends AbstractJavaExpression
 {
 	private final IJavaExpression value;
 	
-	public JavaNotNull(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public JavaNotNull(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
 	{
 		super(position, scope);
 		
@@ -47,7 +48,7 @@ public class JavaNotNull extends AbstractJavaExpression
 	@Override
 	public IJavaType getType()
 	{
-		return getScope().getTypes().getBool();
+		return getScope().getTypeCompiler().getBool(getScope());
 	}
 	
 	@Override
@@ -62,5 +63,18 @@ public class JavaNotNull extends AbstractJavaExpression
 	{
 		compile(true, output);
 		output.ifNull(onElse);
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return value.getCompileTimeValue();
+	}
+
+	@Override
+	public void validate()
+	{
+		if (value.getType().equals(getScope().getTypeCompiler().getNull(getScope())))
+			getScope().getErrorLogger().errorCannotBeNull(getPosition());
 	}
 }

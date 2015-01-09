@@ -6,7 +6,8 @@
 package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
@@ -25,7 +26,7 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType
 {
 	private final SymbolLocal<E, T> variable;
 
-	public PartialLocal(CodePosition position, IScopeMethod<E, T> scope, SymbolLocal<E, T> variable)
+	public PartialLocal(CodePosition position, IMethodScope<E, T> scope, SymbolLocal<E, T> variable)
 	{
 		super(position, scope);
 		
@@ -47,11 +48,7 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType
 	@Override
 	public E assign(CodePosition position, E other)
 	{
-		if (variable.isFinal()) {
-			getScope().error(position, "value cannot be changed");
-			return getScope().getExpressionCompiler().invalid(position, getScope());
-		} else
-			return getScope().getExpressionCompiler().localSet(position, getScope(), variable, other);
+		return getScope().getExpressionCompiler().localSet(position, getScope(), variable, other);
 	}
 
 	@Override
@@ -69,8 +66,8 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType
 	@Override
 	public T toType(List<T> genericTypes)
 	{
-		getScope().error(getPosition(), "not a valid type");
-		return getScope().getTypes().getAny();
+		getScope().getErrorLogger().errorNotAType(getPosition(), this);
+		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override
@@ -80,7 +77,7 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType
 	}
 	
 	@Override
-	public E call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public E call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
@@ -89,5 +86,11 @@ public class PartialLocal<E extends IPartialExpression<E, T>, T extends IZenType
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return function.addCapture(getPosition(), getScope(), variable);
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
 	}
 }

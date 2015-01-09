@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
@@ -26,6 +27,7 @@ import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -49,7 +51,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		MethodHeader<E, T> compiledHeader = header.compile(scope);
 		
@@ -57,33 +59,30 @@ public class ParsedExpressionFunction extends ParsedExpression
 			MethodHeader<E, T> function = asType.getFunctionHeader();
 			if (function != null) {
 				List<T> argumentTypes = new ArrayList<T>();
-				for (ParsedFunctionParameter argument : header.getArguments()) {
+				for (ParsedFunctionParameter argument : header.getParameters()) {
 					argumentTypes.add(argument.getType().compile(scope));
 				}
 
 				T newReturnType = compiledHeader.getReturnType();
-				if (compiledHeader.getReturnType() == scope.getTypes().getAny())
+				if (compiledHeader.getReturnType() == scope.getTypeCompiler().getAny(scope))
 					newReturnType = function.getReturnType();
 
 				for (int i = 0; i < argumentTypes.size(); i++) {
-					if (i < function.getParameters().size() && argumentTypes.get(i) == scope.getTypes().getAny())
+					if (i < function.getParameters().size() && argumentTypes.get(i) == scope.getTypeCompiler().getAny(scope))
 						argumentTypes.set(i, function.getParameters().get(i).getType());
 				}
 
 				List<MethodParameter<E, T>> newArguments = new ArrayList<MethodParameter<E, T>>();
-				for (int i = 0; i < header.getArguments().size(); i++) {
-					ParsedFunctionParameter argument = header.getArguments().get(i);
-
-					String name = argument.getName();
-					T type = argumentTypes.get(i);
-					E defaultValue = null;
-					if (argument.getDefaultValue() != null)
-						defaultValue = argument.getDefaultValue().compile(scope, type);
-
-					newArguments.add(new MethodParameter<E, T>(name, type, defaultValue));
+				for (ParsedFunctionParameter parameter : header.getParameters()) {
+					newArguments.add(parameter.compile(scope));
 				}
 
-				compiledHeader = new MethodHeader<E, T>(newReturnType, newArguments, function.isVarargs());
+				compiledHeader = new MethodHeader<E, T>(
+						compiledHeader.getPosition(),
+						function.getGenericParameters(),
+						newReturnType,
+						newArguments,
+						function.isVarargs());
 			}
 		}
 
@@ -97,7 +96,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 			functionScope.putValue(
 					argument.getName(),
 					symbol,
-					header.getArguments().get(i).getPosition());
+					header.getParameters().get(i).getPosition());
 		}
 
 		List<Statement<E, T>> cStatements = new ArrayList<Statement<E, T>>();
@@ -116,17 +115,23 @@ public class ParsedExpressionFunction extends ParsedExpression
 	}
 
 	private static class EnvironmentFunctionLiteral<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-			implements IScopeMethod<E, T>
+			implements IMethodScope<E, T>
 	{
-		private final IScopeMethod<E, T> outer;
+		private final IMethodScope<E, T> outer;
 		private final SymbolicFunction<E, T> functionUnit;
 		private final Map<String, IZenSymbol<E, T>> locals;
 
-		public EnvironmentFunctionLiteral(IScopeMethod<E, T> outer, SymbolicFunction<E, T> functionUnit)
+		public EnvironmentFunctionLiteral(IMethodScope<E, T> outer, SymbolicFunction<E, T> functionUnit)
 		{
 			this.outer = outer;
 			this.functionUnit = functionUnit;
 			locals = new HashMap<String, IZenSymbol<E, T>>();
+		}
+		
+		@Override
+		public ISymbolicDefinition<E, T> getDefinition()
+		{
+			return functionUnit;
 		}
 
 		@Override
@@ -136,9 +141,9 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 
 		@Override
-		public ITypeCompiler<E, T> getTypes()
+		public ITypeCompiler<E, T> getTypeCompiler()
 		{
-			return outer.getTypes();
+			return outer.getTypeCompiler();
 		}
 
 		@Override
@@ -154,7 +159,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 		
 		@Override
-		public IScopeMethod<E, T> getConstantEnvironment()
+		public IMethodScope<E, T> getConstantEnvironment()
 		{
 			return outer.getConstantEnvironment();
 		}
@@ -196,7 +201,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 
 		@Override
-		public IPartialExpression<E, T> getValue(String name, CodePosition position, IScopeMethod<E, T> environment)
+		public IPartialExpression<E, T> getValue(String name, CodePosition position, IMethodScope<E, T> environment)
 		{
 			if (locals.containsKey(name))
 				return locals.get(name).instance(position, environment);
@@ -211,24 +216,6 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 
 		@Override
-		public boolean hasErrors()
-		{
-			return outer.hasErrors();
-		}
-
-		@Override
-		public void error(CodePosition position, String message)
-		{
-			outer.error(position, message);
-		}
-
-		@Override
-		public void warning(CodePosition position, String message)
-		{
-			outer.warning(position, message);
-		}
-
-		@Override
 		public Statement<E, T> getControlStatement(String label)
 		{
 			return null;
@@ -238,6 +225,18 @@ public class ParsedExpressionFunction extends ParsedExpression
 		public T getReturnType()
 		{
 			return functionUnit.getHeader().getReturnType();
+		}
+
+		@Override
+		public ICodeErrorLogger<E, T> getErrorLogger()
+		{
+			return outer.getErrorLogger();
+		}
+
+		@Override
+		public MethodHeader<E, T> getMethodHeader()
+		{
+			return functionUnit.getHeader();
 		}
 	}
 }

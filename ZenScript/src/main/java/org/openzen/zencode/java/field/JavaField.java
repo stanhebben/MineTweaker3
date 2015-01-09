@@ -14,7 +14,7 @@ import org.openzen.zencode.java.expression.JavaGetStaticField;
 import org.openzen.zencode.java.expression.JavaSetInstanceField;
 import org.openzen.zencode.java.expression.JavaSetStaticField;
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
@@ -78,7 +78,7 @@ public class JavaField implements IJavaField
 	@Override
 	public IJavaExpression makeStaticGetExpression(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope)
+			IMethodScope<IJavaExpression, IJavaType> scope)
 	{
 		return new JavaGetStaticField(position, scope, this);
 	}
@@ -86,7 +86,7 @@ public class JavaField implements IJavaField
 	@Override
 	public IJavaExpression makeStaticSetExpression(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression, IJavaType> scope,
 			IJavaExpression value)
 	{
 		return new JavaSetStaticField(position, scope, this, value);
@@ -95,7 +95,7 @@ public class JavaField implements IJavaField
 	@Override
 	public IJavaExpression makeInstanceGetExpression(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression, IJavaType> scope,
 			IJavaExpression target)
 	{
 		return new JavaGetInstanceField(position, scope, this, target);
@@ -104,7 +104,7 @@ public class JavaField implements IJavaField
 	@Override
 	public IJavaExpression makeInstanceSetExpression(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression, IJavaType> scope,
 			IJavaExpression target, IJavaExpression value)
 	{
 		return new JavaSetInstanceField(position, scope, this, target, value);

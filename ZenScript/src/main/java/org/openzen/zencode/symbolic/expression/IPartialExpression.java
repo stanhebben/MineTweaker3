@@ -7,10 +7,10 @@
 package org.openzen.zencode.symbolic.expression;
 
 import java.util.List;
-import org.openzen.zencode.annotations.CompareType;
+import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
@@ -26,7 +26,7 @@ public interface IPartialExpression<E extends IPartialExpression<E, T>, T extend
 {
 	public CodePosition getPosition();
 	
-	public IScopeMethod<E, T> getScope();
+	public IMethodScope<E, T> getScope();
 	
 	public E eval();
 	
@@ -46,7 +46,7 @@ public interface IPartialExpression<E extends IPartialExpression<E, T>, T extend
 	 * @param arguments
 	 * @return 
 	 */
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments);
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments);
 	
 	public E cast(CodePosition position, T type);
 	
@@ -57,4 +57,8 @@ public interface IPartialExpression<E extends IPartialExpression<E, T>, T extend
 	public T toType(List<T> genericTypes);
 	
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function);
+	
+	public IAny getCompileTimeValue();
+	
+	public void validate();
 }

@@ -6,10 +6,17 @@
 
 package org.openzen.zencode.parser.elements;
 
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.method.IGenericParameterBound;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+
 /**
  *
  * @author Stan
  */
-public interface IParsedGenericBound {
-	
+public interface IParsedGenericBound
+{
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+			 IGenericParameterBound<E, T> compile(IModuleScope<E, T> scope);
 }

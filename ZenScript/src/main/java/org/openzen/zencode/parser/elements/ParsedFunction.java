@@ -6,11 +6,8 @@
 package org.openzen.zencode.parser.elements;
 
 import org.openzen.zencode.lexer.ZenLexer;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.statement.ParsedStatementBlock;
-import org.openzen.zencode.symbolic.scope.IScopeModule;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -39,8 +36,6 @@ public class ParsedFunction
 	private final ParsedFunctionSignature header;
 	private final ParsedStatement contents;
 
-	private SymbolicFunction compiled;
-
 	private ParsedFunction(CodePosition position, String name, ParsedFunctionSignature header, ParsedStatement contents)
 	{
 		this.position = position;
@@ -67,16 +62,5 @@ public class ParsedFunction
 	public ParsedStatement getContents()
 	{
 		return contents;
-	}
-
-	public SymbolicFunction compileHeader(IScopeModule scope)
-	{
-		compiled = new SymbolicFunction(position, header.compile(scope), scope);
-		return compiled;
-	}
-
-	public void compileContents()
-	{
-		compiled.addStatement(contents.compile(compiled.getScope()));
 	}
 }

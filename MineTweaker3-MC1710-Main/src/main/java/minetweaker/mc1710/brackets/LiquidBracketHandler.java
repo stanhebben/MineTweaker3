@@ -15,7 +15,7 @@ import org.openzen.zencode.java.method.IJavaMethod;
 import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -42,7 +42,7 @@ public class LiquidBracketHandler implements IBracketHandler
 	}
 
 	@Override
-	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<Token> tokens)
 	{
 		if (tokens.size() > 2 && tokens.get(0).getValue().equals("liquid") && tokens.get(1).getValue().equals(":"))
 				return find(position, scope, tokens, 2, tokens.size());

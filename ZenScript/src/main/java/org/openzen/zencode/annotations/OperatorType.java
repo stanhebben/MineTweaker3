@@ -12,25 +12,40 @@ package org.openzen.zencode.annotations;
  */
 public enum OperatorType {
 	ADD(2, "+"),
+	ADDASSIGN(2, "+="),
 	SUB(2, "-"),
+	SUBASSIGN(2, "-="),
 	MUL(2, "*"),
+	MULASSIGN(2, "*="),
 	DIV(2, "/"),
+	DIVASSIGN(2, "/="),
 	MOD(2, "%"),
+	MODASSIGN(2, "%="),
 	CAT(2, "~"),
+	CATASSIGN(2, "~="),
 	OR(2, "|"),
+	ORASSIGN(2, "|="),
 	AND(2, "&"),
+	ANDASSIGN(2, "&="),
 	XOR(2, "^"),
+	XORASSIGN(2, "^="),
 	INVERT(1, "~"),
 	NEG(1, "-"),
 	NOT(1, "!"),
-	INDEXSET(3, "[]"),
-	INDEXGET(2, "[]="),
+	SHL(2, "<<"),
+	SHR(2, ">>"),
+	SHLASSIGN(2, "<<="),
+	SHRASSIGN(2, ">>="),
+	INDEXGET(2, "[]"),
+	INDEXSET(3, "[]="),
 	RANGE(2, ".."),
 	CONTAINS(2, "in"),
 	COMPARE(2, "compare"),
 	MEMBERGETTER(3, "member get"),
 	MEMBERSETTER(3, "member set"),
-	EQUALS(2, "==");
+	MEMBERCALLER(3, "member caller"),
+	EQUALS(2, "=="),
+	FOR(1, "for");
 	
 	private final int arguments;
 	private final String operator;

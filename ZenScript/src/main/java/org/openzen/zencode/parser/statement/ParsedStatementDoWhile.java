@@ -5,8 +5,8 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.ScopeStatementBlock;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.StatementBlockScope;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementDoWhile;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
@@ -55,19 +55,19 @@ public class ParsedStatementDoWhile extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
-		E compiledCondition = condition.compile(scope, scope.getTypes().getBool());
+		E compiledCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
 		StatementDoWhile<E, T> compiled = new StatementDoWhile<E, T>(getPosition(), scope, compiledCondition);
 
-		ScopeStatementBlock<E, T> statementScope = new ScopeStatementBlock<E, T>(scope, compiled, label);
+		StatementBlockScope<E, T> statementScope = new StatementBlockScope<E, T>(scope, compiled, label);
 		compiled.setContents(contents.compile(statementScope));
 		return compiled;
 	}
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

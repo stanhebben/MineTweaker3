@@ -5,12 +5,14 @@
  */
 package org.openzen.zencode.java.expression;
 
+import java.util.List;
 import org.openzen.zencode.java.method.IJavaMethod;
 import org.openzen.zencode.java.method.JavaMethods;
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.IAny;
 
 /**
  *
@@ -19,9 +21,9 @@ import org.openzen.zencode.java.util.MethodOutput;
 public class JavaCallStatic extends AbstractJavaExpression
 {
 	private final IJavaMethod method;
-	private final IJavaExpression[] arguments;
+	private final List<IJavaExpression> arguments;
 	
-	public JavaCallStatic(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaMethod method, IJavaExpression... arguments)
+	public JavaCallStatic(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaMethod method, List<IJavaExpression> arguments)
 	{
 		super(position, scope);
 		
@@ -42,7 +44,7 @@ public class JavaCallStatic extends AbstractJavaExpression
 					method.getMethodName(),
 					JavaMethods.getSignature(method.getMethodHeader()));
 		
-		if (!pushResult && method.getReturnType() != getScope().getTypes().getVoid())
+		if (!pushResult && method.getReturnType() != getScope().getTypeCompiler().getVoid(getScope()))
 			output.pop(method.getReturnType().isLarge());
 	}
 
@@ -50,5 +52,17 @@ public class JavaCallStatic extends AbstractJavaExpression
 	public IJavaType getType()
 	{
 		return method.getReturnType();
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
+	}
+
+	@Override
+	public void validate()
+	{
+		method.validateCall(getPosition(), getScope(), arguments);
 	}
 }

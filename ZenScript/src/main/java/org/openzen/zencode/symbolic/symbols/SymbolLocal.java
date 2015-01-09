@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.symbolic.symbols;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialLocal;
 import org.openzen.zencode.symbolic.type.IZenType;
@@ -39,7 +39,7 @@ public class SymbolLocal<E extends IPartialExpression<E, T>, T extends IZenType<
 	}
 
 	@Override
-	public IPartialExpression<E, T> instance(CodePosition position, IScopeMethod<E, T> environment)
+	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> environment)
 	{
 		return new PartialLocal<E, T>(position, environment, this);
 	}

@@ -6,7 +6,8 @@
 package org.openzen.zencode.symbolic.expression.partial;
 
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.field.IField;
@@ -20,13 +21,14 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  * @param <E>
+ * @param <T>
  */
 public class PartialStaticField<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 	extends AbstractPartialExpression<E, T>
 {
 	private final IField<E, T> field;
 	
-	public PartialStaticField(CodePosition position, IScopeMethod<E, T> scope, IField<E, T> field)
+	public PartialStaticField(CodePosition position, IMethodScope<E, T> scope, IField<E, T> field)
 	{
 		super(position, scope);
 		
@@ -58,7 +60,7 @@ public class PartialStaticField<E extends IPartialExpression<E, T>, T extends IZ
 	}
 	
 	@Override
-	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, E... arguments)
+	public IPartialExpression<E, T> call(CodePosition position, IMethod<E, T> method, List<E> arguments)
 	{
 		return method.callVirtual(position, getScope(), eval(), arguments);
 	}
@@ -78,13 +80,20 @@ public class PartialStaticField<E extends IPartialExpression<E, T>, T extends IZ
 	@Override
 	public T toType(List<T> genericTypes)
 	{
-		getScope().error(getPosition(), "Cannot convert static field to type");
-		return getScope().getTypes().getAny();
+		getScope().getErrorLogger().errorNotAType(getPosition(), this);
+		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override
 	public IPartialExpression<E, T> via(SymbolicFunction<E, T> function)
 	{
 		return this;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		// TODO: if we could get the value...
+		return null;
 	}
 }

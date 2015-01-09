@@ -9,7 +9,7 @@ import java.util.List;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.test.type.TestType;
@@ -22,9 +22,9 @@ import org.openzen.zencode.util.CodePosition;
 public abstract class TestExpression implements IPartialExpression<TestExpression, TestType>
 {
 	private final CodePosition position;
-	private final IScopeMethod<TestExpression, TestType> scope;
+	private final IMethodScope<TestExpression, TestType> scope;
 	
-	public TestExpression(CodePosition position, IScopeMethod<TestExpression, TestType> scope)
+	public TestExpression(CodePosition position, IMethodScope<TestExpression, TestType> scope)
 	{
 		this.position = position;
 		this.scope = scope;
@@ -39,7 +39,7 @@ public abstract class TestExpression implements IPartialExpression<TestExpressio
 	}
 
 	@Override
-	public IScopeMethod<TestExpression, TestType> getScope()
+	public IMethodScope<TestExpression, TestType> getScope()
 	{
 		return scope;
 	}

@@ -7,7 +7,7 @@ package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.annotations.OperatorType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyBool;
 import org.openzen.zencode.runtime.AnyInt;
@@ -36,7 +36,7 @@ public class ParsedExpressionBinary extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		E cLeft = left.compile(scope, asType);
 		T predictedRightType = cLeft.getType().predictOperatorArgumentType(operator).get(0);

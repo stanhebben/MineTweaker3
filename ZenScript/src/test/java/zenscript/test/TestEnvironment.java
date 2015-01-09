@@ -13,8 +13,8 @@ import java.util.Queue;
 import static org.junit.Assert.*;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.util.ClassNameGenerator;
-import org.openzen.zencode.symbolic.scope.ScopeGlobal;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.GlobalScope;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.compiler.IExpressionCompiler;
@@ -22,7 +22,7 @@ import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
 import org.openzen.zencode.test.expression.TestExpression;
 import org.openzen.zencode.test.type.TestType;
@@ -41,9 +41,9 @@ public class TestEnvironment implements IZenCompileEnvironment<TestExpression, T
 		INSTANCE.logs.add(new LogMessage(LogMessageType.PRINT, message));
 	}
 
-	public static IScopeGlobal<TestExpression, TestType> createScope()
+	public static IGlobalScope<TestExpression, TestType> createScope()
 	{
-		return new ScopeGlobal<TestExpression, TestType>(INSTANCE, new ClassNameGenerator());
+		return new GlobalScope<TestExpression, TestType>(INSTANCE, new ClassNameGenerator());
 	}
 
 	private final Queue<LogMessage> logs = new LinkedList<LogMessage>();
@@ -114,19 +114,19 @@ public class TestEnvironment implements IZenCompileEnvironment<TestExpression, T
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getGlobal(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String name)
+	public IPartialExpression<TestExpression, TestType> getGlobal(CodePosition position, IMethodScope<TestExpression, TestType> scope, String name)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getDollar(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String name)
+	public IPartialExpression<TestExpression, TestType> getDollar(CodePosition position, IMethodScope<TestExpression, TestType> scope, String name)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getBracketed(CodePosition position, IScopeMethod<TestExpression, TestType> scope, List<Token> tokens)
+	public IPartialExpression<TestExpression, TestType> getBracketed(CodePosition position, IMethodScope<TestExpression, TestType> scope, List<Token> tokens)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyAssociative;
 import org.openzen.zencode.runtime.AnyNull;
@@ -41,31 +42,37 @@ public class ParsedExpressionAssociative extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-			IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+			IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
-		// TODO: handle structs
+		if (asType != null && asType.isStruct())
+			return compileAsStruct(scope, asType);
 		
 		ICastingRule<E, T> castingRule = null;
 		T mapType;
-
+		
 		if (asType != null && asType.getMapKeyType() != null)
 			mapType = asType;
 		else if (asType != null) {
-			castingRule = scope.getTypes().getAnyAnyMap().getCastingRule(scope.getAccessScope(), asType);
+			castingRule = scope.getTypeCompiler().getAnyAnyMap(scope).getCastingRule(asType);
 			if (castingRule == null) {
-				scope.error(getPosition(), "Cannot cast map to " + asType);
+				scope.getErrorLogger().errorCannotCastMapTo(getPosition(), asType);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
 			}
 			
 			mapType = castingRule.getInputType();
 		}
 		else
-			mapType = scope.getTypes().getAnyAnyMap();
+			mapType = scope.getTypeCompiler().getAnyAnyMap(scope);
 
 		List<E> cKeys = new ArrayList<E>();
 		List<E> cValues = new ArrayList<E>();
 
 		for (int i = 0; i < keys.size(); i++) {
+			if (keys.get(i) == null) {
+				scope.getErrorLogger().errorKeyRequired(values.get(i).getPosition());
+				continue;
+			}
+			
 			cKeys.add(keys.get(i).compileKey(scope, mapType.getMapKeyType()));
 			cValues.add(values.get(i).compile(scope, mapType.getMapValueType()));
 		}
@@ -100,5 +107,26 @@ public class ParsedExpressionAssociative extends ParsedExpression
 		}
 
 		return new AnyAssociative(map);
+	}
+	
+	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+			IPartialExpression<E, T> compileAsStruct(IMethodScope<E, T> scope, T asType)
+	{
+		List<ParsedCallArgument> arguments = new ArrayList<ParsedCallArgument>();
+		for (int i = 0; i < keys.size(); i++) {
+			ParsedExpression key = keys.get(i);
+			String argumentName = null;
+			if (key != null) {
+				argumentName = key.asIdentifier();
+				if (argumentName == null)
+					scope.getErrorLogger().errorNotAValidParameterName(getPosition());
+			}
+			
+			arguments.add(new ParsedCallArgument(argumentName, values.get(i)));
+		}
+		
+		ParsedCallArguments allArguments = new ParsedCallArguments(arguments);
+		MatchedArguments<E, T> compiledArguments = allArguments.compile(asType.getConstructors(), scope);
+		return compiledArguments.method.callStatic(getPosition(), scope, compiledArguments.arguments);
 	}
 }

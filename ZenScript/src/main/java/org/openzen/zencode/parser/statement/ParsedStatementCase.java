@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.parser.statement;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementNull;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
@@ -43,15 +43,15 @@ public class ParsedStatementCase extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
-		scope.error(getPosition(), "case must be inside a switch");
+		scope.getErrorLogger().errorCaseOutsideSwitch(getPosition());
 		return new StatementNull<E, T>(getPosition(), scope);
 	}
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onCase(getPosition(), value.compile(scope, forSwitch.getType()));
 	}

@@ -6,7 +6,9 @@
 package org.openzen.zencode.symbolic.statement;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
+import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -20,7 +22,7 @@ public class StatementBreak<E extends IPartialExpression<E, T>, T extends IZenTy
 {
 	private final Statement<E, T> target;
 
-	public StatementBreak(CodePosition position, IScopeMethod<E, T> scope, Statement<E, T> target)
+	public StatementBreak(CodePosition position, IMethodScope<E, T> scope, Statement<E, T> target)
 	{
 		super(position, scope);
 
@@ -36,5 +38,11 @@ public class StatementBreak<E extends IPartialExpression<E, T>, T extends IZenTy
 	public <U> U process(IStatementProcessor<E, T, U> processor)
 	{
 		return processor.onBreak(this);
+	}
+
+	@Override
+	public FlowBlock<E, T> createFlowBlock(FlowBlock<E, T> next, FlowBuilder<E, T> builder)
+	{
+		return builder.getBreakLabel(target);
 	}
 }

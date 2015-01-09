@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.parser.type.IParsedType;
@@ -34,7 +34,7 @@ public class ParsedExpressionNew extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T predictedType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
 	{
 		T cType = type.compile(scope);
 		MatchedArguments<E, T> compiledArguments = callArguments.compile(cType.getConstructors(), scope);

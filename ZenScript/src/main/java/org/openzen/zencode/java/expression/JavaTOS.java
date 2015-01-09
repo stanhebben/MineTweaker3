@@ -6,9 +6,10 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.IAny;
 
 /**
  * Special expression to indicate the top of stack.
@@ -19,7 +20,7 @@ public class JavaTOS extends AbstractJavaExpression
 {
 	private final IJavaType type;
 	
-	public JavaTOS(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaType type)
+	public JavaTOS(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaType type)
 	{
 		super(position, scope);
 		
@@ -37,5 +38,17 @@ public class JavaTOS extends AbstractJavaExpression
 	public IJavaType getType()
 	{
 		return type;
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return null;
+	}
+
+	@Override
+	public void validate()
+	{
+		
 	}
 }

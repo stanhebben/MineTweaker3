@@ -7,6 +7,11 @@
 package org.openzen.zencode.parser.elements;
 
 import org.openzen.zencode.parser.type.IParsedType;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.method.ExtendsGenericParameterBound;
+import org.openzen.zencode.symbolic.method.IGenericParameterBound;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
  *
@@ -19,5 +24,16 @@ public class ParsedGenericBoundExtends implements IParsedGenericBound
 	public ParsedGenericBoundExtends(IParsedType type)
 	{
 		this.type = type;
+	}
+	
+	public IParsedType getType()
+	{
+		return type;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> IGenericParameterBound<E, T> compile(IModuleScope<E, T> scope)
+	{
+		return new ExtendsGenericParameterBound<E, T>(this, scope);
 	}
 }

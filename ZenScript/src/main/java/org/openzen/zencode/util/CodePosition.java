@@ -13,16 +13,29 @@ import org.openzen.zencode.parser.ParsedFile;
  */
 public class CodePosition
 {
+	public static CodePosition SYSTEM = new CodePosition("system", 0, 0);
+	public static CodePosition NATIVE = new CodePosition("native", 0, 0);
+	
 	private final ParsedFile file;
+	private final String name;
 	private final int line;
 	private final int offset;
 
 	public CodePosition(ParsedFile file, int line, int offset)
 	{
-		if (file != null && line <= 0)
+		if (line <= 0)
 			throw new IllegalArgumentException("Line must be positive");
 
 		this.file = file;
+		this.name = file.getFileName();
+		this.line = line;
+		this.offset = offset;
+	}
+	
+	public CodePosition(String filename, int line, int offset)
+	{
+		this.file = null;
+		this.name = filename;
 		this.line = line;
 		this.offset = offset;
 	}
@@ -45,6 +58,6 @@ public class CodePosition
 	@Override
 	public String toString()
 	{
-		return (file == null ? "?" : file.getFileName()) + ":" + Integer.toString(line);
+		return name + ":" + Integer.toString(line);
 	}
 }

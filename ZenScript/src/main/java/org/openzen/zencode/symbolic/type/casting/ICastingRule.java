@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -18,7 +18,7 @@ import org.openzen.zencode.util.CodePosition;
  */
 public interface ICastingRule<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
 {
-	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value);
+	public E cast(CodePosition position, IMethodScope<E, T> scope, E value);
 
 	public T getInputType();
 

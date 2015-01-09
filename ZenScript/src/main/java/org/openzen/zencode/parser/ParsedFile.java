@@ -5,7 +5,6 @@
  */
 package org.openzen.zencode.parser;
 
-import org.openzen.zencode.parser.statement.ParsedImportStatement;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +15,8 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.modifier.ModifierParser;
 import org.openzen.zencode.parser.statement.ParsedStatement;
-import org.openzen.zencode.parser.unit.IParsedUnit;
-import org.openzen.zencode.parser.unit.UnitParser;
-import org.openzen.zencode.symbolic.SymbolicModule;
+import org.openzen.zencode.parser.unit.IParsedDefinition;
+import org.openzen.zencode.parser.unit.DefinitionParser;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -43,8 +41,7 @@ public class ParsedFile
 	private final String filename;
 
 	private final ParsedPackage _package;
-	private final List<ParsedImportStatement> imports;
-	private final List<IParsedUnit> units;
+	private final List<IParsedDefinition> definitions;
 	private final List<ParsedStatement> statements;
 
 	/**
@@ -58,9 +55,8 @@ public class ParsedFile
 	{
 		this.filename = filename;
 		this.module = module;
-
-		imports = new ArrayList<ParsedImportStatement>();
-		units = new ArrayList<IParsedUnit>();
+		
+		definitions = new ArrayList<IParsedDefinition>();
 		statements = new ArrayList<ParsedStatement>();
 
 		lexer.setFile(this);
@@ -78,15 +74,10 @@ public class ParsedFile
 	{
 		return filename;
 	}
-
-	/**
-	 * Gets the imports list.
-	 *
-	 * @return imports list
-	 */
-	public List<ParsedImportStatement> getImports()
+	
+	public ParsedPackage getPackage()
 	{
-		return imports;
+		return _package;
 	}
 
 	/**
@@ -99,42 +90,9 @@ public class ParsedFile
 		return statements;
 	}
 	
-	public void compileUnits(SymbolicModule result)
+	public List<IParsedDefinition> getDefinitions()
 	{
-		
-	}
-	
-	public void compileFunctions(SymbolicModule result)
-	{
-		// TODO: add functions to symbol table
-		
-		/*for (ParsedFunction function : functions.values()) {
-			result.addUnit(function.compileHeader(result.getScope()));
-		}*/
-	}
-	
-	public void compileContents(SymbolicModule result)
-	{
-		/*for (ParsedFunction function : functions.values()) {
-			function.compileContents();
-		}
-		
-		if (!statements.isEmpty())
-			compileScriptContents(result);*/
-	}
-	
-	private void compileScriptContents(SymbolicModule result)
-	{
-		/*SymbolicFunction scriptFunction = new SymbolicFunction(
-				new CodePosition(this, 1, 1),
-				MethodHeader.noParameters(result.getScope().getTypes().getVoid()),
-				result.getScope());
-		
-		for (ParsedStatement statement : statements) {
-			scriptFunction.addStatement(statement.compile(scriptFunction.getScope()));
-		}
-		
-		result.addScript(scriptFunction);*/
+		return definitions;
 	}
 
 	// #############################
@@ -155,16 +113,12 @@ public class ParsedFile
 	{
 		try {
 			InputStream file = module.loadFile(Strings.unescapeString(filename));
-			if (file == null) {
-				module.getErrorLogger().error(
-						position,
-						"Could not load file " + filename
-				);
-			} else {
+			if (file == null)
+				module.getErrorLogger().errorCannotLoadInclude(position, filename);
+			else
 				parseScriptElements(ZenLexer.fromInputStream(module.getErrorLogger(), file));
-			}
 		} catch (IOException ex) {
-			module.getErrorLogger().error(position, "Could not load file " + filename);
+			module.getErrorLogger().errorCannotLoadInclude(position, filename);
 		}
 	}
 
@@ -178,10 +132,10 @@ public class ParsedFile
 			switch (next.getType()) {
 				case T_INCLUDE:
 					if (annotations != null && !annotations.isEmpty())
-						module.getErrorLogger().error(lexer.getPosition(), "Include cannot have annotations");
+						module.getErrorLogger().errorAnnotationsForInclude(lexer.getPosition());
 					
 					if (modifiers != null && !modifiers.isEmpty())
-						module.getErrorLogger().error(lexer.getPosition(), "Include cannot have modifiers");
+						module.getErrorLogger().errorModifiersForInclude(lexer.getPosition());
 					
 					readInclude(lexer);
 					break;
@@ -192,15 +146,15 @@ public class ParsedFile
 				case T_STRUCT:
 				case T_EXPAND:
 				case T_FUNCTION:
-					units.add(UnitParser.parse(lexer, annotations, modifiers));
+					definitions.add(DefinitionParser.parse(lexer, annotations, modifiers));
 					break;
 
 				default:
 					if (modifiers != null && !modifiers.isEmpty())
-						module.getErrorLogger().error(lexer.getPosition(), "Statement cannot have modifiers");
+						module.getErrorLogger().errorModifiersForStatement(lexer.getPosition());
 					
 					if (annotations != null && !annotations.isEmpty())
-						module.getErrorLogger().error(lexer.getPosition(), "Statement cannot have annotations");
+						module.getErrorLogger().errorAnnotationsForStatement(lexer.getPosition());
 					
 					statements.add(ParsedStatement.parse(lexer));
 					break;

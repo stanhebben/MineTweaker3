@@ -7,6 +7,8 @@ package org.openzen.zencode.parser.member;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
@@ -18,6 +20,8 @@ import org.openzen.zencode.parser.modifier.ModifierParser;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
+import org.openzen.zencode.parser.unit.IParsedDefinition;
+import org.openzen.zencode.parser.unit.DefinitionParser;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -55,8 +59,13 @@ public class MemberParser
 					return compileCaster(lexer, annotations, modifiers);
 				case T_THIS:
 					return compileConstructor(lexer, annotations, modifiers);
+				case T_STRUCT:
+				case T_CLASS:
+				case T_INTERFACE:
+				case T_ENUM:
+					return compileInner(lexer, annotations, modifiers);
 				default:
-					lexer.error(lexer.getPosition(), "Invalid token for member: " + lexer.next());
+					lexer.getErrorLogger().errorNotAValidMemberToken(lexer.getPosition(), lexer.next());
 					return null;
 			}
 		}
@@ -98,10 +107,10 @@ public class MemberParser
 		}
 
 		if (token.getType() == T_VAL)
-			return new ParsedVal(token.getPosition(), annotations, modifiers, name, asType, initializer, accessors);
+			return new ParsedField(token.getPosition(), annotations, modifiers, name, asType, initializer, accessors, true);
 		else if (token.getType() == T_VAR)
-			return new ParsedVar(token.getPosition(), annotations, modifiers, name, asType, initializer, accessors);
-
+			return new ParsedField(token.getPosition(), annotations, modifiers, name, asType, initializer, accessors, false);
+		
 		throw new AssertionError();
 	}
 	
@@ -111,11 +120,133 @@ public class MemberParser
 			List<IParsedModifier> modifiers)
 	{
 		CodePosition position = lexer.next().getPosition();
-		String name = lexer.requiredIdentifier();
+		
+		switch (lexer.peek().getType()) {
+			case T_BROPEN: {
+				ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
+				ParsedStatement contents = ParsedStatement.parse(lexer);
+				return new ParsedCaller(position, annotations, modifiers, signature, contents);
+			}
+			case TOKEN_ID: {
+				String name = lexer.requiredIdentifier();
+				ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
+				ParsedStatement contents = ParsedStatement.parse(lexer);
+
+				return new ParsedFunctionMember(position, annotations, modifiers, name, signature, contents);
+			}
+			case T_PLUS:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.ADD);
+			case T_PLUSASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.ADDASSIGN);
+			case T_MINUS:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SUB);
+			case T_MINUSASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SUBASSIGN);
+			case T_MUL:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MUL);
+			case T_MULASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MULASSIGN);
+			case T_DIV:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.DIV);
+			case T_DIVASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.DIVASSIGN);
+			case T_MOD:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MOD);
+			case T_MODASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MODASSIGN);
+			case T_TILDE:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.CAT);
+			case T_TILDEASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.CATASSIGN);
+			case T_DOT: {
+				lexer.next();
+				
+				ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
+				if (signature.getParameters().isEmpty())
+				{
+					signature = ParsedFunctionSignature.parse(lexer);
+					ParsedStatement content = ParsedStatement.parse(lexer);
+					return new ParsedAnyCaller(position, annotations, modifiers, signature, content);
+				}
+				else
+				{
+					ParsedStatement content = ParsedStatement.parse(lexer);
+					return new ParsedOperator(position, annotations, modifiers, signature, content, OperatorType.MEMBERGETTER);
+				}
+			}
+			case T_DOTASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MEMBERSETTER);
+			case T_SHL:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SHL);
+			case T_SHLASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SHLASSIGN);
+			case T_SHR:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SHR);
+			case T_SHRASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.SHRASSIGN);
+			case T_XOR:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.XOR);
+			case T_XORASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.XORASSIGN);
+			case T_AND:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.AND);
+			case T_ANDASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.ANDASSIGN);
+			case T_OR:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.OR);
+			case T_ORASSIGN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.ORASSIGN);
+			case T_IN:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.CONTAINS);
+			case T_DOT2:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.RANGE);
+			case T_FOR:
+				lexer.next();
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.FOR);
+			case T_SQBROPEN:
+				lexer.next();
+				lexer.required(T_SQBRCLOSE, "] expected");
+				return compileOperation(lexer, position, annotations, modifiers, OperatorType.MEMBERSETTER);
+			default:
+				throw new ParseException(lexer.next(), "identifier, function signature or operator expected");
+		}
+	}
+	
+	private static IParsedMember compileOperation(
+			ZenLexer lexer,
+			CodePosition position,
+			List<ParsedAnnotation> annotations,
+			List<IParsedModifier> modifiers,
+			OperatorType operator)
+	{
 		ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
 		ParsedStatement contents = ParsedStatement.parse(lexer);
-		
-		return new ParsedFunctionMember(position, annotations, modifiers, name, signature, contents);
+		return new ParsedOperator(position, annotations, modifiers, signature, contents, operator);
 	}
 	
 	private static IParsedMember compileImplements(
@@ -155,5 +286,14 @@ public class MemberParser
 		ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
 		ParsedStatement content = ParsedStatement.parse(lexer);
 		return new ParsedConstructor(position, annotations, modifiers, signature, content);
+	}
+	
+	private static IParsedMember compileInner(
+			ZenLexer lexer,
+			List<ParsedAnnotation> annotations,
+			List<IParsedModifier> modifiers)
+	{
+		IParsedDefinition unit = DefinitionParser.parse(lexer, annotations, modifiers);
+		return new ParsedInner(unit);
 	}
 }

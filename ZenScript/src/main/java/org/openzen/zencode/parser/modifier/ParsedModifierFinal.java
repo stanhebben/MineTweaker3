@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.parser.modifier;
 
+import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,5 +19,17 @@ public class ParsedModifierFinal implements IParsedModifier
 	public ParsedModifierFinal(CodePosition position)
 	{
 		this.position = position;
+	}
+
+	@Override
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	@Override
+	public Modifier compile()
+	{
+		return Modifier.FINAL;
 	}
 }

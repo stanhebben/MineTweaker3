@@ -7,14 +7,13 @@ package org.openzen.zencode.parser.statement;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.ScopeStatementBlock;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.StatementBlockScope;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementForeach;
 import org.openzen.zencode.symbolic.statement.StatementNull;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
@@ -65,18 +64,18 @@ public class ParsedStatementFor extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 Statement<E, T> compile(IScopeMethod<E, T> scope)
+		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		E compiledSource = source.compile(scope, null);
 		List<T> iteratorTypes = compiledSource.getType().getIteratorTypes(names.size());
 		if (iteratorTypes == null) {
-			scope.error(getPosition(), compiledSource.getType() + " has no iterator with " + names.size() + " variables.");
+			scope.getErrorLogger().errorNoSuchIterator(getPosition(), compiledSource.getType(), names.size());
 			return new StatementNull<E, T>(getPosition(), scope);
 		}
 
 		List<SymbolLocal<E, T>> symbols = new ArrayList<SymbolLocal<E, T>>();
 		StatementForeach<E, T> compiledStatement = new StatementForeach<E, T>(getPosition(), scope, symbols, compiledSource);
-		ScopeStatementBlock<E, T> loopScope = new ScopeStatementBlock<E, T>(scope, compiledStatement, names);
+		StatementBlockScope<E, T> loopScope = new StatementBlockScope<E, T>(scope, compiledStatement, names);
 		for (int i = 0; i < names.size(); i++) {
 			SymbolLocal<E, T> symbol = new SymbolLocal<E, T>(iteratorTypes.get(i), true);
 			symbols.add(symbol);
@@ -91,7 +90,7 @@ public class ParsedStatementFor extends ParsedStatement
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 void compileSwitch(IScopeMethod<E, T> scope, StatementSwitch<E, T> forSwitch)
+		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

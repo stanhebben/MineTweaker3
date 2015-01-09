@@ -30,7 +30,7 @@ import org.openzen.zencode.symbolic.statement.StatementWhile;
  *
  * @author Stan
  */
-public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, IJavaType, Object>
+public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, IJavaType, Void>
 {
 	private final MethodOutput output;
 	
@@ -40,7 +40,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 	
 	@Override
-	public Object onBlock(StatementBlock<IJavaExpression, IJavaType> statement)
+	public Void onBlock(StatementBlock<IJavaExpression, IJavaType> statement)
 	{
 		for (Statement<IJavaExpression, IJavaType> element : statement.getStatements()) {
 			element.process(this);
@@ -53,13 +53,13 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onBreak(StatementBreak<IJavaExpression, IJavaType> statement)
+	public Void onBreak(StatementBreak<IJavaExpression, IJavaType> statement)
 	{
 		MethodOutput.ControlLabels labels = output.getControlLabels(statement.getTarget());
 		if (labels == null)
 			throw new AssertionError("missing control labels");
 		if (labels.breakLabel == null)
-			statement.getScope().error(statement.getPosition(), "cannot break this kind of statement");
+			statement.getScope().getErrorLogger().errorNoBreakableControlStatement(statement.getPosition());
 		else
 			output.goTo(labels.breakLabel);
 		
@@ -67,16 +67,14 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onContinue(StatementContinue<IJavaExpression, IJavaType> statement)
+	public Void onContinue(StatementContinue<IJavaExpression, IJavaType> statement)
 	{
 		MethodOutput.ControlLabels controls = output.getControlLabels(statement.getTarget());
 		if (controls == null)
 			throw new AssertionError("control labels missing");
 		
 		if (controls.continueLabel == null) {
-			statement.getScope().error(
-					statement.getPosition(),
-					"cannot continue this kind of statement");
+			statement.getScope().getErrorLogger().errorNoContinuableControlStatement(statement.getPosition());
 		} else {
 			output.goTo(controls.continueLabel);
 		}
@@ -85,7 +83,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onDoWhile(StatementDoWhile<IJavaExpression, IJavaType> statement)
+	public Void onDoWhile(StatementDoWhile<IJavaExpression, IJavaType> statement)
 	{
 		Label lblRepeat = new Label();
 		Label lblContinue = new Label();
@@ -102,7 +100,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onExpression(StatementExpression<IJavaExpression, IJavaType> statement)
+	public Void onExpression(StatementExpression<IJavaExpression, IJavaType> statement)
 	{
 		output.position(statement.getPosition());
 		statement.getExpression().compile(false, output);
@@ -111,7 +109,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onForeach(StatementForeach<IJavaExpression, IJavaType> statement)
+	public Void onForeach(StatementForeach<IJavaExpression, IJavaType> statement)
 	{
 		output.position(statement.getPosition());
 		
@@ -140,12 +138,12 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onIf(StatementIf<IJavaExpression, IJavaType> statement)
+	public Void onIf(StatementIf<IJavaExpression, IJavaType> statement)
 	{
 		output.position(statement.getPosition());
 		
 		IJavaType expressionType = statement.getCondition().getType();
-		if (expressionType != statement.getScope().getTypes().getBool())
+		if (expressionType != statement.getScope().getTypeCompiler().getBool())
 			throw new RuntimeException("condition is not a boolean");
 		
 		Label labelEnd = new Label();
@@ -166,14 +164,14 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onEmpty(StatementNull<IJavaExpression, IJavaType> statement)
+	public Void onEmpty(StatementNull<IJavaExpression, IJavaType> statement)
 	{
 		// nothing to do
 		return null;
 	}
 
 	@Override
-	public Object onReturn(StatementReturn<IJavaExpression, IJavaType> statement)
+	public Void onReturn(StatementReturn<IJavaExpression, IJavaType> statement)
 	{
 		output.position(statement.getPosition());
 
@@ -190,13 +188,13 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onSwitch(StatementSwitch<IJavaExpression, IJavaType> statement)
+	public Void onSwitch(StatementSwitch<IJavaExpression, IJavaType> statement)
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		
 	}
 
 	@Override
-	public Object onVar(StatementVar<IJavaExpression, IJavaType> statement)
+	public Void onVar(StatementVar<IJavaExpression, IJavaType> statement)
 	{
 		output.position(statement.getPosition());
 
@@ -209,7 +207,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	}
 
 	@Override
-	public Object onWhile(StatementWhile<IJavaExpression, IJavaType> statement)
+	public Void onWhile(StatementWhile<IJavaExpression, IJavaType> statement)
 	{
 		Label lblRepeat = new Label();
 		Label lblBreak = new Label();

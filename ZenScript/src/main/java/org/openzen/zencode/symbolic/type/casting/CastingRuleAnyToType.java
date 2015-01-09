@@ -6,9 +6,8 @@
 
 package org.openzen.zencode.symbolic.type.casting;
 
-import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -24,14 +23,14 @@ public class CastingRuleAnyToType<E extends IPartialExpression<E, T>, T extends 
 	private final T fromType;
 	private final T toType;
 	
-	public CastingRuleAnyToType(ITypeCompiler<E, T> types, T toType)
+	public CastingRuleAnyToType(T fromType, T toType)
 	{
-		fromType = types.getAny();
+		this.fromType = fromType;
 		this.toType = toType;
 	}
 
 	@Override
-	public E cast(CodePosition position, IScopeMethod<E, T> scope, E value)
+	public E cast(CodePosition position, IMethodScope<E, T> scope, E value)
 	{
 		return scope.getExpressionCompiler().anyCastTo(position, scope, value, toType);
 	}

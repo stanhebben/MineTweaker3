@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.expression;
 
 import org.openzen.zencode.symbolic.field.IField;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -19,7 +19,7 @@ public class Expressions
 	private Expressions() {}
 	
 	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 E[] convert(CodePosition position, IScopeMethod<E, T> scope, Object[] constants)
+		 E[] convert(CodePosition position, IMethodScope<E, T> scope, Object[] constants)
 	{
 		@SuppressWarnings("unchecked")
 		E[] results = (E[]) new IPartialExpression[constants.length];
@@ -32,7 +32,7 @@ public class Expressions
 	}
 	
 	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		E convert(CodePosition position, IScopeMethod<E, T> scope, Object constant)
+		E convert(CodePosition position, IMethodScope<E, T> scope, Object constant)
 	{
 		if (constant == null) {
 			return scope.getExpressionCompiler().constantNull(position, scope);

@@ -10,13 +10,18 @@ import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.expression.ParsedCallArguments;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.unit.SymbolicEnum;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  */
-public class ParsedEnum implements IParsedUnit
+public class ParsedEnum implements IParsedDefinition
 {
 	private final CodePosition position;
 	private final List<ParsedAnnotation> annotations;
@@ -39,6 +44,42 @@ public class ParsedEnum implements IParsedUnit
 		this.name = name;
 		this.values = values;
 		this.members = members;
+	}
+
+	public CodePosition getPosition()
+	{
+		return position;
+	}
+
+	public List<ParsedAnnotation> getAnnotations()
+	{
+		return annotations;
+	}
+
+	public List<IParsedModifier> getModifiers()
+	{
+		return modifiers;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<Value> getValues()
+	{
+		return values;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+
+	@Override
+	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	{
+		return new SymbolicEnum<E, T>(this, scope);
 	}
 	
 	public static class Value

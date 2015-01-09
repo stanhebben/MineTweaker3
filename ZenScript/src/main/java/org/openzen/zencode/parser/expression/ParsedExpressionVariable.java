@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.type.IZenType;
@@ -35,19 +35,19 @@ public class ParsedExpressionVariable extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T predictedType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
 	{
 		IPartialExpression<E, T> result = scope.getValue(name, getPosition(), scope);
 		if (result == null) {
 			if (predictedType == null) {
-				scope.error(getPosition(), "could not find " + name);
+				scope.getErrorLogger().errorCouldNotResolveSymbol(getPosition(), name);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope);
 			}
 
 			// enable usage of static members of the same type as the predicted type (eg. enum values)
 			IPartialExpression<E, T> member = predictedType.getStaticMember(getPosition(), scope, name);
-			if (member == null || member.getType().getCastingRule(scope.getAccessScope(), predictedType) == null) {
-				scope.error(getPosition(), "could not find " + name);
+			if (member == null || member.getType().getCastingRule(predictedType) == null) {
+				scope.getErrorLogger().errorCouldNotResolveSymbol(getPosition(), name);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, predictedType);
 			} else
 				return member;
@@ -57,7 +57,7 @@ public class ParsedExpressionVariable extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 E compileKey(IScopeMethod<E, T> scope, T predictedType)
+		 E compileKey(IMethodScope<E, T> scope, T predictedType)
 	{
 		return scope.getExpressionCompiler().constantString(getPosition(), scope, name);
 	}

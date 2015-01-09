@@ -7,11 +7,11 @@ package org.openzen.zencode.parser.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
@@ -61,7 +61,7 @@ public class ParsedTypeClass implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 T compile(IScopeGlobal<E, T> scope)
+		 T compile(IModuleScope<E, T> scope)
 	{
 		IPartialExpression<E, T> expression = scope.getValue(
 				name.get(0),
@@ -71,8 +71,8 @@ public class ParsedTypeClass implements IParsedType
 		for (int i = 1; i < name.size(); i++) {
 			expression = expression.getMember(position, name.get(i));
 			if (expression == null) {
-				scope.error(position, "Could not find package or class " + Strings.join(name.subList(0, i), "."));
-				return scope.getTypes().getAny();
+				scope.getErrorLogger().errorCouldNotResolvePackage(position, Strings.join(name.subList(0, i), "."));
+				return scope.getTypeCompiler().getAny(scope);
 			}
 		}
 
@@ -88,8 +88,8 @@ public class ParsedTypeClass implements IParsedType
 
 		T type = expression.toType(compiledGenericTypes);
 		if (type == null) {
-			scope.error(position, Strings.join(name, ".") + " is not a valid type");
-			type = scope.getTypes().getAny();
+			scope.getErrorLogger().errorNotAType(position, expression, Strings.join(name, "."));
+			type = scope.getTypeCompiler().getAny(scope);
 		}
 
 		return type;

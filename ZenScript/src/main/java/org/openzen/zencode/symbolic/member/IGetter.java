@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.symbolic.member;
 
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.IZenType;
 import org.openzen.zencode.util.CodePosition;
@@ -20,5 +20,5 @@ public interface IGetter<E extends IPartialExpression<E, T>, T extends IZenType<
 {
 	public T getType();
 	
-	public IPartialExpression<E, T> compileGet(CodePosition position, IScopeMethod<E, T> scope);
+	public IPartialExpression<E, T> compileGet(CodePosition position, IMethodScope<E, T> scope);
 }

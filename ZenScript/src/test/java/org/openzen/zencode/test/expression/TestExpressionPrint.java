@@ -7,7 +7,7 @@ package org.openzen.zencode.test.expression;
 
 import org.openzen.zencode.runtime.AnyString;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.test.type.TestType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -19,7 +19,7 @@ public class TestExpressionPrint extends TestExpression
 {
 	private final String value;
 	
-	public TestExpressionPrint(CodePosition position, IScopeMethod<TestExpression, TestType> scope, String value)
+	public TestExpressionPrint(CodePosition position, IMethodScope<TestExpression, TestType> scope, String value)
 	{
 		super(position, scope);
 		
@@ -35,6 +35,6 @@ public class TestExpressionPrint extends TestExpression
 	@Override
 	public TestType getType()
 	{
-		return getScope().getTypes().getString();
+		return getScope().getTypeCompiler().getString();
 	}
 }

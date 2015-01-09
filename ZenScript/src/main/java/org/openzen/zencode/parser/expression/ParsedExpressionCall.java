@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.runtime.IAny;
@@ -32,16 +32,16 @@ public class ParsedExpressionCall extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		 IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		IPartialExpression<E, T> cReceiver = receiver.compilePartial(scope, null);
 
 		MatchedArguments<E, T> matchedArguments = arguments.compile(cReceiver.getMethods(), scope);
 		if (matchedArguments == null) {
 			if (cReceiver.getMethods().isEmpty())
-				scope.error(getPosition(), "Trying to call a non-method");
+				scope.getErrorLogger().errorNotAValidMethod(getPosition());
 			else
-				scope.error(getPosition(), "No method matched the given arguments");
+				scope.getErrorLogger().errorNoMatchingMethod(getPosition(), cReceiver.getMethods(), arguments);
 			
 			return scope.getExpressionCompiler().invalid(getPosition(), scope);
 		}

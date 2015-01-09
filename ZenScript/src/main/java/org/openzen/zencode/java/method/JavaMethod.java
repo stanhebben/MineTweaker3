@@ -9,9 +9,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.annotations.Named;
 import org.openzen.zencode.annotations.NotNull;
 import org.openzen.zencode.annotations.Optional;
@@ -32,6 +34,10 @@ import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
+import org.openzen.zencode.symbolic.method.ExtendsGenericParameterBound;
+import org.openzen.zencode.symbolic.method.GenericParameter;
+import org.openzen.zencode.symbolic.method.IGenericParameterBound;
+import org.openzen.zencode.symbolic.method.ImplementsGenericParameterBound;
 
 /**
  *
@@ -95,7 +101,7 @@ public class JavaMethod implements IJavaMethod
 	{
 		this.method = method;
 
-		JavaTypeCompiler types = scope.getTypes();
+		JavaTypeCompiler types = scope.getTypeCompiler();
 		IJavaType returnType = types.getNativeType(null, method.getGenericReturnType(), capture);
 
 		Type[] genericParameters = method.getGenericParameterTypes();
@@ -105,7 +111,7 @@ public class JavaMethod implements IJavaMethod
 			String name = argumentNames == null || i >= argumentNames.length ? null : argumentNames[i];
 			IJavaExpression defaultValue = null;
 
-			IScopeMethod<IJavaExpression, IJavaType> environment = scope.getConstantEnvironment();
+			IMethodScope<IJavaExpression, IJavaType> environment = scope.getConstantEnvironment();
 			for (Annotation annotation : method.getAnnotations()) {
 				if (annotation instanceof Optional)
 					defaultValue = type.createDefaultValue(null, environment);
@@ -172,10 +178,44 @@ public class JavaMethod implements IJavaMethod
 					name = ((Named) annotation).value();
 			}
 
-			arguments.add(new MethodParameter<IJavaExpression, IJavaType>(name, type, defaultValue));
+			arguments.add(new MethodParameter<IJavaExpression, IJavaType>(
+					new CodePosition(method.getDeclaringClass().getSimpleName() + ":" + method.getName(), 0, 0),
+					name,
+					type,
+					defaultValue));
+		}
+		
+		
+		TypeVariable<Method>[] typeVariables = method.getTypeParameters();
+		List<GenericParameter<IJavaExpression, IJavaType>> genericMethodParameters = Collections.emptyList();
+		if (typeVariables.length > 0) {
+			genericMethodParameters = new ArrayList<GenericParameter<IJavaExpression, IJavaType>>();
+			
+			for (TypeVariable<Method> typeVariable : typeVariables) {
+				List<IGenericParameterBound<IJavaExpression, IJavaType>> bounds = new ArrayList<IGenericParameterBound<IJavaExpression, IJavaType>>();
+				for (Type typeVariableBound : typeVariable.getBounds()) {
+					IJavaType type = types.getNativeType(CodePosition.SYSTEM, typeVariableBound, capture);
+					if (type.isInterface())
+						bounds.add(new ImplementsGenericParameterBound<IJavaExpression, IJavaType>(type));
+					else
+						bounds.add(new ExtendsGenericParameterBound<IJavaExpression, IJavaType>(type));
+				}
+
+				GenericParameter<IJavaExpression, IJavaType> parameter
+						= new GenericParameter<IJavaExpression, IJavaType>(
+								CodePosition.SYSTEM,
+								typeVariable.getName(),
+								bounds);
+				genericMethodParameters.add(parameter);
+			}
 		}
 
-		functionType = types.getFunction(new MethodHeader<IJavaExpression, IJavaType>(returnType, arguments, method.isVarArgs()));
+		functionType = types.getFunction(new MethodHeader<IJavaExpression, IJavaType>(
+				CodePosition.SYSTEM,
+				genericMethodParameters,
+				returnType,
+				arguments,
+				method.isVarArgs()));
 	}
 
 	@Override
@@ -215,32 +255,45 @@ public class JavaMethod implements IJavaMethod
 	}
 
 	@Override
-	public IJavaExpression callStatic(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression... arguments)
+	public IJavaExpression callStatic(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<IJavaExpression> arguments)
 	{
 		return new JavaCallStatic(position, scope, this, arguments);
 	}
 
 	@Override
-	public IJavaExpression callStaticWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, Object... constantArguments)
+	public IJavaExpression callStaticWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, Object... constantArguments)
 	{
 		return new JavaCallStatic(position, scope, this, scope.getExpressionCompiler().constants(position, scope, constantArguments));
 	}
 
 	@Override
-	public IJavaExpression callStaticNullable(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression argument)
+	public IJavaExpression callStaticNullable(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression argument)
 	{
 		return new JavaCallStaticNullable(position, scope, this, argument);
 	}
 
 	@Override
-	public IJavaExpression callVirtual(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, IJavaExpression... arguments)
+	public IJavaExpression callVirtual(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, List<IJavaExpression> arguments)
 	{
 		return new JavaCallVirtual(position, scope, this, target, arguments);
 	}
 
 	@Override
-	public IJavaExpression callVirtualWithConstants(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
+	public IJavaExpression callVirtualWithConstants(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression target, Object... constantArguments)
 	{
 		return new JavaCallVirtual(position, scope, this, target, scope.getExpressionCompiler().constants(position, scope, constantArguments));
+	}
+
+	@Override
+	public void validateCall(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<IJavaExpression> arguments)
+	{
+		MethodHeader<IJavaExpression, IJavaType> header = functionType.getFunctionHeader();
+		if (!header.accepts(arguments.size()))
+			scope.getErrorLogger().errorInvalidNumberOfArguments(position);
+		
+		for (int i = 0; i < arguments.size(); i++) {
+			if (!arguments.get(i).getType().canCastExplicit(header.getArgumentType(i)))
+				scope.getErrorLogger().errorCannotCastExplicit(position, arguments.get(i).getType(), header.getArgumentType(i));
+		}
 	}
 }

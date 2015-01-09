@@ -24,7 +24,7 @@ import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.util.CodePosition;
 
@@ -69,7 +69,7 @@ public class ItemBracketHandler implements IBracketHandler
 	}
 
 	@Override
-	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<Token> tokens)
 	{
 		// any symbol
 		if (tokens.size() == 1 && tokens.get(0).getValue().equals("*"))
@@ -108,7 +108,7 @@ public class ItemBracketHandler implements IBracketHandler
 
 	private IJavaExpression find(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression, IJavaType> scope,
 			List<Token> tokens,
 			int startIndex, 
 			int endIndex,

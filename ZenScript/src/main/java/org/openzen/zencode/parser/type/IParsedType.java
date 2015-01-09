@@ -6,7 +6,7 @@
 package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IZenType;
 
 /**
@@ -17,5 +17,5 @@ import org.openzen.zencode.symbolic.type.IZenType;
 public interface IParsedType
 {
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> 
-		T compile(IScopeGlobal<E, T> environment);
+		T compile(IModuleScope<E, T> environment);
 }

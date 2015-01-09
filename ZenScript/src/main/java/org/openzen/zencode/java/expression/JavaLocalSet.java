@@ -6,9 +6,10 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -22,7 +23,7 @@ public class JavaLocalSet extends AbstractJavaExpression
 	
 	public JavaLocalSet(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> environment,
+			IMethodScope<IJavaExpression, IJavaType> environment,
 			SymbolLocal<IJavaExpression, IJavaType> variable,
 			IJavaExpression value)
 	{
@@ -47,5 +48,18 @@ public class JavaLocalSet extends AbstractJavaExpression
 		if (result)
 			output.dup();
 		output.store(variable.getType().toASMType(), local);
+	}
+
+	@Override
+	public IAny getCompileTimeValue()
+	{
+		return value.getCompileTimeValue();
+	}
+
+	@Override
+	public void validate()
+	{
+		if (!value.getType().canCastExplicit(variable.getType()))
+			getScope().getErrorLogger().errorCannotCastExplicit(getPosition(), value.getType(), variable.getType());
 	}
 }

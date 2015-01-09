@@ -8,7 +8,7 @@ package org.openzen.zencode.parser.expression;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyArray;
 import org.openzen.zencode.runtime.IAny;
@@ -33,7 +33,7 @@ public class ParsedExpressionArray extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-			IPartialExpression<E, T> compilePartial(IScopeMethod<E, T> scope, T asType)
+			IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		T arrayType;
 		ICastingRule<E, T> castingRule = null;
@@ -41,15 +41,15 @@ public class ParsedExpressionArray extends ParsedExpression
 		if (asType != null && asType.getArrayBaseType() != null)
 			arrayType = asType;
 		else if (asType != null) {
-			castingRule = scope.getTypes().getAnyArray().getCastingRule(scope.getAccessScope(), asType);
+			castingRule = scope.getTypeCompiler().getAnyArray(scope).getCastingRule(asType);
 			if (castingRule == null) {
-				scope.error(getPosition(), "Cannot cast an array to " + asType);
+				scope.getErrorLogger().errorCannotCastArrayTo(getPosition(), asType);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
 			}
 			
 			arrayType = castingRule.getInputType();
 		} else
-			arrayType = scope.getTypes().getAnyArray();
+			arrayType = scope.getTypeCompiler().getAnyArray(scope);
 		
 		List<E> cContents = new ArrayList<E>();
 		for (ParsedExpression content : contents) {
@@ -65,7 +65,7 @@ public class ParsedExpressionArray extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-			E compileKey(IScopeMethod<E, T> environment, T predictedType)
+			E compileKey(IMethodScope<E, T> environment, T predictedType)
 	{
 		if (contents.size() == 1 && contents.get(0) instanceof ParsedExpressionVariable)
 			return contents.get(0).compile(environment, predictedType);

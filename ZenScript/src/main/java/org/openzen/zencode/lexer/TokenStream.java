@@ -213,9 +213,9 @@ public class TokenStream implements Iterator<Token> {
             StringBuilder value = new StringBuilder();
             int tLine = line;
             int tLineOffset = lineOffset;
-            while (dfa.transitions[state].containsKey(nextChar)) {
+            while (dfa.transitions[state].containsKey(Math.min(128, nextChar))) {
                 value.append((char)nextChar);
-                state = dfa.transitions[state].get(nextChar);
+                state = dfa.transitions[state].get(Math.min(128, nextChar));
                 line = reader.line;
                 lineOffset = reader.lineOffset;
                 nextChar = reader.read();

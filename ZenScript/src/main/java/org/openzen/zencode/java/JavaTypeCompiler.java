@@ -106,7 +106,7 @@ public class JavaTypeCompiler implements ITypeCompiler<IJavaExpression, IJavaTyp
 
 			TypeVariable<?>[] typeVariables = cls.getTypeParameters();
 			if (typeVariables.length != genericTypes.size()) {
-				scope.error(position, "number of parameters doesn't match");
+				scope.getErrorLogger().errorInvalidNumberOfGenericArguments(position, getNativeType(position, cls, capture), genericTypes);
 				return getNativeType(position, type, capture);
 			}
 

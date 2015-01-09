@@ -23,7 +23,7 @@ public class ParsedCallArgument
 
 		String key = expression.asIdentifier();
 		if (key == null)
-			lexer.error(expression.getPosition(), "Invalid key");
+			lexer.getErrorLogger().errorNotAValidParameterName(expression.getPosition());
 
 		return new ParsedCallArgument(key, ParsedExpression.parse(lexer));
 	}

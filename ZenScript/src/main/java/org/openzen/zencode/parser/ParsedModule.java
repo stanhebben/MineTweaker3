@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
-import org.openzen.zencode.symbolic.SymbolicModule;
 
 /**
  *
@@ -46,7 +45,7 @@ public class ParsedModule
 		return global;
 	}
 
-	public ICodeErrorLogger getErrorLogger()
+	public ICodeErrorLogger<?, ?> getErrorLogger()
 	{
 		return global.getCompileEnvironment().getErrorLogger();
 	}
@@ -56,9 +55,7 @@ public class ParsedModule
 		try {
 			files.add(new ParsedFile(this, filename, new ZenLexer(global.getCompileEnvironment().getErrorLogger(), contents)));
 		} catch (IOException ex) {
-			global.getCompileEnvironment().getErrorLogger().error(
-					null,
-					"Could not load " + filename + ": " + ex.getMessage());
+			global.getCompileEnvironment().getErrorLogger().errorCannotLoadInclude(null, filename);
 		}
 	}
 
@@ -68,9 +65,7 @@ public class ParsedModule
 			Reader reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(file)), UTF8);
 			files.add(new ParsedFile(this, file.getName(), new ZenLexer(global.getCompileEnvironment().getErrorLogger(), reader)));
 		} catch (IOException ex) {
-			global.getCompileEnvironment().getErrorLogger().error(
-					null,
-					"Could not load " + file.getName() + ": " + ex.getMessage());
+			global.getCompileEnvironment().getErrorLogger().errorCannotLoadInclude(null, name, ex);
 		}
 	}
 	
@@ -84,24 +79,8 @@ public class ParsedModule
 		return fileLoader == null ? null : fileLoader.load(name);
 	}
 	
-	public void compileUnits(SymbolicModule module)
+	public List<ParsedFile> getFiles()
 	{
-		for (ParsedFile file : files) {
-			file.compileUnits(module);
-		}
-	}
-	
-	public void compileFunctions(SymbolicModule module)
-	{
-		for (ParsedFile file : files) {
-			file.compileFunctions(module);
-		}
-	}
-	
-	public void compileContents(SymbolicModule module)
-	{
-		for (ParsedFile file : files) {
-			file.compileContents(module);
-		}
+		return files;
 	}
 }

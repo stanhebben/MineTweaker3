@@ -5,8 +5,9 @@
  */
 package org.openzen.zencode.symbolic.type;
 
+import java.util.Collections;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
@@ -38,8 +39,8 @@ public class ExpansionStaticSetter<E extends IPartialExpression<E, T>, T extends
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public E compile(CodePosition position, IScopeMethod<E, T> scope, E value)
+	public E compile(CodePosition position, IMethodScope<E, T> scope, E value)
 	{
-		return method.callStatic(position, scope, value);
+		return method.callStatic(position, scope, Collections.singletonList(value));
 	}
 }

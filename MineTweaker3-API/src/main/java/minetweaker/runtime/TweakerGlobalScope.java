@@ -53,7 +53,7 @@ public class TweakerGlobalScope implements IJavaScopeGlobal
 	}
 
 	@Override
-	public JavaTypeCompiler getTypes()
+	public JavaTypeCompiler getTypeCompiler()
 	{
 		return environment.getTypeCompiler();
 	}
