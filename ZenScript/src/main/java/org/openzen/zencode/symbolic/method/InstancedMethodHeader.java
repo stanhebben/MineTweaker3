@@ -8,13 +8,13 @@ package org.openzen.zencode.symbolic.method;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  */
-public class InstancedMethodHeader<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class InstancedMethodHeader<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final IDefinitionScope<E, T> scope;
 	private final T returnType;

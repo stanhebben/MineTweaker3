@@ -20,7 +20,8 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -30,7 +31,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		implements IMethodScope<E, T>
 {
 	private final IMethodScope<E, T> outer;
@@ -184,5 +185,11 @@ public class StatementBlockScope<E extends IPartialExpression<E, T>, T extends I
 	public MethodHeader<E, T> getMethodHeader()
 	{
 		return outer.getMethodHeader();
+	}
+
+	@Override
+	public TypeCapture<E, T> getTypeCapture()
+	{
+		return outer.getTypeCapture();
 	}
 }

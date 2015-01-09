@@ -141,7 +141,7 @@ public final class Tweaker
 
 		if (!global.hasErrors()) {
 			try {
-				// Step 2: compile all files
+				// Step 2: compileDefinitions all files
 				Runnable compiled = parserEnvironment.compile();
 				
 				

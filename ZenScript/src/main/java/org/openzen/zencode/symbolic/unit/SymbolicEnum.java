@@ -9,15 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.unit.ParsedEnum;
-import org.openzen.zencode.symbolic.Modifier;
-import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.scope.DefinitionScope;
-import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -25,38 +21,22 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-	implements ISymbolicDefinition<E, T>
+public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+	extends AbstractSymbolicDefinition<E, T>
 {
 	private final ParsedEnum source;
-	private final int modifiers;
 	private final String name;
 	private final List<EnumValue> values;
-	private final IDefinitionScope<E, T> scope;
 	private final List<IMember<E, T>> members;
-	
-	private List<SymbolicAnnotation<E, T>> annotations;
 	
 	public SymbolicEnum(ParsedEnum source, IModuleScope<E, T> moduleScope)
 	{
+		super(source, moduleScope);
+		
 		this.source = source;
-		this.modifiers = Modifier.compileModifiers(source.getModifiers(), moduleScope.getErrorLogger());
 		this.name = source.getName();
 		this.values = new ArrayList<EnumValue>();
-		this.scope = new DefinitionScope<E, T>(moduleScope, this);
 		this.members = new ArrayList<IMember<E, T>>();
-	}
-
-	@Override
-	public int getModifiers()
-	{
-		return modifiers;
-	}
-
-	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
-	{
-		return annotations;
 	}
 
 	@Override
@@ -70,8 +50,10 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends IZenType
 	@Override
 	public void compileMembers()
 	{
+		super.compileMembers();
+		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiledMember = member.compile(scope);
+			IMember<E, T> compiledMember = member.compile(getScope());
 			if (compiledMember != null)
 				members.add(compiledMember);
 		}
@@ -84,7 +66,7 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends IZenType
 	@Override
 	public void compileMemberContents()
 	{
-		annotations = SymbolicAnnotation.compileAll(source.getAnnotations(), scope);
+		super.compileMemberContents();
 		
 		for (IMember<E, T> member : members) {
 			member.completeContents();
@@ -92,6 +74,20 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends IZenType
 		
 		for (EnumValue value : values) {
 			value.completeContents();
+		}
+	}
+
+	@Override
+	public void validate()
+	{
+		super.validate();
+		
+		for (IMember<E, T> member : members) {
+			member.validate();
+		}
+		
+		for (EnumValue value : values) {
+			value.validate();
 		}
 	}
 	
@@ -113,6 +109,15 @@ public class SymbolicEnum<E extends IPartialExpression<E, T>, T extends IZenType
 		private void completeContents()
 		{
 			// TODO: get constructors and compile values
+		}
+		
+		private void validate()
+		{
+			for (E argument : arguments) {
+				argument.validate();
+			}
+			
+			constructor.validateCall(source.position, getScope().getConstantEnvironment(), arguments);
 		}
 	}
 }

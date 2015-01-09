@@ -1,5 +1,7 @@
 package org.openzen.zencode.parser.elements;
 
+import org.openzen.zencode.parser.generic.ParsedGenericParameter;
+import org.openzen.zencode.parser.generic.ParsedGenericParameters;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.method.MethodParameter;
@@ -9,10 +11,10 @@ import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.ParsedTypeBasic;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.GenericParameter;
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -69,7 +71,7 @@ public class ParsedFunctionSignature
 		this.returnType = returnType;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 MethodHeader<E, T> compile(IModuleScope<E, T> scope)
 	{
 		T compiledReturnType = this.returnType.compile(scope);
@@ -79,13 +81,17 @@ public class ParsedFunctionSignature
 			compiledArguments.add(parameter.compile(scope));
 		}
 		
-		List<GenericParameter<E, T>> genericParameters = new ArrayList<GenericParameter<E, T>>();
-		for (ParsedGenericParameter parameter : generics) {
-			genericParameters.add(parameter.compile(scope));
-		}
+		List<GenericParameter<E, T>> genericParameters = GenericParameter.compile(generics, scope);
 
 		boolean isVararg = !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
-		return new MethodHeader<E, T>(position, genericParameters, compiledReturnType, compiledArguments, isVararg);
+		MethodHeader<E, T> result = new MethodHeader<E, T>(position, genericParameters, compiledReturnType, compiledArguments, isVararg);
+		result.completeMembers(scope);
+		return result;
+	}
+		 
+	public List<ParsedGenericParameter> getGenericParameters()
+	{
+		return generics;
 	}
 
 	public List<ParsedFunctionParameter> getParameters()
@@ -103,7 +109,7 @@ public class ParsedFunctionSignature
 		return !parameters.isEmpty() && parameters.get(parameters.size() - 1).isVarArg();
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<MethodParameter<E, T>> getCompiledArguments(IModuleScope<E, T> scope)
 	{
 		List<MethodParameter<E, T>> result = new ArrayList<MethodParameter<E, T>>();

@@ -16,7 +16,8 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -26,7 +27,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class ConstantScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class ConstantScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IMethodScope<E, T>
 {
 	private final IGlobalScope<E, T> scope;
@@ -143,5 +144,11 @@ public class ConstantScope<E extends IPartialExpression<E, T>, T extends IZenTyp
 	public MethodHeader<E, T> getMethodHeader()
 	{
 		return null;
+	}
+
+	@Override
+	public TypeCapture<E, T> getTypeCapture()
+	{
+		return TypeCapture.empty();
 	}
 }

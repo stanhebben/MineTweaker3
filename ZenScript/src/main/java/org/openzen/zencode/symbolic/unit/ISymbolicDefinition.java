@@ -9,7 +9,8 @@ import java.util.List;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
  *
@@ -17,7 +18,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public interface ISymbolicDefinition<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface ISymbolicDefinition<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public int getModifiers();
 	
@@ -28,4 +29,8 @@ public interface ISymbolicDefinition<E extends IPartialExpression<E, T>, T exten
 	public void compileMembers();
 	
 	public void compileMemberContents();
+	
+	public void validate();
+	
+	public List<? extends ITypeVariable<E, T>> getTypeVariables();
 }

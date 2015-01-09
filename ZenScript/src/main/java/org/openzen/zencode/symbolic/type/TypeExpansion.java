@@ -29,7 +29,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class TypeExpansion<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class TypeExpansion<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final AccessType accessType;
 	private final AccessScope accessScope;

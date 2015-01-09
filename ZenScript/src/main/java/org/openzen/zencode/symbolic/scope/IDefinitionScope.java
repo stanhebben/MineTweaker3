@@ -7,7 +7,7 @@
 package org.openzen.zencode.symbolic.scope;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  * @param <E>
  * @param <T>
  */
-public interface IDefinitionScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends IModuleScope<E, T>
+public interface IDefinitionScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends IModuleScope<E, T>
 {
 	public ISymbolicDefinition<E, T> getDefinition();
 }

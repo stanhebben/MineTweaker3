@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.SynchronizedStatement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -29,13 +29,13 @@ public class ParsedSynchronizedStatement extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		return new SynchronizedStatement<E, T>(getPosition(), scope, contents.compile(scope));
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}

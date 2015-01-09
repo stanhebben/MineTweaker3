@@ -5,7 +5,6 @@
  */
 package org.openzen.zencode.parser;
 
-import org.openzen.zencode.java.JavaCompiler;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.parser.unit.IParsedDefinition;
+import org.openzen.zencode.symbolic.ScriptBlock;
+import org.openzen.zencode.symbolic.SymbolicModule;
+import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -27,35 +32,33 @@ public class ParsedModule
 {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	private final JavaCompiler global;
+	private final ICodeErrorLogger<?, ?> errorLogger;
 	private final IFileLoader fileLoader;
 	private final String name;
 	private final List<ParsedFile> files;
 
-	public ParsedModule(JavaCompiler global, IFileLoader fileLoader, String name)
+	public ParsedModule(
+			ICodeErrorLogger<?, ?> errorLogger,
+			IFileLoader fileLoader,
+			String name)
 	{
-		this.global = global;
+		this.errorLogger = errorLogger;
 		this.fileLoader = fileLoader;
 		this.name = name;
 		this.files = new ArrayList<ParsedFile>();
 	}
 
-	public JavaCompiler getParserEnvironment()
-	{
-		return global;
-	}
-
 	public ICodeErrorLogger<?, ?> getErrorLogger()
 	{
-		return global.getCompileEnvironment().getErrorLogger();
+		return errorLogger;
 	}
 
 	public void addScript(String filename, String contents)
 	{
 		try {
-			files.add(new ParsedFile(this, filename, new ZenLexer(global.getCompileEnvironment().getErrorLogger(), contents)));
+			files.add(new ParsedFile(this, filename, new ZenLexer(errorLogger, contents)));
 		} catch (IOException ex) {
-			global.getCompileEnvironment().getErrorLogger().errorCannotLoadInclude(null, filename);
+			errorLogger.errorCannotLoadInclude(null, filename);
 		}
 	}
 
@@ -63,9 +66,9 @@ public class ParsedModule
 	{
 		try {
 			Reader reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(file)), UTF8);
-			files.add(new ParsedFile(this, file.getName(), new ZenLexer(global.getCompileEnvironment().getErrorLogger(), reader)));
+			files.add(new ParsedFile(this, file.getName(), new ZenLexer(errorLogger, reader)));
 		} catch (IOException ex) {
-			global.getCompileEnvironment().getErrorLogger().errorCannotLoadInclude(null, name, ex);
+			errorLogger.errorCannotLoadInclude(null, name, ex);
 		}
 	}
 	
@@ -82,5 +85,23 @@ public class ParsedModule
 	public List<ParsedFile> getFiles()
 	{
 		return files;
+	}
+	
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> SymbolicModule<E, T> compileDefinitions(IGlobalScope<E, T> global)
+	{
+		SymbolicModule<E, T> symbolicModule = new SymbolicModule<E, T>(global);
+		
+		for (ParsedFile file : files) {
+			for (IParsedDefinition definition : file.getDefinitions()) {
+				symbolicModule.addUnit(definition.compile(symbolicModule.getScope()));
+			}
+			
+			if (!file.getStatements().isEmpty()) {
+				symbolicModule.addScript(new ScriptBlock<E, T>(file.getFileName(), file.getStatements()));
+			}
+		}
+		
+		symbolicModule.compileDefinitions();
+		return symbolicModule;
 	}
 }

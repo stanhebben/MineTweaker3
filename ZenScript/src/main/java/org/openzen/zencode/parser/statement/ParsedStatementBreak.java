@@ -14,7 +14,7 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -43,7 +43,7 @@ public class ParsedStatementBreak extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		Statement<E, T> controlStatement = scope.getControlStatement(label);
@@ -60,7 +60,7 @@ public class ParsedStatementBreak extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));

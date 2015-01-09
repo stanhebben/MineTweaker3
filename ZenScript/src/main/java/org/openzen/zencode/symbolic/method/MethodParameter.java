@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.symbolic.method;
 
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import java.util.Map;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.compiler.ITypeCompiler;
@@ -13,7 +14,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -22,7 +23,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class MethodParameter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class MethodParameter<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final ParsedFunctionParameter source;
 	

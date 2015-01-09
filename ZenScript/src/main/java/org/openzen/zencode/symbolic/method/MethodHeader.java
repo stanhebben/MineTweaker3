@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.symbolic.method;
 
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 /**
  *
@@ -22,9 +23,9 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class MethodHeader<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class MethodHeader<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
-	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
 		 MethodHeader<ES, TS> noParameters(TS returnType)
 	{
 		return new MethodHeader<ES, TS>(
@@ -35,7 +36,7 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends IZenType
 				false);
 	}
 	
-	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
 		 MethodHeader<ES, TS> singleParameterVoid(String argumentName, TS argumentType)
 	{
 		return singleParameter(
@@ -44,7 +45,7 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends IZenType
 				argumentType);
 	}
 
-	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
 		 MethodHeader<ES, TS> singleParameter(
 				 TS returnType,
 				 String argumentName,
@@ -225,7 +226,14 @@ public class MethodHeader<E extends IPartialExpression<E, T>, T extends IZenType
 		return parameters.get(index).getType();
 	}
 	
-	public void complete(IMethodScope<E, T> scope)
+	public void completeMembers(IModuleScope<E, T> scope)
+	{
+		for (GenericParameter<E, T> genericParameter : genericParameters) {
+			genericParameter.completeMembers(scope);
+		}
+	}
+	
+	public void completeContents(IMethodScope<E, T> scope)
 	{
 		for (MethodParameter<E, T> parameter : parameters) {
 			parameter.completeContents(scope);

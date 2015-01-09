@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.expression;
 
 import org.openzen.zencode.symbolic.field.IField;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,7 +18,7 @@ public class Expressions
 {
 	private Expressions() {}
 	
-	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 E[] convert(CodePosition position, IMethodScope<E, T> scope, Object[] constants)
 	{
 		@SuppressWarnings("unchecked")
@@ -31,7 +31,7 @@ public class Expressions
 		return results;
 	}
 	
-	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		E convert(CodePosition position, IMethodScope<E, T> scope, Object constant)
 	{
 		if (constant == null) {

@@ -5,14 +5,16 @@
  */
 package org.openzen.zencode.parser.unit;
 
+import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.expression.ParsedCallArguments;
+import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicEnum;
 import org.openzen.zencode.util.CodePosition;
@@ -51,14 +53,22 @@ public class ParsedEnum implements IParsedDefinition
 		return position;
 	}
 
+	@Override
 	public List<ParsedAnnotation> getAnnotations()
 	{
 		return annotations;
 	}
 
+	@Override
 	public List<IParsedModifier> getModifiers()
 	{
 		return modifiers;
+	}
+	
+	@Override
+	public List<ParsedGenericParameter> getGenericParameters()
+	{
+		return Collections.<ParsedGenericParameter>emptyList();
 	}
 
 	public String getName()
@@ -77,18 +87,20 @@ public class ParsedEnum implements IParsedDefinition
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope)
 	{
 		return new SymbolicEnum<E, T>(this, scope);
 	}
 	
 	public static class Value
 	{
+		public final CodePosition position;
 		public final String name;
 		public final ParsedCallArguments arguments;
 		
-		public Value(String name, ParsedCallArguments arguments)
+		public Value(CodePosition position, String name, ParsedCallArguments arguments)
 		{
+			this.position = position;
 			this.name = name;
 			this.arguments = arguments;
 		}

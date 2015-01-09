@@ -3,19 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.openzen.zencode.parser.elements;
+package org.openzen.zencode.parser.generic;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.parser.elements.IParsedGenericBound;
+import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.GenericParameter;
-import org.openzen.zencode.symbolic.method.IGenericParameterBound;
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
+import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -58,15 +60,19 @@ public class ParsedGenericParameter
 		this.name = name;
 		this.bounds = bounds;
 	}
-	
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-		GenericParameter<E, T> compile(IModuleScope<E, T> scope)
+
+	public CodePosition getPosition()
 	{
-		List<IGenericParameterBound<E, T>> compiledBounds = new ArrayList<IGenericParameterBound<E, T>>();
-		for (IParsedGenericBound bound : bounds) {
-			compiledBounds.add(bound.compile(scope));
-		}
-		
-		return new GenericParameter<E, T>(position, name, compiledBounds);
+		return position;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<IParsedGenericBound> getBounds()
+	{
+		return bounds;
 	}
 }

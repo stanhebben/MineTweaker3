@@ -9,14 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.unit.ParsedClass;
-import org.openzen.zencode.symbolic.Modifier;
-import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
-import org.openzen.zencode.symbolic.scope.DefinitionScope;
-import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -24,24 +20,20 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class SymbolicClass<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
-	implements ISymbolicDefinition<E, T>
+public class SymbolicClass<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
+	extends AbstractSymbolicDefinition<E, T>
 {
 	private final ParsedClass source;
 	
-	private final int modifiers;
 	private final String className;
 	private final T superclass;
 	private final List<IMember<E, T>> members;
-	private final IDefinitionScope<E, T> scope;
-	
-	private List<SymbolicAnnotation<E, T>> annotations;
 	
 	public SymbolicClass(ParsedClass source, IModuleScope<E, T> moduleScope)
 	{
-		this.source = source;
+		super(source, moduleScope);
 		
-		this.modifiers = Modifier.compileModifiers(source.getModifiers(), moduleScope.getErrorLogger());
+		this.source = source;
 		this.className = source.getName();
 		
 		if (source.getExtendsTypes().isEmpty()) {
@@ -54,12 +46,6 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends IZenTyp
 		}
 		
 		members = new ArrayList<IMember<E, T>>();
-		scope = new DefinitionScope<E, T>(moduleScope, this);
-	}
-	
-	public IDefinitionScope<E, T> getScope()
-	{
-		return scope;
 	}
 
 	@Override
@@ -73,8 +59,10 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends IZenTyp
 	@Override
 	public void compileMembers()
 	{
+		super.compileMembers();
+		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E, T> compiledMember = member.compile(scope);
+			IMember<E, T> compiledMember = member.compile(getScope());
 			if (compiledMember != null)
 				members.add(compiledMember);
 		}
@@ -83,22 +71,20 @@ public class SymbolicClass<E extends IPartialExpression<E, T>, T extends IZenTyp
 	@Override
 	public void compileMemberContents()
 	{
+		super.compileMemberContents();
+		
 		for (IMember<E, T> member : members) {
 			member.completeContents();
 		}
+	}
+
+	@Override
+	public void validate()
+	{
+		super.validate();
 		
-		annotations = SymbolicAnnotation.compileAll(source.getAnnotations(), scope);
-	}
-
-	@Override
-	public int getModifiers()
-	{
-		return modifiers;
-	}
-
-	@Override
-	public List<SymbolicAnnotation<E, T>> getAnnotations()
-	{
-		return annotations;
+		for (IMember<E, T> member : members) {
+			member.validate();
+		}
 	}
 }

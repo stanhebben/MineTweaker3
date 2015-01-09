@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
@@ -17,7 +17,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public abstract class AbstractPartialExpression<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IPartialExpression<E, T>
+public abstract class AbstractPartialExpression<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IPartialExpression<E, T>
 {
 	private final CodePosition position;
 	private final IMethodScope<E, T> scope;

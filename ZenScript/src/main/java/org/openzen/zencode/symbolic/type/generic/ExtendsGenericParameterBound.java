@@ -3,13 +3,13 @@
  * 
  * Copyright (c) 2014 MineTweaker <http://minetweaker3.powerofbytes.com>
  */
-package org.openzen.zencode.symbolic.method;
+package org.openzen.zencode.symbolic.type.generic;
 
-import org.openzen.zencode.parser.elements.ParsedGenericBoundImplements;
+import org.openzen.zencode.parser.generic.ParsedGenericBoundExtends;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -17,17 +17,17 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class ImplementsGenericParameterBound<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class ExtendsGenericParameterBound<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IGenericParameterBound<E, T>
 {
 	private T type;
 	
-	public ImplementsGenericParameterBound(ParsedGenericBoundImplements source, IModuleScope<E, T> scope)
+	public ExtendsGenericParameterBound(ParsedGenericBoundExtends source, IModuleScope<E, T> scope)
 	{
 		type = source.getType().compile(scope);
 	}
 	
-	public ImplementsGenericParameterBound(T type)
+	public ExtendsGenericParameterBound(T type)
 	{
 		this.type = type;
 	}

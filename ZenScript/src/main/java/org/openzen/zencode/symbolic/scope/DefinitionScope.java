@@ -15,7 +15,9 @@ import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -25,12 +27,13 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IDefinitionScope<E, T>
+public class DefinitionScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IDefinitionScope<E, T>
 {
 	private final AccessScope accessScope;
 	private final IModuleScope<E, T> module;
 	private final ISymbolicDefinition<E, T> unit;
 	private final Map<String, IZenSymbol<E, T>> local;
+	private final TypeCapture<E, T> typeCapture;
 	
 	public DefinitionScope(IModuleScope<E, T> global, ISymbolicDefinition<E, T> unit)
 	{
@@ -38,6 +41,11 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IZenT
 		this.module = global;
 		this.local = new HashMap<String, IZenSymbol<E, T>>();
 		this.unit = unit;
+		this.typeCapture = new TypeCapture<E, T>(null);
+		
+		for (ITypeVariable<E, T> typeVariable : unit.getTypeVariables()) {
+			typeCapture.put(typeVariable, global.getTypeCompiler().getGeneric(typeVariable));
+		}
 	}
 	
 	@Override
@@ -134,5 +142,11 @@ public class DefinitionScope<E extends IPartialExpression<E, T>, T extends IZenT
 	public ICodeErrorLogger<E, T> getErrorLogger()
 	{
 		return module.getErrorLogger();
+	}
+
+	@Override
+	public TypeCapture<E, T> getTypeCapture()
+	{
+		return typeCapture;
 	}
 }

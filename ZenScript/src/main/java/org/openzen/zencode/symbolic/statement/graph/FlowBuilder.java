@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Stack;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class FlowBuilder<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class FlowBuilder<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final Stack<Statement<E, T>> loops;
 	private final Map<Statement<E, T>, FlowBlock<E, T>> breakLabels;

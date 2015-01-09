@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.statement.graph.ExpressionFlowInstruction;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.VarFlowInstruction;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -21,7 +21,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class TryStatement<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
+public class TryStatement<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
 {
 	private final StatementVar<E, T> withStatement;
 	private final Statement<E, T> contents;
@@ -104,7 +104,7 @@ public class TryStatement<E extends IPartialExpression<E, T>, T extends IZenType
 		return result;
 	}
 	
-	public static class CatchClause<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public static class CatchClause<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	{
 		private final List<T> types;
 		private final Statement<E, T> contents;

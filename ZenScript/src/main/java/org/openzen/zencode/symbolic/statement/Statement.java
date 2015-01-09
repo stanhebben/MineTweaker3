@@ -7,10 +7,10 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.FlowGraph;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public abstract class Statement<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public abstract class Statement<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final CodePosition position;
 	private final IMethodScope<E, T> scope;

@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.member.OperatorMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -80,13 +80,13 @@ public class ParsedOperator implements IParsedMember
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void collectInnerDefinitions(List<ISymbolicDefinition<E, T>> units, IModuleScope<E, T> scope)
 	{
 		
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> IMember<E, T> compile(IDefinitionScope<E, T> scope)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> IMember<E, T> compile(IDefinitionScope<E, T> scope)
 	{
 		return new OperatorMember<E, T>(this, scope);
 	}

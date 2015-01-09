@@ -8,8 +8,9 @@ package org.openzen.zencode.compiler;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
+import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.symbolic.unit.SymbolicStruct;
 
 /**
@@ -18,7 +19,7 @@ import org.openzen.zencode.symbolic.unit.SymbolicStruct;
  * @param <E>
  * @param <T>
  */
-public interface ITypeCompiler<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface ITypeCompiler<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public T getAny(IModuleScope<E, T> scope);
 	
@@ -65,4 +66,6 @@ public interface ITypeCompiler<E extends IPartialExpression<E, T>, T extends IZe
 	public void addExpansion(IModuleScope<E, T> scope, String type, TypeExpansion<E, T> expansion);
 	
 	public T getStruct(IModuleScope<E, T> scope, SymbolicStruct<E, T> struct);
+	
+	public T getGeneric(ITypeVariable<E, T> typeVariable);
 }

@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -22,11 +22,11 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public interface IExpressionCompiler<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface IExpressionCompiler<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public E invalid(CodePosition position, IMethodScope<E, T> scope);
 	
-	public E invalid(CodePosition position, IMethodScope<E, T> scope, IZenType<E, T> valueType);
+	public E invalid(CodePosition position, IMethodScope<E, T> scope, ITypeInstance<E, T> valueType);
 	
 	public E constantNull(CodePosition position, IMethodScope<E, T> scope);
 	
@@ -80,7 +80,7 @@ public interface IExpressionCompiler<E extends IPartialExpression<E, T>, T exten
 	
 	public E map(CodePosition position, IMethodScope<E, T> scope, T mapType, List<E> keys, List<E> maps);
 	
-	public E constructNew(CodePosition position, IMethodScope<E, T> scope, IZenType<E, T> type, IMethod<E, T> method, List<E> arguments);
+	public E constructNew(CodePosition position, IMethodScope<E, T> scope, ITypeInstance<E, T> type, IMethod<E, T> method, List<E> arguments);
 	
 	public E functionExpression(CodePosition position, IMethodScope<E, T> scope, MethodHeader<E, T> header, List<Statement<E, T>> statements);
 	

@@ -34,10 +34,10 @@ import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
-import org.openzen.zencode.symbolic.method.ExtendsGenericParameterBound;
-import org.openzen.zencode.symbolic.method.GenericParameter;
-import org.openzen.zencode.symbolic.method.IGenericParameterBound;
-import org.openzen.zencode.symbolic.method.ImplementsGenericParameterBound;
+import org.openzen.zencode.symbolic.type.generic.ExtendsGenericParameterBound;
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
+import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
+import org.openzen.zencode.symbolic.type.generic.ImplementsGenericParameterBound;
 
 /**
  *

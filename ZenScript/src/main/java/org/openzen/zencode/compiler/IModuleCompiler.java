@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.symbolic.unit.SymbolicInterface;
 import org.openzen.zencode.symbolic.unit.SymbolicStruct;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -21,7 +21,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public interface IModuleCompiler<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface IModuleCompiler<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public void compileScript(List<Statement<E, T>> statements);
 	

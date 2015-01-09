@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.symbols;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -17,7 +17,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class SymbolLocal<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IZenSymbol<E, T>
+public class SymbolLocal<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IZenSymbol<E, T>
 {
 	private final T type;
 	private final boolean isFinal;

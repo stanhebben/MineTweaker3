@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.symbols;
 
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -17,7 +17,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public interface IZenSymbol<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface IZenSymbol<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public IPartialExpression<E, T> instance(CodePosition position, IMethodScope<E, T> scope);
 }

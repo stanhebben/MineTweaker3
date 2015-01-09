@@ -15,7 +15,8 @@ import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -24,7 +25,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class ModuleScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class ModuleScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IModuleScope<E, T>
 {
 	private final IGlobalScope<E, T> parent;
@@ -132,5 +133,11 @@ public class ModuleScope<E extends IPartialExpression<E, T>, T extends IZenType<
 	public ICodeErrorLogger<E, T> getErrorLogger()
 	{
 		return parent.getErrorLogger();
+	}
+
+	@Override
+	public TypeCapture<E, T> getTypeCapture()
+	{
+		return TypeCapture.empty();
 	}
 }

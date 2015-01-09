@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -37,7 +37,7 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> valueType)
+	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, ITypeInstance<IJavaExpression, IJavaType> valueType)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -199,7 +199,7 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression constructNew(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IZenType<IJavaExpression, IJavaType> type, IMethod<IJavaExpression, IJavaType> method, IJavaExpression[] arguments)
+	public IJavaExpression constructNew(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, ITypeInstance<IJavaExpression, IJavaType> type, IMethod<IJavaExpression, IJavaType> method, IJavaExpression[] arguments)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

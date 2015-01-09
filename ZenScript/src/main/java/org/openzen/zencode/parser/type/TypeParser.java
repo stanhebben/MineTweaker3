@@ -5,10 +5,11 @@ import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
+import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import static org.openzen.zencode.parser.type.ParsedTypeBasic.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  * Utility class to parse types.
@@ -21,7 +22,7 @@ public class TypeParser
 	{
 	}
 
-	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 T parseDirect(String value, IModuleScope<E, T> scope)
 	{
 		try {
@@ -118,6 +119,12 @@ public class TypeParser
 				
 			case T_AOPEN:
 				result = new ParsedTypeInlineStruct(lexer);
+				break;
+				
+			case T_FUNCTION:
+				lexer.next();
+				ParsedFunctionSignature header = ParsedFunctionSignature.parse(lexer);
+				result = new ParsedTypeFunction(header);
 				break;
 				
 			default:

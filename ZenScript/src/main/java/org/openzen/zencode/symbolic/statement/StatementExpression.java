@@ -5,10 +5,10 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.ExpressionFlowInstruction;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementExpression<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
+public class StatementExpression<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
 {
 	private final E expression;
 

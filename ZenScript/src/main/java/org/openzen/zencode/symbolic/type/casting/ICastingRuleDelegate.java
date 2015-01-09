@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public interface ICastingRuleDelegate<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface ICastingRuleDelegate<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public void registerCastingRule(T type, ICastingRule<E, T> rule);
 }

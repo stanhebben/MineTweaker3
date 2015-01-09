@@ -17,7 +17,7 @@ import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.type.generic.TypeVariableNative;
+import org.openzen.zencode.java.type.TypeVariableNative;
 import org.openzen.zencode.util.CodePosition;
 
 /**

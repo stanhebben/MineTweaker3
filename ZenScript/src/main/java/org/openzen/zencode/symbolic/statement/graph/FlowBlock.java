@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class FlowBlock<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class FlowBlock<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final List<IFlowInstruction<E, T>> instructions;
 	private final List<FlowBlock<E, T>> outgoing;

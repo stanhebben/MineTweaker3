@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -26,7 +26,7 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  * @param <E>
  * @param <T>
  */
-public class AnyCallerMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMember<E, T>
+public class AnyCallerMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
 {
 	private final ParsedAnyCaller source;
 	private final int modifiers;

@@ -11,9 +11,8 @@ import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.ModuleScope;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -21,11 +20,11 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class SymbolicModule<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class SymbolicModule<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final IModuleScope<E, T> scope;
-	private final List<SymbolicFunction<E, T>> scripts = new ArrayList<SymbolicFunction<E, T>>();
-	private final List<ISymbolicDefinition<E, T>> units = new ArrayList<ISymbolicDefinition<E, T>>();
+	private final List<ScriptBlock<E, T>> scripts = new ArrayList<ScriptBlock<E, T>>();
+	private final List<ISymbolicDefinition<E, T>> definitions = new ArrayList<ISymbolicDefinition<E, T>>();
 	
 	public SymbolicModule(IGlobalScope<E, T> scope)
 	{
@@ -39,23 +38,51 @@ public class SymbolicModule<E extends IPartialExpression<E, T>, T extends IZenTy
 	
 	public void addUnit(ISymbolicDefinition<E, T> unit)
 	{
-		units.add(unit);
+		definitions.add(unit);
 	}
 	
-	public void addScript(SymbolicFunction<E, T> script)
+	public void addScript(ScriptBlock<E, T> script)
 	{
 		scripts.add(script);
 	}
-	
-	/*public void compile(MethodOutput mainScript)
+
+	public List<ScriptBlock<E, T>> getScripts()
 	{
-		for (ISymbolicDefinition unit : units) {
-			unit.compile();
+		return scripts;
+	}
+
+	public List<ISymbolicDefinition<E, T>> getDefinitions()
+	{
+		return definitions;
+	}
+	
+	public void compileDefinitions()
+	{
+		List<ISymbolicDefinition<E, T>> innerDefinitions = new ArrayList<ISymbolicDefinition<E, T>>();
+		for (ISymbolicDefinition<E, T> definition : definitions) {
+			definition.collectInnerDefinitions(innerDefinitions, scope);
 		}
-		
-		for (SymbolicFunction script : scripts) {
-			script.compile();
-			mainScript.invokeStatic(script.getClassName(), "call", "()V");
+		definitions.addAll(innerDefinitions);
+	}
+	
+	public void compileMembers()
+	{
+		for (ISymbolicDefinition<E, T> definition : definitions) {
+			definition.compileMembers();
 		}
-	}*/
+	}
+	
+	public void compileMemberContents()
+	{
+		for (ISymbolicDefinition<E, T> definition : definitions) {
+			definition.compileMemberContents();
+		}
+	}
+	
+	public void validate()
+	{
+		for (ISymbolicDefinition<E, T> definition : definitions) {
+			definition.validate();
+		}
+	}
 }

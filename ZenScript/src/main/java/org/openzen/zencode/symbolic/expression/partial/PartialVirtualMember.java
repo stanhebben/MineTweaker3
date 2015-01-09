@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.member.IGetter;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
@@ -25,7 +25,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class PartialVirtualMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		extends AbstractPartialExpression<E, T>
 {
 	private final E target;

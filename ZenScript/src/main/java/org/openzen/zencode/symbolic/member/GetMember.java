@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -24,7 +24,7 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  * @param <E>
  * @param <T>
  */
-public class GetMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMember<E, T>
+public class GetMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMember<E, T>
 {
 	private final ParsedGetMember source;
 	private final IMethodScope<E, T> methodScope;
@@ -50,7 +50,7 @@ public class GetMember<E extends IPartialExpression<E, T>, T extends IZenType<E,
 	@Override
 	public void completeContents()
 	{
-		methodScope.getMethodHeader().complete(methodScope);
+		methodScope.getMethodHeader().completeContents(methodScope);
 		contents = source.getContent().compile(methodScope);
 		annotations = SymbolicAnnotation.compileAll(source.getAnnotations(), methodScope);
 	}

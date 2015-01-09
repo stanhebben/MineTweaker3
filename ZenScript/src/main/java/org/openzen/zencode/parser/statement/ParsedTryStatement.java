@@ -19,7 +19,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.statement.TryStatement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -94,7 +94,7 @@ public class ParsedTryStatement extends ParsedStatement
 	}
 	
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		StatementVar<E, T> withVariableCompiled = null;
 		if (withVariable != null)
@@ -117,7 +117,7 @@ public class ParsedTryStatement extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));
 	}
@@ -141,7 +141,7 @@ public class ParsedTryStatement extends ParsedStatement
 			this.contents = contents;
 		}
 		
-		public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> TryStatement.CatchClause<E, T>
+		public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> TryStatement.CatchClause<E, T>
 			compile(IMethodScope<E, T> scope)
 		{
 			List<T> compiledTypes = new ArrayList<T>();

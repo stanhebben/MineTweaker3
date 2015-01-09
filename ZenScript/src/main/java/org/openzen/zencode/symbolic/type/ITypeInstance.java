@@ -10,7 +10,7 @@ import java.util.Map;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.GenericParameter;
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
@@ -24,7 +24,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public interface IZenType<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface ITypeInstance<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public IModuleScope<E, T> getScope();
 	
@@ -45,8 +45,6 @@ public interface IZenType<E extends IPartialExpression<E, T>, T extends IZenType
 	public T nonNull();
 	
 	public boolean isNullable();
-	
-	public E call(CodePosition position, IMethodScope<E, T> scope, IMethod<E, T> method, E... arguments);
 	
 	public IPartialExpression<E, T> getInstanceMember(CodePosition position, IMethodScope<E, T> scope, E instance, String name);
 	

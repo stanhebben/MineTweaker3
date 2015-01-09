@@ -14,7 +14,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.ClassNameGenerator;
 
@@ -24,7 +24,7 @@ import org.openzen.zencode.util.ClassNameGenerator;
  * @param <E>
  * @param <T>
  */
-public class GlobalScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class GlobalScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IGlobalScope<E, T>
 {
 	private final IZenCompileEnvironment<E, T> environment;

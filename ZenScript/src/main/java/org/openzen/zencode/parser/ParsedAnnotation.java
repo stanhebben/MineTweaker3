@@ -18,7 +18,7 @@ import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -66,7 +66,7 @@ public class ParsedAnnotation
 		this.arguments = arguments;
 	}
 	
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		SymbolicAnnotation<E, T> compile(IModuleScope<E, T> scope)
 	{
 		T type = annotationType.compile(scope);

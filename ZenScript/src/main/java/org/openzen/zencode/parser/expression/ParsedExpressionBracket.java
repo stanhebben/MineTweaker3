@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -30,7 +30,7 @@ public class ParsedExpressionBracket extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		IPartialExpression<E, T> result = scope.getEnvironment().getBracketed(getPosition(), scope, tokens);
@@ -43,7 +43,7 @@ public class ParsedExpressionBracket extends ParsedExpression
 		return result;
 	}
 		 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		E errorUnresolved(IMethodScope<E, T> environment)
 	{
 		environment.getErrorLogger().errorCouldNotResolveBracket(getPosition(), tokens);

@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticField;
 import org.openzen.zencode.symbolic.field.IField;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,7 +18,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class SymbolStaticField<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class SymbolStaticField<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		implements IZenSymbol<E, T>
 {
 	private final IField<E, T> field;

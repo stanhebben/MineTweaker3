@@ -15,7 +15,7 @@ import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -51,7 +51,7 @@ public class ParsedStatementIf extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 Statement<E, T> compile(IMethodScope<E, T> scope)
 	{
 		IAny eval = condition.eval(scope.getEnvironment());
@@ -81,7 +81,7 @@ public class ParsedStatementIf extends ParsedStatement
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 void compileSwitch(IMethodScope<E, T> scope, StatementSwitch<E, T> forSwitch)
 	{
 		forSwitch.onStatement(compile(scope));

@@ -8,13 +8,13 @@ package org.openzen.zencode.java.type;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.iterator.IJavaIterator;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
  * @author Stan
  */
-public interface IJavaType extends IZenType<IJavaExpression, IJavaType>
+public interface IJavaType extends ITypeInstance<IJavaExpression, IJavaType>
 {
 	public String getSignature();
 	

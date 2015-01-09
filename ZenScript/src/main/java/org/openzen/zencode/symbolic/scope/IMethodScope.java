@@ -9,7 +9,7 @@ package org.openzen.zencode.symbolic.scope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public interface IMethodScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends IDefinitionScope<E, T>
+public interface IMethodScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends IDefinitionScope<E, T>
 {
 	public Statement<E, T> getControlStatement(String label);
 	

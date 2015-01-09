@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class ForeachFlowInstruction<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IFlowInstruction<E, T>
+public class ForeachFlowInstruction<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IFlowInstruction<E, T>
 {
 	private final E values;
 	private final FlowBlock<E, T> loopBody;

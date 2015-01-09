@@ -14,8 +14,8 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
-import org.openzen.zencode.parser.elements.ParsedGenericParameter;
-import org.openzen.zencode.parser.elements.ParsedGenericParameters;
+import org.openzen.zencode.parser.generic.ParsedGenericParameter;
+import org.openzen.zencode.parser.generic.ParsedGenericParameters;
 import org.openzen.zencode.parser.expression.ParsedCallArguments;
 import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.member.MemberParser;
@@ -148,12 +148,13 @@ public class DefinitionParser
 			if (lexer.peek().getType() == T_SEMICOLON || lexer.peek().getType() == T_ACLOSE)
 				break;
 
+			CodePosition position = lexer.getPosition();
 			String valueName = lexer.requiredIdentifier();
 			ParsedCallArguments arguments = null;
 			if (lexer.peek().getType() == T_BROPEN)
 				arguments = ParsedCallArguments.parse(lexer);
 
-			values.add(new ParsedEnum.Value(valueName, arguments));
+			values.add(new ParsedEnum.Value(position, valueName, arguments));
 		} while (lexer.optional(T_COMMA) != null);
 		
 		return values;

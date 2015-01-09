@@ -19,7 +19,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class ExpansionSetter<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class ExpansionSetter<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		implements ISetter<E, T>
 {
 	private final PartialVirtualMember<E, T> member;

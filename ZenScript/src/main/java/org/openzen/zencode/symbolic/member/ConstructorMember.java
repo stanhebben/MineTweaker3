@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class ConstructorMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class ConstructorMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IMember<E, T>
 {	
 	private final ParsedConstructor source;
@@ -74,7 +74,7 @@ public class ConstructorMember<E extends IPartialExpression<E, T>, T extends IZe
 	@Override
 	public void completeContents()
 	{
-		methodScope.getMethodHeader().complete(methodScope);
+		methodScope.getMethodHeader().completeContents(methodScope);
 		
 		if (source != null)
 		{

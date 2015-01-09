@@ -5,9 +5,13 @@
  */
 package org.openzen.zencode.parser.unit;
 
+import java.util.List;
+import org.openzen.zencode.parser.ParsedAnnotation;
+import org.openzen.zencode.parser.generic.ParsedGenericParameter;
+import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -16,6 +20,12 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  */
 public interface IParsedDefinition
 {
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 ISymbolicDefinition<E, T> compile(IModuleScope<E, T> scope);
+		 
+	public List<IParsedModifier> getModifiers();
+	
+	public List<ParsedAnnotation> getAnnotations();
+	
+	public List<ParsedGenericParameter> getGenericParameters();
 }

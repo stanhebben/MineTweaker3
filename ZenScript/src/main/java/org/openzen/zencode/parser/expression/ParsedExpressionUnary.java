@@ -10,7 +10,7 @@ import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,7 +31,7 @@ public class ParsedExpressionUnary extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType)
 	{
 		E cValue = value.compile(environment, predictedType);

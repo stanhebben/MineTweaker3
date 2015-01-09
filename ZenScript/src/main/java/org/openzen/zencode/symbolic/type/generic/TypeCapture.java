@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.type.generic;
 import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -16,17 +16,17 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class TypeCapture<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class TypeCapture<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	@SuppressWarnings("unchecked")
-	public static <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public static <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 TypeCapture<E, T> empty()
 	{
 		return (TypeCapture<E, T>) EMPTY;
 	}
 	
 	public static final TypeCapture EMPTY = new TypeCapture(null);
-
+	
 	private final TypeCapture<E, T> outer;
 	private final Map<ITypeVariable, T> variables;
 

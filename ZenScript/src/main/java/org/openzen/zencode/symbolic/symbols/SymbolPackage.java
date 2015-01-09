@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialPackage;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -22,7 +22,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class SymbolPackage<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class SymbolPackage<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IZenSymbol<E, T>
 {
 	private final HashMap<String, IZenSymbol<E, T>> members;

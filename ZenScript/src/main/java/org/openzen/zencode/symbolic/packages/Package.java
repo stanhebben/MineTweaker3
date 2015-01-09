@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class Package<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class Package<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IPackageSymbol<E, T>
 {
 	private Map<String, IPackageSymbol<E, T>> contents;

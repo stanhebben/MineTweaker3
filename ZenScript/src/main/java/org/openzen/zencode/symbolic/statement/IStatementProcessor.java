@@ -6,7 +6,7 @@
 package org.openzen.zencode.symbolic.statement;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -15,7 +15,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <T>
  * @param <U>
  */
-public interface IStatementProcessor<E extends IPartialExpression<E, T>, T extends IZenType<E, T>, U>
+public interface IStatementProcessor<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>, U>
 {
 	public U onBlock(StatementBlock<E, T> statement);
 	

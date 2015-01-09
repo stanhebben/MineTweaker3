@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyLong;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,7 +31,7 @@ public class ParsedExpressionInt extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T predictedType)
 	{
 		IExpressionCompiler<E, T> compiler = scope.getExpressionCompiler();

@@ -11,7 +11,7 @@ import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -20,9 +20,9 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class SymbolicAnnotation<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class SymbolicAnnotation<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
-	public static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+	public static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
 		 List<SymbolicAnnotation<ES, TS>> compileAll(List<ParsedAnnotation> annotations, IDefinitionScope<ES, TS> scope)
 	{
 		List<SymbolicAnnotation<ES, TS>> result = new ArrayList<SymbolicAnnotation<ES, TS>>();
@@ -43,5 +43,14 @@ public class SymbolicAnnotation<E extends IPartialExpression<E, T>, T extends IZ
 		this.type = type;
 		this.constructor = constructor;
 		this.arguments = arguments;
+	}
+	
+	public void validate()
+	{
+		for (E argument : arguments) {
+			argument.validate();
+		}
+		
+		constructor.validateCall(position, type.getScope().getConstantEnvironment(), arguments);
 	}
 }

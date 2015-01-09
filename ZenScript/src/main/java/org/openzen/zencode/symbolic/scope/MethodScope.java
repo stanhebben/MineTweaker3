@@ -14,10 +14,12 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
@@ -27,17 +29,23 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class MethodScope<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMethodScope<E, T>
+public class MethodScope<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMethodScope<E, T>
 {
 	private final IDefinitionScope<E, T> scope;
 	private final Map<String, IZenSymbol<E, T>> local;
 	private final MethodHeader<E, T> methodHeader;
-
+	private final TypeCapture<E, T> typeCapture;
+	
 	public MethodScope(IDefinitionScope<E, T> environment, MethodHeader<E, T> methodHeader)
 	{
 		this.scope = environment;
 		this.local = new HashMap<String, IZenSymbol<E, T>>();
 		this.methodHeader = methodHeader;
+		
+		typeCapture = new TypeCapture<E, T>(environment.getTypeCapture());
+		for (GenericParameter<E, T> parameter : methodHeader.getGenericParameters()) {
+			typeCapture.put(parameter, environment.getTypeCompiler().getGeneric(parameter));
+		}
 	}
 	
 	@Override
@@ -152,5 +160,11 @@ public class MethodScope<E extends IPartialExpression<E, T>, T extends IZenType<
 	public MethodHeader<E, T> getMethodHeader()
 	{
 		return methodHeader;
+	}
+
+	@Override
+	public TypeCapture<E, T> getTypeCapture()
+	{
+		return typeCapture;
 	}
 }

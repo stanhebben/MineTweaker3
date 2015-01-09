@@ -12,7 +12,7 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -25,7 +25,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E> compiler expression type
  * @param <T> compiler value type
  */
-public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface IZenCompileEnvironment<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	/**
 	 * Gets the type compiler for the current target language.

@@ -24,9 +24,11 @@ import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.AccessScope;
+import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.unit.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
@@ -50,7 +52,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		MethodHeader<E, T> compiledHeader = header.compile(scope);
@@ -86,7 +88,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 			}
 		}
 
-		SymbolicFunction<E, T> functionUnit = new SymbolicFunction<E, T>(getPosition(), compiledHeader, scope);
+		SymbolicFunction<E, T> functionUnit = new SymbolicFunction<E, T>(getPosition(), Modifier.PRIVATE.getCode(), compiledHeader, scope);
 		EnvironmentFunctionLiteral<E, T> functionScope = new EnvironmentFunctionLiteral<E, T>(scope, functionUnit);
 
 		for (int i = 0; i < compiledHeader.getParameters().size(); i++) {
@@ -114,7 +116,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 		return null;
 	}
 
-	private static class EnvironmentFunctionLiteral<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private static class EnvironmentFunctionLiteral<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 			implements IMethodScope<E, T>
 	{
 		private final IMethodScope<E, T> outer;
@@ -237,6 +239,12 @@ public class ParsedExpressionFunction extends ParsedExpression
 		public MethodHeader<E, T> getMethodHeader()
 		{
 			return functionUnit.getHeader();
+		}
+
+		@Override
+		public TypeCapture<E, T> getTypeCapture()
+		{
+			return outer.getTypeCapture();
 		}
 	}
 }

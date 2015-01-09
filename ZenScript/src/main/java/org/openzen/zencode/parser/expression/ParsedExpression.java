@@ -24,7 +24,7 @@ import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IGlobalScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import static org.openzen.zencode.util.Strings.unescapeString;
 import org.openzen.zencode.util.CodePosition;
 
@@ -489,10 +489,10 @@ public abstract class ParsedExpression
 		return position;
 	}
 
-	public abstract <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public abstract <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 IPartialExpression<E, T> compilePartial(IMethodScope<E, T> environment, T predictedType);
 
-	public final <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public final <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 E compile(IMethodScope<E, T> environment, T predictedType)
 	{
 		return compilePartial(environment, predictedType).eval();
@@ -503,7 +503,7 @@ public abstract class ParsedExpression
 		return null;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 E compileKey(IMethodScope<E, T> environment, T asType)
 	{
 		return compile(environment, asType);

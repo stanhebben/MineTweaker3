@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyArray;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
@@ -32,7 +32,7 @@ public class ParsedExpressionArray extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 			IPartialExpression<E, T> compilePartial(IMethodScope<E, T> scope, T asType)
 	{
 		T arrayType;
@@ -64,7 +64,7 @@ public class ParsedExpressionArray extends ParsedExpression
 	}
 
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 			E compileKey(IMethodScope<E, T> environment, T predictedType)
 	{
 		if (contents.size() == 1 && contents.get(0) instanceof ParsedExpressionVariable)

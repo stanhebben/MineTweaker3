@@ -16,7 +16,7 @@ import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -57,7 +57,7 @@ public class ParsedCallArguments
 		numUnkeyedValues = numberOfUnkeyedValues;
 	}
 
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 MatchedArguments<E, T> compile(List<IMethod<E, T>> methods, IMethodScope<E, T> environment)
 	{
 		List<T> predictedTypes = predictArgumentTypes(methods);
@@ -70,7 +70,7 @@ public class ParsedCallArguments
 		return matchWithImplicitConversion(methods, environment, compiledArguments);
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<E> compileArguments(IMethodScope<E, T> environment, List<T> predictedTypes)
 	{
 		List<E> compiled = new ArrayList<E>();
@@ -81,7 +81,7 @@ public class ParsedCallArguments
 		return compiled;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 MatchedArguments<E, T> matchExactly(List<IMethod<E, T>> methods, IMethodScope<E, T> environment, List<E> compiled)
 	{
 		for (IMethod<E, T> method : methods) {
@@ -93,7 +93,7 @@ public class ParsedCallArguments
 		return null;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 MatchedArguments<E, T> matchWithImplicitConversion(List<IMethod<E, T>> methods, IMethodScope<E, T> environment, List<E> compiled)
 	{
 		for (IMethod<E, T> method : methods) {
@@ -135,7 +135,7 @@ public class ParsedCallArguments
 		return false;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<T> predictArgumentTypes(List<IMethod<E, T>> methods)
 	{
 		List<T> predictedTypes = new ArrayList<T>();
@@ -156,7 +156,7 @@ public class ParsedCallArguments
 		return predictedTypes;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 boolean[] getUsedKeyedArgumentPositions(MethodHeader<E, T> method)
 	{
 		boolean[] isUsed = new boolean[method.getParameters().size() - numUnkeyedValues];
@@ -171,7 +171,7 @@ public class ParsedCallArguments
 		return isUsed;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 boolean checkUnusedArgumentPositions(MethodHeader<E, T> method)
 	{
 		// this method assumes that number of arguments has already been checked
@@ -187,7 +187,7 @@ public class ParsedCallArguments
 		return true;
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 void predictArgumentTypesForMethod(MethodHeader<E, T> method, List<T> predictedTypes, boolean[] ambiguous)
 	{
 		List<MethodParameter<E, T>> methodArguments = method.getParameters();
@@ -224,13 +224,13 @@ public class ParsedCallArguments
 		return arguments.get(index).getKey();
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<E> matchArgumentsExactly(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, true);
 	}
 
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<E> matchArgumentsWithImplicitConversion(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, false);
@@ -246,7 +246,7 @@ public class ParsedCallArguments
 	 * @return
 	 */
 	@SuppressWarnings({"unchecked"})
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 List<E> matchArguments(MethodHeader<E, T> method, IMethodScope<E, T> environment, List<E> compiled, boolean exactly)
 	{
 		int numUnkeyed = numUnkeyedValues;
@@ -339,7 +339,7 @@ public class ParsedCallArguments
 	 * @param exactly
 	 * @return
 	 */
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 boolean matches(E expression, T type, boolean exactly)
 	{
 		if (exactly)
@@ -357,7 +357,7 @@ public class ParsedCallArguments
 	 * @param fromIndex index in the expressions array to assemble from
 	 * @return array expression with vararg values
 	 */
-	private <E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	private <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 		 E assembleVararg(MethodParameter<E, T> argument, IMethodScope<E, T> scope, List<E> compiled, int fromIndex)
 	{
 		T varargBaseType = argument.getType().getArrayBaseType();
@@ -377,7 +377,7 @@ public class ParsedCallArguments
 				arrayMembers);
 	}
 
-	public class MatchedArguments<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+	public class MatchedArguments<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	{
 		public final IMethod<E, T> method;
 		public final List<E> arguments;

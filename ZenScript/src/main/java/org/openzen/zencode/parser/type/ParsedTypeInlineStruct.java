@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.DefinitionScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.SymbolicStruct;
 
 /**
@@ -34,7 +34,7 @@ public class ParsedTypeInlineStruct implements IParsedType
 	}
 	
 	@Override
-	public <E extends IPartialExpression<E, T>, T extends IZenType<E, T>> T compile(IModuleScope<E, T> environment)
+	public <E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> T compile(IModuleScope<E, T> environment)
 	{
 		SymbolicStruct<E, T> struct = new SymbolicStruct<E, T>(Modifier.EXPORT.getCode(), environment);
 		IDefinitionScope<E, T> scope = new DefinitionScope<E, T>(environment, struct);

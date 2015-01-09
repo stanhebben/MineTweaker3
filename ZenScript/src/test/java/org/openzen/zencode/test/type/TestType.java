@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.test.expression.TestExpression;
 import org.openzen.zencode.util.CodePosition;
@@ -23,7 +23,7 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  */
-public class TestType implements IZenType<TestExpression, TestType>
+public class TestType implements ITypeInstance<TestExpression, TestType>
 {
 
 	@Override

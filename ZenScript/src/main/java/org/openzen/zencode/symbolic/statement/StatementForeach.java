@@ -7,10 +7,10 @@ import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.ForeachFlowInstruction;
 import org.openzen.zencode.symbolic.symbols.SymbolLocal;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
-public class StatementForeach<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
+public class StatementForeach<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
 {
 	private final List<SymbolLocal<E, T>> variables;
 	private final E list;

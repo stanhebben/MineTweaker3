@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.member;
 import java.util.List;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 
 /**
@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
  * @param <E>
  * @param <T>
  */
-public interface IMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public interface IMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	public ISymbolicDefinition<E, T> getUnit();
 	

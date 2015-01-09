@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,7 +18,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public class StatementNull<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> extends Statement<E, T>
+public class StatementNull<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> extends Statement<E, T>
 {
 	public StatementNull(CodePosition position, IMethodScope<E, T> environment)
 	{

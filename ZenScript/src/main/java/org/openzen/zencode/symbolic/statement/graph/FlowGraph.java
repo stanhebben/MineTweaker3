@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class FlowGraph<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class FlowGraph<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 {
 	private final FlowBlock<E, T> start;
 	

@@ -17,7 +17,7 @@ import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 
 /**
  *
@@ -25,7 +25,7 @@ import org.openzen.zencode.symbolic.type.IZenType;
  * @param <E>
  * @param <T>
  */
-public class OperatorMember<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class OperatorMember<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements IMember<E, T>
 {
 	private final ParsedOperator source;

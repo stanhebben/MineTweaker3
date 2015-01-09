@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -18,9 +18,9 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  * @param <T>
  */
-public abstract class AbstractMethod<E extends IPartialExpression<E, T>, T extends IZenType<E, T>> implements IMethod<E, T>
+public abstract class AbstractMethod<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>> implements IMethod<E, T>
 {
-	private static <ES extends IPartialExpression<ES, TS>, TS extends IZenType<ES, TS>>
+	private static <ES extends IPartialExpression<ES, TS>, TS extends ITypeInstance<ES, TS>>
 		 List<ES> convert(CodePosition position, IMethodScope<ES, TS> scope, Object... arguments)
 	{
 		@SuppressWarnings("unchecked")

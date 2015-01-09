@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.IZenType;
+import org.openzen.zencode.symbolic.type.ITypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
 
@@ -24,7 +24,7 @@ import org.openzen.zencode.util.Strings;
  * @param <E>
  * @param <T>
  */
-public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends IZenType<E, T>>
+public class AbstractErrorLogger<E extends IPartialExpression<E, T>, T extends ITypeInstance<E, T>>
 	implements ICodeErrorLogger<E, T>
 {
 	private boolean hasErrors;
