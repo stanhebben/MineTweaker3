@@ -6,11 +6,11 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.field.IJavaField;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -21,7 +21,7 @@ public class JavaSetStaticField extends AbstractJavaExpression
 	private final IJavaField field;
 	private final IJavaExpression value;
 	
-	public JavaSetStaticField(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaField field, IJavaExpression value)
+	public JavaSetStaticField(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaField field, IJavaExpression value)
 	{
 		super(position, scope);
 		
@@ -35,13 +35,13 @@ public class JavaSetStaticField extends AbstractJavaExpression
 		value.compile(true, method);
 		
 		if (pushResult)
-			method.dup(field.getType().isLarge());
+			method.dup(field.getType());
 		
-		method.putStaticField(field.getInternalClassName(), field.getFieldName(), field.getType().getSignature());
+		method.putStaticField(field.getInternalClassName(), field.getFieldName(), field.getType());
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return value.getType();
 	}

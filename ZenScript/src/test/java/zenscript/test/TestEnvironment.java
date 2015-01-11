@@ -11,19 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import static org.junit.Assert.*;
+import org.openzen.zencode.AbstractErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.util.ClassNameGenerator;
-import org.openzen.zencode.symbolic.scope.GlobalScope;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
-import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
+import org.openzen.zencode.symbolic.symbols.StaticMethodSymbol;
 import org.openzen.zencode.test.expression.TestExpression;
 import org.openzen.zencode.test.type.TestType;
 import org.openzen.zencode.util.CodePosition;
@@ -32,7 +29,7 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  */
-public class TestEnvironment implements IZenCompileEnvironment<TestExpression, TestType>
+public class TestEnvironment implements IZenCompileEnvironment<IJavaExpression>
 {
 	public static final TestEnvironment INSTANCE = new TestEnvironment();
 
@@ -40,20 +37,15 @@ public class TestEnvironment implements IZenCompileEnvironment<TestExpression, T
 	{
 		INSTANCE.logs.add(new LogMessage(LogMessageType.PRINT, message));
 	}
-
-	public static IGlobalScope<TestExpression, TestType> createScope()
-	{
-		return new GlobalScope<TestExpression, TestType>(INSTANCE, new ClassNameGenerator());
-	}
-
+	
 	private final Queue<LogMessage> logs = new LinkedList<LogMessage>();
-	private final ICodeErrorLogger errorLogger = new MyErrorLogger();
-	private final Map<String, IZenSymbol<TestExpression, TestType>> symbols;
+	private final ICodeErrorLogger<IJavaExpression> errorLogger = new MyErrorLogger();
+	private final Map<String, IZenSymbol<IJavaExpression>> symbols;
 
-	private TestEnvironment()
+	public TestEnvironment()
 	{
-		symbols = new HashMap<String, IZenSymbol<TestExpression, TestType>>();
-		symbols.put("print", new SymbolStaticMethod<TestExpression, TestType>(new TestMethodPrint(this)));
+		symbols = new HashMap<String, IZenSymbol<IJavaExpression>>();
+		symbols.put("print", new StaticMethodSymbol<IJavaExpression>(new TestMethodPrint(this)));
 	}
 
 	public void consumeError(String message)
@@ -96,27 +88,15 @@ public class TestEnvironment implements IZenCompileEnvironment<TestExpression, T
 	}
 
 	@Override
-	public ICodeErrorLogger getErrorLogger()
+	public ICodeErrorLogger<IJavaExpression> getErrorLogger()
 	{
 		return errorLogger;
 	}
 
 	@Override
-	public ITypeCompiler<TestExpression, TestType> getTypeCompiler()
+	public IPartialExpression<IJavaExpression> getGlobal(CodePosition position, IMethodScope<IJavaExpression> scope, String name)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public IExpressionCompiler<TestExpression, TestType> getExpressionCompiler()
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public IPartialExpression<TestExpression, TestType> getGlobal(CodePosition position, IMethodScope<TestExpression, TestType> scope, String name)
-	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return symbols
 	}
 
 	@Override
@@ -149,7 +129,7 @@ public class TestEnvironment implements IZenCompileEnvironment<TestExpression, T
 		return null;
 	}
 
-	private class MyErrorLogger implements ICodeErrorLogger
+	private class MyErrorLogger extends AbstractErrorLogger<IJavaExpression>
 	{
 		private boolean hasErrors = false;
 

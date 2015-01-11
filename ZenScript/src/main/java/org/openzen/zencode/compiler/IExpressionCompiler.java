@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.util.CodePosition;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
@@ -59,9 +59,9 @@ public interface IExpressionCompiler<E extends IPartialExpression<E>>
 	
 	public List<E> constants(CodePosition position, IMethodScope<E> scope, Object[] values);
 	
-	public E localGet(CodePosition position, IMethodScope<E> scope, SymbolLocal<E> local);
+	public E localGet(CodePosition position, IMethodScope<E> scope, LocalSymbol<E> local);
 	
-	public E localSet(CodePosition position, IMethodScope<E> scope, SymbolLocal<E> local, E value);
+	public E localSet(CodePosition position, IMethodScope<E> scope, LocalSymbol<E> local, E value);
 	
 	public E andAnd(CodePosition position, IMethodScope<E> scope, E left, E right);
 	

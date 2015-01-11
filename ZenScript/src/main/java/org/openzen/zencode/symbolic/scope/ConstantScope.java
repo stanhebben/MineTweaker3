@@ -5,10 +5,9 @@
  */
 package org.openzen.zencode.symbolic.scope;
 
-import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
@@ -18,7 +17,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -29,12 +28,11 @@ import org.openzen.zencode.util.CodePosition;
 public class ConstantScope<E extends IPartialExpression<E>>
 	implements IMethodScope<E>
 {
-	private final IGlobalScope<E> scope;
-	private final AccessScope access = AccessScope.createModuleScope();
+	private final IModuleScope<E> parent;
 	
-	public ConstantScope(IGlobalScope<E> scope)
+	public ConstantScope(IModuleScope<E> parent)
 	{
-		this.scope = scope;
+		this.parent = parent;
 	}
 	
 	@Override
@@ -46,67 +44,31 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	@Override
 	public AccessScope getAccessScope()
 	{
-		return access;
+		return parent.getAccessScope();
 	}
 
 	@Override
 	public ITypeCompiler<E> getTypeCompiler()
 	{
-		return scope.getTypeCompiler();
+		return parent.getTypeCompiler();
 	}
 
 	@Override
 	public IZenCompileEnvironment<E> getEnvironment()
 	{
-		return scope.getEnvironment();
+		return parent.getEnvironment();
 	}
 
 	@Override
 	public IExpressionCompiler<E> getExpressionCompiler()
 	{
-		return scope.getExpressionCompiler();
+		return parent.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E> getConstantEnvironment()
+	public IMethodScope<E> getConstantScope()
 	{
 		return this;
-	}
-
-	@Override
-	public String makeClassName()
-	{
-		return scope.makeClassName();
-	}
-
-	@Override
-	public boolean containsClass(String name)
-	{
-		return scope.containsClass(name);
-	}
-
-	@Override
-	public Set<String> getClassNames()
-	{
-		return scope.getClassNames();
-	}
-
-	@Override
-	public byte[] getClass(String name)
-	{
-		return scope.getClass(name);
-	}
-
-	@Override
-	public Map<String, byte[]> getClasses()
-	{
-		return scope.getClasses();
-	}
-
-	@Override
-	public void putClass(String name, byte[] data)
-	{
-		scope.putClass(name, data);
 	}
 
 	@Override
@@ -136,7 +98,7 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	@Override
 	public ICodeErrorLogger<E> getErrorLogger()
 	{
-		return scope.getErrorLogger();
+		return parent.getErrorLogger();
 	}
 
 	@Override
@@ -149,5 +111,29 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	public TypeCapture<E> getTypeCapture()
 	{
 		return TypeCapture.empty();
+	}
+
+	@Override
+	public ZenPackage<E> getRootPackage()
+	{
+		return parent.getRootPackage();
+	}
+
+	@Override
+	public IZenSymbol<E> getSymbol(String name)
+	{
+		return parent.getSymbol(name);
+	}
+
+	@Override
+	public boolean contains(String name)
+	{
+		return parent.contains(name);
+	}
+
+	@Override
+	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+	{
+		// nothing to do
 	}
 }

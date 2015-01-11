@@ -5,15 +5,12 @@
  */
 package zenscript.test;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.java.JavaCompiler;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
 
 /**
  *
@@ -21,7 +18,7 @@ import org.openzen.zencode.symbolic.scope.IGlobalScope;
  */
 public class BasicCodeTest
 {
-	private IGlobalScope scope;
+	private TestEnvironment environment;
 	
 	public BasicCodeTest()
 	{
@@ -40,13 +37,13 @@ public class BasicCodeTest
 	@Before
 	public void setUp()
 	{
-		scope = TestEnvironment.createScope();
+		environment = new TestEnvironment();
 	}
 	
 	@After
 	public void tearDown()
 	{
-		scope = null;
+		environment = null;
 	}
 
 	/**
@@ -56,15 +53,14 @@ public class BasicCodeTest
 	public void testPrint()
 	{
 		System.out.println("print");
-		JavaCompiler environment = new JavaCompiler(scope);
+		JavaCompiler compiler = new JavaCompiler(environment);
 		
-		ParsedModule module = new ParsedModule(environment, null, "test");
+		ParsedModule module = compiler.createAndAddModule("test", null);
 		module.addScript("test.zs", "print(\"Hello World!\");");
-		environment.addModule(module);
 		
-		environment.compile().run();
+		compiler.compile().run();
 		
-		TestEnvironment.INSTANCE.consumePrint("Hello World!");
-		TestEnvironment.INSTANCE.noMoreMessages();
+		environment.consumePrint("Hello World!");
+		environment.noMoreMessages();
 	}
 }

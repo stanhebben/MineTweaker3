@@ -84,7 +84,7 @@ public class ParsedFunctionParameter
 		 MethodParameter<E> compile(IModuleScope<E> scope)
 	{
 		TypeInstance<E> cType = type.compile(scope);
-		E compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getConstantEnvironment(), cType);
+		E compiledDefaultValue = defaultValue == null ? null : defaultValue.compile(scope.getConstantScope(), cType);
 		return new MethodParameter<E>(position, name, cType, compiledDefaultValue);
 	}
 }

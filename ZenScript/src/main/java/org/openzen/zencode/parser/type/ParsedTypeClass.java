@@ -11,6 +11,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
+import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.Strings;
@@ -63,19 +64,25 @@ public class ParsedTypeClass implements IParsedType
 	public <E extends IPartialExpression<E>>
 		 TypeInstance<E> compile(IModuleScope<E> scope)
 	{
-		IPartialExpression<E> expression = scope.getValue(
-				name.get(0),
-				position,
-				scope.getConstantEnvironment());
-		
-		for (int i = 1; i < name.size(); i++) {
-			expression = expression.getMember(position, name.get(i));
-			if (expression == null) {
-				scope.getErrorLogger().errorCouldNotResolvePackage(position, Strings.join(name.subList(0, i), "."));
+		IImportable<E> imported;
+		if (scope.contains(name.get(0))) {
+			imported = scope.getSymbol(name.get(0)).asImportable();
+			if (imported == null) {
+				scope.getErrorLogger().errorNotAType(position, scope.getSymbol(name.get(0)), name.get(0));
 				return scope.getTypeCompiler().getAny(scope);
 			}
+			
+			for (int i = 1; i < name.size(); i++) {
+				imported = imported.getSubDefinition(name.get(i));
+				if (imported == null) {
+					
+					return scope.getTypeCompiler().getAny(scope);
+				}
+			}
+		} else {
+			imported = scope.getRootPackage().resolve(position, scope.getErrorLogger(), name, false);
 		}
-
+		
 		List<TypeInstance<E>> compiledGenericTypes;
 		if (genericType == null)
 			compiledGenericTypes = null;
@@ -85,13 +92,11 @@ public class ParsedTypeClass implements IParsedType
 				compiledGenericTypes.add(type.compile(scope));
 			}
 		}
-
-		TypeInstance<E> type = expression.toType(compiledGenericTypes);
+		
+		TypeInstance<E> type = imported.toType(scope, compiledGenericTypes);
 		if (type == null) {
-			scope.getErrorLogger().errorNotAType(position, expression, Strings.join(name, "."));
-			type = scope.getTypeCompiler().getAny(scope);
+			scope.getErrorLogger().errorNotAType(position, imported);
 		}
-
 		return type;
 	}
 	

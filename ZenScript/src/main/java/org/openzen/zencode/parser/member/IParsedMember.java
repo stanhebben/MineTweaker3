@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 
 /**
  *

@@ -6,38 +6,47 @@
 package org.openzen.zencode.java;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.IZenCompiler;
 import org.openzen.zencode.ZenClassLoader;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.type.JavaTypeCompiler;
 import org.openzen.zencode.parser.IFileLoader;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.symbolic.SymbolicModule;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
 import org.openzen.zencode.java.util.MethodOutput;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 
 /**
  *
  * @author Stan
  */
-public class JavaCompiler
+public class JavaCompiler implements IZenCompiler<IJavaExpression>
 {
+	private final IZenCompileEnvironment<IJavaExpression> environment;
+	
 	private final List<ParsedModule> modules;
-	private final IGlobalScope<IJavaExpression> global;
 	private File debugOutputDirectory;
+	private final JavaTypeCompiler typeCompiler;
+	private final JavaExpressionCompiler expressionCompiler;
+	private final JavaBytecodeCompiler bytecodeCompiler;
 
-	public JavaCompiler(IGlobalScope<IJavaExpression> global)
+	public JavaCompiler(IZenCompileEnvironment<IJavaExpression> environment)
 	{
+		this.environment = environment;
+		
 		modules = new ArrayList<ParsedModule>();
-		this.global = global;
+		typeCompiler = new JavaTypeCompiler(environment);
+		bytecodeCompiler = new JavaBytecodeCompiler();
+		
+		expressionCompiler = new JavaExpressionCompiler();
 	}
 
 	public void setDebugOutputDirectory(File file)
@@ -50,7 +59,7 @@ public class JavaCompiler
 
 	public ParsedModule createAndAddModule(String name, IFileLoader fileLoader)
 	{
-		ParsedModule result = new ParsedModule(global.getErrorLogger(), fileLoader, name);
+		ParsedModule result = new ParsedModule(environment.getErrorLogger(), fileLoader, name);
 		modules.add(result);
 		return result;
 	}
@@ -62,14 +71,26 @@ public class JavaCompiler
 
 	public IZenCompileEnvironment<IJavaExpression> getCompileEnvironment()
 	{
-		return global.getEnvironment();
+		return environment;
+	}
+	
+	@Override
+	public ITypeCompiler<IJavaExpression> getTypeCompiler()
+	{
+		return null; // TODO: phase this out?
+	}
+	
+	@Override
+	public IExpressionCompiler<IJavaExpression> getExpressionCompiler()
+	{
+		return expressionCompiler;
 	}
 
 	public Runnable compile()
 	{
 		List<SymbolicModule<IJavaExpression>> symbolicModules = new ArrayList<SymbolicModule<IJavaExpression>>();
 		for (ParsedModule module : modules) {
-			symbolicModules.add(module.compileDefinitions(global));
+			symbolicModules.add(module.compileDefinitions(environment, this));
 		}
 
 		for (SymbolicModule<IJavaExpression> symbolicModule : symbolicModules) {
@@ -96,14 +117,14 @@ public class JavaCompiler
 
 		clsMain.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, "__ZenMain__", null, internal(Object.class), new String[]{internal(Runnable.class)});
 
-		MethodOutput constructor = new MethodOutput(clsMain, Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+		MethodOutput constructor = new MethodOutput(typeCompiler, clsMain, Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
 		constructor.start();
 		constructor.loadObject(0);
 		constructor.invokeSpecial(Object.class, "<init>", void.class);
 		constructor.ret();
 		constructor.end();
 
-		MethodOutput mainScript = new MethodOutput(clsMain, Opcodes.ACC_PUBLIC, "run", "()V", null, null);
+		MethodOutput mainScript = new MethodOutput(typeCompiler, clsMain, Opcodes.ACC_PUBLIC, "run", "()V", null, null);
 		mainScript.start();
 
 		for (SymbolicModule<IJavaExpression> module : symbolicModules) {
@@ -115,27 +136,12 @@ public class JavaCompiler
 		mainScript.ret();
 		mainScript.end();
 		clsMain.visitEnd();
-		global.putClass("__ZenMain__", clsMain.toByteArray());
+		bytecodeCompiler.putClass("__ZenMain__", clsMain.toByteArray());
 
 		if (debugOutputDirectory != null)
-			writeDebugOutput();
+			bytecodeCompiler.writeClassesToFolder(debugOutputDirectory);
 
 		return getMain();
-	}
-
-	private void writeDebugOutput()
-	{
-		for (Map.Entry<String, byte[]> classEntry : global.getClasses().entrySet()) {
-			File outputFile = new File(debugOutputDirectory, classEntry.getKey().replace('.', '/') + ".class");
-			if (!outputFile.getParentFile().exists())
-				outputFile.getParentFile().mkdirs();
-
-			try {
-				Files.write(outputFile.toPath(), classEntry.getValue());
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
 	}
 
 	/**
@@ -146,7 +152,7 @@ public class JavaCompiler
 	 */
 	private Runnable getMain()
 	{
-		ZenClassLoader classLoader = new ZenClassLoader(getClass().getClassLoader(), global.getClasses());
+		ZenClassLoader classLoader = new ZenClassLoader(getClass().getClassLoader(), bytecodeCompiler.getClasses());
 		try {
 			return (Runnable) classLoader.loadClass("__ZenMain__").newInstance();
 		} catch (InstantiationException e) {

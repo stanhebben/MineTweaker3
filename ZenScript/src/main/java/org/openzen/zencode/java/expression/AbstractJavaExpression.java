@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.statement.Statement;
@@ -119,19 +119,6 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 	public IPartialExpression<IJavaExpression> getMember(CodePosition position, String name)
 	{
 		return getType().getInstanceMember(position, getScope(), this, name);
-	}
-
-	@Override
-	public IZenSymbol<IJavaExpression> toSymbol()
-	{
-		return null;
-	}
-
-	@Override
-	public TypeInstance<IJavaExpression> toType(List<TypeInstance<IJavaExpression>> genericTypes)
-	{
-		scope.getErrorLogger().errorNotAType(position, this);
-		return scope.getTypeCompiler().getAny(scope);
 	}
 
 	@Override

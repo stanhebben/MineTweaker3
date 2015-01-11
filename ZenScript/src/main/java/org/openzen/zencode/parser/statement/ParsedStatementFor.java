@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementForeach;
 import org.openzen.zencode.symbolic.statement.StatementNull;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
@@ -73,11 +73,11 @@ public class ParsedStatementFor extends ParsedStatement
 			return new StatementNull<E>(getPosition(), scope);
 		}
 
-		List<SymbolLocal<E>> symbols = new ArrayList<SymbolLocal<E>>();
+		List<LocalSymbol<E>> symbols = new ArrayList<LocalSymbol<E>>();
 		StatementForeach<E> compiledStatement = new StatementForeach<E>(getPosition(), scope, symbols, compiledSource);
 		StatementBlockScope<E> loopScope = new StatementBlockScope<E>(scope, compiledStatement, names);
 		for (int i = 0; i < names.size(); i++) {
-			SymbolLocal<E> symbol = new SymbolLocal<E>(iteratorTypes.get(i), true);
+			LocalSymbol<E> symbol = new LocalSymbol<E>(iteratorTypes.get(i), true);
 			symbols.add(symbol);
 			loopScope.putValue(names.get(i), symbol, getPosition());
 		}

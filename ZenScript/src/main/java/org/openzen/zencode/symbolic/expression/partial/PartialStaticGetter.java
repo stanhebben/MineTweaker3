@@ -10,18 +10,15 @@ import java.util.List;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.symbols.SymbolStaticGetter;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
 public class PartialStaticGetter<E extends IPartialExpression<E>> extends AbstractPartialExpression<E>
 {
@@ -67,21 +64,9 @@ public class PartialStaticGetter<E extends IPartialExpression<E>> extends Abstra
 	}
 
 	@Override
-	public IZenSymbol<E> toSymbol()
-	{
-		return new SymbolStaticGetter<E>(method);
-	}
-
-	@Override
 	public TypeInstance<E> getType()
 	{
 		return method.getReturnType();
-	}
-
-	@Override
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
-	{
-		throw new UnsupportedOperationException("Cannot convert static getter to type");
 	}
 
 	@Override

@@ -6,12 +6,12 @@
 package org.openzen.zencode.parser.member;
 
 import java.util.List;
-import org.openzen.zencode.parser.unit.IParsedDefinition;
+import org.openzen.zencode.parser.definition.IParsedDefinition;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 
 /**
  *

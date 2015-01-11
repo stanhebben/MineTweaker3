@@ -6,6 +6,7 @@
 package zenscript.test;
 
 import java.util.Collections;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
@@ -24,16 +25,16 @@ public class TestMethodPrint extends TestMethod
 	
 	public TestMethodPrint(TestEnvironment environment)
 	{
-		super(new MethodHeader<TestExpression, TestType>(
+		super(new MethodHeader<IJavaExpression>(
 				environment.getTypeCompiler().getVoid(),
-				Collections.singletonList(new MethodParameter<TestExpression, TestType>("value", environment.getTypeCompiler().getString(), null)),
+				Collections.singletonList(new MethodParameter<IJavaExpression>("value", environment.getTypeCompiler().getString(), null)),
 				false), true);
 		
 		this.environment = environment;
 	}
 
 	@Override
-	public TestExpression callStatic(CodePosition position, IMethodScope<TestExpression, TestType> scope, TestExpression... arguments)
+	public TestExpression callStatic(CodePosition position, IMethodScope<IJavaExpression> scope, List<IJavaExpression> arguments)
 	{
 		return new TestExpressionPrint(position, scope, arguments[0].getValue().asString());
 	}

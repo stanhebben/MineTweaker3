@@ -8,14 +8,13 @@ import minetweaker.api.liquid.ILiquidStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import org.openzen.zencode.java.IJavaScopeGlobal;
 import org.openzen.zencode.java.JavaNative;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.method.IJavaMethod;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -36,13 +35,13 @@ public class LiquidBracketHandler implements IBracketHandler
 
 	private final IJavaMethod method;
 
-	public LiquidBracketHandler(IJavaScopeGlobal scope)
+	public LiquidBracketHandler(IModuleScope<IJavaExpression> scope)
 	{
 		method = JavaNative.getStaticMethod(scope, LiquidBracketHandler.class, "getLiquid", String.class);
 	}
 
 	@Override
-	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression> scope, List<Token> tokens)
 	{
 		if (tokens.size() > 2 && tokens.get(0).getValue().equals("liquid") && tokens.get(1).getValue().equals(":"))
 				return find(position, scope, tokens, 2, tokens.size());
@@ -58,7 +57,7 @@ public class LiquidBracketHandler implements IBracketHandler
 
 	private IJavaExpression find(
 			CodePosition position,
-			IScopeMethod<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression> scope,
 			List<Token> tokens,
 			int startIndex,
 			int endIndex)

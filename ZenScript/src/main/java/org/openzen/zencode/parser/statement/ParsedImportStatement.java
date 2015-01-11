@@ -10,10 +10,14 @@ import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
+import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.statement.ImportStatement;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -78,11 +82,26 @@ public class ParsedImportStatement extends ParsedStatement
 	{
 		return wildcard;
 	}
+	
+	@Override
+	public <E extends IPartialExpression<E>> void processImports(IModuleScope<E> scope)
+	{
+		IImportable<E> importable = scope.getRootPackage().resolve(getPosition(), scope.getErrorLogger(), importName, wildcard);
+		if (wildcard) {
+			for (String definitionName : importable.getSubDefinitionNames()) {
+				scope.putImport(definitionName, new ImportableSymbol<E>(importable), getPosition());
+			}
+		} else {
+			scope.putImport(
+					rename == null ? importName.get(importName.size() - 1) : rename,
+					new ImportableSymbol<E>(importable), getPosition());
+		}
+	}
 
 	@Override
 	public <E extends IPartialExpression<E>> Statement<E> compile(IMethodScope<E> scope)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new ImportStatement<E>(getPosition(), scope, importName, rename, wildcard);
 	}
 
 	@Override

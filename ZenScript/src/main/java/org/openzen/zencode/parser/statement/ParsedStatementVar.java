@@ -8,7 +8,7 @@ package org.openzen.zencode.parser.statement;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
@@ -70,7 +70,7 @@ public class ParsedStatementVar extends ParsedStatement
 		if (asType != null)
 			cType = asType.compile(scope);
 
-		SymbolLocal<E> symbol = new SymbolLocal<E>(cType, isFinal);
+		LocalSymbol<E> symbol = new LocalSymbol<E>(cType, isFinal);
 		scope.putValue(name, symbol, getPosition());
 		return new StatementVar<E>(getPosition(), scope, symbol, cInitializer);
 	}

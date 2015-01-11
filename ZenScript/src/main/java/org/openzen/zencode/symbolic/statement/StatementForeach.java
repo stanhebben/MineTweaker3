@@ -6,16 +6,16 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.ForeachFlowInstruction;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.util.CodePosition;
 
 public class StatementForeach<E extends IPartialExpression<E>> extends Statement<E>
 {
-	private final List<SymbolLocal<E>> variables;
+	private final List<LocalSymbol<E>> variables;
 	private final E list;
 	private Statement<E> body;
 
-	public StatementForeach(CodePosition position, IMethodScope<E> environment, List<SymbolLocal<E>> variables, E list)
+	public StatementForeach(CodePosition position, IMethodScope<E> environment, List<LocalSymbol<E>> variables, E list)
 	{
 		super(position, environment);
 
@@ -28,7 +28,7 @@ public class StatementForeach<E extends IPartialExpression<E>> extends Statement
 		this.body = body;
 	}
 
-	public List<SymbolLocal<E>> getVariables()
+	public List<LocalSymbol<E>> getVariables()
 	{
 		return variables;
 	}

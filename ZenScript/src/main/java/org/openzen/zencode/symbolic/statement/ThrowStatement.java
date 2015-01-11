@@ -28,6 +28,11 @@ public class ThrowStatement<E extends IPartialExpression<E>> extends Statement<E
 		this.value = value;
 	}
 
+	public E getValue()
+	{
+		return value;
+	}
+
 	@Override
 	public <U> U process(IStatementProcessor<E, U> processor)
 	{

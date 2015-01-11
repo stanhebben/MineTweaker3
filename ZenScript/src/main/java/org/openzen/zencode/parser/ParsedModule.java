@@ -16,12 +16,16 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.IZenCompiler;
 import org.openzen.zencode.lexer.ZenLexer;
-import org.openzen.zencode.parser.unit.IParsedDefinition;
+import org.openzen.zencode.parser.definition.IParsedDefinition;
+import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.symbolic.ScriptBlock;
 import org.openzen.zencode.symbolic.SymbolicModule;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.scope.ScriptScope;
 
 /**
  *
@@ -86,17 +90,23 @@ public class ParsedModule
 		return files;
 	}
 	
-	public <E extends IPartialExpression<E>> SymbolicModule<E> compileDefinitions(IGlobalScope<E> global)
+	public <E extends IPartialExpression<E>> SymbolicModule<E> compileDefinitions(IZenCompileEnvironment<E> environment, IZenCompiler<E> compiler)
 	{
-		SymbolicModule<E> symbolicModule = new SymbolicModule<E>(global);
+		SymbolicModule<E> symbolicModule = new SymbolicModule<E>(environment, compiler);
 		
 		for (ParsedFile file : files) {
+			IModuleScope<E> scriptScope = new ScriptScope<E>(symbolicModule.getScope());
 			for (IParsedDefinition definition : file.getDefinitions()) {
-				symbolicModule.addUnit(definition.compile(symbolicModule.getScope()));
+				symbolicModule.addUnit(definition.compile(scriptScope));
 			}
 			
 			if (!file.getStatements().isEmpty()) {
-				symbolicModule.addScript(new ScriptBlock<E>(file.getFileName(), file.getStatements()));
+				ScriptBlock<E> scriptBlock = new ScriptBlock<E>(file.getFileName(), file.getStatements());
+				symbolicModule.addScript(scriptBlock);
+				
+				for (ParsedStatement statement : scriptBlock.getSourceStatements()) {
+					statement.processImports(scriptScope);
+				}
 			}
 		}
 		

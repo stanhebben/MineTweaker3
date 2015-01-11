@@ -31,7 +31,7 @@ public class JavaTOS extends AbstractJavaExpression
 	public void compile(boolean pushResult, MethodOutput method)
 	{
 		if (!pushResult)
-			method.pop(type.isLarge());
+			method.pop(type);
 	}
 
 	@Override

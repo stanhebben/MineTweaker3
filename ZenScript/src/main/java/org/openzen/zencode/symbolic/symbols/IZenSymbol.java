@@ -6,6 +6,7 @@
 
 package org.openzen.zencode.symbolic.symbols;
 
+import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.util.CodePosition;
@@ -18,4 +19,6 @@ import org.openzen.zencode.util.CodePosition;
 public interface IZenSymbol<E extends IPartialExpression<E>>
 {
 	public IPartialExpression<E> instance(CodePosition position, IMethodScope<E> scope);
+	
+	public IImportable<E> asImportable();
 }

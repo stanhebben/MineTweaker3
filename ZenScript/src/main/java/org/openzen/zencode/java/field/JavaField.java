@@ -7,7 +7,7 @@ package org.openzen.zencode.java.field;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import org.openzen.zencode.java.JavaTypeCompiler;
+import org.openzen.zencode.java.type.JavaTypeCompiler;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.expression.JavaGetInstanceField;
 import org.openzen.zencode.java.expression.JavaGetStaticField;

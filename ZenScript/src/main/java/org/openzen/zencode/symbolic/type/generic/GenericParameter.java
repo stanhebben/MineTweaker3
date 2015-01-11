@@ -80,7 +80,7 @@ public class GenericParameter<E extends IPartialExpression<E>> implements ITypeV
 	public void completeContents(IModuleScope<E> scope)
 	{
 		for (IGenericParameterBound<E> bound : bounds) {
-			bound.completeContents(scope.getConstantEnvironment());
+			bound.completeContents(scope.getConstantScope());
 		}
 	}
 }

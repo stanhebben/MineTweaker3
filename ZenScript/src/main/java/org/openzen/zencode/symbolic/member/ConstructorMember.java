@@ -10,7 +10,7 @@ import org.openzen.zencode.parser.member.ParsedConstructor;
 import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;

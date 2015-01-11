@@ -20,8 +20,8 @@ import org.openzen.zencode.parser.modifier.ModifierParser;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
-import org.openzen.zencode.parser.unit.IParsedDefinition;
-import org.openzen.zencode.parser.unit.DefinitionParser;
+import org.openzen.zencode.parser.definition.IParsedDefinition;
+import org.openzen.zencode.parser.definition.DefinitionParser;
 import org.openzen.zencode.util.CodePosition;
 
 /**

@@ -50,6 +50,6 @@ public class SymbolicAnnotation<E extends IPartialExpression<E>>
 			argument.validate();
 		}
 		
-		constructor.validateCall(position, type.getScope().getConstantEnvironment(), arguments);
+		constructor.validateCall(position, type.getScope().getConstantScope(), arguments);
 	}
 }

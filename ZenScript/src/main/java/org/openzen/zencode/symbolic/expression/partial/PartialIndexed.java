@@ -11,9 +11,8 @@ import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -78,22 +77,9 @@ public class PartialIndexed<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public IZenSymbol<E> toSymbol()
-	{
-		return eval().toSymbol();
-	}
-
-	@Override
 	public TypeInstance<E> getType()
 	{
 		return value.getType().getArrayBaseType();
-	}
-
-	@Override
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
-	{
-		getScope().getErrorLogger().errorNotAType(getPosition(), this);
-		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override

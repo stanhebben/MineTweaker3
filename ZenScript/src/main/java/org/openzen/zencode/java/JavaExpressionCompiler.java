@@ -13,7 +13,7 @@ import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
@@ -138,13 +138,13 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression localGet(CodePosition position, IMethodScope<IJavaExpression> scope, SymbolLocal<IJavaExpression> local)
+	public IJavaExpression localGet(CodePosition position, IMethodScope<IJavaExpression> scope, LocalSymbol<IJavaExpression> local)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public IJavaExpression localSet(CodePosition position, IMethodScope<IJavaExpression> scope, SymbolLocal<IJavaExpression> local, IJavaExpression value)
+	public IJavaExpression localSet(CodePosition position, IMethodScope<IJavaExpression> scope, LocalSymbol<IJavaExpression> local, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

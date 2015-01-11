@@ -6,10 +6,10 @@
 package org.openzen.zencode.java.expression;
 
 import org.objectweb.asm.Label;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -20,7 +20,7 @@ public class JavaNotNull extends AbstractJavaExpression
 {
 	private final IJavaExpression value;
 	
-	public JavaNotNull(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaExpression value)
+	public JavaNotNull(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression value)
 	{
 		super(position, scope);
 		
@@ -46,7 +46,7 @@ public class JavaNotNull extends AbstractJavaExpression
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return getScope().getTypeCompiler().getBool(getScope());
 	}

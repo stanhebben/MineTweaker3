@@ -7,7 +7,6 @@ package minetweaker.runtime.symbol;
 
 import minetweaker.runtime.TweakerGlobalScope;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 
@@ -21,7 +20,7 @@ import org.openzen.zencode.runtime.IAny;
  */
 public interface ITweakerSymbol
 {
-	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope);
+	public IZenSymbol<IJavaExpression> convert(TweakerGlobalScope scope);
 
 	public IAny eval();
 }

@@ -10,14 +10,13 @@ import minetweaker.annotations.BracketHandler;
 import minetweaker.api.IBracketHandler;
 import minetweaker.api.oredict.IOreDictEntry;
 import minetweaker.mc1710.oredict.MCOreDictEntry;
-import org.openzen.zencode.java.IJavaScopeGlobal;
 import org.openzen.zencode.java.JavaNative;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.method.IJavaMethod;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,13 +33,13 @@ public class OreBracketHandler implements IBracketHandler
 
 	private final IJavaMethod method;
 
-	public OreBracketHandler(IJavaScopeGlobal scope)
+	public OreBracketHandler(IModuleScope<IJavaExpression> scope)
 	{
 		method = JavaNative.getStaticMethod(scope, OreBracketHandler.class, "getOre", String.class);
 	}
 
 	@Override
-	public IJavaExpression resolve(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression> scope, List<Token> tokens)
 	{
 		if (tokens.size() > 2)
 			if (tokens.get(0).getValue().equals("ore") && tokens.get(1).getValue().equals(":"))
@@ -55,7 +54,7 @@ public class OreBracketHandler implements IBracketHandler
 		return null;
 	}
 
-	private IJavaExpression find(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, List<Token> tokens, int startIndex, int endIndex)
+	private IJavaExpression find(CodePosition position, IMethodScope<IJavaExpression> scope, List<Token> tokens, int startIndex, int endIndex)
 	{
 		StringBuilder valueBuilder = new StringBuilder();
 		for (int i = startIndex; i < endIndex; i++) {

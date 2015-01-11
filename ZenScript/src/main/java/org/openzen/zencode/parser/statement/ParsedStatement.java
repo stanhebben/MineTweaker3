@@ -14,6 +14,7 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -100,10 +101,16 @@ public abstract class ParsedStatement
 	{
 		return position;
 	}
+	
+	public <E extends IPartialExpression<E>>
+		void processImports(IModuleScope<E> scriptScope)
+	{
+		// nothing do to, by default
+	}
+	
+	public abstract <E extends IPartialExpression<E>>
+		Statement<E> compile(IMethodScope<E> scope);
 
 	public abstract <E extends IPartialExpression<E>>
-		 Statement<E> compile(IMethodScope<E> scope);
-
-	public abstract <E extends IPartialExpression<E>>
-		 void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch);
+		void compileSwitch(IMethodScope<E> scope, StatementSwitch<E> forSwitch);
 }

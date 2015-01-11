@@ -10,11 +10,9 @@ import java.util.List;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.symbols.SymbolStaticMethod;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -66,21 +64,9 @@ public class PartialStaticMethod<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public IZenSymbol<E> toSymbol()
-	{
-		return new SymbolStaticMethod<E>(method);
-	}
-
-	@Override
 	public TypeInstance<E> getType()
 	{
 		return method.getFunctionType();
-	}
-
-	@Override
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
-	{
-		throw new UnsupportedOperationException("Cannot convert function to type");
 	}
 
 	@Override

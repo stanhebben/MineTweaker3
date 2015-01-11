@@ -70,7 +70,7 @@ public class ParsedAnnotation
 		SymbolicAnnotation<E> compile(IModuleScope<E> scope)
 	{
 		TypeInstance<E> type = annotationType.compile(scope);
-		MatchedArguments<E> compiledArguments = arguments.compile(type.getConstructors(), scope.getConstantEnvironment());
+		MatchedArguments<E> compiledArguments = arguments.compile(type.getConstructors(), scope.getConstantScope());
 		if (compiledArguments == null) {
 			if (type.getConstructors().isEmpty()) {
 				scope.getErrorLogger().errorNoConstructorsForType(position, type);

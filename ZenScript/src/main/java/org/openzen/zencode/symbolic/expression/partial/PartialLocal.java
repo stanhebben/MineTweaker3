@@ -9,11 +9,10 @@ import java.util.List;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -23,9 +22,9 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class PartialLocal<E extends IPartialExpression<E>> extends AbstractPartialExpression<E>
 {
-	private final SymbolLocal<E> variable;
+	private final LocalSymbol<E> variable;
 
-	public PartialLocal(CodePosition position, IMethodScope<E> scope, SymbolLocal<E> variable)
+	public PartialLocal(CodePosition position, IMethodScope<E> scope, LocalSymbol<E> variable)
 	{
 		super(position, scope);
 		
@@ -51,22 +50,9 @@ public class PartialLocal<E extends IPartialExpression<E>> extends AbstractParti
 	}
 
 	@Override
-	public IZenSymbol<E> toSymbol()
-	{
-		return variable;
-	}
-
-	@Override
 	public TypeInstance<E> getType()
 	{
 		return variable.getType();
-	}
-
-	@Override
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
-	{
-		getScope().getErrorLogger().errorNotAType(getPosition(), this);
-		return getScope().getTypeCompiler().getAny(getScope());
 	}
 
 	@Override

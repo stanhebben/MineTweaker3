@@ -18,7 +18,7 @@ import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.casting.CastingRuleStaticMethod;
 import org.openzen.zencode.symbolic.type.casting.ICastingRuleDelegate;
 import org.openzen.zencode.util.CodePosition;
@@ -31,8 +31,7 @@ import org.openzen.zencode.util.CodePosition;
 public class TypeExpansion<E extends IPartialExpression<E>>
 {
 	private final AccessType accessType;
-	private final AccessScope accessScope;
-	private final IGlobalScope<E> scope;
+	private final IModuleScope<E> scope;
 	
 	private final Map<OperatorType, List<IMethod<E>>> operators;
 	private final Map<String, IMethod<E>> getters;
@@ -44,11 +43,10 @@ public class TypeExpansion<E extends IPartialExpression<E>>
 	private final Map<String, IMethod<E>> staticSetters;
 	private final Map<String, List<IMethod<E>>> staticMethods;
 	
-	public TypeExpansion(IGlobalScope<E> scope, AccessType accessType, AccessScope accessScope)
+	public TypeExpansion(IModuleScope<E> scope, AccessType accessType)
 	{
 		this.scope = scope;
 		this.accessType = accessType;
-		this.accessScope = accessScope;
 		
 		operators = new EnumMap<OperatorType, List<IMethod<E>>>(OperatorType.class);
 		getters = new HashMap<String, IMethod<E>>();
@@ -61,14 +59,14 @@ public class TypeExpansion<E extends IPartialExpression<E>>
 		staticMethods = new HashMap<String, List<IMethod<E>>>();
 	}
 	
-	public AccessScope getScope()
+	public IModuleScope<E> getScope()
 	{
-		return accessScope;
+		return scope;
 	}
 	
 	public boolean isVisibleTo(AccessScope usingScope)
 	{
-		return accessType.isVisible(usingScope, accessScope);
+		return accessType.isVisible(usingScope, scope.getAccessScope());
 	}
 	
 	public void addCaster(IMethod<E> caster)

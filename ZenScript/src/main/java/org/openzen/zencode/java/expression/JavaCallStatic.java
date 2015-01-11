@@ -45,7 +45,7 @@ public class JavaCallStatic extends AbstractJavaExpression
 					JavaMethods.getSignature(method.getMethodHeader()));
 		
 		if (!pushResult && method.getReturnType() != getScope().getTypeCompiler().getVoid(getScope()))
-			output.pop(method.getReturnType().isLarge());
+			output.pop(method.getReturnType());
 	}
 
 	@Override

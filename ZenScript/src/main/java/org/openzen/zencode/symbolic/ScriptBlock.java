@@ -24,4 +24,14 @@ public class ScriptBlock<E extends IPartialExpression<E>>
 		this.filename = filename;
 		this.sourceStatements = sourceStatements;
 	}
+
+	public String getFilename()
+	{
+		return filename;
+	}
+
+	public List<ParsedStatement> getSourceStatements()
+	{
+		return sourceStatements;
+	}
 }

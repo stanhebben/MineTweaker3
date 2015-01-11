@@ -16,15 +16,14 @@ import minetweaker.api.item.IngredientAny;
 import static minetweaker.api.minecraft.MineTweakerMC.getIItemStackWildcardSize;
 import net.minecraft.item.Item;
 import net.minecraftforge.oredict.OreDictionary;
-import org.openzen.zencode.java.IJavaScopeGlobal;
 import org.openzen.zencode.java.JavaNative;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.method.IJavaMethod;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.util.CodePosition;
 
@@ -55,10 +54,10 @@ public class ItemBracketHandler implements IBracketHandler
 			return null;
 	}
 
-	private final IZenSymbol<IJavaExpression, IJavaType> symbolAny;
+	private final IZenSymbol<IJavaExpression> symbolAny;
 	private final IJavaMethod method;
 
-	public ItemBracketHandler(IJavaScopeGlobal scope)
+	public ItemBracketHandler(IModuleScope<IJavaExpression> scope)
 	{
 		symbolAny = JavaNative.getStaticFieldSymbol(scope, IngredientAny.class, "INSTANCE");
 		method = JavaNative.getStaticMethod(
@@ -69,7 +68,7 @@ public class ItemBracketHandler implements IBracketHandler
 	}
 
 	@Override
-	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<Token> tokens)
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression> scope, List<Token> tokens)
 	{
 		// any symbol
 		if (tokens.size() == 1 && tokens.get(0).getValue().equals("*"))
@@ -108,7 +107,7 @@ public class ItemBracketHandler implements IBracketHandler
 
 	private IJavaExpression find(
 			CodePosition position,
-			IMethodScope<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression> scope,
 			List<Token> tokens,
 			int startIndex, 
 			int endIndex,

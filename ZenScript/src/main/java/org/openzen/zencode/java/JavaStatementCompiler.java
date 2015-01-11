@@ -9,8 +9,10 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.iterator.IJavaIterator;
+import org.openzen.zencode.java.type.JavaTypeCompiler;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.statement.IStatementProcessor;
+import org.openzen.zencode.symbolic.statement.ImportStatement;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementBlock;
 import org.openzen.zencode.symbolic.statement.StatementBreak;
@@ -24,6 +26,9 @@ import org.openzen.zencode.symbolic.statement.StatementReturn;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.statement.StatementWhile;
+import org.openzen.zencode.symbolic.statement.SynchronizedStatement;
+import org.openzen.zencode.symbolic.statement.ThrowStatement;
+import org.openzen.zencode.symbolic.statement.TryStatement;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
@@ -33,10 +38,12 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
 public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, Void>
 {
 	private final MethodOutput output;
+	private final JavaTypeCompiler typeCompiler;
 	
-	public JavaStatementCompiler(MethodOutput output)
+	public JavaStatementCompiler(MethodOutput output, JavaTypeCompiler typeCompiler)
 	{
 		this.output = output;
+		this.typeCompiler = typeCompiler;
 	}
 	
 	@Override
@@ -118,7 +125,9 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 			localVariables[i] = output.getLocal(statement.getVariables().get(i));
 		}
 		
-		IJavaIterator iterator = statement.getList().getType().getIterator(statement.getVariables().size());
+		IJavaIterator iterator = typeCompiler
+				.getTypeInfo(statement.getList().getType())
+				.getIterator(statement.getVariables().size());
 		
 		statement.getList().compile(true, output);
 		iterator.compileStart(output, localVariables);
@@ -180,7 +189,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 		else {
 			statement.getExpression().compile(true, output);
 
-			Type asmReturnType = statement.getExpression().getType().toASMType();
+			Type asmReturnType = typeCompiler.getTypeInfo(statement.getExpression().getType()).toASMType();
 			output.returnType(asmReturnType);
 		}
 		
@@ -190,7 +199,9 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	@Override
 	public Void onSwitch(StatementSwitch<IJavaExpression> statement)
 	{
+		// TODO: implement
 		
+		return null;
 	}
 
 	@Override
@@ -200,7 +211,9 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 
 		if (statement.getInitializer() != null) {
 			statement.getInitializer().compile(true, output);
-			output.store(statement.getSymbol().getType().toASMType(), output.getLocal(statement.getSymbol()));
+			output.store(
+					typeCompiler.getTypeInfo(statement.getSymbol().getType()).toASMType(),
+					output.getLocal(statement.getSymbol()));
 		}
 		
 		return null;
@@ -218,6 +231,36 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 		output.goTo(lblRepeat);
 		output.label(lblBreak);
 		
+		return null;
+	}
+
+	@Override
+	public Void onTryCatch(TryStatement<IJavaExpression> statement)
+	{
+		// TODO: implement
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public Void onThrow(ThrowStatement<IJavaExpression> statement)
+	{
+		statement.getValue().compile(true, output);
+		output.aThrow();
+		
+		return null;
+	}
+
+	@Override
+	public Void onSynchronized(SynchronizedStatement<IJavaExpression> statement)
+	{
+		// TODO: implement
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public Void onImport(ImportStatement<IJavaExpression> statement)
+	{
+		// nothing to do
 		return null;
 	}
 }

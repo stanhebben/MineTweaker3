@@ -9,33 +9,32 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
  * @author Stan
  * @param <E>
- * @param <T>
  */
 public class StatementBlockScope<E extends IPartialExpression<E>> implements IMethodScope<E>
 {
 	private final IMethodScope<E> outer;
 	private final Map<String, IZenSymbol<E>> local;
-	private final Map<SymbolLocal<E>, Integer> locals;
+	private final Map<LocalSymbol<E>, Integer> locals;
 
 	private final Statement<E> controlStatement;
 	private final List<String> labels;
@@ -44,7 +43,7 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	{
 		this.outer = outer;
 		this.local = new HashMap<String, IZenSymbol<E>>();
-		this.locals = new HashMap<SymbolLocal<E>, Integer>();
+		this.locals = new HashMap<LocalSymbol<E>, Integer>();
 		this.controlStatement = null;
 		this.labels = null;
 	}
@@ -53,7 +52,7 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	{
 		this.outer = outer;
 		this.local = new HashMap<String, IZenSymbol<E>>();
-		this.locals = new HashMap<SymbolLocal<E>, Integer>();
+		this.locals = new HashMap<LocalSymbol<E>, Integer>();
 		this.controlStatement = controlStatement;
 		this.labels = label == null ? null : Collections.singletonList(label);
 	}
@@ -62,7 +61,7 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	{
 		this.outer = outer;
 		this.local = new HashMap<String, IZenSymbol<E>>();
-		this.locals = new HashMap<SymbolLocal<E>, Integer>();
+		this.locals = new HashMap<LocalSymbol<E>, Integer>();
 		this.controlStatement = controlStatement;
 		this.labels = labels;
 	}
@@ -98,33 +97,9 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	}
 
 	@Override
-	public IMethodScope<E> getConstantEnvironment()
+	public IMethodScope<E> getConstantScope()
 	{
-		return outer.getConstantEnvironment();
-	}
-
-	@Override
-	public String makeClassName()
-	{
-		return outer.makeClassName();
-	}
-
-	@Override
-	public boolean containsClass(String name)
-	{
-		return outer.containsClass(name);
-	}
-
-	@Override
-	public void putClass(String name, byte[] data)
-	{
-		outer.putClass(name, data);
-	}
-	
-	@Override
-	public Map<String, byte[]> getClasses()
-	{
-		return outer.getClasses();
+		return outer.getConstantScope();
 	}
 
 	@Override
@@ -143,18 +118,6 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);
 		else
 			local.put(name, value);
-	}
-
-	@Override
-	public Set<String> getClassNames()
-	{
-		return outer.getClassNames();
-	}
-
-	@Override
-	public byte[] getClass(String name)
-	{
-		return outer.getClass(name);
 	}
 
 	@Override
@@ -190,5 +153,32 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	public TypeCapture<E> getTypeCapture()
 	{
 		return outer.getTypeCapture();
+	}
+
+	@Override
+	public ZenPackage<E> getRootPackage()
+	{
+		return outer.getRootPackage();
+	}
+
+	@Override
+	public IZenSymbol<E> getSymbol(String name)
+	{
+		if (local.containsKey(name))
+			return local.get(name);
+		
+		return outer.getSymbol(name);
+	}
+
+	@Override
+	public boolean contains(String name)
+	{
+		return local.containsKey(name) || outer.contains(name);
+	}
+
+	@Override
+	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+	{
+		putValue(name, symbol, position);
 	}
 }

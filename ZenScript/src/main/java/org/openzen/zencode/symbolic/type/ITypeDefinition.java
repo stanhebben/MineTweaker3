@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.SymbolicExpansion;
+import org.openzen.zencode.symbolic.definition.SymbolicExpansion;
 import org.openzen.zencode.util.CodePosition;
 
 /**

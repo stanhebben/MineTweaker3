@@ -15,8 +15,8 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.modifier.ModifierParser;
 import org.openzen.zencode.parser.statement.ParsedStatement;
-import org.openzen.zencode.parser.unit.IParsedDefinition;
-import org.openzen.zencode.parser.unit.DefinitionParser;
+import org.openzen.zencode.parser.definition.IParsedDefinition;
+import org.openzen.zencode.parser.definition.DefinitionParser;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -112,7 +112,7 @@ public class ParsedFile
 	private void tryLoadFileContents(CodePosition position, String filename)
 	{
 		try {
-			InputStream file = module.loadFile(Strings.unescapeString(filename));
+			InputStream file = module.loadFile(Strings.unescape(filename));
 			if (file == null)
 				module.getErrorLogger().errorCannotLoadInclude(position, filename);
 			else

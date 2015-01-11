@@ -7,12 +7,12 @@ package org.openzen.zencode.compiler;
 
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.unit.SymbolicClass;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
-import org.openzen.zencode.symbolic.unit.SymbolicInterface;
-import org.openzen.zencode.symbolic.unit.SymbolicStruct;
+import org.openzen.zencode.symbolic.definition.SymbolicClass;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicInterface;
+import org.openzen.zencode.symbolic.definition.SymbolicStruct;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.unit.SymbolicEnum;
+import org.openzen.zencode.symbolic.definition.SymbolicEnum;
 
 /**
  *

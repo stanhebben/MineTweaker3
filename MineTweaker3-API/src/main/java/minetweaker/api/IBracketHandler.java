@@ -7,7 +7,6 @@ package minetweaker.api;
 
 import java.util.List;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
@@ -38,7 +37,7 @@ public interface IBracketHandler
 	 * @param tokens token stream to be detected
 	 * @return the resolved symbol, or null
 	 */
-	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, List<Token> tokens);
+	public IJavaExpression resolve(CodePosition position, IMethodScope<IJavaExpression> scope, List<Token> tokens);
 
 	/**
 	 * Evaluates the compile-time value of the given bracket value.

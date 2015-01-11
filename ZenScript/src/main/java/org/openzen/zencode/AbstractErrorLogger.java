@@ -11,9 +11,11 @@ import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.parser.expression.ParsedCallArguments;
 import org.openzen.zencode.symbolic.Modifier;
+import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.ITypeDefinition;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
@@ -99,7 +101,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorNotAType(CodePosition position, IPartialExpression<E> value)
+	public void errorNotAType(CodePosition position, IImportable<E> importable)
 	{
 		error(position, "Not a valid type");
 	}
@@ -242,7 +244,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorNotAType(CodePosition position, IPartialExpression<E> value, String name)
+	public void errorNotAType(CodePosition position, IZenSymbol<E> value, String name)
 	{
 		error(position, name + " is not a valid type");
 	}
@@ -377,12 +379,24 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	@Override
 	public void errorMultipleSuperclasses(CodePosition position, String className)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		error(position, "Class " + className + " cannot have multiple superclasses");
 	}
 
 	@Override
 	public void errorNoConstructorsForType(CodePosition position, TypeInstance<E> type)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		error(position, "This type has no constructors");
+	}
+
+	@Override
+	public void errorNoSuchMember(CodePosition position, IImportable<E> importable, String name)
+	{
+		error(position, "Could not find a member named " + name + " in this type");
+	}
+
+	@Override
+	public void errorNamedWildcardImport(CodePosition position, List<String> importName)
+	{
+		error(position, "Cannot rename a wildcard import");
 	}
 }

@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 
 /**
  *
@@ -16,10 +16,10 @@ import org.openzen.zencode.symbolic.symbols.SymbolLocal;
  */
 public class VarFlowInstruction<E extends IPartialExpression<E>> implements IFlowInstruction<E>
 {
-	private final SymbolLocal<E> symbol;
+	private final LocalSymbol<E> symbol;
 	private final E initializer;
 	
-	public VarFlowInstruction(SymbolLocal<E> symbol, E initializer)
+	public VarFlowInstruction(LocalSymbol<E> symbol, E initializer)
 	{
 		this.symbol = symbol;
 		this.initializer = initializer;

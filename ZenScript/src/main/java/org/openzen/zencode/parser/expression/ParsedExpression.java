@@ -23,10 +23,11 @@ import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.scope.IGlobalScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import static org.openzen.zencode.util.Strings.unescapeString;
 import org.openzen.zencode.util.CodePosition;
+import org.openzen.zencode.util.Strings;
+import static org.openzen.zencode.util.Strings.unescape;
 
 /**
  *
@@ -43,11 +44,11 @@ public abstract class ParsedExpression
 		}
 	}
 	
-	public static IAny evalToAny(String value, IGlobalScope<?> scope)
+	public static IAny evalToAny(String value, IModuleScope<?> scope)
 	{
 		ParsedExpression parsed = parse(value, scope.getErrorLogger());
 		return parsed
-				.compile(scope.getConstantEnvironment(), null)
+				.compile(scope.getConstantScope(), null)
 				.getCompileTimeValue();
 	}
 	
@@ -308,7 +309,7 @@ public abstract class ParsedExpression
 					else {
 						Token indexString2 = lexer.optional(T_STRING);
 						if (indexString2 != null)
-							base = new ParsedExpressionMember(position, base, unescapeString(indexString2.getValue()));
+							base = new ParsedExpressionMember(position, base, Strings.unescape(indexString2.getValue()));
 						else {
 							Token last = lexer.next();
 							throw new ParseException(last, "Invalid expression, last token: " + last.getValue());
@@ -364,13 +365,13 @@ public abstract class ParsedExpression
 			case T_STRINGVALUE:
 				return new ParsedExpressionString(
 						position,
-						unescapeString(lexer.next().getValue()));
+						unescape(lexer.next().getValue()));
 
 			case T_DOLLAR: {
 				if (lexer.isNext(T_STRINGVALUE))
 					return new ParsedExpressionDollar(
 							position,
-							unescapeString(lexer.next().getValue()));
+							unescape(lexer.next().getValue()));
 				else if (lexer.isNext(TOKEN_ID))
 					return new ParsedExpressionDollar(
 							position,

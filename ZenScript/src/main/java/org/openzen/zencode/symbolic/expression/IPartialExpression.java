@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -49,11 +49,7 @@ public interface IPartialExpression<E extends IPartialExpression<E>>
 	
 	public E cast(CodePosition position, TypeInstance<E> type);
 	
-	public IZenSymbol<E> toSymbol();
-	
 	public TypeInstance<E> getType();
-	
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes);
 	
 	public IPartialExpression<E> via(SymbolicFunction<E> function);
 	

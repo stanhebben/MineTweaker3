@@ -49,7 +49,7 @@ public class JavaCallVirtual extends AbstractJavaExpression
 					JavaMethods.getSignature(method.getMethodHeader()));
 		
 		if (!result && method.getReturnType() != getScope().getTypeCompiler().getVoid(getScope()))
-			output.pop(method.getReturnType().isLarge());
+			output.pop(method.getReturnType());
 	}
 
 	@Override

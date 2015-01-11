@@ -7,9 +7,10 @@ package org.openzen.zencode.symbolic.scope;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.IZenCompiler;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
@@ -26,15 +27,19 @@ import org.openzen.zencode.util.CodePosition;
 public class ModuleScope<E extends IPartialExpression<E>>
 	implements IModuleScope<E>
 {
-	private final IGlobalScope<E> parent;
+	private final IZenCompileEnvironment<E> environment;
+	private final IZenCompiler<E> compiler;
 	private final Map<String, IZenSymbol<E>> imports;
 	private final AccessScope accessScope;
+	private final IMethodScope<E> constantScope;
 
-	public ModuleScope(IGlobalScope<E> parent)
+	public ModuleScope(IZenCompileEnvironment<E> environment, IZenCompiler<E> compiler)
 	{
-		this.parent = parent;
+		this.environment = environment;
+		this.compiler = compiler;
 		imports = new HashMap<String, IZenSymbol<E>>();
 		accessScope = AccessScope.createModuleScope();
+		constantScope = new ConstantScope<E>(this);
 	}
 
 	@Override
@@ -46,43 +51,19 @@ public class ModuleScope<E extends IPartialExpression<E>>
 	@Override
 	public IZenCompileEnvironment<E> getEnvironment()
 	{
-		return parent.getEnvironment();
+		return environment;
 	}
 	
 	@Override
 	public IExpressionCompiler<E> getExpressionCompiler()
 	{
-		return parent.getExpressionCompiler();
+		return compiler.getExpressionCompiler();
 	}
 	
 	@Override
-	public IMethodScope<E> getConstantEnvironment()
+	public IMethodScope<E> getConstantScope()
 	{
-		return parent.getConstantEnvironment();
-	}
-
-	@Override
-	public String makeClassName()
-	{
-		return parent.makeClassName();
-	}
-
-	@Override
-	public boolean containsClass(String name)
-	{
-		return parent.containsClass(name);
-	}
-
-	@Override
-	public void putClass(String name, byte[] data)
-	{
-		parent.putClass(name, data);
-	}
-	
-	@Override
-	public Map<String, byte[]> getClasses()
-	{
-		return parent.getClasses();
+		return constantScope;
 	}
 
 	@Override
@@ -94,7 +75,7 @@ public class ModuleScope<E extends IPartialExpression<E>>
 				throw new RuntimeException("How could this happen?");
 			return imprt.instance(position, environment);
 		} else
-			return parent.getValue(name, position, environment);
+			return environment.getValue(name, position, environment);
 	}
 
 	@Override
@@ -112,30 +93,45 @@ public class ModuleScope<E extends IPartialExpression<E>>
 	@Override
 	public ITypeCompiler<E> getTypeCompiler()
 	{
-		return parent.getTypeCompiler();
-	}
-
-	@Override
-	public Set<String> getClassNames()
-	{
-		return parent.getClassNames();
-	}
-
-	@Override
-	public byte[] getClass(String name)
-	{
-		return parent.getClass(name);
+		return compiler.getTypeCompiler();
 	}
 
 	@Override
 	public ICodeErrorLogger<E> getErrorLogger()
 	{
-		return parent.getErrorLogger();
+		return environment.getErrorLogger();
 	}
 
 	@Override
 	public TypeCapture<E> getTypeCapture()
 	{
 		return TypeCapture.empty();
+	}
+
+	@Override
+	public ZenPackage<E> getRootPackage()
+	{
+		return environment.getRootPackage();
+	}
+
+	@Override
+	public IZenSymbol<E> getSymbol(String name)
+	{
+		if (imports.containsKey(name))
+			return imports.get(name);
+		
+		return environment.getGlobal(name);
+	}
+
+	@Override
+	public boolean contains(String name)
+	{
+		return imports.containsKey(name) || environment.getGlobal(name) != null;
+	}
+
+	@Override
+	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+	{
+		putValue(name, symbol, position);
 	}
 }

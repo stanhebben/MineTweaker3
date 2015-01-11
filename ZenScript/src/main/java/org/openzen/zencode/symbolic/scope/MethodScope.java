@@ -7,10 +7,10 @@ package org.openzen.zencode.symbolic.scope;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
@@ -20,7 +20,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -66,9 +66,9 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	}
 	
 	@Override
-	public IMethodScope<E> getConstantEnvironment()
+	public IMethodScope<E> getConstantScope()
 	{
-		return scope.getConstantEnvironment();
+		return scope.getConstantScope();
 	}
 
 	@Override
@@ -81,24 +81,6 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	public IExpressionCompiler<E> getExpressionCompiler()
 	{
 		return scope.getExpressionCompiler();
-	}
-
-	@Override
-	public String makeClassName()
-	{
-		return scope.makeClassName();
-	}
-
-	@Override
-	public void putClass(String name, byte[] data)
-	{
-		scope.putClass(name, data);
-	}
-
-	@Override
-	public boolean containsClass(String name)
-	{
-		return scope.containsClass(name);
 	}
 
 	@Override
@@ -117,24 +99,6 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 			getErrorLogger().errorSymbolNameAlreadyExists(position, name);
 		else
 			local.put(name, value);
-	}
-
-	@Override
-	public Set<String> getClassNames()
-	{
-		return scope.getClassNames();
-	}
-
-	@Override
-	public byte[] getClass(String name)
-	{
-		return scope.getClass(name);
-	}
-	
-	@Override
-	public Map<String, byte[]> getClasses()
-	{
-		return scope.getClasses();
 	}
 
 	@Override
@@ -165,5 +129,32 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	public TypeCapture<E> getTypeCapture()
 	{
 		return typeCapture;
+	}
+
+	@Override
+	public ZenPackage<E> getRootPackage()
+	{
+		return scope.getRootPackage();
+	}
+
+	@Override
+	public IZenSymbol<E> getSymbol(String name)
+	{
+		if (local.containsKey(name))
+			return local.get(name);
+		
+		return scope.getSymbol(name);
+	}
+
+	@Override
+	public boolean contains(String name)
+	{
+		return local.containsKey(name) || scope.contains(name);
+	}
+
+	@Override
+	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+	{
+		putValue(name, symbol, position);
 	}
 }

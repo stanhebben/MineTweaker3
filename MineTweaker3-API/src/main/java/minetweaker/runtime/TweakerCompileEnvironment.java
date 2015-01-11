@@ -18,22 +18,18 @@ import minetweaker.api.IBracketHandler;
 import minetweaker.runtime.symbol.ITweakerSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.annotations.ZenClass;
 import org.openzen.zencode.annotations.ZenExpansion;
-import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.java.IJavaScopeGlobal;
-import org.openzen.zencode.java.JavaExpressionCompiler;
 import org.openzen.zencode.java.JavaNative;
-import org.openzen.zencode.java.JavaTypeCompiler;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.AccessType;
-import org.openzen.zencode.symbolic.scope.IScopeMethod;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.symbols.SymbolPackage;
-import org.openzen.zencode.symbolic.symbols.SymbolType;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
@@ -42,23 +38,19 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  */
-public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaExpression, IJavaType>
+public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaExpression>
 {
 	private final TweakerGlobalScope scope;
-	private final ICodeErrorLogger errors;
+	private final ICodeErrorLogger<IJavaExpression> errors;
 	private final List<IBracketHandler> bracketHandlerInstances = new ArrayList<IBracketHandler>();
-	private final JavaTypeCompiler typeCompiler;
-	private final JavaExpressionCompiler expressionCompiler;
-	private final Map<String, IZenSymbol<IJavaExpression, IJavaType>> globals;
-	private final SymbolPackage<IJavaExpression, IJavaType> root = new SymbolPackage<IJavaExpression, IJavaType>("<root>");
+	private final Map<String, IZenSymbol<IJavaExpression>> globals;
+	private final ZenPackage<IJavaExpression> root = ZenPackage.makeRootPackage();
 
-	public TweakerCompileEnvironment(TweakerGlobalScope scope, ICodeErrorLogger errors)
+	public TweakerCompileEnvironment(TweakerGlobalScope scope, ICodeErrorLogger<IJavaExpression> errors)
 	{
 		this.scope = scope;
 		this.errors = errors;
-		typeCompiler = new JavaTypeCompiler(scope);
-		expressionCompiler = new JavaExpressionCompiler();
-		globals = new HashMap<String, IZenSymbol<IJavaExpression, IJavaType>>();
+		globals = new HashMap<String, IZenSymbol<IJavaExpression>>();
 	}
 	
 	public void init()
@@ -66,7 +58,7 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 		for (Class<? extends IBracketHandler> bracketHandler : GlobalRegistry.getBracketHandlers())
 		{
 			try {
-				Constructor<? extends IBracketHandler> constructor = bracketHandler.getConstructor(IJavaScopeGlobal.class);
+				Constructor<? extends IBracketHandler> constructor = bracketHandler.getConstructor(IModuleScope.class);
 				bracketHandlerInstances.add(constructor.newInstance(scope));
 			} catch (NoSuchMethodException ex) {
 				Logger.getLogger(TweakerCompileEnvironment.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,24 +79,22 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 			globals.put(global.getKey(), global.getValue().convert(scope));
 		}
 		
-		
 		// add annotated classes
 		for (Class<?> cls : GlobalRegistry.getAnnotatedClasses()) {
 			try {
 				for (Annotation annotation : cls.getAnnotations()) {
 					if (annotation instanceof ZenExpansion) {
 						String type = ((ZenExpansion) annotation).value();
-						TypeExpansion<IJavaExpression, IJavaType> expansion
-								= new TypeExpansion<IJavaExpression, IJavaType>(
+						TypeExpansion<IJavaExpression> expansion
+								= new TypeExpansion<IJavaExpression>(
 										scope,
 										AccessType.EXPORT,
 										ZenType.ACCESS_GLOBAL);
 						JavaNative.addExpansion(scope, expansion, cls);
 						typeCompiler.addExpansion(type, expansion);
 					} else if (annotation instanceof ZenClass)
-						root.put(
-								((ZenClass) annotation).value(),
-								new SymbolType<IJavaExpression, IJavaType>(typeCompiler.getNativeType(null, cls, TypeCapture.<IJavaExpression, IJavaType>empty())),
+						root.put(((ZenClass) annotation).value(),
+								new ImportableSymbol<IJavaExpression>(typeCompiler.getNativeType(null, cls, TypeCapture.<IJavaExpression>empty())),
 								errors);
 				}
 			} catch (Throwable t) {
@@ -112,42 +102,30 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 			}
 		}
 	}
-	
-	@Override
-	public JavaTypeCompiler getTypeCompiler()
-	{
-		return typeCompiler;
-	}
-	
-	@Override
-	public IExpressionCompiler<IJavaExpression, IJavaType> getExpressionCompiler()
-	{
-		return expressionCompiler;
-	}
 
 	@Override
-	public ICodeErrorLogger getErrorLogger()
+	public ICodeErrorLogger<IJavaExpression> getErrorLogger()
 	{
 		return errors;
 	}
 
 	@Override
-	public IJavaExpression getGlobal(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, String name)
+	public IZenSymbol<IJavaExpression> getGlobal(String name)
 	{
 		if (!globals.containsKey(name))
 			return null;
 		
-		return globals.get(name).instance(position, scope).eval();
+		return globals.get(name);
 	}
 
 	@Override
-	public IJavaExpression getDollar(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> scope, String name)
+	public IJavaExpression getDollar(CodePosition position, IMethodScope<IJavaExpression> scope, String name)
 	{
 		return null;
 	}
 
 	@Override
-	public IJavaExpression getBracketed(CodePosition position, IScopeMethod<IJavaExpression, IJavaType> environment, List<Token> tokens)
+	public IJavaExpression getBracketed(CodePosition position, IMethodScope<IJavaExpression> environment, List<Token> tokens)
 	{
 		for (IBracketHandler handler : bracketHandlerInstances) {
 			IJavaExpression symbol = handler.resolve(position, environment, tokens);
@@ -183,5 +161,11 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 		}
 
 		return null;
+	}
+
+	@Override
+	public ZenPackage<IJavaExpression> getRootPackage()
+	{
+		return root;
 	}
 }

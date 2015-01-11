@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.VarFlowInstruction;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -20,10 +20,10 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class StatementVar<E extends IPartialExpression<E>> extends Statement<E>
 {
-	private final SymbolLocal<E> symbol;
+	private final LocalSymbol<E> symbol;
 	private final E initializer;
 
-	public StatementVar(CodePosition position, IMethodScope<E> method, SymbolLocal<E> symbol, E initializer)
+	public StatementVar(CodePosition position, IMethodScope<E> method, LocalSymbol<E> symbol, E initializer)
 	{
 		super(position, method);
 
@@ -31,7 +31,7 @@ public class StatementVar<E extends IPartialExpression<E>> extends Statement<E>
 		this.initializer = initializer;
 	}
 	
-	public SymbolLocal<E> getSymbol()
+	public LocalSymbol<E> getSymbol()
 	{
 		return symbol;
 	}

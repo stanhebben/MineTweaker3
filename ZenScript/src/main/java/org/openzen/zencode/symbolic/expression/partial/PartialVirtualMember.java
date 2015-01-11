@@ -8,15 +8,13 @@ package org.openzen.zencode.symbolic.expression.partial;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.symbols.MemberVirtualSymbol;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.member.IGetter;
 import org.openzen.zencode.symbolic.member.ISetter;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -127,24 +125,12 @@ public class PartialVirtualMember<E extends IPartialExpression<E>> extends Abstr
 	}
 
 	@Override
-	public IZenSymbol<E> toSymbol()
-	{
-		return new MemberVirtualSymbol<E>(this);
-	}
-
-	@Override
 	public TypeInstance<E> getType()
 	{
 		if (getter == null)
 			return null;
 
 		return getter.getType();
-	}
-
-	@Override
-	public TypeInstance<E> toType(List<TypeInstance<E>> genericTypes)
-	{
-		return null;
 	}
 
 	@Override

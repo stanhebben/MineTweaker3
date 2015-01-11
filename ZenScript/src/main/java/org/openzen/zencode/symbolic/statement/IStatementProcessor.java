@@ -44,4 +44,6 @@ public interface IStatementProcessor<E extends IPartialExpression<E>, U>
 	public U onThrow(ThrowStatement<E> statement);
 	
 	public U onSynchronized(SynchronizedStatement<E> statement);
+	
+	public U onImport(ImportStatement<E> statement);
 }

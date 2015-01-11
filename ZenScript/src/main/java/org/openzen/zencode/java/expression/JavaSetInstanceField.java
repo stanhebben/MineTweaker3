@@ -6,11 +6,11 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.field.IJavaField;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -24,7 +24,7 @@ public class JavaSetInstanceField extends AbstractJavaExpression
 
 	public JavaSetInstanceField(
 			CodePosition position,
-			IMethodScope<IJavaExpression, IJavaType> scope,
+			IMethodScope<IJavaExpression> scope,
 			IJavaField field,
 			IJavaExpression instance,
 			IJavaExpression value)
@@ -42,17 +42,17 @@ public class JavaSetInstanceField extends AbstractJavaExpression
 		if (pushResult) {
 			value.compile(true, method);
 			instance.compile(true, method);
-			method.dupX1(value.getType().isLarge());
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType().getSignature());
+			method.dupX1(value.getType());
+			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
 		} else {
 			instance.compile(true, method);
 			value.compile(true, method);
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType().getSignature());
+			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
 		}
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return value.getType();
 	}

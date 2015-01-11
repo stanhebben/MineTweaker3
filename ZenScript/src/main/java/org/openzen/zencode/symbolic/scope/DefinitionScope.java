@@ -7,17 +7,17 @@ package org.openzen.zencode.symbolic.scope;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -32,6 +32,7 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	private final ISymbolicDefinition<E> unit;
 	private final Map<String, IZenSymbol<E>> local;
 	private final TypeCapture<E> typeCapture;
+	private final IMethodScope<E> constantScope;
 	
 	public DefinitionScope(IModuleScope<E> global, ISymbolicDefinition<E> unit)
 	{
@@ -40,6 +41,7 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 		this.local = new HashMap<String, IZenSymbol<E>>();
 		this.unit = unit;
 		this.typeCapture = new TypeCapture<E>(null);
+		constantScope = new ConstantScope<E>(this);
 		
 		for (ITypeVariable<E> typeVariable : unit.getTypeVariables()) {
 			typeCapture.put(typeVariable, global.getTypeCompiler().getGeneric(typeVariable));
@@ -77,33 +79,9 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	}
 	
 	@Override
-	public IMethodScope<E> getConstantEnvironment()
+	public IMethodScope<E> getConstantScope()
 	{
-		return module.getConstantEnvironment();
-	}
-
-	@Override
-	public String makeClassName()
-	{
-		return module.makeClassName();
-	}
-
-	@Override
-	public boolean containsClass(String name)
-	{
-		return module.containsClass(name);
-	}
-
-	@Override
-	public void putClass(String name, byte[] data)
-	{
-		module.putClass(name, data);
-	}
-	
-	@Override
-	public Map<String, byte[]> getClasses()
-	{
-		return module.getClasses();
+		return constantScope;
 	}
 
 	@Override
@@ -125,18 +103,6 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	}
 
 	@Override
-	public Set<String> getClassNames()
-	{
-		return module.getClassNames();
-	}
-
-	@Override
-	public byte[] getClass(String name)
-	{
-		return module.getClass(name);
-	}
-
-	@Override
 	public ICodeErrorLogger<E> getErrorLogger()
 	{
 		return module.getErrorLogger();
@@ -146,5 +112,32 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	public TypeCapture<E> getTypeCapture()
 	{
 		return typeCapture;
+	}
+
+	@Override
+	public ZenPackage<E> getRootPackage()
+	{
+		return module.getRootPackage();
+	}
+
+	@Override
+	public IZenSymbol<E> getSymbol(String name)
+	{
+		if (local.containsKey(name))
+			return local.get(name);
+		
+		return module.getSymbol(name);
+	}
+
+	@Override
+	public boolean contains(String name)
+	{
+		return local.containsKey(name) || module.contains(name);
+	}
+
+	@Override
+	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+	{
+		putValue(name, symbol, position);
 	}
 }

@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.TypeExpansion;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
-import org.openzen.zencode.symbolic.unit.SymbolicStruct;
+import org.openzen.zencode.symbolic.definition.SymbolicStruct;
 
 /**
  *

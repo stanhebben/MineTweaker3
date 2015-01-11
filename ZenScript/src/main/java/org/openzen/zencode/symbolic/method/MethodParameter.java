@@ -11,7 +11,7 @@ import org.openzen.zencode.parser.elements.ParsedFunctionParameter;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
@@ -29,7 +29,7 @@ public class MethodParameter<E extends IPartialExpression<E>>
 	private final String name;
 	private final TypeInstance<E> type;
 	private E defaultValue;
-	private SymbolLocal<E> local;
+	private LocalSymbol<E> local;
 
 	public MethodParameter(CodePosition position, String name, TypeInstance<E> type, E defaultValue)
 	{
@@ -70,10 +70,10 @@ public class MethodParameter<E extends IPartialExpression<E>>
 		return defaultValue;
 	}
 
-	public SymbolLocal<E> getLocal()
+	public LocalSymbol<E> getLocal()
 	{
 		if (local == null)
-			local = new SymbolLocal<E>(type, false);
+			local = new LocalSymbol<E>(type, false);
 
 		return local;
 	}

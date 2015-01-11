@@ -11,8 +11,7 @@ import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.java.field.JavaField;
-import org.openzen.zencode.java.type.IJavaType;
-import org.openzen.zencode.symbolic.symbols.SymbolStaticField;
+import org.openzen.zencode.symbolic.symbols.StaticFieldSymbol;
 
 /**
  *
@@ -30,9 +29,9 @@ public class TweakerSymbolStaticField implements ITweakerSymbol
 	}
 
 	@Override
-	public IZenSymbol<IJavaExpression, IJavaType> convert(TweakerGlobalScope scope)
+	public IZenSymbol<IJavaExpression> convert(TweakerGlobalScope scope)
 	{
-		return new SymbolStaticField<IJavaExpression, IJavaType>(new JavaField(field, scope.getTypeCompiler()));
+		return new StaticFieldSymbol<IJavaExpression>(new JavaField(field, scope.getTypeCompiler()));
 	}
 
 	@Override

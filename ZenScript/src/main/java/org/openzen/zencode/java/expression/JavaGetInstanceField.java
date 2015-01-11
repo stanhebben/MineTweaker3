@@ -6,11 +6,11 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.field.IJavaField;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -21,7 +21,7 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 	private final IJavaField field;
 	private final IJavaExpression instance;
 	
-	public JavaGetInstanceField(CodePosition position, IMethodScope<IJavaExpression, IJavaType> scope, IJavaField field, IJavaExpression instance)
+	public JavaGetInstanceField(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaField field, IJavaExpression instance)
 	{
 		super(position, scope);
 		
@@ -35,11 +35,11 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 		instance.compile(pushResult, method);
 		
 		if (pushResult)
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType().getSignature());
+			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
 	}
 
 	@Override
-	public IJavaType getType()
+	public TypeInstance<IJavaExpression> getType()
 	{
 		return field.getType();
 	}

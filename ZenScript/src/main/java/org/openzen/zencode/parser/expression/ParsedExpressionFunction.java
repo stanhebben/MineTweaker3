@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
 import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.symbols.SymbolLocal;
+import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.parser.elements.ParsedFunctionParameter;
 import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.statement.ParsedStatement;
@@ -29,8 +29,8 @@ import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.unit.ISymbolicDefinition;
-import org.openzen.zencode.symbolic.unit.SymbolicFunction;
+import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -93,7 +93,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 
 		for (int i = 0; i < compiledHeader.getParameters().size(); i++) {
 			MethodParameter<E> argument = compiledHeader.getParameters().get(i);
-			SymbolLocal<E> symbol = argument.getLocal();
+			LocalSymbol<E> symbol = argument.getLocal();
 
 			functionScope.putValue(
 					argument.getName(),
@@ -161,45 +161,9 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 		
 		@Override
-		public IMethodScope<E> getConstantEnvironment()
+		public IMethodScope<E> getConstantScope()
 		{
-			return outer.getConstantEnvironment();
-		}
-
-		@Override
-		public String makeClassName()
-		{
-			return outer.makeClassName();
-		}
-
-		@Override
-		public boolean containsClass(String name)
-		{
-			return outer.containsClass(name);
-		}
-
-		@Override
-		public Set<String> getClassNames()
-		{
-			return outer.getClassNames();
-		}
-
-		@Override
-		public byte[] getClass(String name)
-		{
-			return outer.getClass(name);
-		}
-
-		@Override
-		public Map<String, byte[]> getClasses()
-		{
-			return outer.getClasses();
-		}
-
-		@Override
-		public void putClass(String name, byte[] data)
-		{
-			outer.putClass(name, data);
+			return outer.getConstantScope();
 		}
 
 		@Override
@@ -245,6 +209,33 @@ public class ParsedExpressionFunction extends ParsedExpression
 		public TypeCapture<E> getTypeCapture()
 		{
 			return outer.getTypeCapture();
+		}
+
+		@Override
+		public IZenSymbol<E> getSymbol(String name)
+		{
+			if (locals.containsKey(name))
+				return locals.get(name);
+			
+			return outer.getSymbol(name);
+		}
+
+		@Override
+		public boolean contains(String name)
+		{
+			return locals.containsKey(name) || outer.contains(name);
+		}
+
+		@Override
+		public ZenPackage<E> getRootPackage()
+		{
+			return outer.getRootPackage();
+		}
+
+		@Override
+		public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
+		{
+			putValue(name, symbol, position);
 		}
 	}
 }
