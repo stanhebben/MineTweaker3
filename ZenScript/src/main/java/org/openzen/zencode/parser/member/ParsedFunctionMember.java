@@ -7,12 +7,12 @@ package org.openzen.zencode.parser.member;
 
 import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
-import org.openzen.zencode.symbolic.member.MethodMember;
+import org.openzen.zencode.symbolic.member.definition.MethodMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;

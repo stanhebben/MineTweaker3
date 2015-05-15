@@ -9,7 +9,7 @@ package org.openzen.zencode.symbolic.scope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -22,5 +22,7 @@ public interface IMethodScope<E extends IPartialExpression<E>> extends IDefiniti
 	
 	public MethodHeader<E> getMethodHeader();
 	
-	public TypeInstance<E> getReturnType();
+	public IGenericType<E> getReturnType();
+	
+	public boolean isConstructor();
 }

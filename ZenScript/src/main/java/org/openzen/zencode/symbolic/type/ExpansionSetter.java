@@ -5,12 +5,12 @@
  */
 package org.openzen.zencode.symbolic.type;
 
-import java.util.Arrays;
+import java.util.Collections;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.member.ISetter;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IVirtualCallable;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -22,16 +22,16 @@ public class ExpansionSetter<E extends IPartialExpression<E>>
 		implements ISetter<E>
 {
 	private final PartialVirtualMember<E> member;
-	private final IMethod<E> method;
+	private final IVirtualCallable<E> method;
 	
-	public ExpansionSetter(PartialVirtualMember<E> member, IMethod<E> method)
+	public ExpansionSetter(PartialVirtualMember<E> member, IVirtualCallable<E> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return method.getMethodHeader().getArgumentType(1);
 	}
@@ -40,6 +40,6 @@ public class ExpansionSetter<E extends IPartialExpression<E>>
 	@SuppressWarnings("unchecked")
 	public E compile(CodePosition position, IMethodScope<E> scope, E value)
 	{
-		return method.callStatic(position, scope, Arrays.asList(member.getTarget(), value));
+		return method.call(position, scope, member.getTarget(), Collections.singletonList(value));
 	}
 }

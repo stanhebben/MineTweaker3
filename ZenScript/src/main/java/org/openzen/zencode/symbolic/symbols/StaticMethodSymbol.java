@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticMethod;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -20,9 +20,9 @@ import org.openzen.zencode.util.CodePosition;
 public class StaticMethodSymbol<E extends IPartialExpression<E>>
 	implements IZenSymbol<E>
 {
-	private final IMethod<E> method;
+	private final ICallable<E> method;
 	
-	public StaticMethodSymbol(IMethod<E> method)
+	public StaticMethodSymbol(ICallable<E> method)
 	{
 		this.method = method;
 	}

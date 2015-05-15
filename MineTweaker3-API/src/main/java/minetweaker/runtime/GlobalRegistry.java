@@ -15,7 +15,9 @@ import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.symbol.ITweakerSymbol;
 import minetweaker.runtime.symbol.TweakerSymbols;
-import org.openzen.zencode.ICodeErrorLogger;
+import org.openzen.zencode.AbstractErrorLogger;
+import org.openzen.zencode.IZenCompileEnvironment;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -69,9 +71,9 @@ public class GlobalRegistry
 		}
 	}
 
-	public static TweakerGlobalScope makeGlobalEnvironment()
+	public static IZenCompileEnvironment<IJavaExpression> createGlobalEnvironment()
 	{
-		return new TweakerGlobalScope(new MyErrorLogger());
+		return new TweakerCompileEnvironment(new MyErrorLogger());
 	}
 	
 	public static Map<String, ITweakerSymbol> getGlobals()
@@ -89,7 +91,7 @@ public class GlobalRegistry
 		return annotatedClasses;
 	}
 
-	private static class MyErrorLogger implements ICodeErrorLogger
+	private static class MyErrorLogger extends AbstractErrorLogger<IJavaExpression>
 	{
 		private boolean hasErrors = false;
 		

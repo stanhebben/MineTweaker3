@@ -54,7 +54,7 @@ public class ExpandString {
 	
 	@ZenMethod
 	public static List<String> split(String value, String separator, @Optional int maximum) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		int minIndex = 0;
 		int numSplits = 0;
 		

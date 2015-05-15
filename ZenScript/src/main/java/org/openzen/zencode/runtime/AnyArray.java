@@ -7,19 +7,20 @@
 package org.openzen.zencode.runtime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
  * @author Stan
  */
 public class AnyArray implements IAny {
-	public static final AnyArray EMPTY = new AnyArray(new IAny[0]);
+	public static final AnyArray EMPTY = new AnyArray(Collections.emptyList());
 	
-	private final IAny[] values;
+	private final List<IAny> values;
 	
-	public AnyArray(IAny[] values) {
+	public AnyArray(List<IAny> values) {
 		this.values = values;
 	}
 	
@@ -52,18 +53,15 @@ public class AnyArray implements IAny {
 	public IAny cat(IAny value) {
 		Iterator<IAny> iterator = value.iteratorSingle();
 		if (iterator == null) {
-			IAny[] newValues = Arrays.copyOf(values, values.length + 1);
-			newValues[values.length] = value;
+			List<IAny> newValues = new ArrayList<>();
+			newValues.addAll(values);
+			newValues.add(value);
 			return new AnyArray(newValues);
 		} else {
-			ArrayList<IAny> values = new ArrayList<IAny>();
+			List<IAny> newValues = new ArrayList<>();
+			newValues.addAll(this.values);
 			while (iterator.hasNext()) {
-				values.add(iterator.next());
-			}
-			
-			IAny[] newValues = Arrays.copyOf(this.values, this.values.length + values.size());
-			for (int i = 0; i < values.size(); i++) {
-				newValues[this.values.length + i] = values.get(i);
+				newValues.add(iterator.next());
 			}
 			return new AnyArray(newValues);
 		}
@@ -122,7 +120,7 @@ public class AnyArray implements IAny {
 	@Override
 	public IAny memberGet(String member) {
 		if (member.equals("length")) {
-			return new AnyInt(values.length);
+			return new AnyInt(values.size());
 		} else {
 			throw new UnsupportedOperationException("Arrays don't have a " + member + " member");
 		}
@@ -140,12 +138,12 @@ public class AnyArray implements IAny {
 
 	@Override
 	public IAny indexGet(IAny key) {
-		return values[key.asInt()];
+		return values.get(key.asInt());
 	}
 
 	@Override
 	public void indexSet(IAny key, IAny value) {
-		values[key.asInt()] = value;
+		values.set(key.asInt(), value);
 	}
 
 	@Override
@@ -234,7 +232,7 @@ public class AnyArray implements IAny {
 
 	@Override
 	public Iterator<IAny> iteratorSingle() {
-		return Arrays.asList(values).iterator();
+		return values.iterator();
 	}
 
 	@Override

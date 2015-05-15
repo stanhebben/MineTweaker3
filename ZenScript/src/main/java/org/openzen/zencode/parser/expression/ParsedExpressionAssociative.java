@@ -16,7 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyAssociative;
 import org.openzen.zencode.runtime.AnyNull;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
@@ -39,21 +39,25 @@ public class ParsedExpressionAssociative extends ParsedExpression
 		this.keys = keys;
 		this.values = values;
 	}
+	
+	// #######################################
+	// ### ParsedExpression implementation ###
+	// #######################################
 
 	@Override
 	public <E extends IPartialExpression<E>>
-			IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+			IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		if (asType != null && asType.isStruct())
 			return compileAsStruct(scope, asType);
 		
 		ICastingRule<E> castingRule = null;
-		TypeInstance<E> mapType;
+		IGenericType<E> mapType;
 		
 		if (asType != null && asType.getMapKeyType() != null)
 			mapType = asType;
 		else if (asType != null) {
-			castingRule = scope.getTypeCompiler().getAnyAnyMap(scope).getCastingRule(asType);
+			castingRule = scope.getTypeCompiler().anyMap.getCastingRule(scope, asType);
 			if (castingRule == null) {
 				scope.getErrorLogger().errorCannotCastMapTo(getPosition(), asType);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
@@ -62,7 +66,7 @@ public class ParsedExpressionAssociative extends ParsedExpression
 			mapType = castingRule.getInputType();
 		}
 		else
-			mapType = scope.getTypeCompiler().getAnyAnyMap(scope);
+			mapType = scope.getTypeCompiler().anyMap;
 
 		List<E> cKeys = new ArrayList<E>();
 		List<E> cValues = new ArrayList<E>();
@@ -110,7 +114,7 @@ public class ParsedExpressionAssociative extends ParsedExpression
 	}
 	
 	private <E extends IPartialExpression<E>>
-			IPartialExpression<E> compileAsStruct(IMethodScope<E> scope, TypeInstance<E> asType)
+			IPartialExpression<E> compileAsStruct(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		List<ParsedCallArgument> arguments = new ArrayList<ParsedCallArgument>();
 		for (int i = 0; i < keys.size(); i++) {
@@ -126,7 +130,7 @@ public class ParsedExpressionAssociative extends ParsedExpression
 		}
 		
 		ParsedCallArguments allArguments = new ParsedCallArguments(arguments);
-		MatchedArguments<E> compiledArguments = allArguments.compile(asType.getConstructors(), scope);
-		return compiledArguments.method.callStatic(getPosition(), scope, compiledArguments.arguments);
+		MatchedArguments<E> compiledArguments = allArguments.compile(asType.getConstructors(scope), scope);
+		return compiledArguments.method.call(getPosition(), scope, compiledArguments.arguments);
 	}
 }

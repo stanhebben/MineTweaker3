@@ -9,7 +9,7 @@ import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
@@ -48,7 +48,7 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public ITypeCompiler<E> getTypeCompiler()
+	public TypeRegistry<E> getTypeCompiler()
 	{
 		return parent.getTypeCompiler();
 	}
@@ -135,5 +135,11 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
 	{
 		// nothing to do
+	}
+
+	@Override
+	public boolean isConstructor()
+	{
+		return false;
 	}
 }

@@ -6,7 +6,6 @@
 package org.openzen.zencode;
 
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 
 /**
@@ -16,13 +15,6 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
  */
 public interface IZenCompiler<E extends IPartialExpression<E>>
 {
-	/**
-	 * Gets the type compiler for the current target language.
-	 *
-	 * @return type compiler
-	 */
-	public ITypeCompiler<E> getTypeCompiler();
-
 	/**
 	 * Gets the expression compiler for the current target language.
 	 *

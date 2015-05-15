@@ -13,24 +13,24 @@ import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
-import org.openzen.zencode.parser.elements.ParsedFunctionParameter;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionParameter;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -53,28 +53,28 @@ public class ParsedExpressionFunction extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		MethodHeader<E> compiledHeader = header.compile(scope);
 		
 		if (asType != null) {
 			MethodHeader<E> function = asType.getFunctionHeader();
 			if (function != null) {
-				List<TypeInstance<E>> argumentTypes = new ArrayList<TypeInstance<E>>();
+				List<IGenericType<E>> argumentTypes = new ArrayList<IGenericType<E>>();
 				for (ParsedFunctionParameter argument : header.getParameters()) {
 					argumentTypes.add(argument.getType().compile(scope));
 				}
 
-				TypeInstance<E> newReturnType = compiledHeader.getReturnType();
-				if (compiledHeader.getReturnType() == scope.getTypeCompiler().getAny(scope))
+				IGenericType<E> newReturnType = compiledHeader.getReturnType();
+				if (compiledHeader.getReturnType() == scope.getTypeCompiler().any)
 					newReturnType = function.getReturnType();
 
 				for (int i = 0; i < argumentTypes.size(); i++) {
-					if (i < function.getParameters().size() && argumentTypes.get(i) == scope.getTypeCompiler().getAny(scope))
+					if (i < function.getParameters().size() && argumentTypes.get(i) == scope.getTypeCompiler().any)
 						argumentTypes.set(i, function.getParameters().get(i).getType());
 				}
 
-				List<MethodParameter<E>> newArguments = new ArrayList<MethodParameter<E>>();
+				List<MethodParameter<E>> newArguments = new ArrayList<>();
 				for (ParsedFunctionParameter parameter : header.getParameters()) {
 					newArguments.add(parameter.compile(scope));
 				}
@@ -88,7 +88,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 			}
 		}
 
-		SymbolicFunction<E> functionUnit = new SymbolicFunction<E>(getPosition(), Modifier.PRIVATE.getCode(), compiledHeader, scope);
+		SymbolicFunction<E> functionUnit = new SymbolicFunction<E>(getPosition(), Modifier.PRIVATE.getCode(), null, compiledHeader, scope);
 		EnvironmentFunctionLiteral<E> functionScope = new EnvironmentFunctionLiteral<E>(scope, functionUnit);
 
 		for (int i = 0; i < compiledHeader.getParameters().size(); i++) {
@@ -143,7 +143,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 
 		@Override
-		public ITypeCompiler<E> getTypeCompiler()
+		public TypeRegistry<E> getTypeCompiler()
 		{
 			return outer.getTypeCompiler();
 		}
@@ -188,7 +188,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 		}
 
 		@Override
-		public TypeInstance<E> getReturnType()
+		public IGenericType<E> getReturnType()
 		{
 			return functionUnit.getHeader().getReturnType();
 		}
@@ -236,6 +236,12 @@ public class ParsedExpressionFunction extends ParsedExpression
 		public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
 		{
 			putValue(name, symbol, position);
+		}
+
+		@Override
+		public boolean isConstructor()
+		{
+			return false;
 		}
 	}
 }

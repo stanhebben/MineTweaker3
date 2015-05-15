@@ -9,12 +9,13 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stanneke
+ * @author Stan Hebben
  */
 public class ParsedExpressionAssign extends ParsedExpression
 {
@@ -28,10 +29,14 @@ public class ParsedExpressionAssign extends ParsedExpression
 		this.left = left;
 		this.right = right;
 	}
+	
+	// #######################################
+	// ### ParsedExpression implementation ###
+	// #######################################
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		IPartialExpression<E> cLeft = left.compilePartial(scope, asType);
 

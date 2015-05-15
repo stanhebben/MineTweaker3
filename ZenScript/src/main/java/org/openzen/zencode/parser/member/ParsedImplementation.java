@@ -11,7 +11,7 @@ import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
-import org.openzen.zencode.symbolic.member.ImplementationMember;
+import org.openzen.zencode.symbolic.member.definition.ImplementationMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;

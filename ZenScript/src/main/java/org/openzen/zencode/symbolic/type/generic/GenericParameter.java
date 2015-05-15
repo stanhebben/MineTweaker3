@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.type.generic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.openzen.zencode.parser.elements.IParsedGenericBound;
+import org.openzen.zencode.parser.generic.IParsedGenericBound;
 import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
@@ -27,9 +27,9 @@ public class GenericParameter<E extends IPartialExpression<E>> implements ITypeV
 		if (parameters.isEmpty())
 			return Collections.emptyList();
 		
-		List<GenericParameter<ES>> result = new ArrayList<GenericParameter<ES>>();
+		List<GenericParameter<ES>> result = new ArrayList<>();
 		for (ParsedGenericParameter parameter : parameters) {
-			result.add(new GenericParameter<ES>(parameter, scope));
+			result.add(new GenericParameter<>(parameter, scope));
 		}
 		return result;
 	}
@@ -48,7 +48,7 @@ public class GenericParameter<E extends IPartialExpression<E>> implements ITypeV
 		
 		this.position = source.getPosition();
 		this.name = source.getName();
-		this.bounds = new ArrayList<IGenericParameterBound<E>>();
+		this.bounds = new ArrayList<>();
 	}
 	
 	public GenericParameter(CodePosition position, String name, List<IGenericParameterBound<E>> bounds)
@@ -73,7 +73,7 @@ public class GenericParameter<E extends IPartialExpression<E>> implements ITypeV
 			return;
 		
 		for (IParsedGenericBound bound : source.getBounds()) {
-			bounds.add(bound.compile(scope));
+			bounds.add(bound.compile(scope, this));
 		}
 	}
 	

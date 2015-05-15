@@ -8,8 +8,9 @@ package org.openzen.zencode.java.iterator;
 import java.util.Iterator;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.openzen.zencode.java.type.IJavaType;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -17,10 +18,10 @@ import org.openzen.zencode.java.util.MethodOutput;
  */
 public class IteratorIterable implements IJavaIterator
 {
-	private final IJavaType iteratorType;
+	private final IGenericType<IJavaExpression> iteratorType;
 	private int iterator;
 
-	public IteratorIterable(IJavaType iteratorType)
+	public IteratorIterable(IGenericType<IJavaExpression> iteratorType)
 	{
 		this.iteratorType = iteratorType;
 	}
@@ -45,8 +46,8 @@ public class IteratorIterable implements IJavaIterator
 
 		output.loadObject(iterator);
 		output.invokeInterface(Iterator.class, "next", Object.class);
-		output.checkCast(iteratorType.toASMType().getInternalName());
-		output.store(iteratorType.toASMType(), locals[0]);
+		output.checkCast(iteratorType);
+		output.store(iteratorType, locals[0]);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class IteratorIterable implements IJavaIterator
 	}
 
 	@Override
-	public IJavaType getType(int i)
+	public IGenericType<IJavaExpression> getType(int i)
 	{
 		return iteratorType;
 	}

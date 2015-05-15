@@ -55,7 +55,7 @@ public class ParsedStatementWhile extends ParsedStatement
 	public <E extends IPartialExpression<E>>
 		 Statement<E> compile(IMethodScope<E> scope)
 	{
-		E cCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
+		E cCondition = condition.compile(scope, scope.getTypeCompiler().bool);
 		StatementWhile<E> result = new StatementWhile<E>(getPosition(), scope, cCondition);
 		StatementBlockScope<E> blockScope = new StatementBlockScope<E>(scope, result, label);
 		result.setContents(contents.compile(blockScope));

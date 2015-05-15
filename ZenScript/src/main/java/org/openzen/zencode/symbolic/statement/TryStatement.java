@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.statement.graph.ExpressionFlowInstruction;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.VarFlowInstruction;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -105,10 +105,10 @@ public class TryStatement<E extends IPartialExpression<E>> extends Statement<E>
 	
 	public static class CatchClause<E extends IPartialExpression<E>>
 	{
-		private final List<TypeInstance<E>> types;
+		private final List<IGenericType<E>> types;
 		private final Statement<E> contents;
 		
-		public CatchClause(List<TypeInstance<E>> types, Statement<E> contents)
+		public CatchClause(List<IGenericType<E>> types, Statement<E> contents)
 		{
 			this.types = types;
 			this.contents = contents;

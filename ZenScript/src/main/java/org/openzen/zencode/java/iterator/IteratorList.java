@@ -9,22 +9,21 @@ import java.util.Iterator;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.IJavaType;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
  * @author Stan
  */
-public class IteratorList
-	implements IJavaIterator
+public class IteratorList implements IJavaIterator
 {
-	private final IMethodScope<IJavaExpression, IJavaType> scope;
-	private final IJavaType iteratorType;
+	private final IMethodScope<IJavaExpression> scope;
+	private final IGenericType<IJavaExpression> iteratorType;
 	private int iterator;
 
-	public IteratorList(IJavaType iteratorType, IMethodScope<IJavaExpression, IJavaType> scope)
+	public IteratorList(IGenericType<IJavaExpression> iteratorType, IMethodScope<IJavaExpression> scope)
 	{
 		this.scope = scope;
 		this.iteratorType = iteratorType;
@@ -52,7 +51,7 @@ public class IteratorList
 
 		output.dup();
 		output.invokeInterface(Iterator.class, "next", Object.class);
-		output.store(iteratorType.toASMType(), locals[1]);
+		output.store(iteratorType, locals[1]);
 	}
 
 	@Override
@@ -69,8 +68,8 @@ public class IteratorList
 	}
 
 	@Override
-	public IJavaType getType(int i)
+	public IGenericType<IJavaExpression> getType(int i)
 	{
-		return i == 0 ? iteratorType.getScope().getTypeCompiler().getInt(scope) : iteratorType;
+		return i == 0 ? scope.getTypeCompiler().int_ : iteratorType;
 	}
 }

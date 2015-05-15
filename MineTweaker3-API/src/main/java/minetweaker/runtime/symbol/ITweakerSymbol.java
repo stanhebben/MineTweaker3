@@ -5,10 +5,10 @@
  */
 package minetweaker.runtime.symbol;
 
-import minetweaker.runtime.TweakerGlobalScope;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 
 /**
  * ZenCode symbols need a scope in order to exist. However, global symbols have
@@ -20,7 +20,7 @@ import org.openzen.zencode.runtime.IAny;
  */
 public interface ITweakerSymbol
 {
-	public IZenSymbol<IJavaExpression> convert(TweakerGlobalScope scope);
+	public IZenSymbol<IJavaExpression> convert(IModuleScope<IJavaExpression> scope);
 
 	public IAny eval();
 }

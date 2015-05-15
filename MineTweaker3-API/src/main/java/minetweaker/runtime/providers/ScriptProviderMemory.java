@@ -52,7 +52,10 @@ public class ScriptProviderMemory implements IScriptProvider
 
 					while (script.next()) {
 						String name = script.getName();
-						byte[] data = FileUtil.read(script.open());
+						InputStream input = script.open();
+						byte[] data = FileUtil.read(input);
+						input.close();
+						
 						if (data.length == 0)
 							continue; // skip empty files
 

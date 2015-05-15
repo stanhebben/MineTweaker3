@@ -5,10 +5,10 @@
  */
 package org.openzen.zencode.parser.type;
 
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -30,7 +30,8 @@ public enum ParsedTypeBasic implements IParsedType
 	FLOAT("float"),
 	DOUBLE("double"),
 	CHAR("char"),
-	STRING("string");
+	STRING("string"),
+	RANGE("range");
 	
 	private final String name;
 	
@@ -41,41 +42,43 @@ public enum ParsedTypeBasic implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 TypeInstance<E> compile(IModuleScope<E> scope)
+		 IGenericType<E> compile(IModuleScope<E> scope)
 	{
-		ITypeCompiler<E> types = scope.getTypeCompiler();
+		TypeRegistry<E> types = scope.getTypeCompiler();
 		
 		switch (this) {
 			case ANY:
-				return types.getAny(scope);
+				return types.any;
 			case VOID:
-				return types.getVoid(scope);
+				return types.void_;
 			case BOOL:
-				return types.getBool(scope);
+				return types.bool;
 			case BYTE:
-				return types.getByte(scope);
+				return types.byte_;
 			case UBYTE:
-				return types.getUByte(scope);
+				return types.ubyte;
 			case SHORT:
-				return types.getShort(scope);
+				return types.short_;
 			case USHORT:
-				return types.getUShort(scope);
+				return types.ushort;
 			case INT:
-				return types.getInt(scope);
+				return types.int_;
 			case UINT:
-				return types.getUInt(scope);
+				return types.uint;
 			case LONG:
-				return types.getLong(scope);
+				return types.long_;
 			case ULONG:
-				return types.getULong(scope);
+				return types.ulong;
 			case FLOAT:
-				return types.getFloat(scope);
+				return types.float_;
 			case DOUBLE:
-				return types.getDouble(scope);
+				return types.double_;
 			case CHAR:
-				return types.getChar(scope);
+				return types.char_;
 			case STRING:
-				return types.getString(scope);
+				return types.string;
+			case RANGE:
+				return types.range;
 			default:
 				throw new AssertionError("Missing enum value: " + this);
 		}

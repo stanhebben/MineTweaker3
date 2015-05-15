@@ -20,7 +20,7 @@ import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stan
+ * @author Stan Hebben
  */
 public class ParsedExpansion implements IParsedDefinition
 {
@@ -43,6 +43,21 @@ public class ParsedExpansion implements IParsedDefinition
 		this.members = members;
 	}
 
+	public IParsedType getTargetType()
+	{
+		return type;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+	
+	// ########################################
+	// ### IParsedDefinition implementation ###
+	// ########################################
+
+	@Override
 	public CodePosition getPosition()
 	{
 		return position;
@@ -58,16 +73,6 @@ public class ParsedExpansion implements IParsedDefinition
 	public List<IParsedModifier> getModifiers()
 	{
 		return modifiers;
-	}
-
-	public IParsedType getType()
-	{
-		return type;
-	}
-
-	public List<IParsedMember> getMembers()
-	{
-		return members;
 	}
 
 	@Override

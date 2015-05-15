@@ -49,6 +49,26 @@ public class ParsedInterface implements IParsedDefinition
 		this.members = members;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<IParsedType> getExtendsTypes()
+	{
+		return extendsTypes;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+	
+	// ########################################
+	// ### IParsedDefinition implementation ###
+	// ########################################
+
+	@Override
 	public CodePosition getPosition()
 	{
 		return position;
@@ -66,25 +86,10 @@ public class ParsedInterface implements IParsedDefinition
 		return modifiers;
 	}
 
-	public String getName()
-	{
-		return name;
-	}
-
 	@Override
 	public List<ParsedGenericParameter> getGenericParameters()
 	{
 		return genericParameters;
-	}
-
-	public List<IParsedType> getExtendsTypes()
-	{
-		return extendsTypes;
-	}
-
-	public List<IParsedMember> getMembers()
-	{
-		return members;
 	}
 
 	@Override

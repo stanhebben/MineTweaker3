@@ -14,15 +14,15 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -79,7 +79,7 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	}
 
 	@Override
-	public ITypeCompiler<E> getTypeCompiler()
+	public TypeRegistry<E> getTypeCompiler()
 	{
 		return outer.getTypeCompiler();
 	}
@@ -132,7 +132,7 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	}
 
 	@Override
-	public TypeInstance<E> getReturnType()
+	public IGenericType<E> getReturnType()
 	{
 		return outer.getReturnType();
 	}
@@ -180,5 +180,11 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
 	{
 		putValue(name, symbol, position);
+	}
+
+	@Override
+	public boolean isConstructor()
+	{
+		return outer.isConstructor();
 	}
 }

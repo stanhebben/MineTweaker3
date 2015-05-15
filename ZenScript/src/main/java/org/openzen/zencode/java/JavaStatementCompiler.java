@@ -6,10 +6,8 @@
 package org.openzen.zencode.java;
 
 import org.objectweb.asm.Label;
-import org.objectweb.asm.Type;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.iterator.IJavaIterator;
-import org.openzen.zencode.java.type.JavaTypeCompiler;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.symbolic.statement.IStatementProcessor;
 import org.openzen.zencode.symbolic.statement.ImportStatement;
@@ -29,7 +27,7 @@ import org.openzen.zencode.symbolic.statement.StatementWhile;
 import org.openzen.zencode.symbolic.statement.SynchronizedStatement;
 import org.openzen.zencode.symbolic.statement.ThrowStatement;
 import org.openzen.zencode.symbolic.statement.TryStatement;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -38,12 +36,10 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
 public class JavaStatementCompiler implements IStatementProcessor<IJavaExpression, Void>
 {
 	private final MethodOutput output;
-	private final JavaTypeCompiler typeCompiler;
 	
-	public JavaStatementCompiler(MethodOutput output, JavaTypeCompiler typeCompiler)
+	public JavaStatementCompiler(MethodOutput output)
 	{
 		this.output = output;
-		this.typeCompiler = typeCompiler;
 	}
 	
 	@Override
@@ -125,7 +121,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 			localVariables[i] = output.getLocal(statement.getVariables().get(i));
 		}
 		
-		IJavaIterator iterator = typeCompiler
+		IJavaIterator iterator = output.getCompileState()
 				.getTypeInfo(statement.getList().getType())
 				.getIterator(statement.getVariables().size());
 		
@@ -151,8 +147,8 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	{
 		output.position(statement.getPosition());
 		
-		TypeInstance<IJavaExpression> expressionType = statement.getCondition().getType();
-		if (expressionType != statement.getScope().getTypeCompiler().getBool(statement.getScope()))
+		IGenericType<IJavaExpression> expressionType = statement.getCondition().getType();
+		if (expressionType != statement.getScope().getTypeCompiler().bool)
 			throw new RuntimeException("condition is not a boolean");
 		
 		Label labelEnd = new Label();
@@ -188,9 +184,8 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 			output.ret();
 		else {
 			statement.getExpression().compile(true, output);
-
-			Type asmReturnType = typeCompiler.getTypeInfo(statement.getExpression().getType()).toASMType();
-			output.returnType(asmReturnType);
+			
+			output.returnType(statement.getExpression().getType());
 		}
 		
 		return null;
@@ -212,7 +207,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 		if (statement.getInitializer() != null) {
 			statement.getInitializer().compile(true, output);
 			output.store(
-					typeCompiler.getTypeInfo(statement.getSymbol().getType()).toASMType(),
+					statement.getSymbol().getType(),
 					output.getLocal(statement.getSymbol()));
 		}
 		

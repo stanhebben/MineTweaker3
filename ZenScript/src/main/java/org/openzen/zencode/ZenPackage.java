@@ -15,6 +15,7 @@ import org.openzen.zencode.symbolic.expression.partial.PartialImportable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
@@ -55,6 +56,11 @@ public class ZenPackage<E extends IPartialExpression<E>> implements IImportable<
 		return result;
 	}
 	
+	public void put(CodePosition position, ICodeErrorLogger<E> errorLogger, String name, IImportable<E> value)
+	{
+		
+	}
+	
 	public Collection<IImportable<E>> getAllDefinitions()
 	{
 		return definitions.values();
@@ -67,7 +73,7 @@ public class ZenPackage<E extends IPartialExpression<E>> implements IImportable<
 	}
 
 	@Override
-	public TypeInstance<E> toType(IModuleScope<E> scope, List<TypeInstance<E>> genericTypes)
+	public IGenericType<E> toType(IModuleScope<E> scope, List<IGenericType<E>> genericTypes)
 	{
 		return null;
 	}

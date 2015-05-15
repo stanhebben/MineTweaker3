@@ -9,7 +9,7 @@ import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
@@ -25,7 +25,7 @@ public interface IModuleScope<E extends IPartialExpression<E>>
 {
 	public IZenCompileEnvironment<E> getEnvironment();
 
-	public ITypeCompiler<E> getTypeCompiler();
+	public TypeRegistry<E> getTypeCompiler();
 
 	public IExpressionCompiler<E> getExpressionCompiler();
 

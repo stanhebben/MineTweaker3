@@ -13,11 +13,12 @@ import org.openzen.zencode.parser.expression.ParsedCallArguments;
 import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.ITypeDefinition;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
 
@@ -77,19 +78,19 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorInvalidNumberOfGenericArguments(CodePosition position, ITypeDefinition<E> type, List<TypeInstance<E>> genericArguments)
+	public void errorInvalidNumberOfGenericArguments(CodePosition position, ITypeDefinition<E> type, List<IGenericType<E>> genericArguments)
 	{
 		error(position, "Invalid number of generic arguments for " + type);
 	}
 
 	@Override
-	public void errorCannotCastImplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType)
+	public void errorCannotCastImplicit(CodePosition position, IGenericType<E> fromType, IGenericType<E> toType)
 	{
 		error(position, "No implicit cast available from " + fromType + " to " + toType);
 	}
 
 	@Override
-	public void errorCannotCastExplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType)
+	public void errorCannotCastExplicit(CodePosition position, IGenericType<E> fromType, IGenericType<E> toType)
 	{
 		error(position, "Cannot cast " + fromType + " to " + toType);
 	}
@@ -119,7 +120,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorCannotCastArrayTo(CodePosition position, TypeInstance<E> toType)
+	public void errorCannotCastArrayTo(CodePosition position, IGenericType<E> toType)
 	{
 		error(position, "Cannot cast array to " + toType);
 	}
@@ -137,7 +138,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorCannotCastMapTo(CodePosition position, TypeInstance<E> toType)
+	public void errorCannotCastMapTo(CodePosition position, IGenericType<E> toType)
 	{
 		error(position, "Cannot cast map to " + toType);
 	}
@@ -173,7 +174,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorNoMatchingMethod(CodePosition position, List<IMethod<E>> methods, ParsedCallArguments arguments)
+	public void errorNoMatchingMethod(CodePosition position, List<ICallable<E>> methods, ParsedCallArguments arguments)
 	{
 		// TODO: assemble a more useful error message, since this causes common confusion
 		
@@ -190,7 +191,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorCannotCombineTypes(CodePosition position, TypeInstance<E> type1, TypeInstance<E> type2)
+	public void errorCannotCombineTypes(CodePosition position, IGenericType<E> type1, IGenericType<E> type2)
 	{
 		error(position, "Cannot combine " + type1 + " with " + type2);
 	}
@@ -232,7 +233,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorNoSuchIterator(CodePosition position, TypeInstance<E> type, int numVariables)
+	public void errorNoSuchIterator(CodePosition position, IGenericType<E> type, int numVariables)
 	{
 		error(position, type + " has no iterator for " + numVariables + " variables");
 	}
@@ -274,7 +275,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorCannotBeNullable(CodePosition position, TypeInstance<E> type)
+	public void errorCannotBeNullable(CodePosition position, IGenericType<E> type)
 	{
 		error(position, "Cannot be nullable: " + type);
 	}
@@ -292,7 +293,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E> header, TypeInstance<E>... expectedTypes)
+	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E> header, IGenericType<E>... expectedTypes)
 	{
 		StringBuilder errorBuilder = new StringBuilder();
 		errorBuilder.append("Illegal parameters for ");
@@ -383,7 +384,7 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public void errorNoConstructorsForType(CodePosition position, TypeInstance<E> type)
+	public void errorNoConstructorsForType(CodePosition position, IGenericType<E> type)
 	{
 		error(position, "This type has no constructors");
 	}
@@ -398,5 +399,59 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	public void errorNamedWildcardImport(CodePosition position, List<String> importName)
 	{
 		error(position, "Cannot rename a wildcard import");
+	}
+	
+	@Override
+	public void errorNoGetterForMember(CodePosition position, String name)
+	{
+		error(position, "Member " + name + " has no getter");
+	}
+
+	@Override
+	public void errorNoSetterForMember(CodePosition position, String name)
+	{
+		error(position, "Member " + name + " has no setter");
+	}
+
+	@Override
+	public void errorNoSuchOperator(CodePosition position, IGenericType<E> type, OperatorType operator)
+	{
+		error(position, "No such operator: " + operator.getOperatorString());
+	}
+
+	@Override
+	public void errorAmbiguousMethodCall(CodePosition position)
+	{
+		error(position, "Ambiguous method call");
+	}
+
+	@Override
+	public void errorFunctionHasNoMembers(CodePosition position)
+	{
+		error(position, "Functions have no members");
+	}
+
+	@Override
+	public void errorNullHasNoMembers(CodePosition position)
+	{
+		error(position, "Null has no members");
+	}
+
+	@Override
+	public void errorVoidHasNoMembers(CodePosition position)
+	{
+		error(position, "Void has no members");
+	}
+
+	@Override
+	public void errorNotAStaticMember(CodePosition position, IMember<E> member)
+	{
+		error(position, "This member is not static");
+	}
+
+	@Override
+	public void errorValueOutsideRange(CodePosition position, long value)
+	{
+		error(position, "Value outside range: " + value);
 	}
 }

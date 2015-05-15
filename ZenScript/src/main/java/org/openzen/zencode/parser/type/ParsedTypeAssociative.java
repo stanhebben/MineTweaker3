@@ -7,7 +7,7 @@ package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  * Parsed associative array (valuetype[keytype]). Same as a dictionary or
@@ -26,9 +26,9 @@ public class ParsedTypeAssociative implements IParsedType {
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 TypeInstance<E> compile(IModuleScope<E> scope)
+		 IGenericType<E> compile(IModuleScope<E> scope)
 	{
-		return scope.getTypeCompiler().getMap(scope, keyType.compile(scope), valueType.compile(scope));
+		return scope.getTypeCompiler().getMap(keyType.compile(scope), valueType.compile(scope));
 	}
 	
 	@Override

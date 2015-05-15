@@ -7,6 +7,7 @@ package org.openzen.zencode.symbolic.expression.partial;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
@@ -40,9 +41,9 @@ public abstract class AbstractPartialExpression<E extends IPartialExpression<E>>
 	}
 	
 	@Override
-	public E cast(CodePosition position, TypeInstance<E> type)
+	public E cast(CodePosition position, IGenericType<E> type)
 	{
-		ICastingRule<E> castingRule = getType().getCastingRule(type);
+		ICastingRule<E> castingRule = getType().getCastingRule(scope, type);
 		if (castingRule == null)
 		{
 			getScope().getErrorLogger().errorCannotCastExplicit(position, getType(), type);

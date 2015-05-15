@@ -6,15 +6,24 @@
 package org.openzen.zencode.java.method;
 
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
  * @author Stan
  */
-public interface IJavaMethod extends IMethod<IJavaExpression>
+public interface IJavaMethod
 {
 	public String getDeclaringClass();
 	
 	public String getMethodName();
+	
+	public String getMethodSignature();
+	
+	public int getZCModifiers();
+	
+	public IGenericType<IJavaExpression> getReturnType();
+	
+	public MethodHeader<IJavaExpression> getHeader();
 }

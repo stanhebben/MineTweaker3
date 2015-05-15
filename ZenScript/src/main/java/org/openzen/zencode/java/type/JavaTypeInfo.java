@@ -14,11 +14,13 @@ import org.openzen.zencode.java.iterator.IJavaIterator;
  */
 public class JavaTypeInfo
 {
-	private Type asmType;
+	private final Type asmType;
+	private final IJavaIterator[] iterators;
 	
-	public JavaTypeInfo(Type asmType)
+	public JavaTypeInfo(Type asmType, IJavaIterator[] iterators)
 	{
 		this.asmType = asmType;
+		this.iterators = iterators;
 	}
 	
 	public boolean isLarge()
@@ -33,11 +35,14 @@ public class JavaTypeInfo
 	
 	public String getSignature()
 	{
-		
+		return asmType.getDescriptor();
 	}
 	
 	public IJavaIterator getIterator(int variables)
 	{
-		
+		if (variables < iterators.length)
+			return iterators[variables];
+		else
+			return null;
 	}
 }

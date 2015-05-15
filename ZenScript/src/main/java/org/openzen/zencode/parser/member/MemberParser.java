@@ -13,7 +13,7 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.ParsedAnnotation;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.modifier.ModifierParser;
@@ -59,6 +59,10 @@ public class MemberParser
 					return compileCaster(lexer, annotations, modifiers);
 				case T_THIS:
 					return compileConstructor(lexer, annotations, modifiers);
+				case T_GET:
+					return compileGetter(lexer, annotations, modifiers);
+				case T_SET:
+					return compileSetter(lexer, annotations, modifiers);
 				case T_STRUCT:
 				case T_CLASS:
 				case T_INTERFACE:
@@ -99,8 +103,8 @@ public class MemberParser
 					lexer.required(T_SET, "get or set expected");
 					type = ParsedAccessor.Type.SET;
 				}
-				ParsedStatement contents = ParsedStatement.parse(lexer);
-				accessors.add(new ParsedAccessor(position, type, accessorAnnotations, accessorModifiers, contents));
+				lexer.required(T_SEMICOLON, "; expected");
+				accessors.add(new ParsedAccessor(position, type, accessorAnnotations, accessorModifiers));
 			}
 		} else {
 			lexer.required(T_SEMICOLON, "; expected");
@@ -178,7 +182,7 @@ public class MemberParser
 				{
 					signature = ParsedFunctionSignature.parse(lexer);
 					ParsedStatement content = ParsedStatement.parse(lexer);
-					return new ParsedAnyCaller(position, annotations, modifiers, signature, content);
+					return new ParsedOperator(position, annotations, modifiers, signature, content, OperatorType.MEMBERCALLER);
 				}
 				else
 				{
@@ -286,6 +290,38 @@ public class MemberParser
 		ParsedFunctionSignature signature = ParsedFunctionSignature.parse(lexer);
 		ParsedStatement content = ParsedStatement.parse(lexer);
 		return new ParsedConstructor(position, annotations, modifiers, signature, content);
+	}
+	
+	private static IParsedMember compileGetter(
+			ZenLexer lexer,
+			List<ParsedAnnotation> annotations,
+			List<IParsedModifier> modifiers)
+	{
+		CodePosition position = lexer.next().getPosition();
+		String name = lexer.requiredIdentifier();
+		
+		IParsedType asType = null;
+		if (lexer.optional(T_AS) != null)
+			asType = TypeParser.parse(lexer);
+		
+		ParsedStatement content = ParsedStatement.parse(lexer);
+		return new ParsedGetter(position, annotations, modifiers, name, asType, content);
+	}
+	
+	private static IParsedMember compileSetter(
+			ZenLexer lexer, 
+			List<ParsedAnnotation> annotations,
+			List<IParsedModifier> modifiers)
+	{
+		CodePosition position = lexer.next().getPosition();
+		String name = lexer.requiredIdentifier();
+		ParsedStatement content = ParsedStatement.parse(lexer);
+		
+		IParsedType asType = null;
+		if (lexer.optional(T_AS) != null)
+			asType = TypeParser.parse(lexer);
+		
+		return new ParsedSetter(position, annotations, modifiers, name, asType, content);
 	}
 	
 	private static IParsedMember compileInner(

@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ParsedExpressionBracket extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		IPartialExpression<E> result = scope.getEnvironment().getBracketed(getPosition(), scope, tokens);
 		if (result == null)

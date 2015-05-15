@@ -18,7 +18,7 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -67,7 +67,7 @@ public class ParsedStatementFor extends ParsedStatement
 		 Statement<E> compile(IMethodScope<E> scope)
 	{
 		E compiledSource = source.compile(scope, null);
-		List<TypeInstance<E>> iteratorTypes = compiledSource.getType().getIteratorTypes(names.size());
+		List<IGenericType<E>> iteratorTypes = compiledSource.getType().getForeachTypes(scope, names.size());
 		if (iteratorTypes == null) {
 			scope.getErrorLogger().errorNoSuchIterator(getPosition(), compiledSource.getType(), names.size());
 			return new StatementNull<E>(getPosition(), scope);

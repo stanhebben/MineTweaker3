@@ -35,11 +35,11 @@ public class ReturnFlowInstruction<E extends IPartialExpression<E>> implements I
 	public void validate(IMethodScope<E> scope)
 	{
 		if (value == null) {
-			if (scope.getReturnType() != scope.getTypeCompiler().getVoid(scope)
-					&& scope.getReturnType() != scope.getTypeCompiler().getAny(scope))
+			if (scope.getReturnType() != scope.getTypeCompiler().void_
+					&& scope.getReturnType() != scope.getTypeCompiler().any)
 				scope.getErrorLogger().errorMissingReturnValue(position);
 		} else {
-			if (!value.getType().canCastImplicit(scope.getReturnType()))
+			if (!value.getType().canCastImplicit(scope, scope.getReturnType()))
 				scope.getErrorLogger().errorCannotCastImplicit(position, value.getType(), scope.getReturnType());
 		}
 	}

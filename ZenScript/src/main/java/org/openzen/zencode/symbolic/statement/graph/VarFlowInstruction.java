@@ -37,7 +37,7 @@ public class VarFlowInstruction<E extends IPartialExpression<E>> implements IFlo
 		if (initializer != null) {
 			initializer.validate();
 			
-			if (!initializer.getType().canCastImplicit(symbol.getType()))
+			if (!initializer.getType().canCastImplicit(scope, symbol.getType()))
 				scope.getErrorLogger().errorCannotCastImplicit(initializer.getPosition(), initializer.getType(), symbol.getType());
 		}
 	}

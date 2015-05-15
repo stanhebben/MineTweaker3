@@ -15,14 +15,14 @@ import org.objectweb.asm.Opcodes;
 import static org.objectweb.asm.Opcodes.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
+import org.openzen.zencode.java.JavaCompileState;
 import org.openzen.zencode.java.expression.IJavaExpression;
-import org.openzen.zencode.java.type.JavaTypeCompiler;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.util.CodePosition;
 import static org.openzen.zencode.java.type.JavaTypeUtil.internal;
 import static org.openzen.zencode.java.type.JavaTypeUtil.signature;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -30,7 +30,7 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
  */
 public class MethodOutput
 {
-	private final JavaTypeCompiler typeCompiler;
+	private final JavaCompileState compileState;
 	private final LocalVariablesSorter visitor;
 	private final HashMap<LocalSymbol<IJavaExpression>, Integer> locals;
 	private final HashMap<Statement<IJavaExpression>, ControlLabels> controlLabels;
@@ -39,21 +39,26 @@ public class MethodOutput
 	private int labelIndex = 1;
 	private Map<Label, String> labelNames;
 
-	public MethodOutput(JavaTypeCompiler typeCompiler, ClassVisitor cls, int access, String name, String descriptor, String signature, String[] exceptions)
+	public MethodOutput(JavaCompileState compileState, ClassVisitor cls, int access, String name, String descriptor, String signature, String[] exceptions)
 	{
-		this.typeCompiler = typeCompiler;
+		this.compileState = compileState;
 		MethodVisitor methodVisitor = cls.visitMethod(access, name, descriptor, signature, exceptions);
 		visitor = new LocalVariablesSorter(access, descriptor, methodVisitor);
 		this.locals = new HashMap<LocalSymbol<IJavaExpression>, Integer>();
 		controlLabels = new HashMap<Statement<IJavaExpression>, ControlLabels>();
 	}
 
-	public MethodOutput(JavaTypeCompiler typeCompiler, LocalVariablesSorter visitor)
+	public MethodOutput(JavaCompileState compileState, LocalVariablesSorter visitor)
 	{
-		this.typeCompiler = typeCompiler;
+		this.compileState = compileState;
 		this.visitor = visitor;
 		this.locals = new HashMap<LocalSymbol<IJavaExpression>, Integer>();
 		this.controlLabels = new HashMap<Statement<IJavaExpression>, ControlLabels>();
+	}
+	
+	public JavaCompileState getCompileState()
+	{
+		return compileState;
 	}
 
 	public void enableDebug()
@@ -74,7 +79,7 @@ public class MethodOutput
 	public int getLocal(LocalSymbol<IJavaExpression> variable)
 	{
 		if (!locals.containsKey(variable))
-			locals.put(variable, local(typeCompiler.getTypeInfo(variable.getType()).toASMType()));
+			locals.put(variable, local(compileState.getTypeInfo(variable.getType()).toASMType()));
 
 		return locals.get(variable);
 	}
@@ -170,12 +175,12 @@ public class MethodOutput
 		visitor.visitInsn(POP);
 	}
 
-	public void pop(TypeInstance<IJavaExpression> type)
+	public void pop(IGenericType<IJavaExpression> type)
 	{
 		if (debug)
 			System.out.println("pop");
 
-		visitor.visitInsn(typeCompiler.getTypeInfo(type).isLarge() ? POP2 : POP);
+		visitor.visitInsn(compileState.getTypeInfo(type).isLarge() ? POP2 : POP);
 	}
 
 	public void dup()
@@ -194,9 +199,9 @@ public class MethodOutput
 		visitor.visitInsn(large ? DUP2 : DUP);
 	}
 	
-	public void dup(TypeInstance<IJavaExpression> type)
+	public void dup(IGenericType<IJavaExpression> type)
 	{
-		dup(typeCompiler.getTypeInfo(type).isLarge());
+		dup(compileState.getTypeInfo(type).isLarge());
 	}
 
 	public void dup2()
@@ -223,9 +228,9 @@ public class MethodOutput
 			dup2X1();
 	}
 	
-	public void dupX1(TypeInstance<IJavaExpression> type)
+	public void dupX1(IGenericType<IJavaExpression> type)
 	{
-		dupX1(typeCompiler.getTypeInfo(type).isLarge());
+		dupX1(compileState.getTypeInfo(type).isLarge());
 	}
 
 	public void dupX2()
@@ -260,9 +265,9 @@ public class MethodOutput
 		visitor.visitVarInsn(type.getOpcode(ISTORE), local);
 	}
 	
-	public void store(TypeInstance<IJavaExpression> type, int local)
+	public void store(IGenericType<IJavaExpression> type, int local)
 	{
-		store(typeCompiler.getTypeInfo(type).toASMType(), local);
+		store(compileState.getTypeInfo(type).toASMType(), local);
 	}
 
 	public void load(Type type, int local)
@@ -273,9 +278,9 @@ public class MethodOutput
 		visitor.visitVarInsn(type.getOpcode(ILOAD), local);
 	}
 	
-	public void load(TypeInstance<IJavaExpression> type, int local)
+	public void load(IGenericType<IJavaExpression> type, int local)
 	{
-		load(typeCompiler.getTypeInfo(type).toASMType(), local);
+		load(compileState.getTypeInfo(type).toASMType(), local);
 	}
 
 	public void storeInt(int local)
@@ -397,6 +402,16 @@ public class MethodOutput
 			System.out.println("checkCast " + newClass);
 
 		visitor.visitTypeInsn(CHECKCAST, newClass);
+	}
+	
+	public void checkCast(IGenericType<IJavaExpression> type)
+	{
+		Type asmType = compileState.getTypeInfo(type).toASMType();
+		
+		if (debug)
+			System.out.println("checkCast " + asmType.getDescriptor());
+		
+		visitor.visitTypeInsn(CHECKCAST, asmType.getDescriptor());
 	}
 
 	public void iNeg()
@@ -1170,6 +1185,11 @@ public class MethodOutput
 
 		visitor.visitInsn(type.getOpcode(IRETURN));
 	}
+	
+	public void returnType(IGenericType<IJavaExpression> type)
+	{
+		returnType(compileState.getTypeInfo(type).toASMType());
+	}
 
 	public void returnInt()
 	{
@@ -1211,9 +1231,9 @@ public class MethodOutput
 		visitor.visitFieldInsn(PUTFIELD, owner, name, descriptor);
 	}
 	
-	public void putField(String owner, String name, TypeInstance<IJavaExpression> type)
+	public void putField(String owner, String name, IGenericType<IJavaExpression> type)
 	{
-		putField(owner, name, typeCompiler.getTypeInfo(type).getSignature());
+		putField(owner, name, compileState.getTypeInfo(type).getSignature());
 	}
 
 	public void putField(Class<?> owner, String name, Class<?> descriptor)
@@ -1248,9 +1268,9 @@ public class MethodOutput
 		visitor.visitFieldInsn(GETSTATIC, owner, name, descriptor);
 	}
 	
-	public void getStaticField(String owner, String name, TypeInstance<IJavaExpression> type)
+	public void getStaticField(String owner, String name, IGenericType<IJavaExpression> type)
 	{
-		getStaticField(owner, name, typeCompiler.getTypeInfo(type).getSignature());
+		getStaticField(owner, name, compileState.getTypeInfo(type).getSignature());
 	}
 
 	public void getStaticField(Field field)
@@ -1269,9 +1289,9 @@ public class MethodOutput
 		visitor.visitFieldInsn(PUTSTATIC, owner, name, descriptor);
 	}
 	
-	public void putStaticField(String owner, String name, TypeInstance<IJavaExpression> type)
+	public void putStaticField(String owner, String name, IGenericType<IJavaExpression> type)
 	{
-		putStaticField(owner, name, typeCompiler.getTypeInfo(type).getSignature());
+		putStaticField(owner, name, compileState.getTypeInfo(type).getSignature());
 	}
 
 	public void putStaticField(Field field)

@@ -6,12 +6,12 @@
 
 package org.openzen.zencode.parser.generic;
 
-import org.openzen.zencode.parser.elements.IParsedGenericBound;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.type.generic.ConstructorGenericParameterBound;
 import org.openzen.zencode.symbolic.type.generic.IGenericParameterBound;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
  *
@@ -25,8 +25,8 @@ public class ParsedGenericBoundConstructor implements IParsedGenericBound {
 	}
 
 	@Override
-	public <E extends IPartialExpression<E>> IGenericParameterBound<E> compile(IModuleScope<E> scope)
+	public <E extends IPartialExpression<E>> IGenericParameterBound<E> compile(IModuleScope<E> scope, ITypeVariable<E> typeVariable)
 	{
-		return new ConstructorGenericParameterBound<E>(signature.compile(scope));
+		return new ConstructorGenericParameterBound<>(typeVariable, signature.compile(scope));
 	}
 }

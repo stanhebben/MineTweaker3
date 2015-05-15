@@ -18,13 +18,13 @@ import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.parser.statement.ParsedStatement;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
 import static org.openzen.zencode.util.Strings.unescape;
@@ -491,10 +491,10 @@ public abstract class ParsedExpression
 	}
 
 	public abstract <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType);
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, IGenericType<E> predictedType);
 
 	public final <E extends IPartialExpression<E>>
-		 E compile(IMethodScope<E> environment, TypeInstance<E> predictedType)
+		 E compile(IMethodScope<E> environment, IGenericType<E> predictedType)
 	{
 		return compilePartial(environment, predictedType).eval();
 	}
@@ -505,7 +505,7 @@ public abstract class ParsedExpression
 	}
 
 	public <E extends IPartialExpression<E>>
-		 E compileKey(IMethodScope<E> environment, TypeInstance<E> asType)
+		 E compileKey(IMethodScope<E> environment, IGenericType<E> asType)
 	{
 		return compile(environment, asType);
 	}

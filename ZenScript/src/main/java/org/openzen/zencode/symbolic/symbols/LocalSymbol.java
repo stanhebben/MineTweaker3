@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialLocal;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -19,16 +19,16 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class LocalSymbol<E extends IPartialExpression<E>> implements IZenSymbol<E>
 {
-	private final TypeInstance<E> type;
+	private final IGenericType<E> type;
 	private final boolean isFinal;
 
-	public LocalSymbol(TypeInstance<E> type, boolean isFinal)
+	public LocalSymbol(IGenericType<E> type, boolean isFinal)
 	{
 		this.type = type;
 		this.isFinal = isFinal;
 	}
 
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return type;
 	}

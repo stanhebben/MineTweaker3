@@ -13,11 +13,12 @@ import org.openzen.zencode.parser.expression.ParsedCallArguments;
 import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.ITypeDefinition;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -45,17 +46,17 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	
 	public void errorNoLabeledControlStatement(CodePosition position, String label);
 	
-	public void errorInvalidNumberOfGenericArguments(CodePosition position, ITypeDefinition<E> type, List<TypeInstance<E>> genericArguments);
+	public void errorInvalidNumberOfGenericArguments(CodePosition position, ITypeDefinition<E> type, List<IGenericType<E>> genericArguments);
 	
 	public void errorInvalidNumberOfArguments(CodePosition position);
 	
-	public void errorCannotCastImplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType);
+	public void errorCannotCastImplicit(CodePosition position, IGenericType<E> fromType, IGenericType<E> toType);
 	
-	public void errorCannotCastExplicit(CodePosition position, TypeInstance<E> fromType, TypeInstance<E> toType);
+	public void errorCannotCastExplicit(CodePosition position, IGenericType<E> fromType, IGenericType<E> toType);
 	
-	public void errorCannotCastArrayTo(CodePosition position, TypeInstance<E> toType);
+	public void errorCannotCastArrayTo(CodePosition position, IGenericType<E> toType);
 	
-	public void errorCannotCastMapTo(CodePosition position, TypeInstance<E> toType);
+	public void errorCannotCastMapTo(CodePosition position, IGenericType<E> toType);
 	
 	public void errorCannotAssignTo(CodePosition position, IPartialExpression<E> target);
 	
@@ -75,11 +76,11 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	
 	public void errorNotAValidMethod(CodePosition position);
 	
-	public void errorNoMatchingMethod(CodePosition position, List<IMethod<E>> methods, ParsedCallArguments arguments);
+	public void errorNoMatchingMethod(CodePosition position, List<ICallable<E>> methods, ParsedCallArguments arguments);
 	
 	public void errorNoSuchDollarVariable(CodePosition position, String name);
 	
-	public void errorCannotCombineTypes(CodePosition position, TypeInstance<E> type1, TypeInstance<E> type2);
+	public void errorCannotCombineTypes(CodePosition position, IGenericType<E> type1, IGenericType<E> type2);
 	
 	public void errorCannotConvertToChar(CodePosition position, String value);
 	
@@ -95,7 +96,9 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	
 	public void errorDuplicateDefault(CodePosition position);
 	
-	public void errorNoSuchIterator(CodePosition position, TypeInstance<E> type, int numVariables);
+	public void errorNoSuchIterator(CodePosition position, IGenericType<E> type, int numVariables);
+	
+	public void errorNoSuchOperator(CodePosition position, IGenericType<E> type, OperatorType operator);
 	
 	public void errorCouldNotResolvePackage(CodePosition position, String packageName);
 	
@@ -103,13 +106,13 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	
 	public void errorInvalidSwitchValueType(CodePosition position, E value);
 	
-	public void errorCannotBeNullable(CodePosition position, TypeInstance<E> type);
+	public void errorCannotBeNullable(CodePosition position, IGenericType<E> type);
 	
 	public void errorInvalidExpression(CodePosition position, IPartialExpression<E> expression);
 	
 	public void errorCannotCall(CodePosition position, IPartialExpression<E> expression);
 	
-	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E> header, TypeInstance<E>... expectedTypes);
+	public void errorInvalidOperatorArguments(CodePosition position, OperatorType operator, MethodHeader<E> header, IGenericType<E>... expectedTypes);
 	
 	public void errorConstructorHasReturnType(CodePosition position);
 	
@@ -137,9 +140,25 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	
 	public void errorMultipleSuperclasses(CodePosition position, String className);
 	
-	public void errorNoConstructorsForType(CodePosition position, TypeInstance<E> type);
+	public void errorNoConstructorsForType(CodePosition position, IGenericType<E> type);
 	
 	public void errorNoSuchMember(CodePosition position, IImportable<E> importable, String name);
 	
 	public void errorNamedWildcardImport(CodePosition position, List<String> importName);
+	
+	public void errorNoGetterForMember(CodePosition position, String name);
+	
+	public void errorNoSetterForMember(CodePosition position, String name);
+
+	public void errorAmbiguousMethodCall(CodePosition position);
+	
+	public void errorFunctionHasNoMembers(CodePosition position);
+	
+	public void errorNullHasNoMembers(CodePosition position);
+	
+	public void errorVoidHasNoMembers(CodePosition position);
+	
+	public void errorNotAStaticMember(CodePosition position, IMember<E> member);
+	
+	public void errorValueOutsideRange(CodePosition position, long value);
 }

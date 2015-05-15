@@ -7,9 +7,10 @@ package org.openzen.zencode.symbolic.type.generic;
 
 import org.openzen.zencode.parser.generic.ParsedGenericBoundExtends;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
+import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -19,16 +20,28 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
 public class ExtendsGenericParameterBound<E extends IPartialExpression<E>>
 	implements IGenericParameterBound<E>
 {
-	private TypeInstance<E> type;
+	private IGenericType<E> type;
 	
 	public ExtendsGenericParameterBound(ParsedGenericBoundExtends source, IModuleScope<E> scope)
 	{
 		type = source.getType().compile(scope);
 	}
 	
-	public ExtendsGenericParameterBound(TypeInstance<E> type)
+	public ExtendsGenericParameterBound(IGenericType<E> type)
 	{
 		this.type = type;
+	}
+
+	@Override
+	public IMember<E> getMember()
+	{
+		return null;
+	}
+
+	@Override
+	public IGenericType<E> getBound()
+	{
+		return type;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ package org.openzen.zencode.symbolic.method;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
@@ -20,6 +21,7 @@ import org.openzen.zencode.util.CodePosition;
 public interface IMethod<E extends IPartialExpression<E>>
 {
 	public E callStatic(CodePosition position, IMethodScope<E> scope, List<E> arguments);
+	
 	
 	public E callStaticWithConstants(CodePosition position, IMethodScope<E> scope, Object... constantArguments);
 	
@@ -43,7 +45,7 @@ public interface IMethod<E extends IPartialExpression<E>>
 	
 	public MethodHeader<E> getMethodHeader();
 	
-	public TypeInstance<E> getReturnType();
+	public IGenericType<E> getReturnType();
 	
 	public void validateCall(CodePosition position, IMethodScope<E> scope, List<E> arguments);
 }

@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,11 +34,11 @@ public class ParsedExpressionNew extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
-		TypeInstance<E> cType = type.compile(scope);
-		MatchedArguments<E> compiledArguments = callArguments.compile(cType.getConstructors(), scope);
-		return scope.getExpressionCompiler().constructNew(getPosition(), scope, cType, compiledArguments.method, compiledArguments.arguments);
+		IGenericType<E> cType = type.compile(scope);
+		MatchedArguments<E> compiledArguments = callArguments.compile(cType.getConstructors(scope), scope);
+		return compiledArguments.method.call(getPosition(), scope, compiledArguments.arguments);
 	}
 
 	@Override

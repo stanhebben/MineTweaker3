@@ -12,9 +12,11 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IGetter;
 import org.openzen.zencode.symbolic.member.ISetter;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.method.IVirtualCallable;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -30,7 +32,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E>> extends Abstr
 
 	private IGetter<E> getter;
 	private ISetter<E> setter;
-	private final List<IMethod<E>> methods;
+	private final List<ICallable<E>> methods;
 
 	public PartialVirtualMember(CodePosition position, IMethodScope<E> scope, E target, String name)
 	{
@@ -38,7 +40,7 @@ public class PartialVirtualMember<E extends IPartialExpression<E>> extends Abstr
 
 		this.target = target;
 		this.name = name;
-		this.methods = new ArrayList<IMethod<E>>();
+		this.methods = new ArrayList<ICallable<E>>();
 	}
 
 	private PartialVirtualMember(CodePosition position, IMethodScope<E> scope, PartialVirtualMember<E> original)
@@ -70,9 +72,9 @@ public class PartialVirtualMember<E extends IPartialExpression<E>> extends Abstr
 		this.setter = setter;
 	}
 
-	public void addMethod(IMethod<E> method)
+	public void addMethod(IVirtualCallable<E> method)
 	{
-		methods.add(method);
+		methods.add(method.bind(target));
 	}
 
 	public boolean isEmpty()
@@ -113,19 +115,13 @@ public class PartialVirtualMember<E extends IPartialExpression<E>> extends Abstr
 	}
 
 	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
 		return methods;
 	}
 
 	@Override
-	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		return method.callVirtual(position, getScope(), target, arguments);
-	}
-
-	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		if (getter == null)
 			return null;

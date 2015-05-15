@@ -6,13 +6,13 @@
 package org.openzen.zencode.symbolic.method;
 
 import org.openzen.zencode.ICodeErrorLogger;
-import org.openzen.zencode.compiler.ITypeCompiler;
-import org.openzen.zencode.parser.elements.ParsedFunctionParameter;
+import org.openzen.zencode.compiler.TypeRegistry;
+import org.openzen.zencode.parser.definition.ParsedFunctionParameter;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 
@@ -27,11 +27,11 @@ public class MethodParameter<E extends IPartialExpression<E>>
 	
 	private final CodePosition position;
 	private final String name;
-	private final TypeInstance<E> type;
+	private final IGenericType<E> type;
 	private E defaultValue;
 	private LocalSymbol<E> local;
 
-	public MethodParameter(CodePosition position, String name, TypeInstance<E> type, E defaultValue)
+	public MethodParameter(CodePosition position, String name, IGenericType<E> type, E defaultValue)
 	{
 		source = null;
 		
@@ -55,7 +55,7 @@ public class MethodParameter<E extends IPartialExpression<E>>
 		return name;
 	}
 
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return type;
 	}
@@ -89,21 +89,19 @@ public class MethodParameter<E extends IPartialExpression<E>>
 	
 	public void validate(IDefinitionScope<E> scope)
 	{
-		ITypeCompiler<E> types = type.getScope().getTypeCompiler();
-		ICodeErrorLogger<E> errorLogger = type.getScope().getErrorLogger();
+		TypeRegistry<E> types = scope.getTypeCompiler();
+		ICodeErrorLogger<E> errorLogger = scope.getErrorLogger();
 		
-		if (type.equals(types.getVoid(scope)))
+		if (type.equals(types.void_))
 			errorLogger.errorVoidParameter(position, name);
 	}
 	
-	public MethodParameter<E> instance(
-			IDefinitionScope<E> scope,
-			TypeCapture<E> typeCapture)
+	public MethodParameter<E> instance(TypeCapture<E> capture)
 	{
-		TypeInstance<E> instancedType = type.instance(scope, typeCapture);
+		IGenericType<E> instancedType = type.instance(capture);
 		if (instancedType == type)
 			return this;
 		else
-			return new MethodParameter<E>(position, name, type, defaultValue);
+			return new MethodParameter<>(position, name, instancedType, defaultValue);
 	}
 }

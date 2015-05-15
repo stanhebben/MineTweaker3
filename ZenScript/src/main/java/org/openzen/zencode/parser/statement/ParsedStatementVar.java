@@ -17,7 +17,7 @@ import org.openzen.zencode.parser.expression.ParsedExpression;
 import org.openzen.zencode.parser.type.IParsedType;
 import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -65,7 +65,7 @@ public class ParsedStatementVar extends ParsedStatement
 	public <E extends IPartialExpression<E>>
 		 StatementVar<E> compile(IMethodScope<E> scope)
 	{
-		TypeInstance<E> cType = scope.getTypeCompiler().getAny(scope);
+		IGenericType<E> cType = scope.getTypeCompiler().any;
 		E cInitializer = null;
 		if (asType != null)
 			cType = asType.compile(scope);

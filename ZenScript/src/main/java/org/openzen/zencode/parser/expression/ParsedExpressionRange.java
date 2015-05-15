@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyRange;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ParsedExpressionRange extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
 		E compiledFrom = from.compile(scope, null);
 		E compiledTo = to.compile(scope, null);

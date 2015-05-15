@@ -14,6 +14,8 @@ import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
 
 /**
  *
@@ -50,6 +52,14 @@ public class SymbolicStruct<E extends IPartialExpression<E>>
 	public List<IMember<E>> getMembers()
 	{
 		return members;
+	}
+
+	@Override
+	public void register(IModuleScope<E> scope)
+	{
+		scope.putImport(source.getName(),
+				new ImportableSymbol<E>(new TypeDefinition<E>(getTypeVariables(), true, false)),
+				source.getPosition());
 	}
 
 	@Override
@@ -93,5 +103,11 @@ public class SymbolicStruct<E extends IPartialExpression<E>>
 		for (IMember<E> member : members) {
 			member.validate();
 		}
+	}
+	
+	@Override
+	public boolean isStruct()
+	{
+		return true;
 	}
 }

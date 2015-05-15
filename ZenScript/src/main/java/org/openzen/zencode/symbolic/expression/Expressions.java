@@ -5,7 +5,8 @@
  */
 package org.openzen.zencode.symbolic.expression;
 
-import org.openzen.zencode.symbolic.field.IField;
+import java.util.ArrayList;
+import java.util.List;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 
@@ -18,13 +19,12 @@ public class Expressions
 	private Expressions() {}
 	
 	public static <E extends IPartialExpression<E>>
-		 E[] convert(CodePosition position, IMethodScope<E> scope, Object[] constants)
+		 List<E> convert(CodePosition position, IMethodScope<E> scope, Object[] constants)
 	{
-		@SuppressWarnings("unchecked")
-		E[] results = (E[]) new IPartialExpression[constants.length];
+		List<E> results = new ArrayList<E>();
 		
-		for (int i = 0; i < constants.length; i++) {
-			results[i] = convert(position, scope, constants[i]);
+		for (Object constant : constants) {
+			results.add(convert(position, scope, constant));
 		}
 		
 		return results;
@@ -53,13 +53,6 @@ public class Expressions
 			return scope.getExpressionCompiler().constantString(position, scope, (String) constant);
 		} else if (constant instanceof Boolean) {
 			return scope.getExpressionCompiler().constantBool(position, scope, (Boolean) constant);
-		} else if (constant instanceof IField) {
-			@SuppressWarnings("unchecked")
-			IField<E> field = (IField<E>) constant;
-			if (!field.isStatic())
-				throw new IllegalArgumentException("Can only use static fields as constant values");
-
-			return field.makeStaticGetExpression(position, scope);
 		} else {
 			throw new IllegalArgumentException("Unsupported constant type: " + constant.getClass());
 		}

@@ -19,7 +19,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.statement.StatementSwitch;
 import org.openzen.zencode.symbolic.statement.StatementVar;
 import org.openzen.zencode.symbolic.statement.TryStatement;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -144,7 +144,7 @@ public class ParsedTryStatement extends ParsedStatement
 		public <E extends IPartialExpression<E>> TryStatement.CatchClause<E>
 			compile(IMethodScope<E> scope)
 		{
-			List<TypeInstance<E>> compiledTypes = new ArrayList<TypeInstance<E>>();
+			List<IGenericType<E>> compiledTypes = new ArrayList<IGenericType<E>>();
 			for (IParsedType type : types)
 			{
 				compiledTypes.add(type.compile(scope));

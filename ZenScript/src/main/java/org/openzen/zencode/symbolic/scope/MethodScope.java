@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.symbolic.scope;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.ICodeErrorLogger;
@@ -12,15 +13,17 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.symbolic.type.ParameterType;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,16 +37,18 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	private final Map<String, IZenSymbol<E>> local;
 	private final MethodHeader<E> methodHeader;
 	private final TypeCapture<E> typeCapture;
+	private final boolean isConstructor;
 	
-	public MethodScope(IDefinitionScope<E> environment, MethodHeader<E> methodHeader)
+	public MethodScope(IDefinitionScope<E> environment, MethodHeader<E> methodHeader, boolean isConstructor)
 	{
 		this.scope = environment;
-		this.local = new HashMap<String, IZenSymbol<E>>();
+		this.local = new HashMap<>();
 		this.methodHeader = methodHeader;
+		this.isConstructor = isConstructor;
 		
-		typeCapture = new TypeCapture<E>(environment.getTypeCapture());
+		typeCapture = new TypeCapture<>(environment.getTypeCapture());
 		for (GenericParameter<E> parameter : methodHeader.getGenericParameters()) {
-			typeCapture.put(parameter, environment.getTypeCompiler().getGeneric(parameter));
+			typeCapture.put(parameter, new TypeInstance<>(new ParameterType<E>(this, parameter), Collections.emptyList(), false));
 		}
 	}
 	
@@ -60,7 +65,7 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	}
 
 	@Override
-	public ITypeCompiler<E> getTypeCompiler()
+	public TypeRegistry<E> getTypeCompiler()
 	{
 		return scope.getTypeCompiler();
 	}
@@ -108,7 +113,7 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	}
 
 	@Override
-	public TypeInstance<E> getReturnType()
+	public IGenericType<E> getReturnType()
 	{
 		return methodHeader.getReturnType();
 	}
@@ -156,5 +161,11 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
 	{
 		putValue(name, symbol, position);
+	}
+	
+	@Override
+	public boolean isConstructor()
+	{
+		return isConstructor;
 	}
 }

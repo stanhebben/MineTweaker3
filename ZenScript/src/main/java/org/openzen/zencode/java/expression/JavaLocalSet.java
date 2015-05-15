@@ -9,7 +9,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,7 +34,7 @@ public class JavaLocalSet extends AbstractJavaExpression
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
 		return variable.getType();
 	}
@@ -59,7 +59,7 @@ public class JavaLocalSet extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		if (!value.getType().canCastExplicit(variable.getType()))
+		if (!value.getType().canCastExplicit(getScope(), variable.getType()))
 			getScope().getErrorLogger().errorCannotCastExplicit(getPosition(), value.getType(), variable.getType());
 	}
 }

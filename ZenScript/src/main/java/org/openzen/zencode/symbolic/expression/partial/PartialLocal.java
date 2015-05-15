@@ -10,9 +10,9 @@ import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
-import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -50,21 +50,15 @@ public class PartialLocal<E extends IPartialExpression<E>> extends AbstractParti
 	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return variable.getType();
 	}
 
 	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
-		return variable.getType().getInstanceMethods();
-	}
-	
-	@Override
-	public E call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		return method.callVirtual(position, getScope(), eval(), arguments);
+		return variable.getType().getVirtualCallers(getScope(), eval());
 	}
 
 	@Override

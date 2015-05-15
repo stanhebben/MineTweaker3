@@ -8,15 +8,15 @@ package org.openzen.zencode.symbolic.type;
 import java.util.List;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
+import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
-import org.openzen.zencode.symbolic.type.generic.TypeCapture;
-import org.openzen.zencode.symbolic.definition.SymbolicExpansion;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -24,49 +24,47 @@ import org.openzen.zencode.util.CodePosition;
  * @author Stan
  * @param <E>
  */
-public interface ITypeDefinition<E extends IPartialExpression<E>>
+public interface ITypeDefinition<E extends IPartialExpression<E>> extends IImportable<E>
 {
-	public List<ITypeVariable<E>> getGenericParameters();
+	public List<? extends ITypeVariable<E>> getGenericParameters();
 	
-	public List<IMethod<E>> getConstructors(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public List<ICallable<E>> getConstructors(IModuleScope<E> scope, TypeInstance<E> forType);
 	
-	public List<IMethod<E>> getInstanceMethods(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public List<ICallable<E>> getInstanceCallers(IModuleScope<E> scope, E instance, TypeInstance<E> forType);
 	
-	public List<IMethod<E>> getStaticMethods(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public List<ICallable<E>> getStaticCallers(IModuleScope<E> scope, TypeInstance<E> forType);
 	
-	public IPartialExpression<E> getInstanceMember(IModuleScope<E> scope, TypeCapture<E> typeCapture, String name, E instance);
+	public IPartialExpression<E> getInstanceMember(CodePosition position, IMethodScope<E> scope, TypeInstance<E> forType, String name, E instance);
 	
-	public IPartialExpression<E> getStaticMember(IModuleScope<E> scope, TypeCapture<E> typeCapture, String name);
+	public IPartialExpression<E> getStaticMember(CodePosition position, IMethodScope<E> scope, TypeInstance<E> forType, String name);
 	
-	public E getOperator(IModuleScope<E> scope, TypeCapture<E> typeCapture, OperatorType operator, E... operands);
+	public E getOperator(CodePosition position, IMethodScope<E> scope, TypeInstance<E> forType, OperatorType operator, E instance, List<E> operands);
 	
-	public ICastingRule<E> getCastingRule(IModuleScope<E> scope, TypeCapture<E> typeCapture, TypeInstance<E> toType);
+	public ICastingRule<E> getCastingRule(IModuleScope<E> scope, TypeInstance<E> fromType, IGenericType<E> toType);
 	
-	public void addExpansion(SymbolicExpansion<E> expansion);
+	public void addMember(IMember<E> member);
 	
-	public TypeInstance<E> nullable(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public E createDefaultValue(CodePosition position, IMethodScope<E> scope, TypeInstance<E> forType);
 	
-	public TypeInstance<E> nonNull(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public IGenericType<E> getArrayBaseType(TypeInstance<E> forType);
 	
-	public boolean isNullable();
+	public IGenericType<E> getMapKeyType(TypeInstance<E> forType);
 	
-	public E createDefaultValue(CodePosition position, IMethodScope<E> scope);
+	public IGenericType<E> getMapValueType(TypeInstance<E> forType);
 	
-	public TypeInstance<E> getArrayBaseType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public List<IGenericType<E>> predictOperatorArgumentType(TypeInstance<E> forType, OperatorType operator);
 	
-	public TypeInstance<E> getMapKeyType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public E compare(CodePosition position, IMethodScope<E> scope, TypeInstance<E> forType, E left, E right, CompareType comparator);
 	
-	public TypeInstance<E> getMapValueType(IModuleScope<E> scope, TypeCapture<E> typeCapture);
+	public MethodHeader<E> getFunctionHeader(TypeInstance<E> forType);
 	
-	public List<TypeInstance<E>> predictOperatorArgumentType(IModuleScope<E> scope, TypeCapture<E> typeCapture, OperatorType operator);
+	public List<IGenericType<E>> getForeachTypes(IModuleScope<E> scope, TypeInstance<E> forType, int numArguments);
 	
-	public E compare(IMethodScope<E> scope, TypeCapture<E> typeCapture, CodePosition position, E left, E right, CompareType comparator);
-	
-	public MethodHeader<E> getFunctionHeader(IModuleScope<E> scope, TypeCapture<E> typeCapture);
-	
-	public List<TypeInstance<E>> getIteratorTypes(IModuleScope<E> scope, TypeCapture<E> typeCapture, int numArguments);
+	public List<IGenericType<E>> getStructMemberTypes(TypeInstance<E> forType);
 	
 	public boolean isValidSwitchType();
 	
 	public boolean isStruct();
+	
+	public boolean isInterface();
 }

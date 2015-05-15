@@ -7,12 +7,12 @@ package org.openzen.zencode.parser.expression;
 
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyLong;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -32,35 +32,35 @@ public class ParsedExpressionInt extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
 		IExpressionCompiler<E> compiler = scope.getExpressionCompiler();
-		ITypeCompiler<E> types = scope.getTypeCompiler();
+		TypeRegistry<E> types = scope.getTypeCompiler();
 		
 		if (predictedType != null) {
-			if (predictedType.equals(types.getByte(scope)))
+			if (predictedType.equals(types.byte_))
 				return compiler.constantByte(getPosition(), scope, (byte) value);
-			else if (predictedType.equals(types.getUByte(scope)))
+			else if (predictedType.equals(types.ubyte))
 				return compiler.constantUByte(getPosition(), scope, (int) value);
-			else if (predictedType.equals(types.getShort(scope)))
+			else if (predictedType.equals(types.short_))
 				return compiler.constantShort(getPosition(), scope, (short) value);
-			else if (predictedType.equals(types.getUShort(scope)))
+			else if (predictedType.equals(types.ushort))
 				return compiler.constantUShort(getPosition(), scope, (int) value);
-			else if (predictedType.equals(types.getInt(scope)))
+			else if (predictedType.equals(types.int_))
 				return compiler.constantInt(getPosition(), scope, (int) value);
-			else if (predictedType.equals(types.getUInt(scope)))
+			else if (predictedType.equals(types.uint))
 				return compiler.constantUInt(getPosition(), scope, (int) value);
-			else if (predictedType.equals(types.getLong(scope)))
+			else if (predictedType.equals(types.long_))
 				return compiler.constantLong(getPosition(), scope, value);
-			else if (predictedType.equals(types.getULong(scope)))
+			else if (predictedType.equals(types.ulong))
 				return compiler.constantULong(getPosition(), scope, value);
-			else if (predictedType.equals(types.getFloat(scope)))
+			else if (predictedType.equals(types.float_))
 				return compiler.constantFloat(getPosition(), scope, value);
-			else if (predictedType.equals(types.getDouble(scope)))
+			else if (predictedType.equals(types.double_))
 				return compiler.constantDouble(getPosition(), scope, value);
-			else if (predictedType.equals(types.getChar(scope)))
+			else if (predictedType.equals(types.char_))
 				return compiler.constantChar(getPosition(), scope, (int) value);
-			else if (predictedType.equals(types.getString(scope)))
+			else if (predictedType.equals(types.string))
 				return compiler.constantString(getPosition(), scope, Long.toString(value));
 		}
 		

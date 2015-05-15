@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.method.MethodParameter;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.MethodHeader;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.method.InstancedMethodHeader;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -58,9 +59,9 @@ public class ParsedCallArguments
 	}
 
 	public <E extends IPartialExpression<E>>
-		 MatchedArguments<E> compile(List<IMethod<E>> methods, IMethodScope<E> environment)
+		 MatchedArguments<E> compile(List<ICallable<E>> methods, IMethodScope<E> environment)
 	{
-		List<TypeInstance<E>> predictedTypes = predictArgumentTypes(methods);
+		List<IGenericType<E>> predictedTypes = predictArgumentTypes(methods);
 		List<E> compiledArguments = compileArguments(environment, predictedTypes);
 
 		MatchedArguments<E> matchedExactly = matchExactly(methods, environment, compiledArguments);
@@ -71,7 +72,7 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 List<E> compileArguments(IMethodScope<E> environment, List<TypeInstance<E>> predictedTypes)
+		 List<E> compileArguments(IMethodScope<E> environment, List<IGenericType<E>> predictedTypes)
 	{
 		List<E> compiled = new ArrayList<E>();
 		for (int i = 0; i < arguments.size(); i++) {
@@ -82,9 +83,9 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 MatchedArguments<E> matchExactly(List<IMethod<E>> methods, IMethodScope<E> environment, List<E> compiled)
+		 MatchedArguments<E> matchExactly(List<ICallable<E>> methods, IMethodScope<E> environment, List<E> compiled)
 	{
-		for (IMethod<E> method : methods) {
+		for (ICallable<E> method : methods) {
 			List<E> matched = matchArgumentsExactly(method.getMethodHeader(), environment, compiled);
 			if (matched != null)
 				return new MatchedArguments<E>(method, matched);
@@ -94,9 +95,9 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 MatchedArguments<E> matchWithImplicitConversion(List<IMethod<E>> methods, IMethodScope<E> environment, List<E> compiled)
+		 MatchedArguments<E> matchWithImplicitConversion(List<ICallable<E>> methods, IMethodScope<E> environment, List<E> compiled)
 	{
-		for (IMethod<E> method : methods) {
+		for (ICallable<E> method : methods) {
 			List<E> matched = matchArgumentsWithImplicitConversion(method.getMethodHeader(), environment, compiled);
 			if (matched != null)
 				return new MatchedArguments<E>(method, matched);
@@ -125,6 +126,7 @@ public class ParsedCallArguments
 	// #######################
 	// ### Private methods ###
 	// #######################
+	
 	private boolean hasKeyedArguments()
 	{
 		for (ParsedCallArgument argument : arguments) {
@@ -136,13 +138,13 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 List<TypeInstance<E>> predictArgumentTypes(List<IMethod<E>> methods)
+		 List<IGenericType<E>> predictArgumentTypes(List<ICallable<E>> methods)
 	{
-		List<TypeInstance<E>> predictedTypes = new ArrayList<TypeInstance<E>>();
+		List<IGenericType<E>> predictedTypes = new ArrayList<IGenericType<E>>();
 		boolean[] ambiguous = new boolean[arguments.size()];
 
-		for (IMethod<E> method : methods) {
-			MethodHeader<E> header = method.getMethodHeader();
+		for (ICallable<E> method : methods) {
+			InstancedMethodHeader<E> header = method.getMethodHeader();
 
 			if (!header.accepts(arguments.size()))
 				continue;
@@ -157,7 +159,7 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 boolean[] getUsedKeyedArgumentPositions(MethodHeader<E> method)
+		 boolean[] getUsedKeyedArgumentPositions(InstancedMethodHeader<E> method)
 	{
 		boolean[] isUsed = new boolean[method.getParameters().size() - numUnkeyedValues];
 		for (int i = numUnkeyedValues; i < arguments.size(); i++) {
@@ -172,7 +174,7 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 boolean checkUnusedArgumentPositions(MethodHeader<E> method)
+		 boolean checkUnusedArgumentPositions(InstancedMethodHeader<E> method)
 	{
 		// this method assumes that number of arguments has already been checked
 		// then only needs to check for unused keyed argument positions
@@ -188,7 +190,7 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 void predictArgumentTypesForMethod(MethodHeader<E> method, List<TypeInstance<E>> predictedTypes, boolean[] ambiguous)
+		 void predictArgumentTypesForMethod(InstancedMethodHeader<E> method, List<IGenericType<E>> predictedTypes, boolean[] ambiguous)
 	{
 		List<MethodParameter<E>> methodArguments = method.getParameters();
 
@@ -208,7 +210,7 @@ public class ParsedCallArguments
 			if (ambiguous[i])
 				continue;
 
-			TypeInstance<E> argumentType = methodArguments.get(method.getParameterIndex(getArgumentKey(i))).getType();
+			IGenericType<E> argumentType = methodArguments.get(method.getParameterIndex(getArgumentKey(i))).getType();
 
 			if (predictedTypes.get(i) == null)
 				predictedTypes.set(i, argumentType);
@@ -225,13 +227,13 @@ public class ParsedCallArguments
 	}
 
 	private <E extends IPartialExpression<E>>
-		 List<E> matchArgumentsExactly(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
+		 List<E> matchArgumentsExactly(InstancedMethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, true);
 	}
 
 	private <E extends IPartialExpression<E>>
-		 List<E> matchArgumentsWithImplicitConversion(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
+		 List<E> matchArgumentsWithImplicitConversion(InstancedMethodHeader<E> method, IMethodScope<E> environment, List<E> compiled)
 	{
 		return matchArguments(method, environment, compiled, false);
 	}
@@ -247,7 +249,7 @@ public class ParsedCallArguments
 	 */
 	@SuppressWarnings({"unchecked"})
 	private <E extends IPartialExpression<E>>
-		 List<E> matchArguments(MethodHeader<E> method, IMethodScope<E> environment, List<E> compiled, boolean exactly)
+		 List<E> matchArguments(InstancedMethodHeader<E> method, IMethodScope<E> scope, List<E> compiled, boolean exactly)
 	{
 		int numUnkeyed = numUnkeyedValues;
 
@@ -259,15 +261,15 @@ public class ParsedCallArguments
 
 		boolean[] isUsed = new boolean[methodArguments.size() - numUnkeyed];
 		boolean isVarargCall = false;
-		TypeInstance<E> varargBaseType = null;
+		IGenericType<E> varargBaseType = null;
 
-		if (method.isVarargs())
+		if (method.isVararg())
 			varargBaseType = method.getVarArgBaseType();
 
 		// check parameters without names
 		for (int i = 0; i < numUnkeyed; i++) {
-			if (method.isVarargs() && i >= methodArguments.size() - 1)
-				if (matches(compiled.get(i), varargBaseType, exactly)) {
+			if (method.isVararg() && i >= methodArguments.size() - 1)
+				if (matches(scope, compiled.get(i), varargBaseType, exactly)) {
 					isVarargCall = true;
 					continue;
 				}
@@ -275,12 +277,12 @@ public class ParsedCallArguments
 			if (i >= methodArguments.size())
 				return null;
 
-			if (!matches(compiled.get(i), methodArguments.get(i).getType(), exactly))
+			if (!matches(scope, compiled.get(i), methodArguments.get(i).getType(), exactly))
 				return null;
 		}
 
 		// is this a vararg callStaticWithConstants with an empty array?
-		if (method.isVarargs() && numUnkeyed == compiled.size() && numUnkeyed == methodArguments.size() - 1)
+		if (method.isVararg() && numUnkeyed == compiled.size() && numUnkeyed == methodArguments.size() - 1)
 			isVarargCall = true;
 
 		// check parameters with names
@@ -311,7 +313,7 @@ public class ParsedCallArguments
 		}
 
 		if (isVarargCall)
-			result.add(assembleVararg(methodArguments.get(methodArguments.size() - 1), environment, compiled, numUnkeyed));
+			result.add(assembleVararg(methodArguments.get(methodArguments.size() - 1), scope, compiled, numUnkeyed));
 		else {
 			// fill keyed arguments
 			for (int i = numUnkeyed; i < arguments.size(); i++) {
@@ -340,12 +342,12 @@ public class ParsedCallArguments
 	 * @return
 	 */
 	private <E extends IPartialExpression<E>>
-		 boolean matches(E expression, TypeInstance<E> type, boolean exactly)
+		 boolean matches(IModuleScope<E> scope, E expression, IGenericType<E> type, boolean exactly)
 	{
 		if (exactly)
 			return expression.getType().equals(type);
 		else
-			return expression.getType().canCastImplicit(type);
+			return expression.getType().canCastImplicit(scope, type);
 	}
 
 	/**
@@ -360,9 +362,8 @@ public class ParsedCallArguments
 	private <E extends IPartialExpression<E>>
 		 E assembleVararg(MethodParameter<E> argument, IMethodScope<E> scope, List<E> compiled, int fromIndex)
 	{
-		TypeInstance<E> varargBaseType = argument.getType().getArrayBaseType();
-
-		// combine varargs into an array expression
+		IGenericType<E> varargBaseType = argument.getType().getArrayBaseType();
+		
 		List<E> arrayMembers = new ArrayList<E>();
 		for (int i = fromIndex; i < compiled.size(); i++) {
 			arrayMembers.add(compiled.get(i).cast(
@@ -379,10 +380,10 @@ public class ParsedCallArguments
 
 	public class MatchedArguments<E extends IPartialExpression<E>>
 	{
-		public final IMethod<E> method;
+		public final ICallable<E> method;
 		public final List<E> arguments;
 
-		public MatchedArguments(IMethod<E> method, List<E> arguments)
+		public MatchedArguments(ICallable<E> method, List<E> arguments)
 		{
 			this.method = method;
 			this.arguments = arguments;

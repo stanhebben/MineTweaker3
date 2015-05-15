@@ -12,6 +12,7 @@ import org.openzen.zencode.parser.definition.ParsedExpansion;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -29,7 +30,12 @@ public class SymbolicExpansion<E extends IPartialExpression<E>>
 		super(source, scope);
 		
 		this.source = source;
-		this.members = new ArrayList<IMember<E>>();
+		this.members = new ArrayList<>();
+	}
+	
+	public List<IMember<E>> getMembers()
+	{
+		return members;
 	}
 
 	@Override
@@ -68,5 +74,20 @@ public class SymbolicExpansion<E extends IPartialExpression<E>>
 		for (IMember<E> member : members) {
 			member.validate();
 		}
+	}
+
+	@Override
+	public void register(IModuleScope<E> scope)
+	{
+		IGenericType<E> type = source.getTargetType().compile(scope);
+		for (IMember<E> member : members) {
+			type.addMember(member);
+		}
+	}
+	
+	@Override
+	public boolean isStruct()
+	{
+		return false;
 	}
 }

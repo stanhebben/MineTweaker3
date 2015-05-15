@@ -11,9 +11,10 @@ import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
@@ -77,20 +78,13 @@ public class PartialImportable<E extends IPartialExpression<E>> implements IPart
 	}
 
 	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
 		return Collections.emptyList();
 	}
 
 	@Override
-	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		scope.getErrorLogger().errorCannotCall(position, this);
-		return scope.getExpressionCompiler().invalid(position, scope);
-	}
-
-	@Override
-	public E cast(CodePosition position, TypeInstance<E> type)
+	public E cast(CodePosition position, IGenericType<E> type)
 	{
 		return eval().cast(position, type);
 	}

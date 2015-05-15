@@ -6,7 +6,8 @@ import org.openzen.zencode.annotations.ZenGetter;
  * 
  * @author Stan Hebben
  */
-public class Range {
+public class Range
+{
 	private final int from;
 	private final int to;
 	

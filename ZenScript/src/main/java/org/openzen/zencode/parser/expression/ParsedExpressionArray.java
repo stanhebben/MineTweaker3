@@ -12,13 +12,13 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyArray;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
 import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stanneke
+ * @author Stan Hebben
  */
 public class ParsedExpressionArray extends ParsedExpression
 {
@@ -30,18 +30,22 @@ public class ParsedExpressionArray extends ParsedExpression
 
 		this.contents = contents;
 	}
+	
+	// #######################################
+	// ### ParsedExpression implementation ###
+	// #######################################
 
 	@Override
 	public <E extends IPartialExpression<E>>
-			IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+			IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
-		TypeInstance<E> arrayType;
+		IGenericType<E> arrayType;
 		ICastingRule<E> castingRule = null;
 		
 		if (asType != null && asType.getArrayBaseType() != null)
 			arrayType = asType;
 		else if (asType != null) {
-			castingRule = scope.getTypeCompiler().getAnyArray(scope).getCastingRule(asType);
+			castingRule = scope.getTypeCompiler().anyArray.getCastingRule(scope, asType);
 			if (castingRule == null) {
 				scope.getErrorLogger().errorCannotCastArrayTo(getPosition(), asType);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, asType);
@@ -49,9 +53,9 @@ public class ParsedExpressionArray extends ParsedExpression
 			
 			arrayType = castingRule.getInputType();
 		} else
-			arrayType = scope.getTypeCompiler().getAnyArray(scope);
+			arrayType = scope.getTypeCompiler().anyArray;
 		
-		List<E> cContents = new ArrayList<E>();
+		List<E> cContents = new ArrayList<>();
 		for (ParsedExpression content : contents) {
 			cContents.add(content.compile(scope, arrayType.getArrayBaseType()));
 		}
@@ -65,7 +69,7 @@ public class ParsedExpressionArray extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-			E compileKey(IMethodScope<E> environment, TypeInstance<E> predictedType)
+			E compileKey(IMethodScope<E> environment, IGenericType<E> predictedType)
 	{
 		if (contents.size() == 1 && contents.get(0) instanceof ParsedExpressionVariable)
 			return contents.get(0).compile(environment, predictedType);
@@ -76,11 +80,13 @@ public class ParsedExpressionArray extends ParsedExpression
 	@Override
 	public IAny eval(IZenCompileEnvironment<?> environment)
 	{
-		IAny[] values = new IAny[contents.size()];
-		for (int i = 0; i < contents.size(); i++) {
-			values[i] = contents.get(i).eval(environment);
-			if (values[i] == null)
+		List<IAny> values = new ArrayList<>();
+		for (ParsedExpression content : contents) {
+			IAny value = content.eval(environment);
+			if (value == null)
 				return null;
+			
+			values.add(value);
 		}
 
 		return new AnyArray(values);

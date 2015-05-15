@@ -47,6 +47,26 @@ public class ParsedEnum implements IParsedDefinition
 		this.members = members;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<Value> getValues()
+	{
+		return values;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+	
+	// ########################################
+	// ### IParsedDefinition implementation ###
+	// ########################################
+
+	@Override
 	public CodePosition getPosition()
 	{
 		return position;
@@ -70,26 +90,15 @@ public class ParsedEnum implements IParsedDefinition
 		return Collections.<ParsedGenericParameter>emptyList();
 	}
 
-	public String getName()
-	{
-		return name;
-	}
-
-	public List<Value> getValues()
-	{
-		return values;
-	}
-
-	public List<IParsedMember> getMembers()
-	{
-		return members;
-	}
-
 	@Override
 	public <E extends IPartialExpression<E>> ISymbolicDefinition<E> compile(IModuleScope<E> scope)
 	{
 		return new SymbolicEnum<E>(this, scope);
 	}
+	
+	// ###################################
+	// ### Public static inner classes ###
+	// ###################################
 	
 	public static class Value
 	{

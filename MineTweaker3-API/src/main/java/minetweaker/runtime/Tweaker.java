@@ -22,12 +22,13 @@ import minetweaker.api.action.IUndoableAction;
 import minetweaker.api.MineTweakerAPI;
 import minetweaker.api.item.IIngredient;
 import minetweaker.runtime.providers.ScriptProviderMemory;
-import org.openzen.zencode.symbolic.scope.IScopeGlobal;
+import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.lexer.ParseException;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.parser.ParsedFile;
 import org.openzen.zencode.parser.ParsedModule;
 import org.openzen.zencode.java.JavaCompiler;
+import org.openzen.zencode.java.expression.IJavaExpression;
 
 /**
  *
@@ -92,13 +93,13 @@ public final class Tweaker
 		scriptData = ScriptProviderMemory.collect(scriptProvider);
 		Set<String> executed = new HashSet<String>();
 		
-		IScopeGlobal global = GlobalRegistry.makeGlobalEnvironment();
+		IZenCompileEnvironment<IJavaExpression> environment = GlobalRegistry.createGlobalEnvironment();
 
 		// Step 1: parse all files
-		JavaCompiler parserEnvironment = new JavaCompiler(global);
+		JavaCompiler compiler = new JavaCompiler(environment);
 		
 		if (DEBUG)
-			parserEnvironment.setDebugOutputDirectory(new File("scripts-debug"));
+			compiler.setDebugOutputDirectory(new File("scripts-debug"));
 		
 		Iterator<IScriptIterator> scripts = scriptProvider.getScripts();
 		while (scripts.hasNext()) {
@@ -107,8 +108,7 @@ public final class Tweaker
 			if (!executed.contains(script.getGroupName())) {
 				executed.add(script.getGroupName());
 				
-				ParsedModule module = new ParsedModule(parserEnvironment, script.getGroupScriptLoader(), script.getGroupName());
-				parserEnvironment.addModule(module);
+				ParsedModule module = compiler.createAndAddModule(script.getGroupName(), script.getGroupScriptLoader());
 				
 				while (script.next()) {
 					Reader reader = null;
@@ -117,7 +117,7 @@ public final class Tweaker
 
 						String filename = script.getName();
 
-						ZenLexer parser = new ZenLexer(global, reader);
+						ZenLexer parser = new ZenLexer(environment.getErrorLogger(), reader);
 						ParsedFile pfile = new ParsedFile(module, filename, parser);
 						module.addScript(pfile);
 					} catch (IOException ex) {
@@ -139,14 +139,9 @@ public final class Tweaker
 			}
 		}
 
-		if (!global.hasErrors()) {
+		if (!environment.getErrorLogger().hasErrors()) {
 			try {
-				// Step 2: compileDefinitions all files
-				Runnable compiled = parserEnvironment.compile();
-				
-				
-				
-				// Step 3: execute
+				Runnable compiled = compiler.compile();
 				compiled.run();
 			} catch (Throwable t) {
 				t.printStackTrace();

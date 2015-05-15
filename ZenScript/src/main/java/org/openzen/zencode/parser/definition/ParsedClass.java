@@ -28,7 +28,7 @@ public class ParsedClass implements IParsedDefinition
 	private final List<IParsedModifier> modifiers;
 	private final String name;
 	private final List<ParsedGenericParameter> genericParameters;
-	private final List<IParsedType> extendsTypes;
+	private final List<IParsedType> baseTypes;
 	private final List<IParsedMember> members;
 	
 	public ParsedClass(
@@ -37,7 +37,7 @@ public class ParsedClass implements IParsedDefinition
 			List<IParsedModifier> modifiers,
 			String name,
 			List<ParsedGenericParameter> genericParameters,
-			List<IParsedType> extendsTypes,
+			List<IParsedType> baseTypes,
 			List<IParsedMember> members)
 	{
 		this.position = position;
@@ -45,10 +45,30 @@ public class ParsedClass implements IParsedDefinition
 		this.modifiers = modifiers;
 		this.name = name;
 		this.genericParameters = genericParameters;
-		this.extendsTypes = extendsTypes;
+		this.baseTypes = baseTypes;
 		this.members = members;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public List<IParsedType> getBaseTypes()
+	{
+		return baseTypes;
+	}
+
+	public List<IParsedMember> getMembers()
+	{
+		return members;
+	}
+	
+	// ########################################
+	// ### IParsedDefinition implementation ###
+	// ########################################
+
+	@Override
 	public CodePosition getPosition()
 	{
 		return position;
@@ -66,25 +86,10 @@ public class ParsedClass implements IParsedDefinition
 		return modifiers;
 	}
 
-	public String getName()
-	{
-		return name;
-	}
-
 	@Override
 	public List<ParsedGenericParameter> getGenericParameters()
 	{
 		return genericParameters;
-	}
-
-	public List<IParsedType> getExtendsTypes()
-	{
-		return extendsTypes;
-	}
-
-	public List<IParsedMember> getMembers()
-	{
-		return members;
 	}
 
 	@Override

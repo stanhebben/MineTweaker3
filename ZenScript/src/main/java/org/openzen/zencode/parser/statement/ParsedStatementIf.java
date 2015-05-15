@@ -65,7 +65,7 @@ public class ParsedStatementIf extends ParsedStatement
 			}
 		else {
 			// runtime variable
-			E compiledCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
+			E compiledCondition = condition.compile(scope, scope.getTypeCompiler().bool);
 			StatementBlockScope<E> ifScope = new StatementBlockScope<E>(scope);
 			Statement<E> compiledIf = onIf.compile(ifScope);
 			Statement<E> compiledElse = null;

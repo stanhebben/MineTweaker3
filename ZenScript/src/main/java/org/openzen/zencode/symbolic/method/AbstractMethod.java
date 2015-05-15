@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -50,7 +50,7 @@ public abstract class AbstractMethod<E extends IPartialExpression<E>> implements
 	}
 	
 	@Override
-	public TypeInstance<E> getReturnType()
+	public IGenericType<E> getReturnType()
 	{
 		return getMethodHeader().getReturnType();
 	}

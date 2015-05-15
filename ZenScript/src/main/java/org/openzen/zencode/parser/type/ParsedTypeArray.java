@@ -7,7 +7,7 @@ package org.openzen.zencode.parser.type;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  * Parsed array type (valuetype[]).
@@ -25,9 +25,9 @@ public class ParsedTypeArray implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 TypeInstance<E> compile(IModuleScope<E> scope)
+		 IGenericType<E> compile(IModuleScope<E> scope)
 	{
-		return scope.getTypeCompiler().getArray(scope, baseType.compile(scope));
+		return scope.getTypeCompiler().getArray(baseType.compile(scope));
 	}
 	
 	@Override

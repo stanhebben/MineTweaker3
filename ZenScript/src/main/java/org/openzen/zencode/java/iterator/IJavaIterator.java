@@ -6,8 +6,9 @@
 package org.openzen.zencode.java.iterator;
 
 import org.objectweb.asm.Label;
-import org.openzen.zencode.java.type.IJavaType;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -50,5 +51,5 @@ public interface IJavaIterator {
 	 */
 	public void compileEnd(MethodOutput output);
 	
-	public IJavaType getType(int i);
+	public IGenericType<IJavaExpression> getType(int i);
 }

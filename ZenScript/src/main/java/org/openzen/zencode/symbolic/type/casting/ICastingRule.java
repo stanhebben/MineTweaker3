@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.type.casting;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -19,9 +19,9 @@ public interface ICastingRule<E extends IPartialExpression<E>>
 {
 	public E cast(CodePosition position, IMethodScope<E> scope, E value);
 
-	public TypeInstance<E> getInputType();
+	public IGenericType<E> getInputType();
 
-	public TypeInstance<E> getResultingType();
+	public IGenericType<E> getResultingType();
 	
 	public boolean isExplicit();
 }

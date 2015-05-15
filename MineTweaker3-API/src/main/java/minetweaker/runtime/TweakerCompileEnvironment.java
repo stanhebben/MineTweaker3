@@ -5,7 +5,6 @@
  */
 package minetweaker.runtime;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,19 +18,14 @@ import minetweaker.runtime.symbol.ITweakerSymbol;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
-import org.openzen.zencode.annotations.ZenClass;
-import org.openzen.zencode.annotations.ZenExpansion;
-import org.openzen.zencode.java.JavaNative;
+import org.openzen.zencode.java.JavaCompiler;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.AccessType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.scope.ModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
-import org.openzen.zencode.symbolic.type.TypeExpansion;
-import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -40,21 +34,26 @@ import org.openzen.zencode.util.CodePosition;
  */
 public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaExpression>
 {
-	private final TweakerGlobalScope scope;
 	private final ICodeErrorLogger<IJavaExpression> errors;
 	private final List<IBracketHandler> bracketHandlerInstances = new ArrayList<IBracketHandler>();
 	private final Map<String, IZenSymbol<IJavaExpression>> globals;
 	private final ZenPackage<IJavaExpression> root = ZenPackage.makeRootPackage();
 
-	public TweakerCompileEnvironment(TweakerGlobalScope scope, ICodeErrorLogger<IJavaExpression> errors)
+	public TweakerCompileEnvironment(ICodeErrorLogger<IJavaExpression> errors)
 	{
-		this.scope = scope;
 		this.errors = errors;
 		globals = new HashMap<String, IZenSymbol<IJavaExpression>>();
 	}
 	
-	public void init()
+	public void init(JavaCompiler compiler)
 	{
+		IModuleScope<IJavaExpression> scope = new ModuleScope<IJavaExpression>(this, compiler);
+		
+		// add annotated classes
+		for (Class<?> cls : GlobalRegistry.getAnnotatedClasses()) {
+			compiler.addAnnotatedClass(cls);
+		}
+		
 		for (Class<? extends IBracketHandler> bracketHandler : GlobalRegistry.getBracketHandlers())
 		{
 			try {
@@ -77,29 +76,6 @@ public class TweakerCompileEnvironment implements IZenCompileEnvironment<IJavaEx
 		
 		for (Map.Entry<String, ITweakerSymbol> global : GlobalRegistry.getGlobals().entrySet()) {
 			globals.put(global.getKey(), global.getValue().convert(scope));
-		}
-		
-		// add annotated classes
-		for (Class<?> cls : GlobalRegistry.getAnnotatedClasses()) {
-			try {
-				for (Annotation annotation : cls.getAnnotations()) {
-					if (annotation instanceof ZenExpansion) {
-						String type = ((ZenExpansion) annotation).value();
-						TypeExpansion<IJavaExpression> expansion
-								= new TypeExpansion<IJavaExpression>(
-										scope,
-										AccessType.EXPORT,
-										ZenType.ACCESS_GLOBAL);
-						JavaNative.addExpansion(scope, expansion, cls);
-						typeCompiler.addExpansion(type, expansion);
-					} else if (annotation instanceof ZenClass)
-						root.put(((ZenClass) annotation).value(),
-								new ImportableSymbol<IJavaExpression>(typeCompiler.getNativeType(null, cls, TypeCapture.<IJavaExpression>empty())),
-								errors);
-				}
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
 		}
 	}
 

@@ -45,7 +45,12 @@ public enum OperatorType {
 	MEMBERSETTER(3, "member set"),
 	MEMBERCALLER(3, "member caller"),
 	EQUALS(2, "=="),
-	FOR(1, "for");
+	NOTEQUALS(2, "!="),
+	FOR(1, "for"),
+	GREATER(2, ">"),
+	GREATER_EQUALS(2, ">="),
+	LESS(2, "<"),
+	LESS_EQUALS(2, "<=");
 	
 	private final int arguments;
 	private final String operator;

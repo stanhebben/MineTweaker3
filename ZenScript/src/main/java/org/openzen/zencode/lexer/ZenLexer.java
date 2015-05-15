@@ -97,6 +97,7 @@ public class ZenLexer extends TokenStream
 	public static final int T_FUNCTION = 113;
 	public static final int T_IN = 114;
 	public static final int T_VOID = 115;
+	public static final int T_RANGE = 116;
 
 	public static final int T_AS = 120;
 	public static final int T_VERSION = 121;
@@ -276,6 +277,7 @@ public class ZenLexer extends TokenStream
 		KEYWORDS.put("function", T_FUNCTION);
 		KEYWORDS.put("in", T_IN);
 		KEYWORDS.put("void", T_VOID);
+		KEYWORDS.put("range", T_RANGE);
 
 		KEYWORDS.put("as", T_AS);
 		KEYWORDS.put("version", T_VERSION);

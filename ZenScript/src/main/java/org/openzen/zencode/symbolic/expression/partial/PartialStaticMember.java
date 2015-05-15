@@ -12,9 +12,10 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IGetter;
 import org.openzen.zencode.symbolic.member.ISetter;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,7 +32,7 @@ public class PartialStaticMember<E extends IPartialExpression<E>>
 
 	private IGetter<E> getter;
 	private ISetter<E> setter;
-	private final List<IMethod<E>> methods;
+	private final List<ICallable<E>> methods;
 
 	public PartialStaticMember(CodePosition position, IMethodScope<E> scope, TypeInstance<E> target, String name)
 	{
@@ -39,7 +40,7 @@ public class PartialStaticMember<E extends IPartialExpression<E>>
 
 		this.target = target;
 		this.name = name;
-		this.methods = new ArrayList<IMethod<E>>();
+		this.methods = new ArrayList<ICallable<E>>();
 	}
 
 	private PartialStaticMember(CodePosition position, IMethodScope<E> scope, PartialStaticMember<E> original)
@@ -71,7 +72,7 @@ public class PartialStaticMember<E extends IPartialExpression<E>>
 		this.setter = setter;
 	}
 
-	public void addMethod(IMethod<E> method)
+	public void addMethod(ICallable<E> method)
 	{
 		methods.add(method);
 	}
@@ -114,19 +115,13 @@ public class PartialStaticMember<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		return method.callStatic(getPosition(), getScope(), arguments);
-	}
-
-	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
 		return methods;
 	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		if (getter == null)
 			return null;

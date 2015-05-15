@@ -12,7 +12,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -36,32 +36,28 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compile(boolean pushResult, MethodOutput output)
 	{
-		value.compile(true, method);
+		value.compile(true, output);
 		
 		Label lblNotNull = new Label();
 		Label lblAfter = new Label();
 		
-		method.dup();
-		method.ifNonNull(lblNotNull);
-		method.pop();
-		method.aConstNull();
-		method.goTo(lblAfter);
+		output.dup();
+		output.ifNonNull(lblNotNull);
+		output.pop();
+		output.aConstNull();
+		output.goTo(lblAfter);
 
-		method.label(lblNotNull);
+		output.label(lblNotNull);
 		
-		IJavaExpression expression = this.method.callStatic(
-				getPosition(),
-				getScope(),
-				Arrays.<IJavaExpression>asList(new JavaTOS(getPosition(), getScope(), value.getType())));
-		expression.compile(true, method);
+		output.invokeStatic(method.getDeclaringClass(), method.getMethodName(), method.getMethodSignature());
 
-		method.label(lblAfter);
+		output.label(lblAfter);
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
 		return method.getReturnType();
 	}
@@ -75,6 +71,6 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		method.validateCall(getPosition(), getScope(), Arrays.asList(value));
+		
 	}
 }

@@ -11,7 +11,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -27,7 +27,7 @@ public interface IImportable<E extends IPartialExpression<E>>
 	
 	public IZenSymbol<E> getMember(String name);
 	
-	public TypeInstance<E> toType(IModuleScope<E> scope, List<TypeInstance<E>> genericTypes);
+	public IGenericType<E> toType(IModuleScope<E> scope, List<IGenericType<E>> genericTypes);
 	
 	public IPartialExpression<E> toPartialExpression(CodePosition position, IMethodScope<E> scope);
 }

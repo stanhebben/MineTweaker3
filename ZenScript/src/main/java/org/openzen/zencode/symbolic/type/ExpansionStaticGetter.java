@@ -10,6 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialStaticMember;
 import org.openzen.zencode.symbolic.member.IGetter;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.util.CodePosition;
 
@@ -22,24 +23,24 @@ public class ExpansionStaticGetter<E extends IPartialExpression<E>>
 		implements IGetter<E>
 {
 	private final PartialStaticMember<E> member;
-	private final IMethod<E> method;
+	private final ICallable<E> method;
 	
-	public ExpansionStaticGetter(PartialStaticMember<E> member, IMethod<E> method)
+	public ExpansionStaticGetter(PartialStaticMember<E> member, ICallable<E> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
-		return method.getReturnType();
+		return method.getMethodHeader().getReturnType();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public IPartialExpression<E> compileGet(CodePosition position, IMethodScope<E> scope)
 	{
-		return method.callStatic(position, scope, Collections.<E>emptyList());
+		return method.call(position, scope, Collections.<E>emptyList());
 	}
 }

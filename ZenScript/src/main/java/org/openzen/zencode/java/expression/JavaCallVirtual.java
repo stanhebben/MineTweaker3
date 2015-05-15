@@ -7,12 +7,11 @@ package org.openzen.zencode.java.expression;
 
 import java.util.List;
 import org.openzen.zencode.java.method.IJavaMethod;
-import org.openzen.zencode.java.method.JavaMethods;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -46,14 +45,14 @@ public class JavaCallVirtual extends AbstractJavaExpression
 		output.invokeVirtual(
 					method.getDeclaringClass(),
 					method.getMethodName(),
-					JavaMethods.getSignature(method.getMethodHeader()));
+					method.getMethodSignature());
 		
-		if (!result && method.getReturnType() != getScope().getTypeCompiler().getVoid(getScope()))
+		if (!result && method.getReturnType() != getScope().getTypeCompiler().void_)
 			output.pop(method.getReturnType());
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
 		return method.getReturnType();
 	}
@@ -67,6 +66,6 @@ public class JavaCallVirtual extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		method.validateCall(getPosition(), getScope(), arguments);
+		
 	}
 }

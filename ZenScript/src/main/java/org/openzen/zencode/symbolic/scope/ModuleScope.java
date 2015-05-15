@@ -9,10 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.IZenCompiler;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
@@ -28,15 +27,20 @@ public class ModuleScope<E extends IPartialExpression<E>>
 	implements IModuleScope<E>
 {
 	private final IZenCompileEnvironment<E> environment;
-	private final IZenCompiler<E> compiler;
+	private final IExpressionCompiler<E> expressionCompiler;
+	private final TypeRegistry<E> typeRegistry;
 	private final Map<String, IZenSymbol<E>> imports;
 	private final AccessScope accessScope;
 	private final IMethodScope<E> constantScope;
 
-	public ModuleScope(IZenCompileEnvironment<E> environment, IZenCompiler<E> compiler)
+	public ModuleScope(
+			IZenCompileEnvironment<E> environment,
+			IExpressionCompiler<E> compiler,
+			TypeRegistry<E> typeRegistry)
 	{
 		this.environment = environment;
-		this.compiler = compiler;
+		this.expressionCompiler = compiler;
+		this.typeRegistry = typeRegistry;
 		imports = new HashMap<String, IZenSymbol<E>>();
 		accessScope = AccessScope.createModuleScope();
 		constantScope = new ConstantScope<E>(this);
@@ -57,7 +61,7 @@ public class ModuleScope<E extends IPartialExpression<E>>
 	@Override
 	public IExpressionCompiler<E> getExpressionCompiler()
 	{
-		return compiler.getExpressionCompiler();
+		return expressionCompiler;
 	}
 	
 	@Override
@@ -91,9 +95,9 @@ public class ModuleScope<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public ITypeCompiler<E> getTypeCompiler()
+	public TypeRegistry<E> getTypeCompiler()
 	{
-		return compiler.getTypeCompiler();
+		return typeRegistry;
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.parser.expression.ParsedCallArguments.MatchedArguments;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -32,7 +32,7 @@ public class ParsedExpressionCall extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> asType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
 		IPartialExpression<E> cReceiver = receiver.compilePartial(scope, null);
 
@@ -46,7 +46,7 @@ public class ParsedExpressionCall extends ParsedExpression
 			return scope.getExpressionCompiler().invalid(getPosition(), scope);
 		}
 
-		IPartialExpression<E> result = cReceiver.call(getPosition(), matchedArguments.method, matchedArguments.arguments);
+		IPartialExpression<E> result = matchedArguments.method.call(getPosition(), scope, matchedArguments.arguments);
 		if (asType != null)
 			result = result.cast(getPosition(), asType);
 		

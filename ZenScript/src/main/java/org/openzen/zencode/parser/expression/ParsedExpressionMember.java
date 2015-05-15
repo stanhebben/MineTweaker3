@@ -9,7 +9,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -31,7 +31,7 @@ public class ParsedExpressionMember extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, IGenericType<E> predictedType)
 	{
 		return value.compilePartial(environment, null).getMember(getPosition(), member);
 	}

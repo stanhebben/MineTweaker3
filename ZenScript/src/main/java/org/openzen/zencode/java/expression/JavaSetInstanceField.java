@@ -5,12 +5,12 @@
  */
 package org.openzen.zencode.java.expression;
 
-import org.openzen.zencode.java.field.IJavaField;
+import org.openzen.zencode.java.field.JavaField;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -18,14 +18,14 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
  */
 public class JavaSetInstanceField extends AbstractJavaExpression
 {
-	private final IJavaField field;
+	private final JavaField field;
 	private final IJavaExpression instance;
 	private final IJavaExpression value;
 
 	public JavaSetInstanceField(
 			CodePosition position,
 			IMethodScope<IJavaExpression> scope,
-			IJavaField field,
+			JavaField field,
 			IJavaExpression instance,
 			IJavaExpression value)
 	{
@@ -43,16 +43,16 @@ public class JavaSetInstanceField extends AbstractJavaExpression
 			value.compile(true, method);
 			instance.compile(true, method);
 			method.dupX1(value.getType());
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
+			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
 		} else {
 			instance.compile(true, method);
 			value.compile(true, method);
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
+			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
 		}
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
 		return value.getType();
 	}
@@ -66,8 +66,8 @@ public class JavaSetInstanceField extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		if (!value.getType().canCastExplicit(field.getType()))
-			getScope().getErrorLogger().errorCannotCastExplicit(getPosition(), value.getType(), field.getType());
+		if (value.getType().equals(field.type))
+			throw new AssertionError("Value type != field type");
 		
 		// TODO: check access to final field outside constructor
 	}

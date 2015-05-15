@@ -124,7 +124,7 @@ public class AnyNull implements IAny {
 
 	@Override
 	public boolean asBool() {
-		throw new NullPointerException();
+		return false;
 	}
 
 	@Override

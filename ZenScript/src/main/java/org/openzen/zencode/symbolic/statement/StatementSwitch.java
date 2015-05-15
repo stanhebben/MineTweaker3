@@ -14,7 +14,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.graph.FlowBlock;
 import org.openzen.zencode.symbolic.statement.graph.FlowBuilder;
 import org.openzen.zencode.symbolic.statement.graph.SwitchFlowInstruction;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -37,7 +37,7 @@ public class StatementSwitch<E extends IPartialExpression<E>> extends Statement<
 		this.value = value;
 	}
 	
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return value.getType();
 	}

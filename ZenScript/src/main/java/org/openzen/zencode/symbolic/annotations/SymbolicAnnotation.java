@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -32,11 +32,11 @@ public class SymbolicAnnotation<E extends IPartialExpression<E>>
 	}
 	
 	private final CodePosition position;
-	private TypeInstance<E> type;
-	private IMethod<E> constructor;
+	private IGenericType<E> type;
+	private ICallable<E> constructor;
 	private List<E> arguments;
 	
-	public SymbolicAnnotation(CodePosition position, TypeInstance<E> type, IMethod<E> constructor, List<E> arguments)
+	public SymbolicAnnotation(CodePosition position, IGenericType<E> type, ICallable<E> constructor, List<E> arguments)
 	{
 		this.position = position;
 		this.type = type;
@@ -50,6 +50,6 @@ public class SymbolicAnnotation<E extends IPartialExpression<E>>
 			argument.validate();
 		}
 		
-		constructor.validateCall(position, type.getScope().getConstantScope(), arguments);
+		//constructor.validateCall(position, type.getScope().getConstantScope(), arguments);
 	}
 }

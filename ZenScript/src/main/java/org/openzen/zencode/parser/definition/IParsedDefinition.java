@@ -12,6 +12,7 @@ import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -19,6 +20,8 @@ import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
  */
 public interface IParsedDefinition
 {
+	public CodePosition getPosition();
+	
 	public <E extends IPartialExpression<E>> ISymbolicDefinition<E> compile(IModuleScope<E> scope);
 	
 	public List<IParsedModifier> getModifiers();

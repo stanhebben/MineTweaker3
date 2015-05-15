@@ -13,7 +13,7 @@ import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.symbolic.definition.IImportable;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.Strings;
 import org.openzen.zencode.util.CodePosition;
 
@@ -34,7 +34,7 @@ public class ParsedTypeClass implements IParsedType
 		Token nameFirst = lexer.required(TOKEN_ID, "identifier expected");
 		position = nameFirst.getPosition();
 
-		name = new ArrayList<String>();
+		name = new ArrayList<>();
 		name.add(nameFirst.getValue());
 
 		while (lexer.optional(T_DOT) != null) {
@@ -62,38 +62,38 @@ public class ParsedTypeClass implements IParsedType
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 TypeInstance<E> compile(IModuleScope<E> scope)
+		 IGenericType<E> compile(IModuleScope<E> scope)
 	{
 		IImportable<E> imported;
 		if (scope.contains(name.get(0))) {
 			imported = scope.getSymbol(name.get(0)).asImportable();
 			if (imported == null) {
 				scope.getErrorLogger().errorNotAType(position, scope.getSymbol(name.get(0)), name.get(0));
-				return scope.getTypeCompiler().getAny(scope);
+				return scope.getTypeCompiler().any;
 			}
 			
 			for (int i = 1; i < name.size(); i++) {
 				imported = imported.getSubDefinition(name.get(i));
 				if (imported == null) {
 					
-					return scope.getTypeCompiler().getAny(scope);
+					return scope.getTypeCompiler().any;
 				}
 			}
 		} else {
 			imported = scope.getRootPackage().resolve(position, scope.getErrorLogger(), name, false);
 		}
 		
-		List<TypeInstance<E>> compiledGenericTypes;
+		List<IGenericType<E>> compiledGenericTypes;
 		if (genericType == null)
 			compiledGenericTypes = null;
 		else {
-			compiledGenericTypes = new ArrayList<TypeInstance<E>>();
+			compiledGenericTypes = new ArrayList<IGenericType<E>>();
 			for (IParsedType type : genericType) {
 				compiledGenericTypes.add(type.compile(scope));
 			}
 		}
 		
-		TypeInstance<E> type = imported.toType(scope, compiledGenericTypes);
+		IGenericType<E> type = imported.toType(scope, compiledGenericTypes);
 		if (type == null) {
 			scope.getErrorLogger().errorNotAType(position, imported);
 		}

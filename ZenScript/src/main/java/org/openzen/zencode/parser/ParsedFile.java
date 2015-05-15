@@ -40,7 +40,7 @@ public class ParsedFile
 	private final ParsedModule module;
 	private final String filename;
 
-	private final ParsedPackage _package;
+	private final ParsedPackageName _package;
 	private final List<IParsedDefinition> definitions;
 	private final List<ParsedStatement> statements;
 
@@ -75,7 +75,7 @@ public class ParsedFile
 		return filename;
 	}
 	
-	public ParsedPackage getPackage()
+	public ParsedPackageName getPackage()
 	{
 		return _package;
 	}
@@ -173,7 +173,7 @@ public class ParsedFile
 		tryLoadFileContents(includeFileName.getPosition(), includeFileName.getValue());
 	}
 	
-	private static ParsedPackage parseOptionalPackage(ZenLexer lexer)
+	private static ParsedPackageName parseOptionalPackage(ZenLexer lexer)
 	{
 		if (lexer.optional(T_PACKAGE) == null)
 			return null;
@@ -181,6 +181,6 @@ public class ParsedFile
 		List<String> nameParts = lexer.parseIdentifierDotSequence();
 		lexer.requiredSemicolon();
 
-		return new ParsedPackage(nameParts);
+		return new ParsedPackageName(nameParts);
 	}
 }

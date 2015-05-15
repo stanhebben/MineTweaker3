@@ -10,7 +10,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.expression.partial.PartialVirtualMember;
 import org.openzen.zencode.symbolic.member.IGetter;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.IVirtualCallable;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -21,24 +21,23 @@ import org.openzen.zencode.util.CodePosition;
 public class ExpansionGetter<E extends IPartialExpression<E>> implements IGetter<E>
 {
 	private final PartialVirtualMember<E> member;
-	private final IMethod<E> method;
+	private final IVirtualCallable<E> method;
 	
-	public ExpansionGetter(PartialVirtualMember<E> member, IMethod<E> method)
+	public ExpansionGetter(PartialVirtualMember<E> member, IVirtualCallable<E> method)
 	{
 		this.member = member;
 		this.method = method;
 	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
-		return method.getReturnType();
+		return method.getMethodHeader().getReturnType();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public IPartialExpression<E> compileGet(CodePosition position, IMethodScope<E> scope)
 	{
-		return method.callStatic(position, scope, Collections.singletonList(member.getTarget()));
+		return method.bind(member.getTarget()).call(position, scope, Collections.singletonList(member.getTarget()));
 	}
 }

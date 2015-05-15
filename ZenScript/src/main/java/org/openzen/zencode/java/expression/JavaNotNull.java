@@ -9,7 +9,7 @@ import org.objectweb.asm.Label;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -46,9 +46,9 @@ public class JavaNotNull extends AbstractJavaExpression
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
-		return getScope().getTypeCompiler().getBool(getScope());
+		return getScope().getTypeCompiler().bool;
 	}
 	
 	@Override
@@ -74,7 +74,7 @@ public class JavaNotNull extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		if (value.getType().equals(getScope().getTypeCompiler().getNull(getScope())))
+		if (value.getType().equals(getScope().getTypeCompiler().null_))
 			getScope().getErrorLogger().errorCannotBeNull(getPosition());
 	}
 }

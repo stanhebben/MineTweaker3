@@ -22,6 +22,8 @@ public interface ISymbolicDefinition<E extends IPartialExpression<E>>
 	
 	public List<SymbolicAnnotation<E>> getAnnotations();
 	
+	public void register(IModuleScope<E> scope);
+	
 	public void collectInnerDefinitions(List<ISymbolicDefinition<E>> units, IModuleScope<E> scope);
 	
 	public void compileMembers();
@@ -31,4 +33,6 @@ public interface ISymbolicDefinition<E extends IPartialExpression<E>>
 	public void validate();
 	
 	public List<? extends ITypeVariable<E>> getTypeVariables();
+	
+	public boolean isStruct();
 }

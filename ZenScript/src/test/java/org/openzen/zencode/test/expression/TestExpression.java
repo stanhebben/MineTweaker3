@@ -19,12 +19,12 @@ import org.openzen.zencode.util.CodePosition;
  *
  * @author Stan
  */
-public abstract class TestExpression implements IPartialExpression<TestExpression, TestType>
+public abstract class TestExpression implements IPartialExpression<TestExpression>
 {
 	private final CodePosition position;
-	private final IMethodScope<TestExpression, TestType> scope;
+	private final IMethodScope<TestExpression> scope;
 	
-	public TestExpression(CodePosition position, IMethodScope<TestExpression, TestType> scope)
+	public TestExpression(CodePosition position, IMethodScope<TestExpression> scope)
 	{
 		this.position = position;
 		this.scope = scope;
@@ -39,7 +39,7 @@ public abstract class TestExpression implements IPartialExpression<TestExpressio
 	}
 
 	@Override
-	public IMethodScope<TestExpression, TestType> getScope()
+	public IMethodScope<TestExpression> getScope()
 	{
 		return scope;
 	}
@@ -57,13 +57,13 @@ public abstract class TestExpression implements IPartialExpression<TestExpressio
 	}
 
 	@Override
-	public IPartialExpression<TestExpression, TestType> getMember(CodePosition position, String name)
+	public IPartialExpression<TestExpression> getMember(CodePosition position, String name)
 	{
 		return getType().getInstanceMember(position, scope, this, name);
 	}
 
 	@Override
-	public List<IMethod<TestExpression, TestType>> getMethods()
+	public List<IMethod<TestExpression>> getMethods()
 	{
 		return getType().getInstanceMethods();
 	}

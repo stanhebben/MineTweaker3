@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
-import org.openzen.zencode.java.type.IJavaType;
+import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -19,10 +20,10 @@ import org.openzen.zencode.java.util.MethodOutput;
  */
 public class IteratorMap implements IJavaIterator
 {
-	private final IJavaType type;
+	private final IGenericType<IJavaExpression> type;
 	private int iterator;
 
-	public IteratorMap(IJavaType type)
+	public IteratorMap(IGenericType<IJavaExpression> type)
 	{
 		this.type = type;
 	}
@@ -52,10 +53,10 @@ public class IteratorMap implements IJavaIterator
 		output.dup();
 
 		output.invokeInterface(Map.Entry.class, "getKey", Object.class);
-		output.store(type.getMapKeyType().toASMType(), locals[0]);
+		output.store(type.getMapKeyType(), locals[0]);
 
 		output.invokeInterface(Map.Entry.class, "getValue", Object.class);
-		output.store(type.getMapValueType().toASMType(), locals[1]);
+		output.store(type.getMapValueType(), locals[1]);
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class IteratorMap implements IJavaIterator
 	}
 
 	@Override
-	public IJavaType getType(int i)
+	public IGenericType<IJavaExpression> getType(int i)
 	{
 		return i == 1 ? type.getMapValueType() : type.getMapKeyType();
 	}

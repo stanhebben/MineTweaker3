@@ -12,7 +12,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openzen.zencode.AbstractErrorLogger;
+import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.lexer.ZenLexer;
+import org.openzen.zencode.test.expression.TestExpression;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -66,8 +70,22 @@ public class TypeParserTest
 	private static IParsedType getParsedType(String type)
 	{
 		try {
-			ZenLexer lexer = new ZenLexer(type);
-			return TypeParser.parse(lexer, null);
+			ICodeErrorLogger<TestExpression> errorLogger = new AbstractErrorLogger<TestExpression>() {
+				@Override
+				public void error(CodePosition position, String message)
+				{
+					super.error(position, message);
+				}
+
+				@Override
+				public void warning(CodePosition position, String message)
+				{
+					super.warning(position, message);
+				}
+			};
+			
+			ZenLexer lexer = new ZenLexer(errorLogger, type);
+			return TypeParser.parse(lexer);
 		} catch (IOException ex) {
 			throw new AssertionError("Shouldn't happen", ex);
 		}

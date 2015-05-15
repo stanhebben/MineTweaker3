@@ -56,10 +56,10 @@ public class ParsedStatementDoWhile extends ParsedStatement
 	public <E extends IPartialExpression<E>>
 		 Statement<E> compile(IMethodScope<E> scope)
 	{
-		E compiledCondition = condition.compile(scope, scope.getTypeCompiler().getBool(scope));
-		StatementDoWhile<E> compiled = new StatementDoWhile<E>(getPosition(), scope, compiledCondition);
+		E compiledCondition = condition.compile(scope, scope.getTypeCompiler().bool);
+		StatementDoWhile<E> compiled = new StatementDoWhile<>(getPosition(), scope, compiledCondition);
 
-		StatementBlockScope<E> statementScope = new StatementBlockScope<E>(scope, compiled, label);
+		StatementBlockScope<E> statementScope = new StatementBlockScope<>(scope, compiled, label);
 		compiled.setContents(contents.compile(statementScope));
 		return compiled;
 	}

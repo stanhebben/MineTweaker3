@@ -12,7 +12,9 @@ import org.openzen.zencode.parser.definition.ParsedClass;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
+import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
 
 /**
  *
@@ -25,8 +27,9 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 	private final ParsedClass source;
 	
 	private final String className;
-	private final TypeInstance<E> superclass;
+	private final IGenericType<E> superclass;
 	private final List<IMember<E>> members;
+	private final TypeDefinition<E> definition;
 	
 	public SymbolicClass(ParsedClass source, IModuleScope<E> moduleScope)
 	{
@@ -35,16 +38,17 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 		this.source = source;
 		this.className = source.getName();
 		
-		if (source.getExtendsTypes().isEmpty()) {
+		if (source.getBaseTypes().isEmpty()) {
 			superclass = null;
-		} else if (source.getExtendsTypes().size() > 1) {
+		} else if (source.getBaseTypes().size() > 1) {
 			moduleScope.getErrorLogger().errorMultipleSuperclasses(source.getPosition(), source.getName());
 			superclass = null;
 		} else {
-			superclass = source.getExtendsTypes().get(0).compile(moduleScope);
+			superclass = source.getBaseTypes().get(0).compile(moduleScope);
 		}
 		
 		members = new ArrayList<IMember<E>>();
+		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 
 	@Override
@@ -85,5 +89,20 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 		for (IMember<E> member : members) {
 			member.validate();
 		}
+	}
+
+	@Override
+	public void register(IModuleScope<E> scope)
+	{
+		scope.putImport(
+				className,
+				new ImportableSymbol<E>(definition),
+				source.getPosition());
+	}
+	
+	@Override
+	public boolean isStruct()
+	{
+		return false;
 	}
 }

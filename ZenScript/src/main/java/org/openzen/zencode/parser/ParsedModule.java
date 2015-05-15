@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.ICodeErrorLogger;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.IZenCompiler;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.lexer.ZenLexer;
 import org.openzen.zencode.parser.definition.IParsedDefinition;
 import org.openzen.zencode.parser.statement.ParsedStatement;
@@ -69,7 +70,7 @@ public class ParsedModule
 	{
 		try {
 			Reader reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(file)), UTF8);
-			files.add(new ParsedFile(this, file.getName(), new ZenLexer(errorLogger, reader)));
+			addScript(new ParsedFile(this, file.getName(), new ZenLexer(errorLogger, reader)));
 		} catch (IOException ex) {
 			errorLogger.errorCannotLoadInclude(null, name, ex);
 		}
@@ -90,9 +91,12 @@ public class ParsedModule
 		return files;
 	}
 	
-	public <E extends IPartialExpression<E>> SymbolicModule<E> compileDefinitions(IZenCompileEnvironment<E> environment, IZenCompiler<E> compiler)
+	public <E extends IPartialExpression<E>> SymbolicModule<E> compileDefinitions(
+			IZenCompileEnvironment<E> environment,
+			IExpressionCompiler<E> compiler,
+			TypeRegistry<E> typeRegistry)
 	{
-		SymbolicModule<E> symbolicModule = new SymbolicModule<E>(environment, compiler);
+		SymbolicModule<E> symbolicModule = new SymbolicModule<E>(environment, compiler, typeRegistry);
 		
 		for (ParsedFile file : files) {
 			IModuleScope<E> scriptScope = new ScriptScope<E>(symbolicModule.getScope());

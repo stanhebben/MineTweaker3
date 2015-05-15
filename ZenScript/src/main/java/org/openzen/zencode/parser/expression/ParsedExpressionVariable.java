@@ -9,7 +9,7 @@ import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -35,7 +35,7 @@ public class ParsedExpressionVariable extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
 		IPartialExpression<E> result = scope.getValue(name, getPosition(), scope);
 		if (result == null) {
@@ -46,7 +46,7 @@ public class ParsedExpressionVariable extends ParsedExpression
 
 			// enable usage of static members of the same type as the predicted type (eg. enum values)
 			IPartialExpression<E> member = predictedType.getStaticMember(getPosition(), scope, name);
-			if (member == null || member.getType().getCastingRule(predictedType) == null) {
+			if (member == null || member.getType().getCastingRule(scope, predictedType) == null) {
 				scope.getErrorLogger().errorCouldNotResolveSymbol(getPosition(), name);
 				return scope.getExpressionCompiler().invalid(getPosition(), scope, predictedType);
 			} else
@@ -57,7 +57,7 @@ public class ParsedExpressionVariable extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 E compileKey(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 E compileKey(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
 		return scope.getExpressionCompiler().constantString(getPosition(), scope, name);
 	}

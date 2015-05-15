@@ -56,4 +56,18 @@ public final class AccessScope
 	{
 		return moduleScope == other.moduleScope;
 	}
+	
+	public boolean isAccessibleFrom(AccessScope other, int modifiers)
+	{
+		if ((modifiers & Modifier.PRIVATE.getCode()) > 0)
+			return this == other;
+		
+		if ((modifiers & Modifier.PUBLIC.getCode()) > 0)
+			return matchesPublic(other);
+		
+		if ((modifiers & Modifier.EXPORT.getCode()) > 0)
+			return true;
+		
+		return matchesPackage(other);
+	}
 }

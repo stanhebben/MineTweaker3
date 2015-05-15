@@ -7,7 +7,6 @@ package org.openzen.zencode.parser.definition;
 
 import java.util.List;
 import org.openzen.zencode.parser.ParsedAnnotation;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.parser.modifier.IParsedModifier;
 import org.openzen.zencode.parser.statement.ParsedStatement;
@@ -19,7 +18,7 @@ import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stan
+ * @author Stan Hebben
  */
 public class ParsedFunction implements IParsedDefinition
 {
@@ -46,6 +45,26 @@ public class ParsedFunction implements IParsedDefinition
 		this.contents = contents;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public ParsedFunctionSignature getSignature()
+	{
+		return signature;
+	}
+
+	public ParsedStatement getContents()
+	{
+		return contents;
+	}
+	
+	// ########################################
+	// ### IParsedDefinition implementation ###
+	// ########################################
+
+	@Override
 	public CodePosition getPosition()
 	{
 		return position;
@@ -61,21 +80,6 @@ public class ParsedFunction implements IParsedDefinition
 	public List<IParsedModifier> getModifiers()
 	{
 		return modifiers;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public ParsedFunctionSignature getSignature()
-	{
-		return signature;
-	}
-
-	public ParsedStatement getContents()
-	{
-		return contents;
 	}
 
 	@Override

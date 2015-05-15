@@ -5,10 +5,10 @@
  */
 package org.openzen.zencode.parser.type;
 
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
+import org.openzen.zencode.parser.definition.ParsedFunctionSignature;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -24,8 +24,8 @@ public class ParsedTypeFunction implements IParsedType
 	}
 
 	@Override
-	public <E extends IPartialExpression<E>> TypeInstance<E> compile(IModuleScope<E> environment)
+	public <E extends IPartialExpression<E>> IGenericType<E> compile(IModuleScope<E> environment)
 	{
-		return environment.getTypeCompiler().getFunction(environment, header.compile(environment));
+		return environment.getTypeCompiler().getFunction(header.compile(environment));
 	}
 }

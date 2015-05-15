@@ -7,7 +7,7 @@ package org.openzen.zencode.symbolic.statement.graph;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -36,8 +36,8 @@ public class IfFlowInstruction<E extends IPartialExpression<E>> implements IFlow
 	@Override
 	public void validate(IMethodScope<E> scope)
 	{
-		TypeInstance<E> type = condition.getType();
-		if (!type.canCastImplicit(scope.getTypeCompiler().getBool(scope)))
-			scope.getErrorLogger().errorCannotCastImplicit(condition.getPosition(), type, scope.getTypeCompiler().getBool(scope));
+		IGenericType<E> type = condition.getType();
+		if (!type.canCastImplicit(scope, scope.getTypeCompiler().bool))
+			scope.getErrorLogger().errorCannotCastImplicit(condition.getPosition(), type, scope.getTypeCompiler().bool);
 	}
 }

@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.symbolic.scope;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.openzen.zencode.ICodeErrorLogger;
@@ -12,12 +13,14 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.IZenCompileEnvironment;
 import org.openzen.zencode.ZenPackage;
 import org.openzen.zencode.compiler.IExpressionCompiler;
-import org.openzen.zencode.compiler.ITypeCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.AccessScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.type.ParameterType;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -38,13 +41,13 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	{
 		this.accessScope = AccessScope.createClassScope(global.getAccessScope());
 		this.module = global;
-		this.local = new HashMap<String, IZenSymbol<E>>();
+		this.local = new HashMap<>();
 		this.unit = unit;
-		this.typeCapture = new TypeCapture<E>(null);
-		constantScope = new ConstantScope<E>(this);
+		this.typeCapture = new TypeCapture<>(null);
+		constantScope = new ConstantScope<>(this);
 		
 		for (ITypeVariable<E> typeVariable : unit.getTypeVariables()) {
-			typeCapture.put(typeVariable, global.getTypeCompiler().getGeneric(typeVariable));
+			typeCapture.put(typeVariable, new TypeInstance<>(new ParameterType<>(this, typeVariable), Collections.emptyList(), false));
 		}
 	}
 	
@@ -61,7 +64,7 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	}
 
 	@Override
-	public ITypeCompiler<E> getTypeCompiler()
+	public TypeRegistry<E> getTypeCompiler()
 	{
 		return module.getTypeCompiler();
 	}

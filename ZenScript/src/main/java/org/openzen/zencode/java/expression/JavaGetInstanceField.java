@@ -5,12 +5,12 @@
  */
 package org.openzen.zencode.java.expression;
 
-import org.openzen.zencode.java.field.IJavaField;
+import org.openzen.zencode.java.field.JavaField;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -18,10 +18,10 @@ import org.openzen.zencode.symbolic.type.TypeInstance;
  */
 public class JavaGetInstanceField extends AbstractJavaExpression
 {
-	private final IJavaField field;
+	private final JavaField field;
 	private final IJavaExpression instance;
 	
-	public JavaGetInstanceField(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaField field, IJavaExpression instance)
+	public JavaGetInstanceField(CodePosition position, IMethodScope<IJavaExpression> scope, JavaField field, IJavaExpression instance)
 	{
 		super(position, scope);
 		
@@ -35,13 +35,13 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 		instance.compile(pushResult, method);
 		
 		if (pushResult)
-			method.putField(field.getInternalClassName(), field.getFieldName(), field.getType());
+			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
 	}
 
 	@Override
-	public TypeInstance<IJavaExpression> getType()
+	public IGenericType<IJavaExpression> getType()
 	{
-		return field.getType();
+		return field.type;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 		if (instanceValue == null)
 			return null;
 		
-		return instanceValue.memberGet(field.getFieldName());
+		return instanceValue.memberGet(field.fieldName);
 	}
 
 	@Override

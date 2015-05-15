@@ -10,9 +10,10 @@ import java.util.List;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.type.CallableFunctionType;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -23,9 +24,9 @@ import org.openzen.zencode.util.CodePosition;
 public class PartialStaticMethod<E extends IPartialExpression<E>>
 	extends AbstractPartialExpression<E>
 {
-	private final IMethod<E> method;
+	private final ICallable<E> method;
 	
-	public PartialStaticMethod(CodePosition position, IMethodScope<E> scope, IMethod<E> method)
+	public PartialStaticMethod(CodePosition position, IMethodScope<E> scope, ICallable<E> method)
 	{
 		super(position, scope);
 		
@@ -35,7 +36,7 @@ public class PartialStaticMethod<E extends IPartialExpression<E>>
 	@Override
 	public E eval()
 	{
-		return getScope().getExpressionCompiler().staticMethodValue(getPosition(), getScope(), method);
+		return method.asValue(getPosition(), getScope());
 	}
 
 	@Override
@@ -48,25 +49,20 @@ public class PartialStaticMethod<E extends IPartialExpression<E>>
 	@Override
 	public IPartialExpression<E> getMember(CodePosition position, String name)
 	{
-		return method.getFunctionType().getInstanceMember(position, getScope(), eval(), name);
+		getScope().getErrorLogger().errorFunctionHasNoMembers(position);
+		return getScope().getExpressionCompiler().invalid(position, getScope());
 	}
 	
 	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
 		return Collections.singletonList(method);
 	}
-	
-	@Override
-	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		return method.callStatic(position, getScope(), arguments);
-	}
 
 	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
-		return method.getFunctionType();
+		return new CallableFunctionType<E>(method);
 	}
 
 	@Override

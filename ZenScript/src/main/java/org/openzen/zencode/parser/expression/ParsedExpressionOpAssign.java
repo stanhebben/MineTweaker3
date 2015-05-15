@@ -10,7 +10,7 @@ import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.IAny;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -34,12 +34,12 @@ public class ParsedExpressionOpAssign extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> environment, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
-		E cLeft = left.compile(environment, predictedType);
-		E cRight = right.compile(environment, cLeft.getType().predictOperatorArgumentType(operator).get(0));
+		E cLeft = left.compile(scope, predictedType);
+		E cRight = right.compile(scope, cLeft.getType().predictOperatorArgumentType(scope, operator).get(0));
 		
-		E value = cLeft.getType().binary(getPosition(), environment, operator, cLeft, cRight);
+		E value = cLeft.getType().binary(getPosition(), scope, operator, cLeft, cRight);
 		return value;
 	}
 

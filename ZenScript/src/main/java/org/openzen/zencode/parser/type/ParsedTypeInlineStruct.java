@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.parser.type;
 
+import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.T_AOPEN;
@@ -16,8 +17,11 @@ import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.DefinitionScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicStruct;
+import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
+import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 
 /**
  *
@@ -34,16 +38,19 @@ public class ParsedTypeInlineStruct implements IParsedType
 	}
 	
 	@Override
-	public <E extends IPartialExpression<E>> TypeInstance<E> compile(IModuleScope<E> environment)
+	public <E extends IPartialExpression<E>> IGenericType<E> compile(IModuleScope<E> environment)
 	{
-		SymbolicStruct<E> struct = new SymbolicStruct<E>(Modifier.EXPORT.getCode(), environment);
-		IDefinitionScope<E> scope = new DefinitionScope<E>(environment, struct);
+		SymbolicStruct<E> struct = new SymbolicStruct<>(Modifier.EXPORT.getCode(), environment);
+		IDefinitionScope<E> scope = new DefinitionScope<>(environment, struct);
+		TypeDefinition<E> typeDefinition = new TypeDefinition<>(Collections.emptyList(), true, false);
 		for (IParsedMember member : members) {
 			IMember<E> compiledMember = member.compile(scope);
-			if (compiledMember != null)
+			if (compiledMember != null) {
 				struct.addMember(compiledMember);
+				typeDefinition.addMember(compiledMember);
+			}
 		}
 		
-		return environment.getTypeCompiler().getStruct(scope, struct);
+		return new TypeInstance<>(typeDefinition, TypeCapture.empty(), false);
 	}
 }

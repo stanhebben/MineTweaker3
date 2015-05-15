@@ -18,7 +18,7 @@ import org.openzen.zencode.parser.type.TypeParser;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -32,7 +32,7 @@ public class ParsedAnnotation
 		if (lexer.peek().getType() != T_SQBROPEN)
 			return Collections.emptyList();
 		
-		List<ParsedAnnotation> annotations = new ArrayList<ParsedAnnotation>();
+		List<ParsedAnnotation> annotations = new ArrayList<>();
 		
 		while (lexer.peek().getType() == T_SQBROPEN) {
 			annotations.add(parse(lexer));
@@ -69,13 +69,13 @@ public class ParsedAnnotation
 	public <E extends IPartialExpression<E>>
 		SymbolicAnnotation<E> compile(IModuleScope<E> scope)
 	{
-		TypeInstance<E> type = annotationType.compile(scope);
-		MatchedArguments<E> compiledArguments = arguments.compile(type.getConstructors(), scope.getConstantScope());
+		IGenericType<E> type = annotationType.compile(scope);
+		MatchedArguments<E> compiledArguments = arguments.compile(type.getConstructors(scope), scope.getConstantScope());
 		if (compiledArguments == null) {
-			if (type.getConstructors().isEmpty()) {
+			if (type.getConstructors(scope).isEmpty()) {
 				scope.getErrorLogger().errorNoConstructorsForType(position, type);
 			} else {
-				scope.getErrorLogger().errorNoMatchingMethod(position, type.getConstructors(), arguments);
+				scope.getErrorLogger().errorNoMatchingMethod(position, type.getConstructors(scope), arguments);
 			}
 			
 			return null;

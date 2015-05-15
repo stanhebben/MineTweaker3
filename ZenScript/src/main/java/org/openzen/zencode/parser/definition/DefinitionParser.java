@@ -13,7 +13,6 @@ import org.openzen.zencode.lexer.Token;
 import org.openzen.zencode.lexer.ZenLexer;
 import static org.openzen.zencode.lexer.ZenLexer.*;
 import org.openzen.zencode.parser.ParsedAnnotation;
-import org.openzen.zencode.parser.elements.ParsedFunctionSignature;
 import org.openzen.zencode.parser.generic.ParsedGenericParameter;
 import org.openzen.zencode.parser.generic.ParsedGenericParameters;
 import org.openzen.zencode.parser.expression.ParsedCallArguments;

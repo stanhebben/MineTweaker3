@@ -13,6 +13,8 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
 
 /**
  *
@@ -25,6 +27,7 @@ public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbo
 	private final String name;
 	private final List<EnumValue> values;
 	private final List<IMember<E>> members;
+	private final TypeDefinition<E> definition;
 	
 	public SymbolicEnum(ParsedEnum source, IModuleScope<E> moduleScope)
 	{
@@ -34,6 +37,7 @@ public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbo
 		this.name = source.getName();
 		this.values = new ArrayList<EnumValue>();
 		this.members = new ArrayList<IMember<E>>();
+		this.definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 
 	@Override
@@ -86,6 +90,21 @@ public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbo
 		for (EnumValue value : values) {
 			value.validate();
 		}
+	}
+
+	@Override
+	public void register(IModuleScope<E> scope)
+	{
+		scope.putImport(
+				name,
+				new ImportableSymbol<E>(definition),
+				source.getPosition());
+	}
+	
+	@Override
+	public boolean isStruct()
+	{
+		return false;
 	}
 	
 	public final class EnumValue

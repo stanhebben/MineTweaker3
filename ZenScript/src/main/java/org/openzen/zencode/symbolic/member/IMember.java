@@ -8,7 +8,7 @@ package org.openzen.zencode.symbolic.member;
 import java.util.List;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.scope.IModuleScope;
 
 /**
  *
@@ -17,8 +17,6 @@ import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
  */
 public interface IMember<E extends IPartialExpression<E>>
 {
-	public ISymbolicDefinition<E> getUnit();
-	
 	public int getModifiers();
 	
 	public List<SymbolicAnnotation<E>> getAnnotations();
@@ -26,4 +24,8 @@ public interface IMember<E extends IPartialExpression<E>>
 	public void completeContents();
 	
 	public void validate();
+	
+	public boolean isAccessibleFrom(IModuleScope<E> scope);
+	
+	public <R> R accept(IMemberVisitor<E, R> visitor);
 }

@@ -5,11 +5,14 @@
  */
 package org.openzen.zencode.symbolic.type;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
@@ -19,167 +22,226 @@ import org.openzen.zencode.util.CodePosition;
 
 /**
  *
- * @author Stan
+ * @author Stan Hebben
  * @param <E>
  */
-public class TypeInstance<E extends IPartialExpression<E>>
+public class TypeInstance<E extends IPartialExpression<E>> implements IGenericType<E>
 {
-	private final IModuleScope<E> scope;
 	private final ITypeDefinition<E> definition;
 	private final TypeCapture<E> typeCapture;
+	private final boolean nullable;
 	
-	public TypeInstance(ITypeDefinition<E> definition, List<TypeInstance<E>> typeArguments, IModuleScope<E> scope)
+	public TypeInstance(ITypeDefinition<E> definition)
+	{
+		this(definition, Collections.emptyList(), false);
+	}
+	
+	public TypeInstance(ITypeDefinition<E> definition, List<IGenericType<E>> typeArguments, boolean nullable)
 	{
 		if (definition.getGenericParameters().size() != typeArguments.size())
 			throw new IllegalArgumentException("Type parameters don't match");
 		
-		this.scope = scope;
 		this.definition = definition;
-		typeCapture = new TypeCapture<E>(scope.getTypeCapture());
+		this.nullable = nullable;
+		typeCapture = new TypeCapture<>(null);
 		for (int i = 0; i < typeArguments.size(); i++) {
 			typeCapture.put(definition.getGenericParameters().get(i), typeArguments.get(i));
 		}
 	}
 	
-	private TypeInstance(ITypeDefinition<E> definition, TypeCapture<E> typeCapture, IModuleScope<E> scope)
+	public TypeInstance(ITypeDefinition<E> definition, TypeCapture<E> typeCapture, boolean nullable)
 	{
-		this.scope = scope;
 		this.definition = definition;
 		this.typeCapture = typeCapture;
+		this.nullable = nullable;
 	}
 	
-	public IModuleScope<E> getScope()
+	public TypeCapture<E> getTypeCapture()
 	{
-		return scope;
+		return typeCapture;
 	}
 	
-	public ICastingRule<E> getCastingRule(TypeInstance<E> toType)
+	@Override
+	public IGenericType<E> instance(TypeCapture<E> capture)
 	{
-		return definition.getCastingRule(scope, typeCapture, toType);
+		return new TypeInstance<>(definition, capture.instance(capture), nullable);
 	}
 	
-	public boolean canCastImplicit(TypeInstance<E> toType)
+	@Override
+	public ICastingRule<E> getCastingRule(IModuleScope<E> scope, IGenericType<E> toType)
 	{
-		ICastingRule<E> castingRule = getCastingRule(toType);
+		return definition.getCastingRule(scope, this, toType);
+	}
+	
+	@Override
+	public boolean canCastImplicit(IModuleScope<E> scope, IGenericType<E> toType)
+	{
+		ICastingRule<E> castingRule = getCastingRule(scope, toType);
 		return castingRule != null && !castingRule.isExplicit();
 	}
 	
-	public boolean canCastExplicit(TypeInstance<E> toType)
+	@Override
+	public boolean canCastExplicit(IModuleScope<E> scope, IGenericType<E> toType)
 	{
-		return getCastingRule(toType) != null;
+		return getCastingRule(scope, toType) != null;
 	}
 	
-	public List<IMethod<E>> getInstanceMethods()
+	@Override
+	public List<ICallable<E>> getVirtualCallers(IModuleScope<E> scope, E instance)
 	{
-		return definition.getInstanceMethods(scope, typeCapture);
+		return definition.getInstanceCallers(scope, instance, this);
 	}
 	
-	public List<IMethod<E>> getStaticMethods()
+	@Override
+	public List<ICallable<E>> getStaticCallers(IModuleScope<E> scope)
 	{
-		return definition.getStaticMethods(scope, typeCapture);
+		return definition.getStaticCallers(scope, this);
 	}
 	
-	public List<IMethod<E>> getConstructors()
+	@Override
+	public List<ICallable<E>> getConstructors(IModuleScope<E> scope)
 	{
-		return definition.getConstructors(scope, typeCapture);
+		return definition.getConstructors(scope, this);
 	}
 	
+	@Override
 	public TypeInstance<E> nullable()
 	{
-		return definition.nullable(scope, typeCapture);
+		if (nullable)
+			return this;
+		else
+			return new TypeInstance<>(definition, typeCapture, true);
 	}
 	
+	@Override
 	public TypeInstance<E> nonNull()
 	{
-		return definition.nonNull(scope, typeCapture);
+		if (nullable)
+			return new TypeInstance<>(definition, typeCapture, false);
+		else
+			return this;
 	}
 	
+	@Override
 	public boolean isNullable()
 	{
-		return definition.isNullable();
+		return nullable;
 	}
 	
+	@Override
 	public IPartialExpression<E> getInstanceMember(CodePosition position, IMethodScope<E> scope, E instance, String name)
 	{
-		return definition.getInstanceMember(scope, typeCapture, name, instance);
+		return definition.getInstanceMember(position, scope, this, name, instance);
 	}
 	
+	@Override
 	public IPartialExpression<E> getStaticMember(CodePosition position, IMethodScope<E> scope, String name)
 	{
-		return definition.getStaticMember(scope, typeCapture, name);
+		return definition.getStaticMember(position, scope, this, name);
 	}
 	
+	@Override
 	public E createDefaultValue(CodePosition position, IMethodScope<E> scope)
 	{
-		return definition.createDefaultValue(position, scope);
+		return definition.createDefaultValue(position, scope, this);
 	}
 	
-	public TypeInstance<E> getArrayBaseType()
+	@Override
+	public IGenericType<E> getArrayBaseType()
 	{
-		return definition.getArrayBaseType(scope, typeCapture);
+		return definition.getArrayBaseType(this);
 	}
 	
-	public TypeInstance<E> getMapKeyType()
+	@Override
+	public IGenericType<E> getMapKeyType()
 	{
-		return definition.getMapKeyType(scope, typeCapture);
+		return definition.getMapKeyType(this);
 	}
 	
-	public TypeInstance<E> getMapValueType()
+	@Override
+	public IGenericType<E> getMapValueType()
 	{
-		return definition.getMapValueType(scope, typeCapture);
+		return definition.getMapValueType(this);
 	}
 	
-	public List<TypeInstance<E>> predictOperatorArgumentType(OperatorType operator)
+	@Override
+	public List<IGenericType<E>> predictOperatorArgumentType(IModuleScope<E> scope, OperatorType operator)
 	{
-		return definition.predictOperatorArgumentType(scope, typeCapture, operator);
+		return definition.predictOperatorArgumentType(this, operator);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public E unary(CodePosition position, IMethodScope<E> scope, OperatorType operator, E value)
 	{
-		return definition.getOperator(scope, typeCapture, operator, value);
+		return definition.getOperator(position, scope, this, operator, value, Collections.<E>emptyList());
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public E binary(CodePosition position, IMethodScope<E> scope, OperatorType operator, E left, E right)
 	{
-		return definition.getOperator(scope, typeCapture, operator, left, right);
+		return definition.getOperator(position, scope, this, operator, left, Collections.singletonList(right));
 	}
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public E ternary(CodePosition position, IMethodScope<E> scope, OperatorType operator, E first, E second, E third)
 	{
-		return definition.getOperator(scope, typeCapture, operator, first, second, third);
+		return definition.getOperator(position, scope, this, operator, first, Arrays.asList(second, third));
 	}
 	
+	@Override
 	public E compare(CodePosition position, IMethodScope<E> scope, E left, E right, CompareType comparator)
 	{
-		return definition.compare(scope, typeCapture, position, left, right, comparator);
+		return definition.compare(position, scope, this, left, right, comparator);
 	}
 	
+	@Override
 	public MethodHeader<E> getFunctionHeader()
 	{
-		return definition.getFunctionHeader(scope, typeCapture);
+		return definition.getFunctionHeader(this);
 	}
 	
-	public List<TypeInstance<E>> getIteratorTypes(int numArguments)
+	@Override
+	public List<IGenericType<E>> getForeachTypes(IMethodScope<E> scope, int numArguments)
 	{
-		return definition.getIteratorTypes(scope, typeCapture, numArguments);
+		return definition.getForeachTypes(scope, this, numArguments);
 	}
 	
+	@Override
 	public boolean isValidSwitchType()
 	{
 		return definition.isValidSwitchType();
 	}
 	
+	@Override
 	public boolean isStruct()
 	{
 		return definition.isStruct();
 	}
-	
-	public TypeInstance<E> instance(IModuleScope<E> scope, TypeCapture<E> capture)
+
+	@Override
+	public boolean isInterface()
 	{
-		// TODO: is this the correct way of doing it?
-		return new TypeInstance<E>(definition, capture, scope);
+		return definition.isInterface();
+	}
+
+	@Override
+	public IGenericType<E> unify(IModuleScope<E> scope, IGenericType<E> other)
+	{
+		ICastingRule<E> castingRuleA = this.getCastingRule(scope, other);
+		ICastingRule<E> castingRuleB = other.getCastingRule(scope, this);
+		
+		if (castingRuleA != null && !castingRuleA.isExplicit())
+			return other;
+		else if (castingRuleB != null && !castingRuleB.isExplicit())
+			return this;
+		else
+			return null;
+	}
+
+	@Override
+	public void addMember(IMember<E> member)
+	{
+		definition.addMember(member);
 	}
 }

@@ -8,7 +8,8 @@ package org.openzen.zencode.symbolic;
 import java.util.ArrayList;
 import java.util.List;
 import org.openzen.zencode.IZenCompileEnvironment;
-import org.openzen.zencode.IZenCompiler;
+import org.openzen.zencode.compiler.IExpressionCompiler;
+import org.openzen.zencode.compiler.TypeRegistry;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.ModuleScope;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
@@ -25,9 +26,12 @@ public class SymbolicModule<E extends IPartialExpression<E>>
 	private final List<ScriptBlock<E>> scripts = new ArrayList<ScriptBlock<E>>();
 	private final List<ISymbolicDefinition<E>> definitions = new ArrayList<ISymbolicDefinition<E>>();
 	
-	public SymbolicModule(IZenCompileEnvironment<E> environment, IZenCompiler<E> compiler)
+	public SymbolicModule(
+			IZenCompileEnvironment<E> environment,
+			IExpressionCompiler<E> expressionCompiler,
+			TypeRegistry<E> typeRegistry)
 	{
-		this.scope = new ModuleScope<E>(environment, compiler);
+		this.scope = new ModuleScope<E>(environment, expressionCompiler, typeRegistry);
 	}
 	
 	public IModuleScope<E> getScope()
@@ -38,6 +42,7 @@ public class SymbolicModule<E extends IPartialExpression<E>>
 	public void addUnit(ISymbolicDefinition<E> unit)
 	{
 		definitions.add(unit);
+		unit.register(scope);
 	}
 	
 	public void addScript(ScriptBlock<E> script)

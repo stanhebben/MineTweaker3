@@ -11,6 +11,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.runtime.AnyBool;
 import org.openzen.zencode.runtime.AnyNull;
 import org.openzen.zencode.runtime.IAny;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 
@@ -33,19 +34,19 @@ public class ParsedExpressionOrOr extends ParsedExpression
 
 	@Override
 	public <E extends IPartialExpression<E>>
-		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, TypeInstance<E> predictedType)
+		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> predictedType)
 	{
 		E cLeft = left.compile(scope, predictedType);
 		E cRight = right.compile(scope, predictedType);
 
-		TypeInstance<E> type;
-		if (cRight.getType().canCastImplicit(cLeft.getType()))
+		IGenericType<E> type;
+		if (cRight.getType().canCastImplicit(scope, cLeft.getType()))
 			type = cLeft.getType();
-		else if (cLeft.getType().canCastImplicit(cRight.getType()))
+		else if (cLeft.getType().canCastImplicit(scope, cRight.getType()))
 			type = cRight.getType();
 		else {
 			scope.getErrorLogger().errorCannotCombineTypes(getPosition(), cLeft.getType(), cRight.getType());
-			type = scope.getTypeCompiler().getAny(scope);
+			type = scope.getTypeCompiler().any;
 		}
 
 		return scope.getExpressionCompiler().orOr(

@@ -9,10 +9,10 @@ import java.util.List;
 import org.openzen.zencode.annotations.OperatorType;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.method.IMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.method.ICallable;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -25,9 +25,9 @@ public class PartialIndexed<E extends IPartialExpression<E>>
 {
 	private final E value;
 	private final E index;
-	private final TypeInstance<E> asType;
+	private final IGenericType<E> asType;
 	
-	public PartialIndexed(CodePosition position, IMethodScope<E> scope, E value, E index, TypeInstance<E> asType)
+	public PartialIndexed(CodePosition position, IMethodScope<E> scope, E value, E index, IGenericType<E> asType)
 	{
 		super(position, scope);
 		
@@ -65,19 +65,13 @@ public class PartialIndexed<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public List<IMethod<E>> getMethods()
+	public List<ICallable<E>> getMethods()
 	{
 		return eval().getMethods();
 	}
 
 	@Override
-	public IPartialExpression<E> call(CodePosition position, IMethod<E> method, List<E> arguments)
-	{
-		return eval().call(position, method, arguments);
-	}
-
-	@Override
-	public TypeInstance<E> getType()
+	public IGenericType<E> getType()
 	{
 		return value.getType().getArrayBaseType();
 	}

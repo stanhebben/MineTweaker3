@@ -12,7 +12,7 @@ import java.util.Map;
 import org.openzen.zencode.parser.definition.ParsedFunction;
 import org.openzen.zencode.symbolic.Modifier;
 import org.openzen.zencode.symbolic.annotations.SymbolicAnnotation;
-import org.openzen.zencode.symbolic.member.FieldMember;
+import org.openzen.zencode.symbolic.member.definition.FieldMember;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
@@ -21,7 +21,8 @@ import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
@@ -29,30 +30,30 @@ import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
  * @author Stan
  * @param <E>
  */
-public class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractSymbolicDefinition<E>
+public final class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedFunction source;
 	
 	private final CodePosition position;
-	private final LocalSymbol<E> localThis;
-	private final TypeInstance<E> type;
+	private final String name;
 	private Statement<E> content;
 	
 	private final IMethodScope<E> methodScope;
+	private final TypeDefinition<E> definition;
 
 	private final Map<LocalSymbol<E>, Capture<E>> captured = new HashMap<LocalSymbol<E>, Capture<E>>();
 
-	public SymbolicFunction(CodePosition position, int modifiers, MethodHeader<E> header, IModuleScope<E> scope)
+	public SymbolicFunction(CodePosition position, int modifiers, String name, MethodHeader<E> header, IModuleScope<E> scope)
 	{
 		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), scope);
 		
 		source = null;
-		methodScope = new MethodScope<E>(getScope(), header);
+		methodScope = new MethodScope<E>(getScope(), header, false);
 		
 		this.position = position;
-		this.type = scope.getTypeCompiler().getFunction(methodScope, header);
+		this.name = name;
 		
-		localThis = new LocalSymbol<E>(type, true);
+		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 	
 	public SymbolicFunction(ParsedFunction source, IModuleScope<E> scope)
@@ -62,10 +63,10 @@ public class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractS
 		this.source = source;
 		position = source.getPosition();
 		MethodHeader<E> header = source.getSignature().compile(getScope());
-		methodScope = new MethodScope<E>(getScope(), header);
-		type = scope.getTypeCompiler().getFunction(getScope(), header);
+		methodScope = new MethodScope<E>(getScope(), header, false);
+		this.name = source.getName();
 		
-		localThis = new LocalSymbol<E>(type, true);
+		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 	
 	public final IMethodScope<E> getMethodScope()
@@ -102,7 +103,7 @@ public class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractS
 
 	public MethodHeader<E> getHeader()
 	{
-		return type.getFunctionHeader();
+		return methodScope.getMethodHeader();
 	}
 
 	public IPartialExpression<E> addCapture(CodePosition position, IMethodScope<E> scope, LocalSymbol<E> local)
@@ -147,6 +148,18 @@ public class SymbolicFunction<E extends IPartialExpression<E>> extends AbstractS
 	public List<? extends ITypeVariable<E>> getTypeVariables()
 	{
 		return methodScope.getMethodHeader().getGenericParameters();
+	}
+
+	@Override
+	public void register(IModuleScope<E> scope)
+	{
+		scope.putImport(name, new ImportableSymbol<E>(new TypeDefinition<E>(getTypeVariables(), false, false)), position);
+	}
+	
+	@Override
+	public boolean isStruct()
+	{
+		return false;
 	}
 	
 	private static class Capture<E extends IPartialExpression<E>>
