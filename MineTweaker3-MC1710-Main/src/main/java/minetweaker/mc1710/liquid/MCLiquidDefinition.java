@@ -117,7 +117,7 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 	}
 	
 	@Override
-	public boolean equals(Object ) {
+	public boolean equals(Object obj) {
 		if(this == obj)
 			return true;
 		
