@@ -117,7 +117,7 @@ public class MCLiquidStack implements ILiquidStack {
 	
 	@Override
 	public String toString() {
-		return "<fluid:" + this.getName() + ">";
+		return "<liquid:" + this.getName() + ">";
 	}
 	
 	// ##################################
