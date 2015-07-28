@@ -42,8 +42,8 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	public StatementBlockScope(IMethodScope<E> outer)
 	{
 		this.outer = outer;
-		this.local = new HashMap<String, IZenSymbol<E>>();
-		this.locals = new HashMap<LocalSymbol<E>, Integer>();
+		this.local = new HashMap<>();
+		this.locals = new HashMap<>();
 		this.controlStatement = null;
 		this.labels = null;
 	}
@@ -186,5 +186,17 @@ public class StatementBlockScope<E extends IPartialExpression<E>> implements IMe
 	public boolean isConstructor()
 	{
 		return outer.isConstructor();
+	}
+
+	@Override
+	public IGenericType<E> getSelfType()
+	{
+		return outer.getSelfType();
+	}
+
+	@Override
+	public E getThis(CodePosition position, IGenericType<E> predictedType)
+	{
+		return outer.getThis(position, predictedType);
 	}
 }

@@ -36,8 +36,9 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	private final Map<String, IZenSymbol<E>> local;
 	private final TypeCapture<E> typeCapture;
 	private final IMethodScope<E> constantScope;
+	private final TypeInstance<E> type;
 	
-	public DefinitionScope(IModuleScope<E> global, ISymbolicDefinition<E> unit)
+	public DefinitionScope(IModuleScope<E> global, ISymbolicDefinition<E> unit, TypeInstance<E> type)
 	{
 		this.accessScope = AccessScope.createClassScope(global.getAccessScope());
 		this.module = global;
@@ -45,6 +46,7 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 		this.unit = unit;
 		this.typeCapture = new TypeCapture<>(null);
 		constantScope = new ConstantScope<>(this);
+		this.type = type;
 		
 		for (ITypeVariable<E> typeVariable : unit.getTypeVariables()) {
 			typeCapture.put(typeVariable, new TypeInstance<>(new ParameterType<>(this, typeVariable), Collections.emptyList(), false));
@@ -142,5 +144,11 @@ public class DefinitionScope<E extends IPartialExpression<E>> implements IDefini
 	public void putImport(String name, IZenSymbol<E> symbol, CodePosition position)
 	{
 		putValue(name, symbol, position);
+	}
+
+	@Override
+	public TypeInstance<E> getSelfType()
+	{
+		return type;
 	}
 }

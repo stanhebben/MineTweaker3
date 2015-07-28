@@ -41,8 +41,8 @@ public class ParsedTypeInlineStruct implements IParsedType
 	public <E extends IPartialExpression<E>> IGenericType<E> compile(IModuleScope<E> environment)
 	{
 		SymbolicStruct<E> struct = new SymbolicStruct<>(Modifier.EXPORT.getCode(), environment);
-		IDefinitionScope<E> scope = new DefinitionScope<>(environment, struct);
 		TypeDefinition<E> typeDefinition = new TypeDefinition<>(Collections.emptyList(), true, false);
+		IDefinitionScope<E> scope = new DefinitionScope<>(environment, struct, typeDefinition.getSelfInstance());
 		for (IParsedMember member : members) {
 			IMember<E> compiledMember = member.compile(scope);
 			if (compiledMember != null) {

@@ -16,7 +16,6 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
-import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.util.Strings;
 

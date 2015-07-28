@@ -472,6 +472,12 @@ public abstract class ParsedExpression
 				ParsedExpression result = readAssignExpression(lexer);
 				lexer.required(T_BRCLOSE, ") expected");
 				return result;
+			case T_THIS:
+				lexer.next();
+				return new ParsedExpressionThis(position);
+			case T_SUPER:
+				lexer.next();
+				return new ParsedExpressionSuper(position);
 			default:
 				Token last = lexer.next();
 				throw new ParseException(last, "Invalid expression, last token: " + last.getValue());

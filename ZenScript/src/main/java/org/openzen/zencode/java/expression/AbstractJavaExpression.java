@@ -65,10 +65,10 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 	public void compileIf(Label onIf, MethodOutput output)
 	{
 		if (getType() == getScope().getTypeCompiler().bool) {
-			compile(true, output);
+			compileValue(output);
 			output.ifNE(onIf);
 		} else if (getType().isNullable()) {
-			compile(true, output);
+			compileValue(output);
 			output.ifNonNull(onIf);
 		} else
 			throw new RuntimeException("cannot compile non-pointer non-boolean value to if condition");
@@ -78,10 +78,10 @@ public abstract class AbstractJavaExpression implements IJavaExpression
 	public void compileElse(Label onElse, MethodOutput output)
 	{
 		if (getType() == getScope().getTypeCompiler().bool) {
-			compile(true, output);
+			compileValue(output);
 			output.ifEQ(onElse);
 		} else if (getType().isNullable()) {
-			compile(true, output);
+			compileValue(output);
 			output.ifNull(onElse);
 		} else
 			throw new RuntimeException("cannot compile non-pointer non-boolean value to if condition");

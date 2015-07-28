@@ -8,6 +8,7 @@ package org.openzen.zencode.symbolic.scope;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.type.IGenericType;
 
 /**
  *
@@ -17,4 +18,6 @@ import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 public interface IDefinitionScope<E extends IPartialExpression<E>> extends IModuleScope<E>
 {
 	public ISymbolicDefinition<E> getDefinition();
+	
+	public IGenericType<E> getSelfType();
 }

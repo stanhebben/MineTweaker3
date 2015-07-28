@@ -27,7 +27,7 @@ public class SymbolicExpansion<E extends IPartialExpression<E>>
 	
 	public SymbolicExpansion(ParsedExpansion source, IModuleScope<E> scope)
 	{
-		super(source, scope);
+		super(source, scope, false, false);
 		
 		this.source = source;
 		this.members = new ArrayList<>();

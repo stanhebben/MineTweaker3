@@ -87,7 +87,7 @@ public class ParsedTypeClass implements IParsedType
 		if (genericType == null)
 			compiledGenericTypes = null;
 		else {
-			compiledGenericTypes = new ArrayList<IGenericType<E>>();
+			compiledGenericTypes = new ArrayList<>();
 			for (IParsedType type : genericType) {
 				compiledGenericTypes.add(type.compile(scope));
 			}

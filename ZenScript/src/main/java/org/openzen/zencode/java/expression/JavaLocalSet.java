@@ -40,14 +40,18 @@ public class JavaLocalSet extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean result, MethodOutput output)
+	public void compileValue(MethodOutput output)
 	{
-		int local = output.getLocal(variable);
-
-		value.compile(true, output);
-		if (result)
-			output.dup();
-		output.store(variable.getType(), local);
+		value.compileValue(output);
+		output.store(variable.getType(), output.getLocal(variable));
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput output)
+	{
+		value.compileValue(output);
+		output.dup();
+		output.store(variable.getType(), output.getLocal(variable));
 	}
 
 	@Override

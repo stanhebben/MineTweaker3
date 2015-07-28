@@ -12,29 +12,30 @@ import java.util.Iterator;
  *
  * @author Stan
  */
-public class AnyInt extends AnyNumber
-{
+public class AnyByte extends AnyNumber {
 	private final int value;
 	
-	public AnyInt(int value) {
+	public AnyByte(int value) {
 		this.value = value;
 	}
 	
 	@Override
 	public IAny invert() {
-		return new AnyInt(~value);
+		return new AnyByte(~value);
 	}
 
 	@Override
 	public IAny neg() {
-		return new AnyInt(-value);
+		return new AnyByte(-value);
 	}
 
 	@Override
 	public IAny add(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value + value.asByte());
 			case SHORT:
+				return new AnyShort(this.value + value.asShort());
 			case INT:
 				return new AnyInt(this.value + value.asInt());
 			case LONG:
@@ -53,7 +54,9 @@ public class AnyInt extends AnyNumber
 	public IAny sub(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value - value.asByte());
 			case SHORT:
+				return new AnyShort(this.value - value.asShort());
 			case INT:
 				return new AnyInt(this.value - value.asInt());
 			case LONG:
@@ -62,7 +65,7 @@ public class AnyInt extends AnyNumber
 			case DOUBLE:
 				return new AnyDouble(this.value - value.asDouble());
 			case NONE:
-				return new AnyInt(this.value - value.asInt());
+				return new AnyByte(this.value - value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -77,7 +80,9 @@ public class AnyInt extends AnyNumber
 	public IAny mul(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value * value.asByte());
 			case SHORT:
+				return new AnyShort(this.value * value.asShort());
 			case INT:
 				return new AnyInt(this.value * value.asInt());
 			case LONG:
@@ -86,7 +91,7 @@ public class AnyInt extends AnyNumber
 			case DOUBLE:
 				return new AnyDouble(this.value * value.asDouble());
 			case NONE:
-				return new AnyInt(this.value * value.asInt());
+				return new AnyByte(this.value * value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -96,7 +101,9 @@ public class AnyInt extends AnyNumber
 	public IAny div(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value / value.asByte());
 			case SHORT:
+				return new AnyShort(this.value / value.asShort());
 			case INT:
 				return new AnyInt(this.value / value.asInt());
 			case LONG:
@@ -105,7 +112,7 @@ public class AnyInt extends AnyNumber
 			case DOUBLE:
 				return new AnyDouble(this.value / value.asDouble());
 			case NONE:
-				return new AnyInt(this.value / value.asInt());
+				return new AnyByte(this.value / value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -115,16 +122,18 @@ public class AnyInt extends AnyNumber
 	public IAny mod(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value % value.asByte());
 			case SHORT:
+				return new AnyShort(this.value % value.asShort());
 			case INT:
-				return new AnyInt(this.value % value.asInt());
+				return new AnyByte(this.value % value.asInt());
 			case LONG:
 				return new AnyLong(this.value % value.asLong());
 			case FLOAT:
 			case DOUBLE:
 				return new AnyDouble(this.value % value.asDouble());
 			case NONE:
-				return new AnyInt(this.value % value.asInt());
+				return new AnyByte(this.value % value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -132,14 +141,16 @@ public class AnyInt extends AnyNumber
 
 	@Override
 	public IAny and(IAny value) {
-		return new AnyInt(this.value & value.asInt());
+		return new AnyByte(this.value & value.asInt());
 	}
 
 	@Override
 	public IAny or(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value | value.asByte());
 			case SHORT:
+				return new AnyShort(this.value | value.asShort());
 			case INT:
 				return new AnyInt(this.value | value.asInt());
 			case LONG:
@@ -148,7 +159,7 @@ public class AnyInt extends AnyNumber
 			case DOUBLE:
 				throw new UnsupportedOperationException("Cannot | with a double");
 			case NONE:
-				return new AnyInt(this.value | value.asInt());
+				return new AnyByte(this.value | value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -158,16 +169,18 @@ public class AnyInt extends AnyNumber
 	public IAny xor(IAny value) {
 		switch (value.getNumberType()) {
 			case BYTE:
+				return new AnyByte(this.value ^ value.asByte());
 			case SHORT:
+				return new AnyShort(this.value ^ value.asShort());
 			case INT:
-				return new AnyInt(this.value ^ value.asInt());
+				return new AnyByte(this.value ^ value.asInt());
 			case LONG:
 				return new AnyLong(this.value ^ value.asLong());
 			case FLOAT:
 			case DOUBLE:
 				throw new UnsupportedOperationException("Cannot ^ with a double");
 			case NONE:
-				return new AnyInt(this.value ^ value.asInt());
+				return new AnyByte(this.value ^ value.asInt());
 			default:
 				throw new AssertionError("Invalid number type: " + value.getNumberType());
 		}
@@ -267,7 +280,7 @@ public class AnyInt extends AnyNumber
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final AnyInt other = (AnyInt) obj;
+		final AnyByte other = (AnyByte) obj;
 		if (this.value != other.value) {
 			return false;
 		}

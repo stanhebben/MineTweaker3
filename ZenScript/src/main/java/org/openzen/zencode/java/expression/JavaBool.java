@@ -28,9 +28,15 @@ public class JavaBool extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
 		method.constant(value);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		
 	}
 
 	@Override

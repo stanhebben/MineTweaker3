@@ -30,6 +30,7 @@ import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.definition.SymbolicFunction;
+import org.openzen.zencode.symbolic.type.FunctionType;
 import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
@@ -55,7 +56,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 	public <E extends IPartialExpression<E>>
 		 IPartialExpression<E> compilePartial(IMethodScope<E> scope, IGenericType<E> asType)
 	{
-		MethodHeader<E> compiledHeader = header.compile(scope);
+		MethodHeader<E> compiledHeader = null;
 		
 		if (asType != null) {
 			MethodHeader<E> function = asType.getFunctionHeader();
@@ -79,7 +80,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 					newArguments.add(parameter.compile(scope));
 				}
 
-				compiledHeader = new MethodHeader<E>(
+				compiledHeader = new MethodHeader<>(
 						compiledHeader.getPosition(),
 						function.getGenericParameters(),
 						newReturnType,
@@ -87,9 +88,14 @@ public class ParsedExpressionFunction extends ParsedExpression
 						function.isVarargs());
 			}
 		}
+		
+		if (compiledHeader == null) {
+			compiledHeader = header.compile(scope);
+			asType = new FunctionType<>(compiledHeader);
+		}
 
-		SymbolicFunction<E> functionUnit = new SymbolicFunction<E>(getPosition(), Modifier.PRIVATE.getCode(), null, compiledHeader, scope);
-		EnvironmentFunctionLiteral<E> functionScope = new EnvironmentFunctionLiteral<E>(scope, functionUnit);
+		SymbolicFunction<E> functionUnit = new SymbolicFunction<>(getPosition(), Modifier.PRIVATE.getCode(), null, compiledHeader, scope);
+		EnvironmentFunctionLiteral<E> functionScope = new EnvironmentFunctionLiteral<>(scope, functionUnit, asType);
 
 		for (int i = 0; i < compiledHeader.getParameters().size(); i++) {
 			MethodParameter<E> argument = compiledHeader.getParameters().get(i);
@@ -101,7 +107,7 @@ public class ParsedExpressionFunction extends ParsedExpression
 					header.getParameters().get(i).getPosition());
 		}
 
-		List<Statement<E>> cStatements = new ArrayList<Statement<E>>();
+		List<Statement<E>> cStatements = new ArrayList<>();
 		for (ParsedStatement statement : statements) {
 			Statement<E> cStatement = statement.compile(functionScope);
 			cStatements.add(cStatement);
@@ -121,13 +127,15 @@ public class ParsedExpressionFunction extends ParsedExpression
 	{
 		private final IMethodScope<E> outer;
 		private final SymbolicFunction<E> functionUnit;
+		private final IGenericType<E> type;
 		private final Map<String, IZenSymbol<E>> locals;
 
-		public EnvironmentFunctionLiteral(IMethodScope<E> outer, SymbolicFunction<E> functionUnit)
+		public EnvironmentFunctionLiteral(IMethodScope<E> outer, SymbolicFunction<E> functionUnit, IGenericType<E> type)
 		{
 			this.outer = outer;
 			this.functionUnit = functionUnit;
-			locals = new HashMap<String, IZenSymbol<E>>();
+			this.type = type;
+			locals = new HashMap<>();
 		}
 		
 		@Override
@@ -192,6 +200,12 @@ public class ParsedExpressionFunction extends ParsedExpression
 		{
 			return functionUnit.getHeader().getReturnType();
 		}
+		
+		@Override
+		public IGenericType<E> getSelfType()
+		{
+			return type;
+		}
 
 		@Override
 		public ICodeErrorLogger<E> getErrorLogger()
@@ -242,6 +256,15 @@ public class ParsedExpressionFunction extends ParsedExpression
 		public boolean isConstructor()
 		{
 			return false;
+		}
+
+		@Override
+		public E getThis(CodePosition position, IGenericType<E> predictedType)
+		{
+			if (predictedType != null && outer.getSelfType().canCastImplicit(this, predictedType))
+				return outer.getThis(position, predictedType);
+			else
+				return outer.getExpressionCompiler().thisValue(position, this);
 		}
 	}
 }

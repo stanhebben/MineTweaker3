@@ -37,10 +37,16 @@ public class JavaLocalGet extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean result, MethodOutput output)
+	public void compileValue(MethodOutput output)
 	{
 		int local = output.getLocal(variable);
 		output.load(variable.getType(), local);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput output)
+	{
+		
 	}
 
 	@Override

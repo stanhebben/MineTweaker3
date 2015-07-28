@@ -37,16 +37,30 @@ public class JavaTernary extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
 		Label exit = new Label();
 		Label lblTrue = new Label();
 		
 		condition.compileIf(lblTrue, method);
-		ifFalse.compile(pushResult, method);
+		ifFalse.compileValue(method);
 		method.goTo(exit);
 		method.label(lblTrue);
-		ifTrue.compile(pushResult, method);
+		ifTrue.compileValue(method);
+		method.label(exit);
+	}
+
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		Label exit = new Label();
+		Label lblTrue = new Label();
+		
+		condition.compileIf(lblTrue, method);
+		ifFalse.compileStatement(method);
+		method.goTo(exit);
+		method.label(lblTrue);
+		ifTrue.compileStatement(method);
 		method.label(exit);
 	}
 

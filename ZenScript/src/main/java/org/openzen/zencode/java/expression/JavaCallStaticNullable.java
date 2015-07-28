@@ -5,7 +5,7 @@
  */
 package org.openzen.zencode.java.expression;
 
-import java.util.Arrays;
+import java.util.Collections;
 import org.objectweb.asm.Label;
 import org.openzen.zencode.java.method.IJavaMethod;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
@@ -36,9 +36,9 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput output)
+	public void compileValue(MethodOutput output)
 	{
-		value.compile(true, output);
+		value.compileValue(output);
 		
 		Label lblNotNull = new Label();
 		Label lblAfter = new Label();
@@ -53,6 +53,28 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 		
 		output.invokeStatic(method.getDeclaringClass(), method.getMethodName(), method.getMethodSignature());
 
+		output.label(lblAfter);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput output)
+	{
+		value.compileValue(output);
+		
+		Label lblNotNull = new Label();
+		Label lblAfter = new Label();
+		
+		output.dup();
+		output.ifNonNull(lblNotNull);
+		output.pop();
+		output.goTo(lblAfter);
+
+		output.label(lblNotNull);
+		
+		output.invokeStatic(method.getDeclaringClass(), method.getMethodName(), method.getMethodSignature());
+		if (method.getReturnType() != getScope().getTypeCompiler().void_)
+			output.pop(method.getReturnType());
+		
 		output.label(lblAfter);
 	}
 
@@ -71,6 +93,7 @@ public class JavaCallStaticNullable extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		
+		if (!method.accepts(Collections.singletonList(value)))
+			getScope().getErrorLogger().errorInvalidMethodCall(getPosition(), method.getMethodName(), Collections.singletonList(value));
 	}
 }

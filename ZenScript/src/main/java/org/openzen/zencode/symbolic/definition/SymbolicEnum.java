@@ -27,17 +27,15 @@ public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbo
 	private final String name;
 	private final List<EnumValue> values;
 	private final List<IMember<E>> members;
-	private final TypeDefinition<E> definition;
 	
 	public SymbolicEnum(ParsedEnum source, IModuleScope<E> moduleScope)
 	{
-		super(source, moduleScope);
+		super(source, moduleScope, false, false);
 		
 		this.source = source;
 		this.name = source.getName();
-		this.values = new ArrayList<EnumValue>();
-		this.members = new ArrayList<IMember<E>>();
-		this.definition = new TypeDefinition<E>(getTypeVariables(), false, false);
+		this.values = new ArrayList<>();
+		this.members = new ArrayList<>();
 	}
 
 	@Override
@@ -97,7 +95,7 @@ public class SymbolicEnum<E extends IPartialExpression<E>> extends AbstractSymbo
 	{
 		scope.putImport(
 				name,
-				new ImportableSymbol<E>(definition),
+				new ImportableSymbol<>(getDefinition()),
 				source.getPosition());
 	}
 	

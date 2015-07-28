@@ -23,6 +23,9 @@ import org.openzen.zencode.java.expression.JavaInvalid;
 import org.openzen.zencode.java.expression.JavaLocalGet;
 import org.openzen.zencode.java.expression.JavaLocalSet;
 import org.openzen.zencode.java.expression.JavaLong;
+import org.openzen.zencode.java.expression.JavaMapLiteral;
+import org.openzen.zencode.java.expression.JavaNew;
+import org.openzen.zencode.java.expression.JavaNewGenericOnObject;
 import org.openzen.zencode.java.expression.JavaNotNull;
 import org.openzen.zencode.java.expression.JavaNull;
 import org.openzen.zencode.java.expression.JavaOrOr;
@@ -34,6 +37,7 @@ import org.openzen.zencode.java.expression.JavaUByte;
 import org.openzen.zencode.java.expression.JavaUInt;
 import org.openzen.zencode.java.expression.JavaULong;
 import org.openzen.zencode.java.expression.JavaUShort;
+import org.openzen.zencode.java.type.JavaTypeInfo;
 import org.openzen.zencode.symbolic.member.ICallerMember;
 import org.openzen.zencode.symbolic.member.IGetterMember;
 import org.openzen.zencode.symbolic.member.IMethodMember;
@@ -47,6 +51,7 @@ import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
+import org.openzen.zencode.symbolic.type.generic.ConstructorGenericParameterBound;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.util.CodePosition;
 
@@ -65,103 +70,152 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression> scope)
+	public IJavaExpression invalid(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope)
 	{
 		return invalid(position, scope, scope.getTypeCompiler().any);
 	}
 
 	@Override
-	public IJavaExpression invalid(CodePosition position, IMethodScope<IJavaExpression> scope, IGenericType<IJavaExpression> valueType)
+	public IJavaExpression invalid(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IGenericType<IJavaExpression> valueType)
 	{
 		return new JavaInvalid(position, scope, valueType);
 	}
 
 	@Override
-	public IJavaExpression constantNull(CodePosition position, IMethodScope<IJavaExpression> scope)
+	public IJavaExpression constantNull(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope)
 	{
 		return new JavaNull(position, scope);
 	}
 
 	@Override
-	public IJavaExpression constantBool(CodePosition position, IMethodScope<IJavaExpression> scope, boolean value)
+	public IJavaExpression constantBool(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			boolean value)
 	{
 		return new JavaBool(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantByte(CodePosition position, IMethodScope<IJavaExpression> scope, byte value)
+	public IJavaExpression constantByte(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			byte value)
 	{
 		return new JavaByte(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantUByte(CodePosition position, IMethodScope<IJavaExpression> scope, int value)
+	public IJavaExpression constantUByte(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			int value)
 	{
 		return new JavaUByte(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantShort(CodePosition position, IMethodScope<IJavaExpression> scope, short value)
+	public IJavaExpression constantShort(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			short value)
 	{
 		return new JavaShort(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantUShort(CodePosition position, IMethodScope<IJavaExpression> scope, int value)
+	public IJavaExpression constantUShort(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			int value)
 	{
 		return new JavaUShort(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantInt(CodePosition position, IMethodScope<IJavaExpression> scope, int value)
+	public IJavaExpression constantInt(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			int value)
 	{
 		return new JavaInt(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantUInt(CodePosition position, IMethodScope<IJavaExpression> scope, int value)
+	public IJavaExpression constantUInt(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			int value)
 	{
 		return new JavaUInt(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantLong(CodePosition position, IMethodScope<IJavaExpression> scope, long value)
+	public IJavaExpression constantLong(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			long value)
 	{
 		return new JavaLong(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantULong(CodePosition position, IMethodScope<IJavaExpression> scope, long value)
+	public IJavaExpression constantULong(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			long value)
 	{
 		return new JavaULong(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantFloat(CodePosition position, IMethodScope<IJavaExpression> scope, float value)
+	public IJavaExpression constantFloat(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			float value)
 	{
 		return new JavaFloat(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantDouble(CodePosition position, IMethodScope<IJavaExpression> scope, double value)
+	public IJavaExpression constantDouble(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			double value)
 	{
 		return new JavaDouble(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantChar(CodePosition position, IMethodScope<IJavaExpression> scope, int value)
+	public IJavaExpression constantChar(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			int value)
 	{
 		return new JavaChar(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constantString(CodePosition position, IMethodScope<IJavaExpression> scope, String value)
+	public IJavaExpression constantString(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			String value)
 	{
 		return new JavaString(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression constant(CodePosition position, IMethodScope<IJavaExpression> scope, Object value)
+	public IJavaExpression constant(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			Object value)
 	{
 		if (value.getClass() == Boolean.class)
 			return constantBool(position, scope, (Boolean) value);
@@ -186,7 +240,10 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public List<IJavaExpression> constants(CodePosition position, IMethodScope<IJavaExpression> scope, Object[] values)
+	public List<IJavaExpression> constants(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			Object[] values)
 	{
 		List<IJavaExpression> results = new ArrayList<>();
 		for (Object value : values) {
@@ -196,75 +253,127 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 	}
 
 	@Override
-	public IJavaExpression localGet(CodePosition position, IMethodScope<IJavaExpression> scope, LocalSymbol<IJavaExpression> local)
+	public IJavaExpression localGet(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			LocalSymbol<IJavaExpression> local)
 	{
 		return new JavaLocalGet(position, scope, local);
 	}
 
 	@Override
-	public IJavaExpression localSet(CodePosition position, IMethodScope<IJavaExpression> scope, LocalSymbol<IJavaExpression> local, IJavaExpression value)
+	public IJavaExpression localSet(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			LocalSymbol<IJavaExpression> local,
+			IJavaExpression value)
 	{
 		return new JavaLocalSet(position, scope, local, value);
 	}
 
 	@Override
-	public IJavaExpression andAnd(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression andAnd(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression left,
+			IJavaExpression right)
 	{
 		return new JavaAndAnd(position, scope, left, right);
 	}
 
 	@Override
-	public IJavaExpression orOr(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression left, IJavaExpression right)
+	public IJavaExpression orOr(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression left,
+			IJavaExpression right)
 	{
 		return new JavaOrOr(position, scope, left, right);
 	}
 
 	@Override
-	public IJavaExpression compareGeneric(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression value, CompareType comparator)
+	public IJavaExpression compareGeneric(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression value,
+			CompareType comparator)
 	{
 		return new JavaCompareGeneric(position, scope, value, comparator);
 	}
 
 	@Override
-	public IJavaExpression ternary(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression condition, IJavaExpression ifValue, IJavaExpression elseValue)
+	public IJavaExpression ternary(
+			CodePosition position, 
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression condition,
+			IJavaExpression ifValue,
+			IJavaExpression elseValue)
 	{
 		return new JavaTernary(position, scope, condition, ifValue, elseValue);
 	}
 
 	@Override
-	public IJavaExpression notNull(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression value)
+	public IJavaExpression notNull(
+			CodePosition position, 
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression value)
 	{
 		return new JavaNotNull(position, scope, value);
 	}
 
 	@Override
-	public IJavaExpression range(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression from, IJavaExpression to)
+	public IJavaExpression range(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression from,
+			IJavaExpression to)
 	{
 		return new JavaRange(position, scope, from, to);
 	}
 
 	@Override
-	public IJavaExpression array(CodePosition position, IMethodScope<IJavaExpression> scope, IGenericType<IJavaExpression> arrayType, List<IJavaExpression> values)
+	public IJavaExpression array(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IGenericType<IJavaExpression> arrayType,
+			List<IJavaExpression> values)
 	{
-		return new JavaArrayLiteral(position, scope, arrayType, values);
+		return new JavaArrayLiteral(position, scope, compileState, arrayType, values);
 	}
 
 	@Override
-	public IJavaExpression map(CodePosition position, IMethodScope<IJavaExpression> scope, IGenericType<IJavaExpression> mapType, List<IJavaExpression> keys, List<IJavaExpression> values)
+	public IJavaExpression map(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IGenericType<IJavaExpression> mapType,
+			List<IJavaExpression> keys,
+			List<IJavaExpression> values)
 	{
 		return new JavaMapLiteral(position, scope, mapType, keys, values);
 	}
 
 	@Override
-	public IJavaExpression constructNew(CodePosition position, IMethodScope<IJavaExpression> scope, TypeInstance<IJavaExpression> type, ConstructorMember<IJavaExpression> constructor, List<IJavaExpression> arguments)
+	public IJavaExpression constructNew(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			TypeInstance<IJavaExpression> type,
+			ConstructorMember<IJavaExpression> constructor,
+			List<IJavaExpression> arguments)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new JavaNew(position, scope, compileState, type, constructor, arguments);
 	}
 
 	@Override
-	public IJavaExpression constructNewGeneric(CodePosition position, IMethodScope<IJavaExpression> scope, TypeInstance<IJavaExpression> type, ITypeVariable<IJavaExpression> typeVariable, List<IJavaExpression> arguments)
+	public IJavaExpression constructNewGenericOnObject(
+			CodePosition position,
+			IMethodScope<IJavaExpression> scope,
+			IJavaExpression source,
+			ConstructorGenericParameterBound<IJavaExpression> bound,
+			List<IJavaExpression> arguments)
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		JavaTypeInfo typeInfo = compileState.getTypeInfo(source.getType());
+		typeInfo.markGenericConstructorUse(bound);
+		return new JavaNewGenericOnObject(position, scope, compileState, source, bound, arguments);
 	}
 
 	@Override
@@ -1925,6 +2034,18 @@ public class JavaExpressionCompiler implements IExpressionCompiler<IJavaExpressi
 
 	@Override
 	public IJavaExpression setArrayElement(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression array, IJavaExpression index, IJavaExpression value)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public IJavaExpression getRangeFrom(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression value)
+	{
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public IJavaExpression getRangeTo(CodePosition position, IMethodScope<IJavaExpression> scope, IJavaExpression value)
 	{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

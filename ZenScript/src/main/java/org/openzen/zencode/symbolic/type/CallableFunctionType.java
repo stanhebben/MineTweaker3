@@ -214,4 +214,10 @@ public class CallableFunctionType<E extends IPartialExpression<E>> implements IG
 	{
 		throw new UnsupportedOperationException("Cannot add members to function types");
 	}
+
+	@Override
+	public IGenericType<E> getSuperclass()
+	{
+		return null;
+	}
 }

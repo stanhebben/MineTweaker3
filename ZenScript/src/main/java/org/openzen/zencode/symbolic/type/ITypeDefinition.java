@@ -67,4 +67,6 @@ public interface ITypeDefinition<E extends IPartialExpression<E>> extends IImpor
 	public boolean isStruct();
 	
 	public boolean isInterface();
+	
+	public IGenericType<E> getSuperType();
 }

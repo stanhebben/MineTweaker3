@@ -40,6 +40,7 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.casting.ICastingRule;
+import org.openzen.zencode.symbolic.type.generic.GenericParameterType;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 import org.openzen.zencode.util.CodePosition;
 
@@ -51,7 +52,7 @@ import org.openzen.zencode.util.CodePosition;
 public class TypeDefinition<E extends IPartialExpression<E>>
 	implements ITypeDefinition<E>, IImportable<E>
 {
-	private final List<? extends ITypeVariable<E>> typeVariables;
+	private List<? extends ITypeVariable<E>> typeVariables = Collections.emptyList();
 	private final boolean isStruct;
 	private final boolean isInterface;
 	private final List<IGenericType<E>> superclasses;
@@ -70,12 +71,11 @@ public class TypeDefinition<E extends IPartialExpression<E>>
 	
 	public TypeDefinition()
 	{
-		this(Collections.<ITypeVariable<E>>emptyList(), false, false);
+		this(false, false);
 	}
 	
-	public TypeDefinition(List<? extends ITypeVariable<E>> typeVariables, boolean isStruct, boolean isInterface)
+	public TypeDefinition(boolean isStruct, boolean isInterface)
 	{
-		this.typeVariables = typeVariables;
 		this.isStruct = isStruct;
 		this.isInterface = isInterface;
 		
@@ -92,6 +92,26 @@ public class TypeDefinition<E extends IPartialExpression<E>>
 		iterators = new ArrayList<>();
 		
 		addMemberVisitor = new AddMemberVisitor();
+	}
+	
+	public TypeDefinition(List<? extends ITypeVariable<E>> typeVariables, boolean isStruct, boolean isInterface)
+	{
+		this(isStruct, isInterface);
+		setTypeVariables(typeVariables);
+	}
+	
+	public void setTypeVariables(List<? extends ITypeVariable<E>> typeVariables)
+	{
+		this.typeVariables = typeVariables;
+	}
+	
+	public TypeInstance<E> getSelfInstance()
+	{
+		List<IGenericType<E>> parameters = new ArrayList<>();
+		for (ITypeVariable<E> typeVariable : typeVariables)
+			parameters.add(new GenericParameterType<>(typeVariable));
+		
+		return new TypeInstance<>(this, parameters, false);
 	}
 	
 	@Override
@@ -411,6 +431,15 @@ public class TypeDefinition<E extends IPartialExpression<E>>
 	public IPartialExpression<E> toPartialExpression(CodePosition position, IMethodScope<E> scope)
 	{
 		return new PartialImportable<>(position, scope, this);
+	}
+
+	@Override
+	public IGenericType<E> getSuperType()
+	{
+		if (superclasses.size() == 1)
+			return superclasses.get(0);
+		else
+			return null;
 	}
 	
 	private class AddMemberVisitor implements IMemberVisitor<E, Void>

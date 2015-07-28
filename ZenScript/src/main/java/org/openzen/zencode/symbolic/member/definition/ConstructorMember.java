@@ -30,7 +30,7 @@ import org.openzen.zencode.util.CodePosition;
  * @param <E>
  */
 public class ConstructorMember<E extends IPartialExpression<E>> implements IConstructorMember<E>
-{	
+{
 	private final ParsedConstructor source;
 	private final IMethodScope<E> methodScope;
 	private final int modifiers;
@@ -42,7 +42,7 @@ public class ConstructorMember<E extends IPartialExpression<E>> implements ICons
 	{
 		source = null;
 		this.contents = contents;
-		methodScope = new MethodScope<E>(scope, header, true);
+		methodScope = new MethodScope<>(scope, header, true);
 		this.modifiers = modifiers;
 	}
 	

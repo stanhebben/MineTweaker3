@@ -27,7 +27,13 @@ public class JavaInvalid extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
+	{
+		compileStatement(method);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
 	{
 		method.newObject(UnsupportedOperationException.class);
 		method.dup();

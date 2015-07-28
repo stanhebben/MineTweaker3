@@ -39,14 +39,14 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	private final TypeCapture<E> typeCapture;
 	private final boolean isConstructor;
 	
-	public MethodScope(IDefinitionScope<E> environment, MethodHeader<E> methodHeader, boolean isConstructor)
+	public MethodScope(IDefinitionScope<E> scope, MethodHeader<E> methodHeader, boolean isConstructor)
 	{
-		this.scope = environment;
+		this.scope = scope;
 		this.local = new HashMap<>();
 		this.methodHeader = methodHeader;
 		this.isConstructor = isConstructor;
 		
-		typeCapture = new TypeCapture<>(environment.getTypeCapture());
+		typeCapture = new TypeCapture<>(scope.getTypeCapture());
 		for (GenericParameter<E> parameter : methodHeader.getGenericParameters()) {
 			typeCapture.put(parameter, new TypeInstance<>(new ParameterType<E>(this, parameter), Collections.emptyList(), false));
 		}
@@ -167,5 +167,17 @@ public class MethodScope<E extends IPartialExpression<E>> implements IMethodScop
 	public boolean isConstructor()
 	{
 		return isConstructor;
+	}
+
+	@Override
+	public IGenericType<E> getSelfType()
+	{
+		return scope.getSelfType();
+	}
+
+	@Override
+	public E getThis(CodePosition position, IGenericType<E> predictedType)
+	{
+		return getExpressionCompiler().thisValue(position, this);
 	}
 }

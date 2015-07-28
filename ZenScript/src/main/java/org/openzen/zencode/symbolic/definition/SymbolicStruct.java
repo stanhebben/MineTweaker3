@@ -30,18 +30,18 @@ public class SymbolicStruct<E extends IPartialExpression<E>>
 	
 	public SymbolicStruct(int modifiers, IModuleScope<E> moduleScope)
 	{
-		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), moduleScope);
+		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), moduleScope, true, false);
 		
 		source = null;
-		this.members = new ArrayList<IMember<E>>();
+		this.members = new ArrayList<>();
 	}
 	
 	public SymbolicStruct(ParsedStruct source, IModuleScope<E> moduleScope)
 	{
-		super(source, moduleScope);
+		super(source, moduleScope, true, false);
 		
 		this.source = source;
-		this.members = new ArrayList<IMember<E>>();
+		this.members = new ArrayList<>();
 	}
 	
 	public void addMember(IMember<E> member)

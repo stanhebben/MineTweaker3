@@ -16,6 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.ITypeDefinition;
@@ -37,12 +38,6 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 		hasErrors = false;
 	}
 	
-	@Override
-	public boolean hasErrors()
-	{
-		return hasErrors;
-	}
-	
 	public void error(CodePosition position, String message)
 	{
 		hasErrors = true;
@@ -52,7 +47,13 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	{
 		
 	}
-
+	
+	@Override
+	public boolean hasErrors()
+	{
+		return hasErrors;
+	}
+	
 	@Override
 	public void errorSymbolNameAlreadyExists(CodePosition position, String name)
 	{
@@ -453,5 +454,23 @@ public class AbstractErrorLogger<E extends IPartialExpression<E>>
 	public void errorValueOutsideRange(CodePosition position, long value)
 	{
 		error(position, "Value outside range: " + value);
+	}
+
+	@Override
+	public void errorInvalidMethodCall(CodePosition position, String methodName, List<E> expressions)
+	{
+		error(position, "Invalid method call");
+	}
+
+	@Override
+	public void errorSuperIsNotValue(CodePosition position, IMethodScope<E> scope)
+	{
+		error(position, "super is not a proper value");
+	}
+
+	@Override
+	public void errorNoThisInConstant(CodePosition position)
+	{
+		error(position, "constants cannot dereference this");
 	}
 }

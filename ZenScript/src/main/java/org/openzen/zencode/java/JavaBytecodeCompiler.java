@@ -21,7 +21,7 @@ public class JavaBytecodeCompiler
 	
 	public JavaBytecodeCompiler()
 	{
-		this.classes = new HashMap<String, byte[]>();
+		this.classes = new HashMap<>();
 	}
 	
 	public boolean hasClass(String name)

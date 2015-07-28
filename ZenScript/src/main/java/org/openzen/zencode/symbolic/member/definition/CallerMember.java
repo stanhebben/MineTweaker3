@@ -173,7 +173,7 @@ public class CallerMember<E extends IPartialExpression<E>> implements ICallerMem
 		@Override
 		public ICallable<E> bind(E instance)
 		{
-			return new BoundCallable<E>(this, instance);
+			return new BoundCallable<>(this, instance);
 		}
 	}
 }

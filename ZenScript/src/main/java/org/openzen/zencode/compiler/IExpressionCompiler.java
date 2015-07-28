@@ -9,12 +9,14 @@ import java.util.List;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.ICallerMember;
+import org.openzen.zencode.symbolic.member.IFieldMember;
 import org.openzen.zencode.symbolic.member.IGetterMember;
 import org.openzen.zencode.symbolic.member.IMethodMember;
 import org.openzen.zencode.symbolic.member.IOperatorMember;
 import org.openzen.zencode.symbolic.member.ISetterMember;
 import org.openzen.zencode.symbolic.member.definition.ConstructorMember;
 import org.openzen.zencode.symbolic.method.IMethod;
+import org.openzen.zencode.symbolic.method.InstancedMethodHeader;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
@@ -22,7 +24,7 @@ import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.TypeInstance;
-import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
+import org.openzen.zencode.symbolic.type.generic.ConstructorGenericParameterBound;
 
 /**
  *
@@ -89,11 +91,30 @@ public interface IExpressionCompiler<E extends IPartialExpression<E>>
 	
 	public E constructNew(CodePosition position, IMethodScope<E> scope, TypeInstance<E> type, ConstructorMember<E> constructor, List<E> arguments);
 	
-	public E constructNewGeneric(CodePosition position, IMethodScope<E> scope, TypeInstance<E> type, ITypeVariable<E> typeVariable, List<E> arguments);
+	/**
+	 * Constructs a new instance from a generic parameter. The actual type is
+	 * unknown at compile time - instead, the actual type needs to be retrieved
+	 * from the runtime value of the given type variable.
+	 * 
+	 * @param position
+	 * @param scope
+	 * @param source
+	 * @param bound
+	 * @param arguments
+	 * @return 
+	 */
+	public E constructNewGenericOnObject(
+			CodePosition position,
+			IMethodScope<E> scope,
+			E source,
+			ConstructorGenericParameterBound<E> bound,
+			List<E> arguments);
 	
 	public E functionExpression(CodePosition position, IMethodScope<E> scope, MethodHeader<E> header, List<Statement<E>> statements);
 	
 	public E staticMethodValue(CodePosition position, IMethodScope<E> scope, IMethod<E> method);
+	
+	public E thisValue(CodePosition position, IMethodScope<E> scope);
 	
 	public E anyNot(CodePosition position, IMethodScope<E> scope, E value);
 	
@@ -134,6 +155,8 @@ public interface IExpressionCompiler<E extends IPartialExpression<E>>
 	public E callStaticMethod(CodePosition position, IMethodScope<E> scope, IMethodMember<E> member, List<E> arguments);
 	
 	public E callFunction(CodePosition position, IMethodScope<E> scope, E value, List<E> arguments);
+	
+	public E getVirtualField(CodePosition position, IMethodScope<E> scope, E value, IFieldMember<E> field);
 	
 	public E notBool(CodePosition position, IMethodScope<E> scope, E value);
 	
@@ -648,4 +671,8 @@ public interface IExpressionCompiler<E extends IPartialExpression<E>>
 	public E getRangeFrom(CodePosition position, IMethodScope<E> scope, E value);
 	
 	public E getRangeTo(CodePosition position, IMethodScope<E> scope, E value);
+	
+	public E boundFunction(CodePosition position, IMethodScope<E> scope, InstancedMethodHeader<E> header, E value);
+	
+	public E functionCallExpression(CodePosition position, IMethodScope<E> scope, InstancedMethodHeader<E> header, E instance, List<E> arguments);
 }

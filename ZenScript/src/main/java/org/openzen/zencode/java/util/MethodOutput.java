@@ -17,6 +17,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.openzen.zencode.java.JavaCompileState;
 import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.field.JavaField;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.LocalSymbol;
 import org.openzen.zencode.util.CodePosition;
@@ -1221,6 +1222,11 @@ public class MethodOutput
 			System.out.println("getField " + owner.getName() + '.' + name + ":" + descriptor.getName());
 
 		visitor.visitFieldInsn(GETFIELD, internal(owner), name, signature(descriptor));
+	}
+	
+	public void getField(JavaField field)
+	{
+		visitor.visitFieldInsn(GETFIELD, field.fieldClass, field.fieldName, field.fieldDescriptor);
 	}
 
 	public void putField(String owner, String name, String descriptor)

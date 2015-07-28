@@ -15,7 +15,6 @@ import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.MethodScope;
 import org.openzen.zencode.symbolic.statement.Statement;
-import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
 import org.openzen.zencode.symbolic.member.ICasterMember;
 import org.openzen.zencode.symbolic.member.IMemberVisitor;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
@@ -36,14 +35,14 @@ public class CasterMember<E extends IPartialExpression<E>> implements ICasterMem
 	private Statement<E> contents;
 	private List<SymbolicAnnotation<E>> annotations;
 	
-	public CasterMember(ParsedCaster source, IDefinitionScope<E> unit)
+	public CasterMember(ParsedCaster source, IDefinitionScope<E> scope)
 	{
 		this.source = source;
-		asType = source.getAsType().compile(unit);
+		asType = source.getAsType().compile(scope);
 		
 		MethodHeader<E> methodHeader = MethodHeader.noParameters(asType);
-		methodScope = new MethodScope<E>(unit, methodHeader, false);
-		modifiers = Modifier.compileModifiers(source.getModifiers(), unit.getErrorLogger());
+		methodScope = new MethodScope<E>(scope, methodHeader, false);
+		modifiers = Modifier.compileModifiers(source.getModifiers(), scope.getErrorLogger());
 	}
 
 	@Override

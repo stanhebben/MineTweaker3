@@ -39,12 +39,17 @@ public class SetStaticJavaFieldExpression extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		value.compile(true, method);
-		if (pushResult)
-			method.dup(type);
-		
+		value.compileValue(method);
+		method.dup(type);
+		method.putField(field.getDeclaringClass(), field.getName(), field.getType());
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		value.compileValue(method);
 		method.putField(field.getDeclaringClass(), field.getName(), field.getType());
 	}
 

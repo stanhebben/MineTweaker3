@@ -31,19 +31,20 @@ public class JavaCallStatic extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput output)
+	public void compileValue(MethodOutput output)
 	{
-		for (IJavaExpression argument : arguments)
-		{
-			argument.compile(true, output);
-		}
+		compileCall(output);
 		
-		output.invokeStatic(
-					method.getDeclaringClass(),
-					method.getMethodName(),
-					method.getMethodSignature());
+		if (method.getReturnType() == getScope().getTypeCompiler().void_)
+			throw new RuntimeException("Method has no return value");
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput output)
+	{
+		compileCall(output);
 		
-		if (!pushResult && method.getReturnType() != getScope().getTypeCompiler().void_)
+		if (method.getReturnType() != getScope().getTypeCompiler().void_)
 			output.pop(method.getReturnType());
 	}
 
@@ -62,6 +63,19 @@ public class JavaCallStatic extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
+		if (!method.accepts(arguments))
+			getScope().getErrorLogger().errorInvalidMethodCall(getPosition(), method.getMethodName(), arguments);
+	}
+	
+	private void compileCall(MethodOutput output)
+	{
+		for (IJavaExpression argument : arguments) {
+			argument.compileValue(output);
+		}
 		
+		output.invokeStatic(
+					method.getDeclaringClass(),
+					method.getMethodName(),
+					method.getMethodSignature());
 	}
 }

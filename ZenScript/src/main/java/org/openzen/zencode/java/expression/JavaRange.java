@@ -35,17 +35,20 @@ public class JavaRange extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult) {
-			method.newObject(Range.class);
-			method.dup();
-			from.compile(true, method);
-			to.compile(true, method);
-		} else {
-			from.compile(false, method);
-			to.compile(false, method);
-		}
+		method.newObject(Range.class);
+		method.dup();
+		from.compileValue(method);
+		to.compileValue(method);
+		method.invokeSpecial(Range.class, "<init>", void.class, int.class, int.class);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		from.compileStatement(method);
+		to.compileStatement(method);
 	}
 
 	@Override

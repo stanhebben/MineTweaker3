@@ -14,7 +14,6 @@ import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
-import org.openzen.zencode.symbolic.type.TypeDefinition;
 
 /**
  *
@@ -29,11 +28,10 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 	private final String className;
 	private final IGenericType<E> superclass;
 	private final List<IMember<E>> members;
-	private final TypeDefinition<E> definition;
 	
 	public SymbolicClass(ParsedClass source, IModuleScope<E> moduleScope)
 	{
-		super(source, moduleScope);
+		super(source, moduleScope, false, false);
 		
 		this.source = source;
 		this.className = source.getName();
@@ -48,7 +46,6 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 		}
 		
 		members = new ArrayList<IMember<E>>();
-		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 
 	@Override
@@ -96,7 +93,7 @@ public class SymbolicClass<E extends IPartialExpression<E>>
 	{
 		scope.putImport(
 				className,
-				new ImportableSymbol<E>(definition),
+				new ImportableSymbol<>(getDefinition()),
 				source.getPosition());
 	}
 	

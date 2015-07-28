@@ -7,6 +7,7 @@ package org.openzen.zencode.java.expression;
 
 import org.objectweb.asm.Label;
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.AnyNull;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IGenericType;
@@ -30,53 +31,75 @@ public class JavaOrOr extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult) {
-			method.constant(1);
-			
-			Label lblTrue = new Label();
-			left.compileIf(lblTrue, method);
-			right.compileIf(lblTrue, method);
-			method.pop();
-			method.constant(0);
-			method.label(lblTrue);
-		} else {
-			Label exit = new Label();
-			left.compileElse(exit, method);
-			right.compile(false, method);
-			method.label(exit);
-		}
+		method.constant(1);
+
+		Label lblTrue = new Label();
+		left.compileIf(lblTrue, method);
+		right.compileIf(lblTrue, method);
+		method.pop();
+		method.constant(0);
+		method.label(lblTrue);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		Label exit = new Label();
+		left.compileElse(exit, method);
+		right.compileStatement(method);
+		method.label(exit);
 	}
 	
 	@Override
 	public void compileIf(Label onIf, MethodOutput output)
 	{
-		
+		left.compileIf(onIf, output);
+		right.compileIf(onIf, output);
 	}
 	
 	@Override
 	public void compileElse(Label onElse, MethodOutput output)
 	{
-		
+		Label lblAfter = new Label();
+		left.compileElse(lblAfter, output);
+		right.compileElse(lblAfter, output);
+		output.goTo(onElse);
+		output.label(lblAfter);
 	}
 
 	@Override
 	public IGenericType<IJavaExpression> getType()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return left.getType().unify(getScope(), right.getType());
 	}
 
 	@Override
 	public IAny getCompileTimeValue()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		IAny leftValue = left.getCompileTimeValue();
+		IAny rightValue = right.getCompileTimeValue();
+		
+		if (leftValue == null)
+			return null;
+		
+		if (leftValue == AnyNull.INSTANCE)
+			return rightValue;
+		
+		if (leftValue.canCastImplicit(boolean.class)) {
+			if (leftValue.asBool())
+				return rightValue;
+			else
+				return leftValue;
+		}
+		
+		return null;
 	}
 
 	@Override
 	public void validate()
 	{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		
 	}
-	
 }

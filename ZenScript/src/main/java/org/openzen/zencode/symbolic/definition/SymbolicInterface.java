@@ -11,8 +11,6 @@ import org.openzen.zencode.parser.member.IParsedMember;
 import org.openzen.zencode.parser.definition.ParsedInterface;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
-import org.openzen.zencode.symbolic.scope.DefinitionScope;
-import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
 import org.openzen.zencode.symbolic.type.TypeDefinition;
@@ -26,23 +24,21 @@ public class SymbolicInterface<E extends IPartialExpression<E>>
 	extends AbstractSymbolicDefinition<E>
 {
 	private final ParsedInterface source;
-	private final IDefinitionScope<E> scope;
 	private final List<IMember<E>> members;
 	
 	public SymbolicInterface(ParsedInterface source, IModuleScope<E> scope)
 	{
-		super(source, scope);
+		super(source, scope, false, true);
 		
 		this.source = source;
-		this.scope = new DefinitionScope<E>(scope, this);
-		members = new ArrayList<IMember<E>>();
+		members = new ArrayList<>();
 	}
 
 	@Override
 	public void register(IModuleScope<E> scope)
 	{
 		scope.putImport(source.getName(),
-				new ImportableSymbol<E>(new TypeDefinition<E>(getTypeVariables(), false, true)),
+				new ImportableSymbol<>(new TypeDefinition<>(getTypeVariables(), false, true)),
 				source.getPosition());
 	}
 
@@ -60,7 +56,7 @@ public class SymbolicInterface<E extends IPartialExpression<E>>
 		super.compileMembers();
 		
 		for (IParsedMember member : source.getMembers()) {
-			IMember<E> compiled = member.compile(scope);
+			IMember<E> compiled = member.compile(getScope());
 			if (compiled != null)
 				members.add(compiled);
 		}

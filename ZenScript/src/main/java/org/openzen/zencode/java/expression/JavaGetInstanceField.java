@@ -30,12 +30,16 @@ public class JavaGetInstanceField extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		instance.compile(pushResult, method);
-		
-		if (pushResult)
-			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
+		instance.compileValue(method);
+		method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		instance.compileStatement(method);
 	}
 
 	@Override

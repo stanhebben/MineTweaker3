@@ -6,6 +6,7 @@
 package org.openzen.zencode.java.expression;
 
 import org.openzen.zencode.java.util.MethodOutput;
+import org.openzen.zencode.runtime.AnyByte;
 import org.openzen.zencode.runtime.IAny;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IGenericType;
@@ -27,9 +28,15 @@ public class JavaByte extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
 		method.constant(value);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		
 	}
 
 	@Override
@@ -41,7 +48,7 @@ public class JavaByte extends AbstractJavaExpression
 	@Override
 	public IAny getCompileTimeValue()
 	{
-		return null; // TODO
+		return new AnyByte(value);
 	}
 
 	@Override

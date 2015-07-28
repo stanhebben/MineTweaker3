@@ -244,4 +244,10 @@ public class TypeInstance<E extends IPartialExpression<E>> implements IGenericTy
 	{
 		definition.addMember(member);
 	}
+
+	@Override
+	public IGenericType<E> getSuperclass()
+	{
+		return definition.getSuperType();
+	}
 }

@@ -14,6 +14,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.scope.DefinitionScope;
 import org.openzen.zencode.symbolic.scope.IDefinitionScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
+import org.openzen.zencode.symbolic.type.TypeDefinition;
 import org.openzen.zencode.symbolic.type.generic.GenericParameter;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
@@ -30,31 +31,40 @@ public abstract class AbstractSymbolicDefinition<E extends IPartialExpression<E>
 	private final int modifiers;
 	private final IDefinitionScope<E> definitionScope;
 	private final List<GenericParameter<E>> genericParameters;
+	private final TypeDefinition<E> typeDefinition;
 	
 	private List<SymbolicAnnotation<E>> annotations;
 	
-	public AbstractSymbolicDefinition(IParsedDefinition source, IModuleScope<E> scope)
+	public AbstractSymbolicDefinition(IParsedDefinition source, IModuleScope<E> scope, boolean isStruct, boolean isInterface)
 	{
 		this.source = source;
 		
 		modifiers = Modifier.compileModifiers(source.getModifiers(), scope.getErrorLogger());
-		definitionScope = new DefinitionScope<E>(scope, this);
+		typeDefinition = new TypeDefinition<>(isStruct, isInterface);
+		definitionScope = new DefinitionScope<>(scope, this, typeDefinition.getSelfInstance());
 		genericParameters = GenericParameter.compile(source.getGenericParameters(), scope);
+		typeDefinition.setTypeVariables(genericParameters);
 	}
 	
-	public AbstractSymbolicDefinition(int modifiers, List<SymbolicAnnotation<E>> annotations, IModuleScope<E> scope)
+	public AbstractSymbolicDefinition(int modifiers, List<SymbolicAnnotation<E>> annotations, IModuleScope<E> scope, boolean isStruct, boolean isInterface)
 	{
 		this.source = null;
 		
 		this.modifiers = modifiers;
 		this.annotations = annotations;
-		definitionScope = new DefinitionScope<E>(scope, this);
+		typeDefinition = new TypeDefinition<>(isStruct, isInterface);
+		definitionScope = new DefinitionScope<>(scope, this, typeDefinition.getSelfInstance());
 		genericParameters = Collections.emptyList();
 	}
 	
 	public IDefinitionScope<E> getScope()
 	{
 		return definitionScope;
+	}
+	
+	public TypeDefinition<E> getDefinition()
+	{
+		return typeDefinition;
 	}
 	
 	@Override

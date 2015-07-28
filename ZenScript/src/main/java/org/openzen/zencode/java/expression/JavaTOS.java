@@ -28,10 +28,15 @@ public class JavaTOS extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (!pushResult)
-			method.pop(type);
+		
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		method.pop(type);
 	}
 
 	@Override

@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.java.expression;
 
+import org.objectweb.asm.Label;
 import org.openzen.zencode.annotations.CompareType;
 import org.openzen.zencode.java.util.MethodOutput;
 import org.openzen.zencode.runtime.AnyBool;
@@ -31,12 +32,104 @@ public class JavaCompareGeneric extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult) {
-			
-		} else {
-			value.compile(false, method);
+		value.compileValue(method);
+		
+		Label onIf = new Label();
+		Label after = new Label();
+		
+		switch (compareType) {
+			case LT:
+				method.ifLT(onIf);
+				break;
+			case GT:
+				method.ifGT(onIf);
+				break;
+			case EQ:
+				method.ifEQ(onIf);
+				break;
+			case NE:
+				method.ifNE(onIf);
+				break;
+			case LE:
+				method.ifLE(onIf);
+				break;
+			case GE:
+				method.ifGE(onIf);
+				break;
+			default:
+				throw new AssertionError("Unknown case value:" + compareType);
+		}
+		
+		method.constant(0);
+		method.goTo(after);
+		method.label(onIf);
+		method.constant(1);
+		method.label(after);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		value.compileStatement(method);
+	}
+	
+	@Override
+	public void compileIf(Label onIf, MethodOutput method)
+	{
+		value.compileValue(method);
+		
+		switch (compareType) {
+			case LT:
+				method.ifLT(onIf);
+				break;
+			case GT:
+				method.ifGT(onIf);
+				break;
+			case EQ:
+				method.ifEQ(onIf);
+				break;
+			case NE:
+				method.ifNE(onIf);
+				break;
+			case LE:
+				method.ifLE(onIf);
+				break;
+			case GE:
+				method.ifGE(onIf);
+				break;
+			default:
+				throw new AssertionError("Unknown case value:" + compareType);
+		}
+	}
+	
+	@Override
+	public void compileElse(Label onElse, MethodOutput method)
+	{
+		value.compileValue(method);
+		
+		switch (compareType) {
+			case LT:
+				method.ifGE(onElse);
+				break;
+			case GT:
+				method.ifLE(onElse);
+				break;
+			case EQ:
+				method.ifNE(onElse);
+				break;
+			case NE:
+				method.ifEQ(onElse);
+				break;
+			case LE:
+				method.ifGT(onElse);
+				break;
+			case GE:
+				method.ifLT(onElse);
+				break;
+			default:
+				throw new AssertionError("Unknown case value:" + compareType);
 		}
 	}
 

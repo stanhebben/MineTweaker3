@@ -6,9 +6,10 @@
 package org.openzen.zencode.symbolic.type.generic;
 
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
-import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -19,7 +20,7 @@ public interface IGenericParameterBound<E extends IPartialExpression<E>>
 {
 	public void completeContents(IMethodScope<E> scope);
 	
-	public IMember<E> getMember();
+	public ICallable<E> getConstructor(TypeInstance<E> type);
 	
 	public IGenericType<E> getBound();
 }

@@ -196,4 +196,10 @@ public class VoidTypeDefinition<E extends IPartialExpression<E>> implements ITyp
 		scope.getErrorLogger().errorNullHasNoMembers(position);
 		return scope.getExpressionCompiler().invalid(position, scope);
 	}
+
+	@Override
+	public IGenericType<E> getSuperType()
+	{
+		return null;
+	}
 }

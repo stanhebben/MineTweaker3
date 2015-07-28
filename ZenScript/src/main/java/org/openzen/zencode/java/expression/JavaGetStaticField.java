@@ -28,9 +28,15 @@ public class JavaGetStaticField extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
 		method.getStaticField(field.fieldClass, field.fieldName, field.fieldDescriptor);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		
 	}
 
 	@Override

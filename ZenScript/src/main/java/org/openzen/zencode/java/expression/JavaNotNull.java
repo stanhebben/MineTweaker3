@@ -28,21 +28,25 @@ public class JavaNotNull extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		value.compile(pushResult, method);
+		value.compileValue(method);
 		
-		if (pushResult) {
-			Label labelElse = new Label();
-			Label labelAfter = new Label();
+		Label labelElse = new Label();
+		Label labelAfter = new Label();
 
-			method.ifNull(labelElse);
-			method.iConst1();
-			method.goTo(labelAfter);
-			method.label(labelElse);
-			method.iConst0();
-			method.label(labelAfter);
-		}
+		method.ifNull(labelElse);
+		method.iConst1();
+		method.goTo(labelAfter);
+		method.label(labelElse);
+		method.iConst0();
+		method.label(labelAfter);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		value.compileStatement(method);
 	}
 
 	@Override
@@ -54,14 +58,14 @@ public class JavaNotNull extends AbstractJavaExpression
 	@Override
 	public void compileIf(Label onIf, MethodOutput output)
 	{
-		compile(true, output);
+		compileValue(output);
 		output.ifNonNull(onIf);
 	}
 
 	@Override
 	public void compileElse(Label onElse, MethodOutput output)
 	{
-		compile(true, output);
+		compileValue(output);
 		output.ifNull(onElse);
 	}
 

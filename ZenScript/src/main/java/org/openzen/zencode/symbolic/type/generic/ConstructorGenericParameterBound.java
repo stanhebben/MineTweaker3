@@ -39,6 +39,16 @@ public class ConstructorGenericParameterBound<E extends IPartialExpression<E>>
 		this.header = header;
 		this.typeVariable = typeVariable;
 	}
+	
+	public MethodHeader<E> getHeader()
+	{
+		return header;
+	}
+	
+	public ITypeVariable<E> getTypeVariable()
+	{
+		return typeVariable;
+	}
 
 	@Override
 	public void completeContents(IMethodScope<E> scope)
@@ -47,9 +57,9 @@ public class ConstructorGenericParameterBound<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public IMember<E> getMember()
+	public ICallable<E> getConstructor(TypeInstance<E> instance)
 	{
-		return new GenericConstructorMember();
+		return new GenericConstructorMember().instance(instance);
 	}
 
 	@Override
@@ -118,7 +128,13 @@ public class ConstructorGenericParameterBound<E extends IPartialExpression<E>>
 		@Override
 		public E call(CodePosition position, IMethodScope<E> scope, List<E> arguments)
 		{
-			return scope.getExpressionCompiler().constructNewGeneric(position, scope, typeInstance, typeVariable, arguments);
+			E source = scope.getThis(position, null);
+			return scope.getExpressionCompiler().constructNewGenericOnObject(
+					position,
+					scope,
+					source,
+					ConstructorGenericParameterBound.this,
+					arguments);
 		}
 
 		@Override

@@ -16,6 +16,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
 import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.method.MethodHeader;
+import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.symbolic.type.ITypeDefinition;
@@ -161,4 +162,10 @@ public interface ICodeErrorLogger<E extends IPartialExpression<E>> {
 	public void errorNotAStaticMember(CodePosition position, IMember<E> member);
 	
 	public void errorValueOutsideRange(CodePosition position, long value);
+	
+	public void errorInvalidMethodCall(CodePosition position, String methodName, List<E> expressions);
+	
+	public void errorSuperIsNotValue(CodePosition position, IMethodScope<E> scope);
+	
+	public void errorNoThisInConstant(CodePosition position);
 }

@@ -78,7 +78,7 @@ public abstract class AnyNumber implements IAny {
 	}
 	
 	@Override
-	public final boolean canCastImplicit(Class cls) {
+	public final boolean canCastImplicit(Class<?> cls) {
 		return cls == byte.class || cls == short.class || cls == int.class || cls == long.class
 				|| cls == float.class || cls == double.class
 				|| cls == Byte.class || cls == Short.class || cls == Integer.class || cls == Long.class

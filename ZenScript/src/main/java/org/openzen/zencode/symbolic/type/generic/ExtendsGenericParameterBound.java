@@ -8,9 +8,11 @@ package org.openzen.zencode.symbolic.type.generic;
 import org.openzen.zencode.parser.generic.ParsedGenericBoundExtends;
 import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.member.IMember;
+import org.openzen.zencode.symbolic.method.ICallable;
 import org.openzen.zencode.symbolic.scope.IMethodScope;
 import org.openzen.zencode.symbolic.scope.IModuleScope;
 import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 
 /**
  *
@@ -33,15 +35,15 @@ public class ExtendsGenericParameterBound<E extends IPartialExpression<E>>
 	}
 
 	@Override
-	public IMember<E> getMember()
-	{
-		return null;
-	}
-
-	@Override
 	public IGenericType<E> getBound()
 	{
 		return type;
+	}
+
+	@Override
+	public ICallable<E> getConstructor(TypeInstance<E> type)
+	{
+		return null;
 	}
 
 	@Override

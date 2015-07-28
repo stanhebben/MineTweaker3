@@ -37,18 +37,20 @@ public class JavaSetInstanceField extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult) {
-			value.compile(true, method);
-			instance.compile(true, method);
-			method.dupX1(value.getType());
-			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
-		} else {
-			instance.compile(true, method);
-			value.compile(true, method);
-			method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
-		}
+		value.compileValue(method);
+		instance.compileValue(method);
+		method.dupX1(value.getType());
+		method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		instance.compileValue(method);
+		value.compileValue(method);
+		method.putField(field.fieldClass, field.fieldName, field.fieldDescriptor);
 	}
 
 	@Override

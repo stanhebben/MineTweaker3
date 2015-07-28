@@ -10,6 +10,7 @@ import org.openzen.zencode.symbolic.expression.IPartialExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.type.IGenericType;
+import org.openzen.zencode.util.CodePosition;
 
 /**
  *
@@ -25,4 +26,6 @@ public interface IMethodScope<E extends IPartialExpression<E>> extends IDefiniti
 	public IGenericType<E> getReturnType();
 	
 	public boolean isConstructor();
+	
+	public E getThis(CodePosition position, IGenericType<E> predictedType);
 }

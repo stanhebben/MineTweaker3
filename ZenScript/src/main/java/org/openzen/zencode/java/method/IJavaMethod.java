@@ -5,6 +5,7 @@
  */
 package org.openzen.zencode.java.method;
 
+import java.util.List;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
 import org.openzen.zencode.symbolic.type.IGenericType;
@@ -26,4 +27,6 @@ public interface IJavaMethod
 	public IGenericType<IJavaExpression> getReturnType();
 	
 	public MethodHeader<IJavaExpression> getHeader();
+	
+	public boolean accepts(List<IJavaExpression> values);
 }

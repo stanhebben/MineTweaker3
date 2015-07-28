@@ -80,4 +80,6 @@ public interface IGenericType<E extends IPartialExpression<E>>
 	public IGenericType<E> unify(IModuleScope<E> scope, IGenericType<E> other);
 	
 	public void addMember(IMember<E> member);
+	
+	public IGenericType<E> getSuperclass();
 }

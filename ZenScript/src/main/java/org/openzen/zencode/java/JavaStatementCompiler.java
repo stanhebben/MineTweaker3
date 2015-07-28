@@ -106,7 +106,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	public Void onExpression(StatementExpression<IJavaExpression> statement)
 	{
 		output.position(statement.getPosition());
-		statement.getExpression().compile(false, output);
+		statement.getExpression().compileStatement(output);
 		
 		return null;
 	}
@@ -125,7 +125,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 				.getTypeInfo(statement.getList().getType())
 				.getIterator(statement.getVariables().size());
 		
-		statement.getList().compile(true, output);
+		statement.getList().compileValue(output);
 		iterator.compileStart(output, localVariables);
 		
 		Label lblRepeat = new Label();
@@ -183,7 +183,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 		if (statement.getExpression() == null)
 			output.ret();
 		else {
-			statement.getExpression().compile(true, output);
+			statement.getExpression().compileValue(output);
 			
 			output.returnType(statement.getExpression().getType());
 		}
@@ -205,7 +205,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 		output.position(statement.getPosition());
 
 		if (statement.getInitializer() != null) {
-			statement.getInitializer().compile(true, output);
+			statement.getInitializer().compileValue(output);
 			output.store(
 					statement.getSymbol().getType(),
 					output.getLocal(statement.getSymbol()));
@@ -239,7 +239,7 @@ public class JavaStatementCompiler implements IStatementProcessor<IJavaExpressio
 	@Override
 	public Void onThrow(ThrowStatement<IJavaExpression> statement)
 	{
-		statement.getValue().compile(true, output);
+		statement.getValue().compileValue(output);
 		output.aThrow();
 		
 		return null;

@@ -6,6 +6,7 @@
 package org.openzen.zencode.java.method;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import org.openzen.zencode.java.JavaCompiler;
 import org.openzen.zencode.java.expression.IJavaExpression;
 import org.openzen.zencode.symbolic.method.MethodHeader;
@@ -103,5 +104,12 @@ public class JavaMethod implements IJavaMethod
 	public int getZCModifiers()
 	{
 		return JavaUtil.getZCModifiers(method.getModifiers());
+	}
+
+	@Override
+	public boolean accepts(List<IJavaExpression> values)
+	{
+		// TODO: implement
+		return true;
 	}
 }

@@ -18,6 +18,7 @@ import org.openzen.zencode.symbolic.symbols.IZenSymbol;
 import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.TypeCapture;
 import org.openzen.zencode.symbolic.definition.ISymbolicDefinition;
+import org.openzen.zencode.symbolic.type.IGenericType;
 import org.openzen.zencode.util.CodePosition;
 
 /**
@@ -141,5 +142,18 @@ public class ConstantScope<E extends IPartialExpression<E>>
 	public boolean isConstructor()
 	{
 		return false;
+	}
+
+	@Override
+	public IGenericType<E> getSelfType()
+	{
+		return null;
+	}
+
+	@Override
+	public E getThis(CodePosition position, IGenericType<E> predictedType)
+	{
+		getErrorLogger().errorNoThisInConstant(position);
+		return getExpressionCompiler().invalid(position, this);
 	}
 }

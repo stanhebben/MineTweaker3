@@ -31,23 +31,25 @@ public class JavaAndAnd extends AbstractJavaExpression
 	}
 	
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult) {
-			method.constant(0);
-			
-			Label lblFalse = new Label();
-			left.compileElse(lblFalse, method);
-			right.compileElse(lblFalse, method);
-			method.pop();
-			method.constant(1);
-			method.label(lblFalse);
-		} else {
-			Label exit = new Label();
-			left.compileElse(exit, method);
-			right.compile(false, method);
-			method.label(exit);
-		}
+		method.constant(0);
+
+		Label lblFalse = new Label();
+		left.compileElse(lblFalse, method);
+		right.compileElse(lblFalse, method);
+		method.pop();
+		method.constant(1);
+		method.label(lblFalse);
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		Label exit = new Label();
+		left.compileElse(exit, method);
+		right.compileStatement(method);
+		method.label(exit);
 	}
 	
 	@Override

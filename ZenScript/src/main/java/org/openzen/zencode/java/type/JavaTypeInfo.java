@@ -6,7 +6,13 @@
 package org.openzen.zencode.java.type;
 
 import org.objectweb.asm.Type;
+import org.openzen.zencode.java.expression.IJavaExpression;
+import org.openzen.zencode.java.field.JavaField;
 import org.openzen.zencode.java.iterator.IJavaIterator;
+import org.openzen.zencode.java.method.IJavaMethod;
+import org.openzen.zencode.symbolic.member.definition.ConstructorMember;
+import org.openzen.zencode.symbolic.type.generic.ConstructorGenericParameterBound;
+import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
  *
@@ -44,5 +50,50 @@ public class JavaTypeInfo
 			return iterators[variables];
 		else
 			return null;
+	}
+	
+	public String getInternalName()
+	{
+		return asmType.getInternalName();
+	}
+	
+	public String getDescriptor()
+	{
+		return asmType.getDescriptor();
+	}
+	
+	public boolean isArray()
+	{
+		
+	}
+	
+	public boolean isList()
+	{
+		
+	}
+	
+	public JavaTypeInfo getArrayBaseType()
+	{
+		
+	}
+	
+	public IJavaMethod getConstructor(ConstructorMember<IJavaExpression> constructor)
+	{
+		
+	}
+	
+	public JavaField getTypeVariableField(ITypeVariable<IJavaExpression> typeVariable)
+	{
+		
+	}
+	
+	public JavaField getGenericConstructorField(ConstructorGenericParameterBound<IJavaExpression> constructor)
+	{
+		
+	}
+	
+	public void markGenericConstructorUse(ConstructorGenericParameterBound<IJavaExpression> constructor)
+	{
+		
 	}
 }

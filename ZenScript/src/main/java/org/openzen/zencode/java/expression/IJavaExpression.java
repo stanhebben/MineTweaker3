@@ -15,7 +15,20 @@ import org.openzen.zencode.java.util.MethodOutput;
  */
 public interface IJavaExpression extends IPartialExpression<IJavaExpression>
 {
-	public void compile(boolean pushResult, MethodOutput method);
+	/**
+	 * Compiles a statement. The stack after this statement must be in the same
+	 * state as it was before.
+	 * 
+	 * @param method method output
+	 */
+	public void compileStatement(MethodOutput method);
+	
+	/**
+	 * Compiles a value. The value must be pushed on the stack.
+	 * 
+	 * @param method method output
+	 */
+	public void compileValue(MethodOutput method);
 	
 	public void compileIf(Label onIf, MethodOutput output);
 	

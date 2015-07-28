@@ -23,6 +23,7 @@ import org.openzen.zencode.util.CodePosition;
 import org.openzen.zencode.symbolic.statement.Statement;
 import org.openzen.zencode.symbolic.symbols.ImportableSymbol;
 import org.openzen.zencode.symbolic.type.TypeDefinition;
+import org.openzen.zencode.symbolic.type.TypeInstance;
 import org.openzen.zencode.symbolic.type.generic.ITypeVariable;
 
 /**
@@ -39,34 +40,28 @@ public final class SymbolicFunction<E extends IPartialExpression<E>> extends Abs
 	private Statement<E> content;
 	
 	private final IMethodScope<E> methodScope;
-	private final TypeDefinition<E> definition;
-
-	private final Map<LocalSymbol<E>, Capture<E>> captured = new HashMap<LocalSymbol<E>, Capture<E>>();
+	private final Map<LocalSymbol<E>, Capture<E>> captured = new HashMap<>();
 
 	public SymbolicFunction(CodePosition position, int modifiers, String name, MethodHeader<E> header, IModuleScope<E> scope)
 	{
-		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), scope);
-		
-		source = null;
-		methodScope = new MethodScope<E>(getScope(), header, false);
+		super(modifiers, Collections.<SymbolicAnnotation<E>>emptyList(), scope, false, false);
 		
 		this.position = position;
 		this.name = name;
 		
-		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
+		source = null;
+		methodScope = new MethodScope<>(getScope(), header, false);
 	}
 	
 	public SymbolicFunction(ParsedFunction source, IModuleScope<E> scope)
 	{
-		super(source, scope);
+		super(source, scope, false, false);
 		
 		this.source = source;
 		position = source.getPosition();
 		MethodHeader<E> header = source.getSignature().compile(getScope());
-		methodScope = new MethodScope<E>(getScope(), header, false);
+		methodScope = new MethodScope<>(getScope(), header, false);
 		this.name = source.getName();
-		
-		definition = new TypeDefinition<E>(getTypeVariables(), false, false);
 	}
 	
 	public final IMethodScope<E> getMethodScope()
@@ -74,12 +69,7 @@ public final class SymbolicFunction<E extends IPartialExpression<E>> extends Abs
 		return methodScope;
 	}
 
-	/*@Override
-	public T getType()
-	{
-		return type;
-	}
-	
+	/*
 	@Override
 	public void compile()
 	{
@@ -117,8 +107,7 @@ public final class SymbolicFunction<E extends IPartialExpression<E>> extends Abs
 			captured.put(local, new Capture<E>(local, field));
 		}
 
-		//return new ExpressionGetInstanceField(position, scope, scope.getExpressionCompiler().localGet(position, scope, localThis), captured.get(local).field);
-		return null; // TODO: finish captures
+		return scope.getExpressionCompiler().getVirtualField(position, scope, scope.getThis(position, null), captured.get(local).field);
 	}
 
 	@Override
@@ -153,7 +142,7 @@ public final class SymbolicFunction<E extends IPartialExpression<E>> extends Abs
 	@Override
 	public void register(IModuleScope<E> scope)
 	{
-		scope.putImport(name, new ImportableSymbol<E>(new TypeDefinition<E>(getTypeVariables(), false, false)), position);
+		scope.putImport(name, new ImportableSymbol<>(new TypeDefinition<E>(getTypeVariables(), false, false)), position);
 	}
 	
 	@Override

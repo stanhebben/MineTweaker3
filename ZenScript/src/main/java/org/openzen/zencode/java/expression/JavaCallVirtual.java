@@ -33,22 +33,35 @@ public class JavaCallVirtual extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean result, MethodOutput output)
+	public void compileValue(MethodOutput output)
 	{
-		target.compile(true, output);
+		compileCall(output);
 		
-		for (IJavaExpression argument : arguments)
-		{
-			argument.compile(true, output);
+		if (method.getReturnType() == getScope().getTypeCompiler().void_)
+			throw new RuntimeException("Method has no return value");
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput output)
+	{
+		compileCall(output);
+		
+		if (method.getReturnType() != getScope().getTypeCompiler().void_)
+			output.pop(method.getReturnType());
+	}
+	
+	private void compileCall(MethodOutput output)
+	{
+		target.compileValue(output);
+		
+		for (IJavaExpression argument : arguments) {
+			argument.compileValue(output);
 		}
 		
 		output.invokeVirtual(
 					method.getDeclaringClass(),
 					method.getMethodName(),
 					method.getMethodSignature());
-		
-		if (!result && method.getReturnType() != getScope().getTypeCompiler().void_)
-			output.pop(method.getReturnType());
 	}
 
 	@Override
@@ -66,6 +79,7 @@ public class JavaCallVirtual extends AbstractJavaExpression
 	@Override
 	public void validate()
 	{
-		
+		if (!method.accepts(arguments))
+			getScope().getErrorLogger().errorInvalidMethodCall(getPosition(), method.getMethodName(), arguments);
 	}
 }

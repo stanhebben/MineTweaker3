@@ -24,10 +24,15 @@ public class JavaNull extends AbstractJavaExpression
 	}
 
 	@Override
-	public void compile(boolean pushResult, MethodOutput method)
+	public void compileValue(MethodOutput method)
 	{
-		if (pushResult)
-			method.aConstNull();
+		method.aConstNull();
+	}
+	
+	@Override
+	public void compileStatement(MethodOutput method)
+	{
+		
 	}
 
 	@Override
