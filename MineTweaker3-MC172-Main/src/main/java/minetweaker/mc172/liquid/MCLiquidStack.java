@@ -115,6 +115,11 @@ public class MCLiquidStack implements ILiquidStack {
 		return stack;
 	}
 	
+	@Override
+	public String toString() {
+		return "<liquid:" + this.getName() + ">";
+	}
+	
 	// ##################################
 	// ### IIngredient implementation ###
 	// ##################################

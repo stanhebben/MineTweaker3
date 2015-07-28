@@ -116,6 +116,30 @@ public class MCLiquidDefinition implements ILiquidDefinition {
 		MineTweakerAPI.logError("Cannot remove container items in MineCraft 1.7.X");
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj)
+			return true;
+		
+		if(obj == null)
+			return false;
+		
+		if(this.getClass() != obj.getClass())
+			return false;
+		
+		MCLiquidDefinition liquidDefintion = (MCLiquidDefinition)obj;
+		
+		if((!this.getName().equals(liquidDefintion.getName())) || 
+			this.getLuminosity() != liquidDefintion.getLuminosity() ||
+			this.getDensity() != liquidDefintion.getDensity() ||
+			this.getTemperature() != liquidDefintion.getTemperature() ||
+			this.getViscosity() != liquidDefintion.getViscosity() ||
+			this.isGaseous() != liquidDefintion.isGaseous())
+			return false;
+		
+		return true;
+	}
+	
 	// #######################
 	// ### Private methods ###
 	// #######################
