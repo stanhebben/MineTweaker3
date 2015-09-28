@@ -101,15 +101,15 @@ public class NEI {
 	}
 	
 	private static class NEIHideItemAction implements IUndoableAction {
-		private final ItemStack stack;
+		private final ItemStack item;
 
-		public NEIHideItemAction(ItemStack stack) {
-			this.stack = stack;
+		public NEIHideItemAction(ItemStack item) {
+			this.item = item;
 		}
 
 		@Override
 		public void apply() {
-			API.hideItem(stack);
+			API.hideItem(item);
 		}
 
 		@Override
@@ -119,17 +119,17 @@ public class NEI {
 
 		@Override
 		public void undo() {
-			API.addItemListEntry(stack);
+			API.addItemListEntry(item);
 		}
 
 		@Override
 		public String describe() {
-			return "Hiding " + stack.getUnlocalizedName() + " in NEI";
+			return "Hiding " + item.getDisplayName() + " in NEI";
 		}
 
 		@Override
 		public String describeUndo() {
-			return "Displaying " + stack.getUnlocalizedName() + " in NEI";
+			return "Displaying " + item.getDisplayName() + " in NEI";
 		}
 
 		@Override

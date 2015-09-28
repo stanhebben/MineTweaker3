@@ -124,12 +124,12 @@ public class NEI {
 
 		@Override
 		public String describe() {
-			return "Hiding " + stack.getUnlocalizedName() + " in NEI";
+			return "Hiding " + stack.getDisplayName() + " in NEI";
 		}
 
 		@Override
 		public String describeUndo() {
-			return "Displaying " + stack.getUnlocalizedName() + " in NEI";
+			return "Displaying " + stack.getDisplayName() + " in NEI";
 		}
 
 		@Override
