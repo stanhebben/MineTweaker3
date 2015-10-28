@@ -9,6 +9,7 @@ package minetweaker.runtime.providers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import minetweaker.MineTweakerAPI;
@@ -33,7 +34,11 @@ public class ScriptProviderDirectory implements IScriptProvider {
 	public Iterator<IScriptIterator> getScripts() {
 		List<IScriptIterator> scripts = new ArrayList<IScriptIterator>();
 		if (directory.exists()) {
-			for (File file : directory.listFiles()) {
+            File files[] = directory.listFiles();
+          
+            Arrays.sort(files);
+            
+			for (File file : files) {
 				if (file.isDirectory()) {
 					scripts.add(new ScriptIteratorDirectory(file));
 				} else if (file.getName().endsWith(".zs")) {
