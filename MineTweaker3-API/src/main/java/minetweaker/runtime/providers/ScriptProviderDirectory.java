@@ -21,6 +21,7 @@ import minetweaker.runtime.IScriptProvider;
  * @author Stan
  */
 public class ScriptProviderDirectory implements IScriptProvider {
+    public final static String SORTING_FLAG = ".sorting";
 	private final File directory;
 
 	public ScriptProviderDirectory(File directory) {
@@ -30,14 +31,39 @@ public class ScriptProviderDirectory implements IScriptProvider {
 		this.directory = directory;
 	}
 
+    protected File[] getFiles()
+    {
+      if( directory.exists() )
+      {
+          //Build path to flag file
+          StringBuilder sortFlag = new StringBuilder();
+          sortFlag.append(directory.getAbsolutePath());
+          sortFlag.append("/");
+          sortFlag.append(SORTING_FLAG);
+          
+          File file = new File( sortFlag.toString() );
+          File files[] = directory.listFiles();
+
+          //Sorting flag file exists
+          if( file.exists() )
+          {
+              Arrays.sort(files);
+          }
+          return files;
+      }
+      else
+      {
+          return null;
+      }
+    }
+            
 	@Override
 	public Iterator<IScriptIterator> getScripts() {
 		List<IScriptIterator> scripts = new ArrayList<IScriptIterator>();
-		if (directory.exists()) {
-            File files[] = directory.listFiles();
-          
-            Arrays.sort(files);
-            
+        File files[] = this.getFiles();
+        
+        if( files != null )
+        {
 			for (File file : files) {
 				if (file.isDirectory()) {
 					scripts.add(new ScriptIteratorDirectory(file));
@@ -51,7 +77,7 @@ public class ScriptProviderDirectory implements IScriptProvider {
 					}
 				}
 			}
-		}
+        }
 		return scripts.iterator();
 	}
 }
