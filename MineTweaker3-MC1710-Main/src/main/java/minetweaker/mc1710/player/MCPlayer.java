@@ -20,6 +20,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatList;
 
 /**
  *
@@ -142,5 +144,33 @@ public class MCPlayer implements IPlayer {
 	@Override
 	public void give(IItemStack stack) {
 		player.inventory.addItemStackToInventory(MineTweakerMC.getItemStack(stack).copy());
+	}
+
+	@Override
+	public int getStat(String name) {
+		if (!(player instanceof EntityPlayerMP)) {
+			return 0;
+		}
+		EntityPlayerMP player_mp = (EntityPlayerMP) player;
+		StatBase stat = StatList.func_151177_a(name);
+		if (stat == null) {
+			MineTweakerAPI.logError("not a valid stat name: " + name);
+			return 0;
+		}
+		return player_mp.func_147099_x().writeStat(stat);
+	}
+
+	@Override
+	public void setStat(String name, int value) {
+		if (!(player instanceof EntityPlayerMP)) {
+			return;
+		}
+		EntityPlayerMP player_mp = (EntityPlayerMP) player;
+		StatBase stat = StatList.func_151177_a(name);
+		if (stat == null) {
+			MineTweakerAPI.logError("not a valid stat name: " + name);
+			return;
+		}
+		player_mp.func_147099_x().func_150873_a(player_mp, stat, value);
 	}
 }

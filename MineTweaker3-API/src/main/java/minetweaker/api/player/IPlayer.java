@@ -61,6 +61,12 @@ public interface IPlayer {
 	@ZenMethod
 	public void give(IItemStack stack);
 
+	@ZenMethod
+	public int getStat(String name);
+
+	@ZenMethod
+	public void setStat(String name, int value);
+
 	// not an exposed method. risks abuse
 	public void openBrowser(String url);
 
