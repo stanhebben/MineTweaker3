@@ -62,7 +62,7 @@ public class MineTweakerImplementationAPI {
 	private static final Map<String, MineTweakerCommand> minetweakerCommands;
 
 	private static final Comparator<IItemDefinition> ITEM_COMPARATOR = new ItemComparator();
-    private static final Comparator<IItemStack> ITEMSTACK_COMPARATOR = new ItemStackComparator();
+	private static final Comparator<IItemStack> ITEMSTACK_COMPARATOR = new ItemStackComparator();
 	private static final Comparator<ILiquidDefinition> LIQUID_COMPARATOR = new LiquidComparator();
 	private static final Comparator<IBlockDefinition> BLOCK_COMPARATOR = new BlockComparator();
 	private static final Comparator<IEntityDefinition> ENTITY_COMPARATOR = new EntityComparator();
@@ -128,7 +128,7 @@ public class MineTweakerImplementationAPI {
 				new String[] {
 						"/minetweaker items",
 						"    Outputs a list of most items in the game to the minetweaker log",
-                        "    including damage/meta based subitems (using NEI's algorithm)."
+						"    including damage/meta based subitems (using NEI's algorithm)."
 				}, new ICommandFunction() {
 					@Override
 					public void execute(String[] arguments, IPlayer player) {
@@ -819,14 +819,14 @@ public class MineTweakerImplementationAPI {
 		}
 	}
 
-    private static class ItemStackComparator implements Comparator<IItemStack> {
-        @Override
-        public int compare(IItemStack o1, IItemStack o2) {
-            int id = o1.getDefinition().getId().compareTo(o2.getDefinition().getId());
-            if (id != 0) return id;
-            return Integer.compare(o1.getDamage(), o2.getDamage());
-        }
-    }
+	private static class ItemStackComparator implements Comparator<IItemStack> {
+		@Override
+		public int compare(IItemStack o1, IItemStack o2) {
+			int id = o1.getDefinition().getId().compareTo(o2.getDefinition().getId());
+			if (id != 0) return id;
+			return Integer.compare(o1.getDamage(), o2.getDamage());
+		}
+	}
 
 	private static class LiquidComparator implements Comparator<ILiquidDefinition> {
 		@Override
