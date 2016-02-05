@@ -3,6 +3,7 @@ package minetweaker;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.lang.Integer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -61,6 +62,7 @@ public class MineTweakerImplementationAPI {
 	private static final Map<String, MineTweakerCommand> minetweakerCommands;
 
 	private static final Comparator<IItemDefinition> ITEM_COMPARATOR = new ItemComparator();
+    private static final Comparator<IItemStack> ITEMSTACK_COMPARATOR = new ItemStackComparator();
 	private static final Comparator<ILiquidDefinition> LIQUID_COMPARATOR = new LiquidComparator();
 	private static final Comparator<IBlockDefinition> BLOCK_COMPARATOR = new BlockComparator();
 	private static final Comparator<IEntityDefinition> ENTITY_COMPARATOR = new EntityComparator();
@@ -113,6 +115,41 @@ public class MineTweakerImplementationAPI {
 							}
 
 							MineTweakerAPI.logCommand("<" + item.getId() + ">" + displayName);
+						}
+
+						if (player != null) {
+							player.sendChat("List generated; see minetweaker.log in your minecraft dir");
+						}
+					}
+				}));
+
+		minetweakerCommands.put("items", new MineTweakerCommand(
+				"items",
+				new String[] {
+						"/minetweaker items",
+						"    Outputs a list of most items in the game to the minetweaker log",
+                        "    including damage/meta based subitems (using NEI's algorithm)."
+				}, new ICommandFunction() {
+					@Override
+					public void execute(String[] arguments, IPlayer player) {
+						List<IItemStack> items = MineTweakerAPI.game.getItemStacks();
+						Collections.sort(items, ITEMSTACK_COMPARATOR);
+						for (IItemStack stack : items) {
+							String displayName;
+
+							try {
+								displayName = ", " + stack.getDisplayName();
+							} catch (Throwable ex) {
+								// some mods (such as buildcraft) may throw
+								// exceptions when calling
+								// getDisplayName on an item stack that doesn't
+								// contain valid NBT data
+								// also seems to cause errors in some other
+								// cases too
+								displayName = " -- Name could not be retrieved due to an error: " + ex;
+							}
+
+							MineTweakerAPI.logCommand("<" + stack.getDefinition().getId() + ":" + stack.getDamage() + ">" + displayName);
 						}
 
 						if (player != null) {
@@ -781,6 +818,15 @@ public class MineTweakerImplementationAPI {
 			return o1.getId().compareTo(o2.getId());
 		}
 	}
+
+    private static class ItemStackComparator implements Comparator<IItemStack> {
+        @Override
+        public int compare(IItemStack o1, IItemStack o2) {
+            int id = o1.getDefinition().getId().compareTo(o2.getDefinition().getId());
+            if (id != 0) return id;
+            return Integer.compare(o1.getDamage(), o2.getDamage());
+        }
+    }
 
 	private static class LiquidComparator implements Comparator<ILiquidDefinition> {
 		@Override
