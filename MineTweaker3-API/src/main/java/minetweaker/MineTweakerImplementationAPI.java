@@ -15,6 +15,7 @@ import java.util.Set;
 import static minetweaker.MineTweakerAPI.server;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.block.IBlockDefinition;
+import minetweaker.api.data.DataMap;
 import minetweaker.api.data.IData;
 import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.event.IEventHandle;
@@ -136,9 +137,14 @@ public class MineTweakerImplementationAPI {
 						Collections.sort(items, ITEMSTACK_COMPARATOR);
 						for (IItemStack stack : items) {
 							String displayName;
+							String tag = new String("");
 
 							try {
 								displayName = ", " + stack.getDisplayName();
+								IData tagData = stack.getTag();
+								if (tagData != null && tagData != DataMap.EMPTY) {
+									tag = tagData.toString();
+								}
 							} catch (Throwable ex) {
 								// some mods (such as buildcraft) may throw
 								// exceptions when calling
@@ -149,7 +155,12 @@ public class MineTweakerImplementationAPI {
 								displayName = " -- Name could not be retrieved due to an error: " + ex;
 							}
 
-							MineTweakerAPI.logCommand("<" + stack.getDefinition().getId() + ":" + stack.getDamage() + ">" + displayName);
+							if (tag.equals("")) {
+								MineTweakerAPI.logCommand("<" + stack.getDefinition().getId() + ":" + stack.getDamage() + ">" + displayName);
+							} else {
+								MineTweakerAPI.logCommand("<" + stack.getDefinition().getId() + ":" +
+									stack.getDamage() + ">.withTag(" + tag + ")" + displayName);
+							}
 						}
 
 						if (player != null) {
