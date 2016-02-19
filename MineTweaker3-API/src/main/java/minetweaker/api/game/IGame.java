@@ -4,6 +4,7 @@ import java.util.List;
 import minetweaker.api.block.IBlockDefinition;
 import minetweaker.api.entity.IEntityDefinition;
 import minetweaker.api.item.IItemDefinition;
+import minetweaker.api.item.IItemStack;
 import minetweaker.api.liquid.ILiquidDefinition;
 import minetweaker.api.world.IBiome;
 import stanhebben.zenscript.annotations.ZenClass;
@@ -18,12 +19,20 @@ import stanhebben.zenscript.annotations.ZenMethod;
 @ZenClass("minetweaker.game.IGame")
 public interface IGame {
 	/**
-	 * Retrieves the item definitions in this game.
+	 * Retrieves the items in this game, not including damage/meta based subitems.
 	 * 
 	 * @return game items
 	 */
 	@ZenGetter("items")
 	public List<IItemDefinition> getItems();
+
+	/**
+	 * Retrieves the item definitions in this game, including most damage/meta based subitems.
+	 *
+	 * @return game itemstacks
+	 */
+	@ZenGetter("itemstacks")
+	public List<IItemStack> getItemStacks();
 
 	/**
 	 * Retrieves the block definitions in this game.
