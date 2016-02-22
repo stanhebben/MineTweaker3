@@ -10,7 +10,7 @@ import minetweaker.IUndoableAction;
 import minetweaker.MineTweakerAPI;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 
 /**
  *
@@ -25,7 +25,7 @@ public class SetBlockHardnessAction implements IUndoableAction {
 	public SetBlockHardnessAction(ItemStack stack, float hardness) {
 		this.stack = stack;
 		this.hardness = hardness;
-		this.oldHardness = ReflectionHelper.getPrivateValue(Block.class, Block.getBlockFromItem(stack.getItem()), "blockHardness");
+		this.oldHardness = (Float) ObfuscationReflectionHelper.getPrivateValue(Block.class, Block.getBlockFromItem(stack.getItem()), "blockHardness", "field_149782_v");
 	}
 
 	@Override

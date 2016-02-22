@@ -696,9 +696,14 @@ public class MineTweakerImplementationAPI {
 	// ##############################
 
 	private static void copyToClipboard(String value) {
-		StringSelection stringSelection = new StringSelection(value);
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		clipboard.setContents(stringSelection, null);
+		try {
+			StringSelection stringSelection = new StringSelection(value);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			if (clipboard != null || stringSelection != null) {
+				clipboard.setContents(stringSelection, null);
+			}
+		} catch (Throwable e) {
+		} 
 	}
 
 	// ############################

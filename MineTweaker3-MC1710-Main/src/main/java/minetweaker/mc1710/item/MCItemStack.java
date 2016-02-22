@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import minetweaker.MineTweakerAPI;
 import minetweaker.api.block.IBlock;
 import minetweaker.api.data.DataMap;
@@ -122,7 +122,7 @@ public class MCItemStack implements IItemStack {
 
 	@Override
 	public float getBlockHardness() {
-		return ReflectionHelper.getPrivateValue(Block.class, Block.getBlockFromItem(stack.getItem()), "blockHardness");
+		return ObfuscationReflectionHelper.getPrivateValue(Block.class, Block.getBlockFromItem(stack.getItem()), "blockHardness", "field_149782_v");
 	}
 
 	@Override
