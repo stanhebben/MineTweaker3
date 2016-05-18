@@ -124,4 +124,14 @@ public class ServerPlayer implements IPlayer {
 	public void give(IItemStack stack) {
 
 	}
+
+	@Override
+	public int getStat(String name) {
+		return 0;
+	}
+
+	@Override
+	public void setStat(String name, int value) {
+		return;
+	}
 }
