@@ -394,7 +394,7 @@ public class MCItemStack implements IItemStack {
 		
 		if (stack.stackSize > 1) {
 			result.append(" * ");
-			result.append(stack.StackSize);
+			result.append(stack.stackSize);
 		}
 
 		return result.toString();
