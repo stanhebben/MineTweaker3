@@ -44,7 +44,7 @@ public class ItemBracketHandler implements IBracketHandler {
 		itemNames.clear();
 		
 		for (String itemName : (Set<String>) Item.itemRegistry.getKeys()) {
-			itemNames.put(itemName.replace(" ", ""), (Item) Item.itemRegistry.getObject(itemName));
+			itemNames.put(itemName.replaceAll("[^[_\p{Alnum}]]", ""), (Item) Item.itemRegistry.getObject(itemName));
 		}
 	}
 	
