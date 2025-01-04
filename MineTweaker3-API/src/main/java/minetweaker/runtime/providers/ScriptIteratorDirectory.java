@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -62,7 +63,9 @@ public class ScriptIteratorDirectory implements IScriptIterator {
 	}
 
 	private static void iterate(File directory, List<File> contentsList) {
-		for (File file : directory.listFiles()) {
+        	File[] files = directory.listFiles();
+		Arrays.sort(files);
+		for (File file : files) {
 			if (file.isDirectory()) {
 				iterate(file, contentsList);
 			} else if (file.isFile() && file.getName().endsWith(".zs")) {
